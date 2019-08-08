@@ -238,10 +238,6 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:Think()
-	if (CLIENT) then
-		self:CalcViewModel()
-	end
-
 	if (self:GetIronsights() and not self:GetOwner():KeyDown(IN_ATTACK2)) then
 		local old, new
 		if (self:GetIronsights()) then
@@ -254,5 +250,9 @@ function SWEP:Think()
 	
 		self:SetIronsightsTime(CurTime() - new + frac)
 		self:SetIronsights(false)
+	end
+
+	if (CLIENT) then
+		self:CalcViewModel()
 	end
 end
