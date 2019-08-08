@@ -31,8 +31,7 @@ SWEP.Primary.Recoil        = 1.6
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.ClipSize      = 20
-SWEP.Primary.ClipMax       = 1000
-SWEP.Primary.DefaultClip   = 20
+SWEP.Primary.DefaultClip   = 1000
 SWEP.Primary.Sound         = Sound "Weapon_M4A1.Single"
 
 SWEP.AutoSpawnable         = true

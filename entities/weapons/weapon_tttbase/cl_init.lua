@@ -133,6 +133,6 @@ function SWEP:TranslateFOV(fov)
 	elseif (res > 180) then
 		res = res - 180
 	end
-
+ 
 	return res
 end
