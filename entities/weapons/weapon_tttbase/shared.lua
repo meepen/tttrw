@@ -81,18 +81,12 @@ function SWEP:Initialize()
 	self:SetHoldType(self.HoldType)
 end
 
-function SWEP:Reload()
-	self:SetIronsights(false)
-	self:SetIronsightsTime(0)
-	if (CLIENT) then
-		self:CalcViewModel()
-	end
-	BaseClass.Reload(self)
-end
-
-
-function SWEP:SecondaryAttack()
+function SWEP:ChangeIronsights(on)
 	if (not self.Ironsights) then
+		return
+	end
+
+	if (self:GetIronsights() == on) then
 		return
 	end
 
@@ -119,6 +113,18 @@ function SWEP:SecondaryAttack()
 	end
 end
 
+function SWEP:Reload()
+	if (self:Clip1() == 0) then
+		self:ChangeIronsights(false)
+	end
+	BaseClass.Reload(self)
+end
+
+
+function SWEP:SecondaryAttack()
+	self:ChangeIronsights(true)
+end
+
 function SWEP:GetDeveloperMode()
 	return true
 end
@@ -126,9 +132,9 @@ end
 local informations = {}
 
 function SWEP:OnDrop()
+	self:SetIronsightsTime(CurTime() - self.Ironsights.TimeFrom)
 	self:SetIronsights(false)
 	self:DoZoom(false)
-	self:SetIronsightsTime(CurTime() - self.Ironsights.TimeFrom)
 end
 
 function SWEP:FireBulletsCallback(tr, dmginfo)
@@ -239,17 +245,7 @@ end
 
 function SWEP:Think()
 	if (self:GetIronsights() and not self:GetOwner():KeyDown(IN_ATTACK2)) then
-		local old, new
-		if (self:GetIronsights()) then
-			old, new = self.Ironsights.TimeFrom, self.Ironsights.TimeTo
-		else
-			new, old = self.Ironsights.TimeFrom, self.Ironsights.TimeTo
-		end
-	
-		local frac = math.min(1, (CurTime() - self:GetIronsightsTime()) / old) * new
-	
-		self:SetIronsightsTime(CurTime() - new + frac)
-		self:SetIronsights(false)
+		self:ChangeIronsights(false)
 	end
 
 	if (CLIENT) then
