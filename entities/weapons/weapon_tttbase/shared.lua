@@ -119,6 +119,9 @@ end
 
 function SWEP:Reload()
 	self:ChangeIronsights(false)
+	if (CLIENT) then
+		self:CalcFOV()
+	end
 	BaseClass.Reload(self)
 end
 
@@ -154,7 +157,6 @@ hook.Add("StartCommand", "developer", function(pl, cmd)
 		cmd:SetViewAngles(Angle(89, swap and 0 or 180, 0))
 	end
 end)
-
 
 local vector_origin = vector_origin
 

@@ -56,7 +56,6 @@ DEFINE_BASECLASS "weapon_tttbase"
 function SWEP:DoZoom(state)
 	if state then
 		self:ChangeFOVMultiplier(35 / 70, self.Ironsights.TimeTo)
-		--self:GetOwner():SetFOV(35, 0.5)
 	else
 		self:ChangeFOVMultiplier(1, self.Ironsights.TimeFrom)
 	end

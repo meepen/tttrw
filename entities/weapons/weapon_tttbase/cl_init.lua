@@ -60,7 +60,7 @@ end
 local host_timescale = GetConVar("host_timescale")
 
 function SWEP:GetUnpredictedTime()
-	return self.CurTime + (RealTime() - self.RealTime) * game.GetTimeScale() * host_timescale:GetFloat()
+	return (self.CurTime or 0) + (RealTime() - (self.RealTime or 0)) * game.GetTimeScale() * host_timescale:GetFloat()
 end
 
 local vector_lower = Vector(0, 0, 2)
