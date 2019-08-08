@@ -23,7 +23,8 @@ AddCSLuaFile();
         "sh_round_system.lua",
         "sh_spectator.lua",
         "player_terror.lua",
-        "sh_movement.lua"
+        "sh_movement.lua",
+		"sh_equipment.lua"
     },
     Load = function(self)
         for _, file in ipairs(self.Shared) do
