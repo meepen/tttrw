@@ -115,8 +115,8 @@ function SWEP:CalcFOV()
 end
 
 function SWEP:GetCurrentUnpredictedFOVMultiplier()
-	local fov, time, duration = self.FOVMultiplier, self.FOVMultiplierTime, self.FOVMultiplierDuration
-	local ofov = self.OldFOVMultiplier
+	local fov, time, duration = self.FOVMultiplier or 1, self.FOVMultiplierTime or -0.1, self.FOVMultiplierDuration or 0.1
+	local ofov = self.OldFOVMultiplier or 1
 
 	local cur = math.min(1, (self:GetUnpredictedTime() - time) / duration)
 
@@ -124,5 +124,15 @@ function SWEP:GetCurrentUnpredictedFOVMultiplier()
 end
 
 function SWEP:TranslateFOV(fov)
-	return self:GetCurrentUnpredictedFOVMultiplier() * fov
+	local mult = self:GetCurrentUnpredictedFOVMultiplier()
+
+	local res = math.deg(math.atan(math.tan(math.rad(fov) * mult)))
+	
+	if (res < 0) then
+		res = res + 180
+	elseif (res > 180) then
+		res = res - 180
+	end
+
+	return res
 end
