@@ -14,8 +14,8 @@ if (SERVER) then
 	end)
 
 
-	concommand.Add("i_want_equipment", function(ply)
-		local eq = ents.Create("ttt_bodyarmor")
+	concommand.Add("i_want_equipment", function(ply, cmd, args)
+		local eq = ents.Create(args[1])
 		eq:SetParent(ply)
 		eq:Spawn()
 	end)
