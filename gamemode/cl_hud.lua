@@ -43,6 +43,7 @@ function GM:HUDDrawTargetID()
 
 	if (IsValid(ent) and ent:IsPlayer()) then
 
+
 		if (LastTarget ~= ent or LastTime and LastTime < CurTime() - 1) then
 			LastTarget = ent
 			LastTime = CurTime()
