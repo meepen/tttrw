@@ -8,6 +8,7 @@ DEFINE_BASECLASS "weapon_base"
 SWEP.Primary.Automatic = true
 SWEP.Primary.Delay = 0.1
 SWEP.Primary.DefaultClip = 100000
+SWEP.Primary.ClipSize = 32
 
 SWEP.Bullets = {
 	Damage = 20,
@@ -15,7 +16,16 @@ SWEP.Bullets = {
 	Num = 1,
 	DamageDropoffRange = 600,
 	DamageDropoffRangeMax = 3600,
-	DamageMinimumPercent = 0.1
+	DamageMinimumPercent = 0.1,
+	Spread = Vector(0, 0, 0)
+}
+
+SWEP.Ironsights = {
+	Pos = Vector(-8, 4, 3.9),
+	Angle = Vector(0, 0, 1.5),
+	TimeTo = 0.01,
+	TimeFrom = 2,
+	Editing
 }
 
 SWEP.PredictableSpread = true
@@ -41,7 +51,26 @@ function SWEP:NetVar(name, type, default, notify)
 	end
 end
 
+function SWEP:ScaleDamage(hitgroup, dmg)
+	-- More damage if we're shot in the head
+	if (hitgroup == HITGROUP_HEAD) then
+		dmg:ScaleDamage(2)
+	end
+
+	-- Less damage if we're shot in the arms or legs
+	if (hitgroup == HITGROUP_LEFTARM or
+		hitgroup == HITGROUP_RIGHTARM or
+		hitgroup == HITGROUP_LEFTLEG or
+		hitgroup == HITGROUP_RIGHTLEG or
+		hitgroup == HITGROUP_GEAR) then
+
+		dmg:ScaleDamage(0.6)
+	end
+end
+
 function SWEP:SetupDataTables()
+	self:NetVar("Ironsights", "Bool", false, false)
+	self:NetVar("IronsightsTime", "Float", 0, false)
 	hook.Run("TTTInitWeaponNetVars", self)
 end
 
@@ -49,14 +78,57 @@ function SWEP:Initialize()
 	if (self.Primary and self.Primary.Ammo == "Buckshot" and not self.PredictableSpread) then
 		printf("Warning: %s weapon type has shotgun ammo and no predictable spread", self:GetClass())
 	end
+	self:SetHoldType(self.HoldType)
 end
 
-function SWEP:PrimaryAttack()
-	BaseClass.PrimaryAttack(self)
-	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+function SWEP:Reload()
+	self:SetIronsights(false)
+	self:SetIronsightsTime(0)
+	if (CLIENT) then
+		self:CalcViewModel()
+	end
+	BaseClass.Reload(self)
 end
+
 
 function SWEP:SecondaryAttack()
+	if (not self.Ironsights) then
+		return
+	end
+
+	self:SetIronsights(not self:GetIronsights())
+
+	local old, new
+	if (self:GetIronsights()) then
+		old, new = self.Ironsights.TimeFrom, self.Ironsights.TimeTo
+	else
+		new, old = self.Ironsights.TimeFrom, self.Ironsights.TimeTo
+	end
+
+	local frac = math.min(1, (CurTime() - self:GetIronsightsTime()) / old) * new
+
+	self:SetIronsightsTime(CurTime() - new + frac)
+	self:SetNextPrimaryFire(CurTime() + new)
+
+	if (CLIENT) then
+		self:CalcViewModel()
+	end
+
+	if (self.DoZoom) then
+		self:DoZoom(self:GetIronsights())
+	end
+end
+
+function SWEP:GetDeveloperMode()
+	return true
+end
+
+local informations = {}
+
+function SWEP:OnDrop()
+	self:SetIronsights(false)
+	self:DoZoom(false)
+	self:SetIronsightsTime(CurTime() - self.Ironsights.TimeFrom)
 end
 
 function SWEP:FireBulletsCallback(tr, dmginfo)
@@ -68,12 +140,59 @@ function SWEP:FireBulletsCallback(tr, dmginfo)
 	end
 end
 
+hook.Add("StartCommand", "developer", function(pl, cmd)
+	if (pl:IsBot()) then
+		swap = not swap
+		cmd:SetViewAngles(Angle(89, swap and 0 or 180, 0))
+	end
+end)
+
 
 local vector_origin = vector_origin
 
-function SWEP:ShootBullet()
-	--debug.Trace()
+function SWEP:ShootBullet(bullet_info)
 	local owner = self:GetOwner()
+
+	if (self:GetDeveloperMode()) then
+		owner:LagCompensation(true)
+		local tick = math.floor(CurTime() / engine.TickInterval())
+		local hitboxes = {}
+		for _, ply in pairs(player.GetAll()) do
+			for group = 0, ply:GetHitBoxGroupCount() - 1 do 
+				for hitbox = 0, ply:GetHitBoxCount(group) - 1 do
+					local bone = ply:GetHitBoxBone(hitbox, group)
+					local pos, angles = ply:GetBonePosition(bone)
+					local min, max = ply:GetHitBoxBounds(hitbox, group)
+					hitboxes[#hitboxes + 1] = {
+						mins = min,
+						maxs = max,
+						pos = pos,
+						angles = angles
+					}
+				end
+			end
+		end
+		owner:LagCompensation(false)
+
+		if (SERVER) then
+			net.Start "tttrw_developer_hitboxes"
+				net.WriteUInt(tick, 32)
+				net.WriteEntity(self)
+				--net.WriteEntity(game.Get)
+				--net.WriteVector(tr.HitPos)
+				--net.WriteVector(tr.StartPos)
+				net.WriteTable(hitboxes)
+			net.Send(self:GetOwner())
+		else
+			self.DeveloperInformations = {
+				Tick = tick,
+				--Entity = tr.Entity,
+				--HitPos = tr.HitPos,
+				--StartPos = tr.StartPos,
+				hitboxes = hitboxes
+			}
+		end
+	end
 
 	local bullet_ang = owner:EyeAngles() + owner:GetViewPunchAngles()
 
@@ -85,20 +204,22 @@ function SWEP:ShootBullet()
 		Damage = bullet_info.Damage,
 		Tracer = bullet_info.Tracer,
 		TracerName = bullet_info.TracerName,
-		Spread = vector_origin,
-		Callback = self.FireBulletsCallback,
+		Spread = bullet_info.Spread,
+		Callback = function(_, ...)
+			if (IsValid(self)) then
+				self:FireBulletsCallback(...)
+			end
+		end,
 		Src = owner:GetShootPos(),
 		Dir = bullet_ang:Forward()
 	}
 
-	owner:LagCompensation(true)
+	--owner:LagCompensation(true)
 	self:FireBullets(bullet)
-	owner:LagCompensation(false)
+	--owner:LagCompensation(false)
 
 	self:ShootEffects()
 end
-
-
 
 function SWEP:PrimaryAttack()
 	if (not self:CanPrimaryAttack()) then
@@ -107,11 +228,31 @@ function SWEP:PrimaryAttack()
 
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 
-	self:EmitSound "Weapon_AR2.Single"
+	self:EmitSound(self.Primary.Sound, self.Primary.SoundLevel)
 
 	self:ShootBullet(150, 1, 0.01)
 
 	self:TakePrimaryAmmo(1)
 
 	self.Owner:ViewPunch(Angle(-1, 0, 0))
+end
+
+function SWEP:Think()
+	if (CLIENT) then
+		self:CalcViewModel()
+	end
+
+	if (self:GetIronsights() and not self:GetOwner():KeyDown(IN_ATTACK2)) then
+		local old, new
+		if (self:GetIronsights()) then
+			old, new = self.Ironsights.TimeFrom, self.Ironsights.TimeTo
+		else
+			new, old = self.Ironsights.TimeFrom, self.Ironsights.TimeTo
+		end
+	
+		local frac = math.min(1, (CurTime() - self:GetIronsightsTime()) / old) * new
+	
+		self:SetIronsightsTime(CurTime() - new + frac)
+		self:SetIronsights(false)
+	end
 end

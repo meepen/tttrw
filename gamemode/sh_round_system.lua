@@ -32,6 +32,14 @@ function GM:OnRoundStateChange(old, new)
 	end
 end
 
+function GM:PlayerSpawn(ply)
+	player_manager.SetPlayerClass(ply, "player_terror")
+	if (SERVER) then
+		self:SV_PlayerSpawn(ply)
+	end
+	player_manager.RunClass(ply, "Spawn")
+end
+
 function GM:PlayerShouldTakeDamage(ply, atk)
 	if (IsValid(atk) and atk:IsPlayer()) then
 		local state = ttt.GetRoundState()

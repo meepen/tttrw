@@ -13,12 +13,32 @@ function PLAYER:Loadout()
 	-- TODO(meep): should we do something else here???
 end
 
+function PLAYER:Spawn()
+	if (SERVER) then
+		self.Player:SetupHands()
+	end
+end
+
 function PLAYER:SetupDataTables()
 	local ply = self.Player
 
 	ply:NetworkVar("Angle", 0, "ViewPunch")
 	ply:NetworkVar("Float", 0, "ViewPunchTime")
 	ply:NetworkVar("Float", 1, "ViewPunchDuration")
+end
+
+function PLAYER:GetSpeedData()
+	local ply = self.Player
+	local wep = ply:GetActiveWeapon()
+
+	local data = {
+		Multiplier = 1,
+		FinalMultiplier = IsValid(wep) and wep.GetIronsights and wep:GetIronsights() and wep.Ironsights and wep.Ironsights.SlowDown or 1
+	}
+
+	hook.Run("TTTUpdatePlayerSpeed", data)
+
+	return data
 end
 
 local q1, quat_zero = Quaternion(), Quaternion()
@@ -49,7 +69,7 @@ function PLAYER:StartCommand(cmd)
 	--print(q1:ToEulerAngles(), q1:ToEulerAngles(), quat_zero:ToEulerAngles())
 end
 
-
+--[[
 function PLAYER:HandleViewPunch(vp)
 	local ply = self.Player
 	ply:SetViewPunch(vp)
@@ -57,7 +77,6 @@ function PLAYER:HandleViewPunch(vp)
 	--ply:SetViewPunchDuration()
 end
 
---[[
 FindMetaTable "Player".ViewPunch = function(self, vp)
 	player_manager.RunClass(self, "HandleViewPunch", vp)
 end]]

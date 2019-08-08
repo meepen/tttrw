@@ -38,7 +38,7 @@ function ENT:SetupDataTables()
 			self["Set"..var.Name](self, var.Default)
 		end
 
-		self:SetNWVarProxy(var.Name, self.NetworkVarNotifyCallback)
+		self:SetNW2VarProxy(var.Name, self.NetworkVarNotifyCallback)
 
 		--self:NetworkVarNotify(var.Name, self.NetworkVarNotifyCallback)
 

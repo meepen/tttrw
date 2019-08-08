@@ -147,7 +147,7 @@ function round.TryStart()
 			Player = ply,
 			SteamID = ply:SteamID(),
 			Nick = ply:Nick(),
-			Role = role
+			Role = ttt.roles[role]
 		}
 	end
 
@@ -166,7 +166,7 @@ function round.TryStart()
 		local winners = {}
 
 		for _, ply in pairs(round.GetStartingPlayers()) do
-			if (ttt.roles[ply.Role].Team == "innocent") then
+			if (ply.Role.Team.Name == "innocent") then
 				table.insert(winners, ply)
 			end
 		end
@@ -184,24 +184,25 @@ end
 function GM:OnPlayerRoleChange(ply, old, new)
 	for _, info in pairs(round.GetActivePlayers()) do
 		if (info.Player == ply) then
-			info.Role = new
+			info.Role = ttt.roles[new]
 		end
 	end
 
 	for _, info in pairs(round.GetStartingPlayers()) do
 		if (info.Player == ply) then
-			info.Role = new
+			info.Role = ttt.roles[new]
 		end
 	end
 
+	print "check"
 	ttt.CheckTeamWin()
 end
 
 function GM:TTTRoundStart()
 	for _, info in pairs(round.GetActivePlayers()) do
 		if (IsValid(info.Player)) then
-			info.Player:ChatPrint("Your role is "..info.Role.." on team "..ttt.roles[info.Role].Team)
-			info.Player:SetRole(info.Role)
+			info.Player:ChatPrint("Your role is "..info.Role.Name.." on team "..info.Role.Team.Name)
+			info.Player:SetRole(info.Role.Name)
 		end
 		if (not info.Player:Alive()) then
 			info.Player:Spawn()
@@ -234,7 +235,7 @@ function GM:PlayerInitialSpawn(ply)
 	ply:AllowFlashlight(true)
 end
 
-function GM:PlayerSpawn(ply)
+function GM:SV_PlayerSpawn(ply)
 	local state = ttt.GetRoundState()
 	ply:UnSpectate()
 
@@ -247,10 +248,18 @@ function GM:PlayerSpawn(ply)
 		return
 	end
 
-	player_manager.SetPlayerClass(ply, "player_terror")
-
 	hook.Run("PlayerLoadout", ply)
 	hook.Run("PlayerSetModel", ply)
+
+	local Role = ttt.roles[ply:GetRole()]
+
+	hook.Run("PlayerSetSpeed", ply, Role.Speed, Role.RunSpeed)
+end
+
+function GM:PlayerSetSpeed(ply, walkspeed, runspeed)
+	ply:SetWalkSpeed(walkspeed)
+	ply:SetCrouchedWalkSpeed(0.2)
+	ply:SetRunSpeed(runspeed or walkspeed)
 end
 
 function GM:PlayerDisconnected(ply)
@@ -282,7 +291,7 @@ function ttt.CheckTeamWin()
 	end
 
 	for _, ply in pairs(plys) do
-		local team = ttt.roles[ply.Role].Team
+		local team = ply.Role.Team.Name
 		roles[team] = roles[team] + 1
 	end
 
@@ -294,7 +303,7 @@ function ttt.CheckTeamWin()
 		local winners = {}
 
 		for _, ply in pairs(round.GetStartingPlayers()) do
-			if (ttt.roles[ply.Role].Team == win_team) then
+			if (ply.Role.Team.Name == win_team) then
 				table.insert(winners, ply)
 			end
 		end

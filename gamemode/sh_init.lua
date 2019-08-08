@@ -9,20 +9,6 @@ ttt = ttt or GM or {}
 
 PLAYER = FindMetaTable "Player"
 
-for _, file in ipairs {
-	"libraries/quaternion.lua",
-	"player_terror.lua",
-	"sh_roles.lua",
-	"sh_proper_networking.lua",
-	"sh_round_system.lua",
-	"sh_spectator.lua"
-} do
-	if (SERVER) then
-		AddCSLuaFile(file)
-	end
-	include(file)
-end
-
 function printf(...)
 	print(string.format(...))
 end
@@ -45,4 +31,11 @@ end
 
 function GM:StartCommand(ply, cmd)
 	player_manager.RunClass(ply, "StartCommand", cmd)
+end
+
+function GM:ScalePlayerDamage(ply, hitgroup, dmg)
+	local wep = dmg:GetInflictor()
+	if (IsValid(wep) and wep.ScaleDamage) then
+		wep:ScaleDamage(hitgroup, dmg)
+	end
 end

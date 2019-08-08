@@ -6,6 +6,28 @@ local ttt_detective_min_players = CreateConVar("ttt_detective_min_players", "10"
 
 local TEAM = {}
 
+ttt.SeenBy = ttt.SeenBy or {}
+
+
+function ttt.CanPlayerSeePlayersRole(looker, ply)
+	local r, t = ply:GetRole()
+	t = ttt.roles[r].Team.Name
+
+	r, t = ttt.SeenBy[r], ttt.SeenBy[t]
+
+	local lr, lt = looker:GetRole()
+	lt = ttt.roles[lr].Team.Name
+
+	if (r and (r[lr] or r[lt])) then
+		return true
+	end
+	if (t and (t[lr] or t[lt])) then
+		return true
+	end
+	
+	return false
+end
+
 function TEAM:SetColor(col, g, b, a)
 	if (type(col) == "number") then
 		col = Color(col, g, b, a)
@@ -15,9 +37,20 @@ function TEAM:SetColor(col, g, b, a)
 	return self
 end
 
+local SEEN_BY_ALL = {
+	__index = function() return true end,
+	__newindex = function() end,
+	__eq = function() return true end
+}
+
+function TEAM:SeenByAll()
+	ttt.SeenBy[self.Name] = setmetatable({}, SEEN_BY_ALL)
+	return self
+end
+
 function TEAM:SeenBy(what)
-	if (not self.CanBeSeenBy) then
-		self.CanBeSeenBy = {}
+	if (not ttt.SeenBy[self.Name]) then
+		ttt.SeenBy[self.Name] = {}
 	end
 
 	if (type(what) ~= "table") then
@@ -25,24 +58,31 @@ function TEAM:SeenBy(what)
 	end
 
 	for _, what in ipairs(what) do
-		self.CanBeSeenBy[what] = true
+		ttt.SeenBy[self.Name][what] = true
 	end
 
 	return self
 end
 
-local SEEN_BY_ALL = {
-	__index = function() return true end,
-	__newindex = function() end,
-	__eq = function() return true end
-}
+function TEAM:TeamChatSeenBy(what)
+	if (not self.TeamChatCanBeSeenBy) then
+		self.TeamChatCanBeSeenBy = {}
+	end
+
+	if (type(what) ~= "table") then
+		what = {what}
+	end
+
+	for _, what in ipairs(what) do
+		self.TeamChatCanBeSeenBy[what] = true
+	end
+
+	return self
+end
+
 
 setmetatable(SEEN_BY_ALL, SEEN_BY_ALL)
 
-function TEAM:SeenByAll()
-	self.CanBeSeenBy = setmetatable({}, SEEN_BY_ALL)
-	return self
-end
 
 local ROLE = {
 	SetColor = TEAM.SetColor,
@@ -61,7 +101,14 @@ local TEAM_MT = {
 
 local function Team(name)
 	local t = ttt.teams[name] or setmetatable({
-		Name = name
+		Name = name,
+		Speed = 300,
+		--[[
+		RunSpeed = 400,
+		RunTime = 3, -- seconds
+		RunRecovery = 0.5, -- per second
+		RunMinimum = 0.5 -- before running you have to have this amount of a fraction
+		]]
 	}, TEAM_MT)
 
 	ttt.teams[name] = t
@@ -70,13 +117,19 @@ local function Team(name)
 end
 
 local ROLE_MT = {
-	__index = ROLE
+	__index = function(self, index)
+		local Team = rawget(self, "Team")
+		if (Team and Team[index]) then
+			return Team[index]
+		end
+		return ROLE[index]
+	end
 }
 
 local function Role(name, team)
 	local role = ttt.roles[name] or setmetatable({
 		Name = name,
-		Team = team
+		Team = Team(team)
 	}, ROLE_MT)
 
 	ttt.roles[name] = role
@@ -84,12 +137,9 @@ local function Role(name, team)
 	return role
 end
 
-function GM:SetupRoles()
-	ttt.roles = {}
-	ttt.teams = {}
-
+function GM:TTTPrepareRoles(Team, Role)
 	Team "innocent":SetColor(Color(20, 240, 20))
-	Team "traitor":SeenBy {"traitor"}:SetColor(Color(240, 20, 20))
+	Team "traitor":SeenBy {"traitor"}:SetColor(Color(240, 20, 20)):TeamChatSeenBy "traitor"
 	Team "spectator":SeenByAll():SetColor(Color(20, 120, 120))
 
 	Role("Innocent", "innocent")
@@ -99,17 +149,20 @@ function GM:SetupRoles()
 			return 0
 		end
 		return math.min(ttt_detective_max:GetInt(), math.ceil(total_players * ttt_detective_pct:GetFloat()))
-	end):SetColor(20, 20, 240)
+	end):SetColor(20, 20, 240):TeamChatSeenBy "Detective"
 	Role("Traitor", "traitor"):SetCalculateAmountFunction(function(total_players)
 		return math.min(ttt_traitor_max:GetInt(), math.ceil(total_players * ttt_traitor_pct:GetFloat()))
 	end)
+end
+
+function GM:SetupRoles()
+	ttt.roles = {}
+	ttt.teams = {}
 
 	hook.Run("TTTPrepareRoles", Team, Role)
 
 	for name, role in pairs(ttt.roles) do
-		local team = ttt.teams[role.Team]
-
-		-- merge SeenBy
+		local team = role.Team
 
 		if (team.CanBeSeenBy) then
 			if (not role.CanBeSeenBy or team.CanBeSeenBy == SEEN_BY_ALL) then
@@ -121,12 +174,8 @@ function GM:SetupRoles()
 			end
 		end
 
-
 		if (not role.Color) then
-			role.Color = team.Color or color_black
+			role.Color = color_black
 		end
 	end
-
-
-	-- TODO(meep): merge team data into role data for everything
 end

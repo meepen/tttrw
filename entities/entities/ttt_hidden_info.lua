@@ -39,7 +39,7 @@ function ENT:SetupDataTables()
 			self[nw2setter](self, var.Name, value)
 		end
 
-		self:SetNWVarProxy(var.Name, self.NetworkVarNotifyCallback)
+		self:SetNW2VarProxy(var.Name, self.NetworkVarNotifyCallback)
 
 		--self:NetworkVarNotify(var.Name, self.NetworkVarNotifyCallback)
 
@@ -56,15 +56,7 @@ function ENT:IsVisibleTo(ply)
 	local roundstate = ttt.GetRoundState()
 
 	if (roundstate == ttt.ROUNDSTATE_ACTIVE) then
-		local ownrole = ttt.roles[own:GetRole()]
-		local otherrole = ttt.roles[ply:GetRole()]
-		local seent = ownrole.CanBeSeenBy
-
-		if (ownrole and seent and (seent["*"] or seent[otherrole.Role] or ownrole.CanBeSeenBy[otherrole.Team])) then
-			return true
-		end
-
-		return false
+		return ttt.CanPlayerSeePlayersRole(ply, own)
 	end
 
 	return roundstate ~= ttt.ROUNDSTATE_PREPARING
