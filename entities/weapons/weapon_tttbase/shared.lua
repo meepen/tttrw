@@ -71,6 +71,10 @@ end
 function SWEP:SetupDataTables()
 	self:NetVar("Ironsights", "Bool", false, false)
 	self:NetVar("IronsightsTime", "Float", 0, false)
+	self:NetVar("FOVMultiplier", "Float", 1, false)
+	self:NetVar("OldFOVMultiplier", "Float", 1, false)
+	self:NetVar("FOVMultiplierTime", "Float", -0.1, false)
+	self:NetVar("FOVMultiplierDuration", "Float", 0.1, false)
 	hook.Run("TTTInitWeaponNetVars", self)
 end
 
@@ -248,5 +252,23 @@ function SWEP:Think()
 
 	if (CLIENT) then
 		self:CalcViewModel()
+		self:CalcFOV()
 	end
+end
+
+function SWEP:GetCurrentFOVMultiplier()
+	local fov, time, duration = self:GetFOVMultiplier(), self:GetFOVMultiplierTime(), self:GetFOVMultiplierDuration()
+	local ofov = self:GetOldFOVMultiplier()
+
+	local cur = math.min(1, (CurTime() - time) / duration)
+
+	return ofov + (fov - ofov) * cur
+end
+
+
+function SWEP:ChangeFOVMultiplier(fovmult, duration)
+	self:SetOldFOVMultiplier(self:GetCurrentFOVMultiplier())
+	self:SetFOVMultiplier(fovmult)
+	self:SetFOVMultiplierDuration(duration)
+	self:SetFOVMultiplierTime(CurTime())
 end

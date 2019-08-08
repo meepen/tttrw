@@ -45,16 +45,25 @@ net.Receive("tttrw_developer_hitboxes", function(len, pl)
 	end
 end)
 
-function SWEP:CalcViewModel()
-	if (not CLIENT) or (not IsFirstTimePredicted()) then return end
-	self.CurIronsights = self:GetIronsights()
-	self.IronTime = self:GetIronsightsTime()
+function SWEP:CalcUnpredictedTimings()
 	self.CurTime = CurTime()
 	self.RealTime = RealTime()
 end
 
-local vector_lower = Vector(0, 0, 2)
+function SWEP:CalcViewModel()
+	if (not CLIENT) or (not IsFirstTimePredicted()) then return end
+	self.CurIronsights = self:GetIronsights()
+	self.IronTime = self:GetIronsightsTime()
+	self:CalcUnpredictedTimings()
+end
+
 local host_timescale = GetConVar("host_timescale")
+
+function SWEP:GetUnpredictedTime()
+	return self.CurTime + (RealTime() - self.RealTime) * game.GetTimeScale() * host_timescale:GetFloat()
+end
+
+local vector_lower = Vector(0, 0, 2)
 
 function SWEP:GetViewModelPosition(pos, ang)
 	if (not self.Ironsights or self.CurIronsights == nil) then
@@ -65,7 +74,7 @@ function SWEP:GetViewModelPosition(pos, ang)
 	local toggletime = self.IronTime
 	local time = is_ironsights and self.Ironsights.TimeTo or self.Ironsights.TimeFrom
 
-	local frac = math.min(1, (self.CurTime + (RealTime() - self.RealTime) * game.GetTimeScale() * host_timescale:GetFloat() - toggletime) / time)
+	local frac = math.min(1, (self:GetUnpredictedTime() - toggletime) / time)
 
 	local ironpos, ironang = self.Ironsights.Pos - (ttt_lowered:GetBool() and vector_lower or vector_origin), self.Ironsights.Angle
 
@@ -95,4 +104,25 @@ function SWEP:GetViewModelPosition(pos, ang)
 	end
 
 	return pos, ang
+end
+
+function SWEP:CalcFOV()
+	self.FOVMultiplier = self:GetFOVMultiplier()
+	self.FOVMultiplierTime = self:GetFOVMultiplierTime()
+	self.FOVMultiplierDuration = self:GetFOVMultiplierDuration()
+	self.OldFOVMultiplier = self:GetOldFOVMultiplier()
+	self:CalcUnpredictedTimings()
+end
+
+function SWEP:GetCurrentUnpredictedFOVMultiplier()
+	local fov, time, duration = self.FOVMultiplier, self.FOVMultiplierTime, self.FOVMultiplierDuration
+	local ofov = self.OldFOVMultiplier
+
+	local cur = math.min(1, (self:GetUnpredictedTime() - time) / duration)
+
+	return ofov + (fov - ofov) * cur
+end
+
+function SWEP:TranslateFOV(fov)
+	return self:GetCurrentUnpredictedFOVMultiplier() * fov
 end
