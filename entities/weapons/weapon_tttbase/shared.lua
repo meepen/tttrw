@@ -5,13 +5,13 @@ SWEP.SlotPos = 0
 
 DEFINE_BASECLASS "weapon_base"
 
-SWEP.Primary.Automatic = true
-SWEP.Primary.Delay = 0.1
+SWEP.Primary.Automatic   = true
+SWEP.Primary.Delay       = 0.1
 SWEP.Primary.DefaultClip = 100000
-SWEP.Primary.ClipSize = 32
+SWEP.Primary.ClipSize    = 32
+SWEP.Primary.Damage      = 20
 
 SWEP.Bullets = {
-	Damage = 20,
 	HullSize = 0,
 	Num = 1,
 	DamageDropoffRange = 600,
@@ -114,9 +114,7 @@ function SWEP:ChangeIronsights(on)
 end
 
 function SWEP:Reload()
-	if (self:Clip1() == 0) then
-		self:ChangeIronsights(false)
-	end
+	self:ChangeIronsights(false)
 	BaseClass.Reload(self)
 end
 
@@ -126,7 +124,7 @@ function SWEP:SecondaryAttack()
 end
 
 function SWEP:GetDeveloperMode()
-	return true
+	return false
 end
 
 local informations = {}
@@ -207,7 +205,7 @@ function SWEP:ShootBullet(bullet_info)
 	local bullet = {
 		Num = 1,
 		Attacker = owner,
-		Damage = bullet_info.Damage,
+		Damage = self.Primary.Damage,
 		Tracer = bullet_info.Tracer,
 		TracerName = bullet_info.TracerName,
 		Spread = bullet_info.Spread,

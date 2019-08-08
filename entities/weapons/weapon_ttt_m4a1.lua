@@ -17,7 +17,6 @@ SWEP.Kind                  = WEAPON_HEAVY
 SWEP.WeaponID              = AMMO_M16
 
 SWEP.Bullets = {
-	Damage = 18,
 	HullSize = 0,
 	Num = 1,
 	DamageDropoffRange = 600,
@@ -26,6 +25,7 @@ SWEP.Bullets = {
 	Spread = Vector(.02, .02, .02)
 }
 
+SWEP.Primary.Damage        = 18
 SWEP.Primary.Delay         = 0.1
 SWEP.Primary.Recoil        = 1.6
 SWEP.Primary.Automatic     = true
