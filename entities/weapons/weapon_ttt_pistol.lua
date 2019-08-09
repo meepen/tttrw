@@ -1,20 +1,20 @@
 AddCSLuaFile()
 
-SWEP.HoldType              = "ar2"
+SWEP.HoldType              = "pistol"
 
-SWEP.PrintName          = "M4A1"
-SWEP.Slot               = 2
+SWEP.PrintName          = "Pistol"
+SWEP.Slot               = 1
 
 SWEP.ViewModelFlip      = false
-SWEP.ViewModelFOV       = 64
+SWEP.ViewModelFOV       = 54
 
-SWEP.Icon               = "vgui/ttt/icon_m16"
-SWEP.IconLetter         = "w"
+SWEP.Icon               = "vgui/ttt/icon_pistol"
+SWEP.IconLetter         = "u"
 
 SWEP.Base                  = "weapon_tttbase"
 
-SWEP.Kind                  = WEAPON_HEAVY
-SWEP.WeaponID              = AMMO_M16
+SWEP.Kind                  = WEAPON_PISTOL
+SWEP.WeaponID              = AMMO_PISTOL
 
 SWEP.Bullets = {
 	HullSize = 0,
@@ -25,26 +25,26 @@ SWEP.Bullets = {
 	Spread = Vector(.02, .02, .02)
 }
 
-SWEP.Primary.Damage        = 18
-SWEP.Primary.Delay         = 0.1
-SWEP.Primary.Recoil        = 1.6
+SWEP.Primary.Damage        = 25
+SWEP.Primary.Delay         = 0.38
+SWEP.Primary.Recoil        = 1.5
 SWEP.Primary.Automatic     = true
-SWEP.Primary.Ammo          = "ar2"
+SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.ClipSize      = 20
 SWEP.Primary.DefaultClip   = 1000
-SWEP.Primary.Sound         = Sound "Weapon_M4A1.Single"
+SWEP.Primary.Sound         = Sound "Weapon_FiveSeven.Single"
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
-SWEP.AmmoEnt               = "item_ammo_ar2_ttt"
+SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
 
 SWEP.UseHands              = true
-SWEP.ViewModel             = "models/weapons/cstrike/c_rif_m4a1.mdl"
-SWEP.WorldModel            = "models/weapons/w_rif_m4a1.mdl"
+SWEP.ViewModel             = "models/weapons/cstrike/c_pist_fiveseven.mdl"
+SWEP.WorldModel            = "models/weapons/w_pist_fiveseven.mdl"
 
 SWEP.Ironsights = {
-	Pos = Vector(-7.8, -9.2, 0.55),
-	Angle = Vector(3.3, -2.7, -5),
+	Pos = Vector(-5.95, -4, 2.799),
+	Angle = Vector(0, 0, 0),
 	TimeTo = 0.25,
 	TimeFrom = 0.15,
 	SlowDown = 0.3

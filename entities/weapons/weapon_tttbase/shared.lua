@@ -11,6 +11,8 @@ SWEP.Primary.DefaultClip = 100000
 SWEP.Primary.ClipSize    = 32
 SWEP.Primary.Damage      = 20
 
+SWEP.HeadshotMultiplier  = 2
+
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
@@ -54,7 +56,7 @@ end
 function SWEP:ScaleDamage(hitgroup, dmg)
 	-- More damage if we're shot in the head
 	if (hitgroup == HITGROUP_HEAD) then
-		dmg:ScaleDamage(2)
+		dmg:ScaleDamage(self.HeadshotMultiplier)
 	end
 
 	-- Less damage if we're shot in the arms or legs

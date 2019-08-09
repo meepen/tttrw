@@ -2,19 +2,19 @@ AddCSLuaFile()
 
 SWEP.HoldType              = "ar2"
 
-SWEP.PrintName          = "M4A1"
+SWEP.PrintName          = "AK47"
 SWEP.Slot               = 2
 
 SWEP.ViewModelFlip      = false
-SWEP.ViewModelFOV       = 64
+SWEP.ViewModelFOV       = 54
 
-SWEP.Icon               = "vgui/ttt/icon_m16"
+SWEP.Icon               = "vgui/ttt/icon_ak47"
 SWEP.IconLetter         = "w"
 
 SWEP.Base                  = "weapon_tttbase"
 
 SWEP.Kind                  = WEAPON_HEAVY
-SWEP.WeaponID              = AMMO_M16
+SWEP.WeaponID              = AMMO_AK47
 
 SWEP.Bullets = {
 	HullSize = 0,
@@ -22,25 +22,25 @@ SWEP.Bullets = {
 	DamageDropoffRange = 600,
 	DamageDropoffRangeMax = 3600,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(.02, .02, .02)
+	Spread = Vector(.03, .03, .03)
 }
 
-SWEP.Primary.Damage        = 18
-SWEP.Primary.Delay         = 0.1
-SWEP.Primary.Recoil        = 1.6
+SWEP.Primary.Damage        = 8
+SWEP.Primary.Delay         = 0.08
+SWEP.Primary.Recoil        = 3.4
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "ar2"
-SWEP.Primary.ClipSize      = 20
+SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 1000
-SWEP.Primary.Sound         = Sound "Weapon_M4A1.Single"
+SWEP.Primary.Sound         = Sound "Weapon_AK47.Single"
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
 SWEP.AmmoEnt               = "item_ammo_ar2_ttt"
 
 SWEP.UseHands              = true
-SWEP.ViewModel             = "models/weapons/cstrike/c_rif_m4a1.mdl"
-SWEP.WorldModel            = "models/weapons/w_rif_m4a1.mdl"
+SWEP.ViewModel             = "models/weapons/cstrike/c_rif_ak47.mdl"
+SWEP.WorldModel            = "models/weapons/w_rif_ak47.mdl"
 
 SWEP.Ironsights = {
 	Pos = Vector(-7.8, -9.2, 0.55),
