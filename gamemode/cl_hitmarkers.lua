@@ -20,9 +20,7 @@ end
 local color = Color(220, 220, 220, 255)
 local black = Color(0,0,0,255)
 
-function GM:HUDPaint()
-    hook.Run "HUDDrawTargetID"
-
+function GM:TTTDrawHitmarkers()
     local alpha = 1 - (CurTime() - last_hit) / 0.5
 
     if (alpha <= 0) then

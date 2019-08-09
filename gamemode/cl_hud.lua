@@ -105,6 +105,12 @@ function GM:HUDDrawTargetID()
 	end
 end
 
+function GM:HUDPaint()
+	hook.Run "HUDDrawTargetID"
+
+	hook.Run "TTTDrawHitmarkers"
+end
+
 
 if (IsValid(ttt.HUDPanel)) then
 	ttt.HUDPanel:Remove()
