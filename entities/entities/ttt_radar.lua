@@ -27,10 +27,6 @@ end
 if (CLIENT) then
 	surface.CreateFont('TabLarge', {font = 'Lato', size = 13, weight = 900})
 
-	local function IsOffScreen(scrpos)
-		return not scrpos.visible or scrpos.x < 0 or scrpos.y < 0 or scrpos.x > ScrW() or scrpos.y > ScrH()
-	end
-	
 	function ENT:DrawTarget(pl, size, offset)
 		local scrpos = pl.Pos:ToScreen() -- sweet
 		local sz = IsOffScreen(scrpos) and size / 2 or size
