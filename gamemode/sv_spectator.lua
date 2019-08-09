@@ -2,21 +2,28 @@ local function UpdatePlayerSpectating(ply, new_mode)
 	local current = ply:GetObserverTarget()
 	local mode = ply:GetObserverMode()
 	local target
-	local active = round.GetActivePlayers()
+	local active = {}
+	local i = 1
+	for k,v in ipairs(player.GetAll()) do
+		if (v:Alive()) then
+			active[i] = v
+			i = i + 1
+		end
+	end
 	if (mode ~= OBS_MODE_ROAMING) then
 		for num, info in ipairs(active) do
-			if (info.Player == current) then
+			if (info == current) then
 				current_num = num
 			end
 		end
 
 		if (current_num) then
-			target = active[1 + (current_num % #active)].Player
+			target = active[1 + (current_num % #active)]
 		end
 	end
 
 	if (not IsValid(target)) then
-		target = active[1].Player
+		target = active[1]
 	end
 
 	if (IsValid(target)) then
