@@ -3,10 +3,8 @@ AddCSLuaFile()
 ENT.Base = "ttt_equipment_info"
 DEFINE_BASECLASS(ENT.Base)
 ENT.PrintName = "TTT Body Armour"
-ENT.Author = "Meepen"
-ENT.Contact = "meepdarknessmeep@gmail.com"
-
-
+ENT.Author = "Ling"
+ENT.Contact = "lingbleed@gmail.com"
 
 
 function ENT:Equipment_EntityTakeDamage(dmg)

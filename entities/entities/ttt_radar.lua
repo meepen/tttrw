@@ -3,8 +3,8 @@ AddCSLuaFile()
 ENT.Base = "ttt_equipment_info"
 DEFINE_BASECLASS(ENT.Base)
 ENT.PrintName = "TTT Radar"
-ENT.Author = "Meepen"
-ENT.Contact = "meepdarknessmeep@gmail.com"
+ENT.Author = "Ling"
+ENT.Contact = "lingbleed@gmail.com"
 
 function ENT:Initialize()
 	if (CLIENT) then
@@ -21,8 +21,8 @@ end
 if (CLIENT) then
 
 	local function IsOffScreen(scrpos)
-        return not scrpos.visible or scrpos.x < 0 or scrpos.y < 0 or scrpos.x > ScrW() or scrpos.y > ScrH()
-    end
+		return not scrpos.visible or scrpos.x < 0 or scrpos.y < 0 or scrpos.x > ScrW() or scrpos.y > ScrH()
+	end
 	
 	local function DrawTarget(tgt, size, offset, no_shrink)
 		local scrpos = tgt:GetPos():ToScreen() -- sweet
