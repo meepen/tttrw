@@ -7,7 +7,14 @@ ENT.Author = "Ling"
 ENT.Contact = "lingbleed@gmail.com"
 
 
-function ENT:Equipment_EntityTakeDamage(dmg)
+function ENT:Initialize()
+	BaseClass.Initialize(self)
+	
+	self:RegisterHook("EntityTakeDamage", self.EntityTakeDamage)
+end
+
+
+function ENT:EntityTakeDamage(target, dmg)
 	if (dmg:IsBulletDamage()) then
 		-- Body armor nets you a damage reduction.
 		dmg:ScaleDamage(0.7)

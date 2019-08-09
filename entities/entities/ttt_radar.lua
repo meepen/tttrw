@@ -7,12 +7,16 @@ ENT.Author = "Ling"
 ENT.Contact = "lingbleed@gmail.com"
 
 function ENT:Initialize()
+	BaseClass.Initialize(self)
+	
 	if (CLIENT) then
 		hook.Add("HUDPaint", "TTT_Radar_HUDPaint", self.Equipment_HUDPaint)
 	end
 end
 
 function ENT:OnRemove()
+	BaseClass.Initialize(self)
+	
 	if (CLIENT) then
 		hook.Remove("HUDPaint", "TTT_Radar_HUDPaint")
 	end
