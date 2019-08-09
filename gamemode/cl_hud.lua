@@ -36,13 +36,13 @@ local LastTarget, LastTime
 
 function GM:HUDDrawTargetID()
 	local ent = GetHUDTarget()
-
 	local tr = ent:GetEyeTrace()
 
 	ent = tr.Entity
 
 	if (IsValid(ent) and ent:IsPlayer()) then
-
+		if (ent.HasDisguiser and ent:HasDisguiser()) then return end
+		
 		if (LastTarget ~= ent or LastTime and LastTime < CurTime() - 1) then
 			LastTarget = ent
 			LastTime = CurTime()
