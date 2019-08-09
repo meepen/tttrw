@@ -40,6 +40,7 @@ function GM:HUDDrawTargetID()
 
 	ent = tr.Entity
 
+
 	if (IsValid(ent) and ent:IsPlayer()) then
 		if (ent.HasDisguiser and ent:HasDisguiser()) then return end
 		
@@ -102,6 +103,12 @@ function GM:HUDDrawTargetID()
 		surface.SetDrawColor(200, 200, 200, 255)
 		surface.DrawOutlinedRect(x - wid / 2 - 1, y - 1, wid + 2, th + 2)
 	end
+end
+
+function GM:HUDPaint()
+	hook.Run "HUDDrawTargetID"
+
+	hook.Run "TTTDrawHitmarkers"
 end
 
 
@@ -195,8 +202,6 @@ vgui.Register("ttt_hud", {
 		if (not ent:Alive()) then
 			return
 		end
-
-		hook.Run "HUDDrawTargetID"
 
 		surface.SetDrawColor(Color(0, 0, 0, 200))
 		surface.DrawRect(0, 0, w, h)

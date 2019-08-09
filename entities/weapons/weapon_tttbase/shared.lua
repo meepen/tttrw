@@ -166,7 +166,7 @@ end
 hook.Add("StartCommand", "developer", function(pl, cmd)
 	if (pl:IsBot()) then
 		swap = not swap
-		cmd:SetViewAngles(Angle(89, swap and 0 or 180, 0))
+		--cmd:SetViewAngles(Angle(89, swap and 0 or 180, 0))
 	end
 end)
 

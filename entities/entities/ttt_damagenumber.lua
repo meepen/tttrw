@@ -6,7 +6,7 @@ ENT.PrintName = "TTT Hitmarker Info"
 ENT.Author = "Meepen"
 ENT.Contact = "meepdarknessmeep@gmail.com"
 
-ENT.LiveTime = 0.4
+ENT.LiveTime = 0.5
 
 DEFINE_BASECLASS "ttt_point_info"
 
@@ -16,6 +16,7 @@ function ENT:SetupDataTables()
     self:NetworkVar("Int", 0, "Damage")
     self:NetworkVar("Int", 1, "DamageType")
     self:NetworkVar("Int", 2, "ID")
+    self:NetworkVar("Int", 3, "HitGroup")
 end
 
 function ENT:Initialize()
@@ -31,6 +32,7 @@ function ENT:Initialize()
     else
         self:NextThink(CurTime() + self.LiveTime)
     end
+    hook.Run("PlayerHit", self:GetOwner(), self:GetDamage(), self:GetDamageType(), self:GetHitGroup())
 end
 
 function ENT:IsVisibleTo(ply)
@@ -48,7 +50,7 @@ if (not CLIENT) then
 end
 
 surface.CreateFont("ttt_damagenumber", {
-	font = "Arial",
+	font = "Lato",
 	size = 160,
 	weight = 500,
 })
@@ -81,6 +83,13 @@ local paths = {
     }
 }
 
+local colors = {
+    [HITGROUP_HEAD] = Color(255, 0, 0),
+    [HITGROUP_CHEST] = Color(128, 20, 108),
+    [HITGROUP_STOMACH] = Color(200, 20, 108),
+    default = color_white,
+}
+
 function ENT:PostDrawEffects()
     local frac = (CurTime() - self:GetCreationTime()) / self.LiveTime
     local totalfrac = frac
@@ -100,9 +109,12 @@ function ENT:PostDrawEffects()
     cam.Start3D()
         local ang = (self:GetPos() - EyePos()):Angle():Right():Angle()
         ang:RotateAroundAxis(ang:Forward(), 90)
-        cam.Start3D2D(self:GetPos(), ang, 0.07 + 0.05 * (self:GetDamage() / 100 * 0.05))
+        cam.Start3D2D(self:GetPos(), ang, 0.04 + self:GetDamage() / 100 * 0.09)
             cam.IgnoreZ(true)
-                draw.SimpleText(self:GetDamage(), "ttt_damagenumber", targ.x, targ.y, Color(255, 0, 0, Lerp(totalfrac, 255, 0)), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                local alpha = Lerp(math.max(totalfrac - 0.5, 0) * 2, 255, 0)
+                local col = ColorAlpha(colors[self:GetHitGroup()] or colors.default, alpha)
+                local outline = ColorAlpha(color_black, alpha)
+                draw.SimpleTextOutlined(self:GetDamage(), "ttt_damagenumber", targ.x, targ.y, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 3, outline)
             cam.IgnoreZ(false)
         cam.End3D2D()
     cam.End3D()
