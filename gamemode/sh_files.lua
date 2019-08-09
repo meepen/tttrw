@@ -7,12 +7,13 @@ AddCSLuaFile();
         "sv_spawning.lua",
         "sv_spectator.lua",
         "sv_ragdoll.lua",
-        "sv_chat.lua"
+        "sv_chat.lua",
+        "sv_hitmarkers.lua",
     },
     Client = {
         "cl_hud_helpers.lua",
         "cl_hud.lua",
-        "cl_scoreboard.lua"
+        "cl_scoreboard.lua",
     },
     Shared = {
         "sh_init.lua",
