@@ -39,7 +39,9 @@ function GM:HUDDrawTargetID()
 
 	local tr = ent:GetEyeTrace()
 
+	print(ent,tr.Entity)
 	ent = tr.Entity
+
 
 	if (IsValid(ent) and ent:IsPlayer()) then
 
@@ -195,8 +197,6 @@ vgui.Register("ttt_hud", {
 		if (not ent:Alive()) then
 			return
 		end
-
-		hook.Run "HUDDrawTargetID"
 
 		surface.SetDrawColor(Color(0, 0, 0, 200))
 		surface.DrawRect(0, 0, w, h)
