@@ -7,7 +7,7 @@ if (SERVER) then
 
 	-- Development command
 	concommand.Add("i_want_equipment", function(ply, cmd, args)
-		if (not ply:GetUserGroup("superadmin")) then return end
+		if (not ply:IsSuperAdmin()) then return end
 
 		local eq = ents.Create(args[1])
 		eq:SetParent(ply)
