@@ -114,8 +114,18 @@ function SWEP:ChangeIronsights(on)
 		self:CalcViewModel()
 	end
 
-	if (self.DoZoom) then
-		self:DoZoom(self:GetIronsights())
+	self:DoZoom(self:GetIronsights())
+end
+
+function SWEP:DoZoom(state)
+	if (not self.Ironsights) then
+		return
+	end
+
+	if (state) then
+		self:ChangeFOVMultiplier(self.Ironsights.Zoom, self.Ironsights.TimeTo)
+	else
+		self:ChangeFOVMultiplier(1, self.Ironsights.TimeFrom)
 	end
 end
 
