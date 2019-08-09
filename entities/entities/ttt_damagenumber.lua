@@ -16,6 +16,7 @@ function ENT:SetupDataTables()
     self:NetworkVar("Int", 0, "Damage")
     self:NetworkVar("Int", 1, "DamageType")
     self:NetworkVar("Int", 2, "ID")
+    self:NetworkVar("Int", 3, "HitGroup")
 end
 
 function ENT:Initialize()
@@ -31,6 +32,7 @@ function ENT:Initialize()
     else
         self:NextThink(CurTime() + self.LiveTime)
     end
+    hook.Run("PlayerHit", self:GetOwner(), self:GetDamage(), self:GetDamageType(), self:GetHitGroup())
 end
 
 function ENT:IsVisibleTo(ply)

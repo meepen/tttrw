@@ -14,6 +14,7 @@ AddCSLuaFile();
         "cl_hud_helpers.lua",
         "cl_hud.lua",
         "cl_scoreboard.lua",
+        "cl_hitmarkers.lua",
     },
     Shared = {
         "sh_init.lua",

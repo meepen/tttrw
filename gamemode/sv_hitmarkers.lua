@@ -1,3 +1,5 @@
+resource.AddFile "sound/tttrw/hitmarker.mp3"
+
 function GM:EntityTakeDamage(vic, dmg)
     local atk = dmg:GetAttacker()
 
@@ -10,5 +12,6 @@ function GM:EntityTakeDamage(vic, dmg)
     hitmarker:SetDamage(dmg:GetDamage())
     hitmarker:SetDamageType(dmg:GetDamageType())
     hitmarker:SetPos(dmg:GetDamagePosition())
+    hitmarker:SetHitGroup(vic:LastHitGroup())
     hitmarker:Spawn()
 end
