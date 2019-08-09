@@ -6,7 +6,7 @@ ENT.PrintName = "TTT Hitmarker Info"
 ENT.Author = "Meepen"
 ENT.Contact = "meepdarknessmeep@gmail.com"
 
-ENT.LiveTime = 0.4
+ENT.LiveTime = 0.5
 
 DEFINE_BASECLASS "ttt_point_info"
 
@@ -104,7 +104,7 @@ function ENT:PostDrawEffects()
         ang:RotateAroundAxis(ang:Forward(), 90)
         cam.Start3D2D(self:GetPos(), ang, 0.07 + 0.05 * (self:GetDamage() / 100 * 0.05))
             cam.IgnoreZ(true)
-                draw.SimpleText(self:GetDamage(), "ttt_damagenumber", targ.x, targ.y, Color(255, 0, 0, Lerp(totalfrac, 255, 0)), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                draw.SimpleText(self:GetDamage(), "ttt_damagenumber", targ.x, targ.y, Color(255, 0, 0, Lerp(math.max(totalfrac - 0.5, 0) * 2, 255, 0)), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             cam.IgnoreZ(false)
         cam.End3D2D()
     cam.End3D()
