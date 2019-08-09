@@ -19,18 +19,9 @@ function ENT:Initialize()
 	end
 end
 
-function ENT:OnRemove()
-	BaseClass.Initialize(self)
-	
-	for eventName, id in pairs(self.Hooks) do
-		hook.Remove(eventName, id)
-	end
-end
-
 function ENT:RegisterHook(eventName, cb)
-	local id = self:GetClass() .. eventName .. self:GetParent():SteamID64()
+	local id = self
 	
 	self.Hooks[eventName] = id
 	hook.Add(eventName, id, function(...) cb(self, ...) end)
 end
-
