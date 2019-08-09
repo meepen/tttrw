@@ -7,9 +7,9 @@ if (SERVER) then
 
 	-- Development command
 	function PLAYER:GiveEquipment(class)
-		local eq = ents.Create(class)
-		eq:SetParent(self)
-		eq:Spawn()
+		if (TTT_Equipment[class]) then
+			TTT_Equipment[class]:OnBuy(self)
+		end
 	end
 	
 	concommand.Add("i_want_equipment", function(ply, cmd, args)
@@ -24,5 +24,32 @@ if (SERVER) then
 		end
 	end)
 else
-	TTT_Equipment = {}
+	
 end
+
+TTT_Equipment = {}
+
+local list = file.Find("gamemodes/tttrw/gamemode/equipment/*.lua","GAME")
+for k,v in pairs(list) do
+	if (SERVER) then AddCSLuaFile("equipment/"..v) end
+	EQUIP = {}
+
+	EQUIP.ID = string.gsub(v,".lua","")
+	
+	EQUIP.Desc = "A super cool item."
+	EQUIP.Cost = 1
+	EQUIP.Limit = 1
+
+	EQUIP.TraitorOnly = false
+	EQUIP.DetectiveOnly = false
+	
+	include("equipment/"..v)
+
+	if !(EQUIP.Name) then
+		ErrorNoHalt("[Equipment] Item \""..v.."\" has no name!")
+	elseif !(EQUIP.OnBuy~=nil) then
+		ErrorNoHalt("[Equipment] Item \""..v.."\" has no function! Add EQUIP:OnBuy()")
+	end
+	TTT_Equipment[EQUIP.ID] = EQUIP
+end
+PrintTable(TTT_Equipment)
