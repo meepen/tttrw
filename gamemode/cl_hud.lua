@@ -2,9 +2,9 @@ local tttrw_force_ammo_bar = CreateConVar("tttrw_force_ammo_bar", 0, {FCVAR_ARCH
 
 local DrawTextShadowed = hud.DrawTextShadowed
 
-local health_full = Color(0, 0xff, 0x2b)
-local health_ok = Color(0xf0, 0xff, 0)
-local health_dead = Color(0xff, 0x33, 0)
+local health_full = Color(58, 180, 80)
+local health_ok = Color(240, 255, 0)
+local health_dead = Color(255, 51, 0)
 
 local function ColorLerp(col_from, col_mid, col_to, amt)
 	if (amt > 0.5) then
@@ -112,8 +112,8 @@ function GM:HUDPaint()
 end
 
 
-if (IsValid(ttt.HUDPanel)) then
-	ttt.HUDPanel:Remove()
+if (IsValid(ttt.HUDHealthPanel)) then
+	ttt.HUDHealthPanel:Remove()
 end
 
 local hide_when_chat_open = CreateConVar("ttt_hide_hud_when_chat_open", "0", FCVAR_ARCHIVE)
@@ -124,16 +124,16 @@ local border_size = 5
 vgui.Register("ttt_hud", {
 	Init = function(self)
 		self.Health = vgui.Create("ttt_hud_health", self)
-		self.Health:Dock(TOP)
+		self.Health:Dock(NODOCK)
 		self.Health:SetZPos(1)
 
-		self.Role = vgui.Create("ttt_hud_ammo", self)
+		--[[self.Role = vgui.Create("ttt_hud_ammo", self)
 		self.Role:Dock(TOP)
 		self.Role:SetZPos(0)
 
 		self.Role2 = vgui.Create("ttt_hud_role", self)
 		self.Role2:Dock(TOP)
-		self.Role2:SetZPos(-1)
+		self.Role2:SetZPos(-1)]]
 		hook.Add("StartChat", self, self.StartChat)
 		hook.Add("FinishChat", self, self.FinishChat)
 	end,
@@ -148,7 +148,12 @@ vgui.Register("ttt_hud", {
 	PerformLayout = function(self, w, h)
 		hook.Run("ScreenResolutionChanged")
 		local scrw, scrh = ScrW(), ScrH()
-		local cx, cy = chat.GetChatBoxPos()
+		self:SetSize(scrw, scrh)
+		self:SetPos(0, 0)
+		
+		self.Health:SetSize(200, 500)
+		self.Health:SetPos(ScrW() / 2, 1000)
+		--[[local cx, cy = chat.GetChatBoxPos()
 		local cw, ch = chat.GetChatBoxSize()
 		self:SetSize(scrw / 5, scrh - (cy + ch) - cx)
 		self:SetPos(cx, cy + ch)
@@ -164,10 +169,10 @@ vgui.Register("ttt_hud", {
 		local tall = math.floor((h - border_size * (children + 1)) / children)
 		for _, pnl in ipairs(self:GetChildren()) do
 			pnl:SetTall(tall)
-		end
+		end]]
 
 		-- 2 is always better looking
-		local font_size = math.floor((tall - border_size * 2) / 2) * 2
+		local font_size = 2--math.floor((tall - border_size * 2) / 2) * 2
 
 		surface.CreateFont("TTTHUDFont", {
 			font = "Roboto",
@@ -177,7 +182,7 @@ vgui.Register("ttt_hud", {
 			shadow = false
 		})
 		
-		surface.CreateFont("TTTHUDAmmoFontLarge", {
+		--[[surface.CreateFont("TTTHUDAmmoFontLarge", {
 			font = "Roboto",
 			size = math.floor((tall - border_size * 2) / 3) * 2,
 			weight = 800,
@@ -191,35 +196,68 @@ vgui.Register("ttt_hud", {
 			weight = 800,
 			antialias = true,
 			shadow = false
-		})
+		})]]
 	end,
 	GetTarget = function()
 		return GetHUDTarget()
 	end,
 	Paint = function(self, w, h)
-		local ent = GetHUDTarget()
+		--[[local ent = GetHUDTarget()
 
 		if (not ent:Alive()) then
 			return
 		end
 
 		surface.SetDrawColor(Color(0, 0, 0, 200))
-		surface.DrawRect(0, 0, w, h)
+		surface.DrawRect(0, 0, w, h)]]
 
 		-- TODO(meep): role information
 	end
 }, "EditablePanel")
 
+local icon_width = 100
+local health_width = 200
+local health_height = 35
 
 vgui.Register("ttt_hud_health", {
 	Paint = function(self, w, h)
-		local ent = self:GetParent():GetTarget()
+		local ent = self:GetTarget()
 
 		if (not ent:Alive()) then
 			return
 		end
-
+		
+		local width = w - icon_width
+		
+		surface.SetDrawColor(Color(0, 0, 0, 200))
+		surface.DrawRect(icon_width, 0, width, h)
+		
 		local health, maxhealth = ent:Health(), ent:GetMaxHealth()
+		local pct = health / maxhealth
+		local lastpct = self.LastPercent or pct
+		local curchange = FrameTime() * 4 -- 500% hp/s
+		local change = pct - lastpct
+		local curpct = change == 0 and pct or lastpct + (change / math.abs(change)) * math.min(curchange, math.abs(change))
+
+		self.LastPercent = curpct
+		
+		surface.SetDrawColor(ColorLerp(health_dead, health_ok, health_full, curpct))
+		surface.DrawRect(icon_width, 0, width * curpct, h)
+		
+		local text = string.format("%i/%i", math.max(0, ent:Health()), math.max(0, ent:GetMaxHealth()))
+		
+		draw.SimpleTextOutlined(
+			text, "TTTHUDHealthFont", 100 + width / 2, h / 2,
+			color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 0, color_white
+		)
+		
+		
+		surface.SetDrawColor(color_white)
+		surface.DrawOutlinedRect(icon_width, 0, width, h)
+		
+		
+
+		--[[local health, maxhealth = ent:Health(), ent:GetMaxHealth()
 		local pct = health / maxhealth
 		local lastpct = self.LastPercent or pct
 		local curchange = FrameTime() * 4 -- 500% hp/s
@@ -234,13 +272,29 @@ vgui.Register("ttt_hud_health", {
 		draw.SimpleTextOutlined(
 			string.format("%i HP", math.max(0, ent:Health())), "TTTHUDFont", w / 2, h / 2,
 			color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black
-		)
+		)]]
+	end,
+	PerformLayout = function(self, w, h)
+		local scrw, scrh = ScrW(), ScrH()
+		self:SetSize(icon_width + health_width, health_height)
+		self:SetPos(scrw / 10, scrh / 1.125)
+		
+		surface.CreateFont("TTTHUDHealthFont", {
+			font = "Lato",
+			size = 22,
+			weight = 0,
+			antialias = true,
+			shadow = true
+		})
+	end,
+	GetTarget = function()
+		return GetHUDTarget()
 	end
 })
 
 vgui.Register("ttt_hud_role", {
 	Paint = function(self, w, h)
-		local ent = self:GetParent():GetTarget()
+		--[[local ent = self:GetParent():GetTarget()
 
 		if (not ent:Alive()) then
 			return
@@ -275,7 +329,7 @@ vgui.Register("ttt_hud_role", {
 		draw.SimpleTextOutlined(
 			other_text, "TTTHUDFont", w - border_size * 5, h / 2,
 			color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER, 1, color_black
-		)
+		)]]
 	end
 })
 
@@ -284,7 +338,7 @@ local ammo_empty_color = Color(20, 20, 20, 200)
 
 vgui.Register("ttt_hud_ammo", {
 	Paint = function(self, w, h)
-		local ent = self:GetParent():GetTarget()
+		--[[local ent = self:GetParent():GetTarget()
 
 		if (not ent:Alive()) then
 			return
@@ -346,13 +400,15 @@ vgui.Register("ttt_hud_ammo", {
 				"+"..extra, "TTTHUDAmmoFontSmall", border_size + maxw / 2, h - border_size, color_white,
 				TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM, 1, color_black
 			)
-		end
+		end]]
 	end
 })
 
 local hide = {
 	CHudHealth = true,
-	CHudDamageIndicator = true
+	CHudDamageIndicator = true,
+	CHudAmmo = true,
+	CHudSecondaryAmmo = true
 }
 
 hook.Add("HUDShouldDraw", "TTTHud", function(name)
@@ -361,4 +417,4 @@ hook.Add("HUDShouldDraw", "TTTHud", function(name)
 	end
 end)
 
-ttt.HUDPanel = vgui.Create("ttt_hud", GetHUDPanel())
+ttt.HUDHealthPanel = vgui.Create("ttt_hud_health", GetHUDPanel())
