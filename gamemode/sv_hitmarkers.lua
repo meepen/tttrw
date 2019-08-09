@@ -8,6 +8,10 @@ function GM:EntityTakeDamage(vic, dmg)
         return
     end
 
+    if (not hook.Run("PlayerShouldTakeDamage", vic, atk)) then
+        return
+    end
+
     local hitmarker = ents.Create "ttt_damagenumber"
     hitmarker:SetOwner(atk)
     hitmarker:SetDamage(dmg:GetDamage())
