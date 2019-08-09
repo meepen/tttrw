@@ -6,8 +6,6 @@ ENT.PrintName = "TTT Equipment State"
 ENT.Author = "Ling"
 ENT.Contact = "lingbleed@gmail.com"
 
-ENT.Hooks = {}
-
 function ENT:Initialize()
 	BaseClass.Initialize(self)
 	
@@ -20,8 +18,5 @@ function ENT:Initialize()
 end
 
 function ENT:RegisterHook(eventName, cb)
-	local id = self
-	
-	self.Hooks[eventName] = id
-	hook.Add(eventName, id, function(...) cb(self, ...) end)
+	hook.Add(eventName, self, function(...) cb(self, ...) end)
 end
