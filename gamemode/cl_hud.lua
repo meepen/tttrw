@@ -39,7 +39,6 @@ function GM:HUDDrawTargetID()
 
 	local tr = ent:GetEyeTrace()
 
-	print(ent,tr.Entity)
 	ent = tr.Entity
 
 
