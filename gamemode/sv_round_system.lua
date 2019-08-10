@@ -143,7 +143,7 @@ function round.TryStart()
 			role = "Innocent"
 		end
 
-		round.Players[i] = {
+		round.Players[ply:UserID()] = {
 			Player = ply,
 			SteamID = ply:SteamID(),
 			Nick = ply:Nick(),

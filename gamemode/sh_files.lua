@@ -15,6 +15,7 @@ AddCSLuaFile();
 		"cl_hud.lua",
 		"cl_scoreboard.lua",
 		"cl_hitmarkers.lua",
+		"cl_voice.lua",
 	},
 	Shared = {
 		"sh_init.lua",
@@ -27,7 +28,7 @@ AddCSLuaFile();
 		"player_terror.lua",
 		"sh_movement.lua",
 		"sh_equipment.lua",
-		"sh_util.lua"
+		"sh_util.lua",
 	},
 	Load = function(self)
 		for _, file in ipairs(self.Shared) do

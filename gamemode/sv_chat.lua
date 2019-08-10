@@ -1,4 +1,5 @@
 util.AddNetworkString "ttt_player_target"
+util.AddNetworkString "ttt_traitor_voice"
 
 net.Receive("ttt_player_target", function(len, cl)
     cl.Target = net.ReadEntity()
@@ -44,3 +45,34 @@ function GM:PlayerCanSeePlayersChat(text, team, listener, speaker)
         end
     end
 end
+
+function GM:PlayerCanHearPlayersVoice(hear,talk)
+    if (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
+        return true, false
+    else
+        if !(IsValid(hear) and IsValid(talk)) then return end
+        if (!talk:Alive() and hear:Alive()) then
+            return false, false
+        elseif !(talk:Alive() or hear:Alive()) then
+            return true, false
+        end
+        if (ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE) then
+            if (round.Players[talk:UserID()].Role == ttt.roles["Traitor"] and talk.tchat) then
+                if (round.Players[hear:UserID()].Role == ttt.roles["Traitor"]) then
+                    return true, false
+                else
+                    return false, false
+                end
+            end
+        end
+        return true, false
+    end
+end
+
+net.Receive("ttt_traitor_voice", function()
+    local ply = Player(net.ReadUInt(8))
+    if !(IsValid(ply)) then return end
+    local team = net.ReadBool()
+    ply.tchat = team
+    print(ply:Nick()..":"..tostring(ply.tchat))
+end)
