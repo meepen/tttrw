@@ -103,7 +103,7 @@ function SWEP:GetViewModelPosition(pos, ang)
 		self.BobScale = 1
 	end
 
-	return pos, ang
+	return pos, ang + self:GetCurrentUnpredictedViewPunch()
 end
 
 function SWEP:CalcFOV()
@@ -135,4 +135,36 @@ function SWEP:TranslateFOV(fov)
 	end
  
 	return res
+end
+
+local quat_zero = Quaternion()
+
+function SWEP:GetCurrentUnpredictedViewPunch()
+	local delay = self.Primary.Delay
+	local time = self._ViewPunchTime or -math.huge
+	local frac = (self:GetUnpredictedTime() - time) / delay
+	
+	if (frac >= 1) then
+		return angle_zero
+	end
+
+	local vp = self._ViewPunch or angle_zero
+	local diff = Quaternion():SetEuler(-vp):Slerp(quat_zero, frac):ToEulerAngles()
+
+	return diff
+end
+
+function SWEP:CalcView(ply, pos, ang, fov)
+	local delay = self.Primary.Delay * 2
+
+	return pos, ang + self:GetCurrentUnpredictedViewPunch(), fov
+end
+
+function SWEP:CalcViewPunch()
+	if (not IsFirstTimePredicted()) then
+		return
+	end
+	self._ViewPunch = self:GetViewPunch()
+	self._ViewPunchTime = self:GetViewPunchTime()
+	self:CalcUnpredictedTimings()
 end

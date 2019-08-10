@@ -71,12 +71,14 @@ function SWEP:ScaleDamage(hitgroup, dmg)
 end
 
 function SWEP:SetupDataTables()
-	self:NetVar("Ironsights", "Bool", false, false)
-	self:NetVar("IronsightsTime", "Float", 0, false)
-	self:NetVar("FOVMultiplier", "Float", 1, false)
-	self:NetVar("OldFOVMultiplier", "Float", 1, false)
-	self:NetVar("FOVMultiplierTime", "Float", -0.1, false)
-	self:NetVar("FOVMultiplierDuration", "Float", 0.1, false)
+	self:NetVar("Ironsights", "Bool", false)
+	self:NetVar("IronsightsTime", "Float", 0)
+	self:NetVar("FOVMultiplier", "Float", 1)
+	self:NetVar("OldFOVMultiplier", "Float", 1)
+	self:NetVar("FOVMultiplierTime", "Float", -0.1)
+	self:NetVar("FOVMultiplierDuration", "Float", 0.1)
+	self:NetVar("ViewPunch", "Angle", angle_zero)
+	self:NetVar("ViewPunchTime", "Float", -math.huge)
 	hook.Run("TTTInitWeaponNetVars", self)
 end
 
@@ -162,13 +164,6 @@ function SWEP:FireBulletsCallback(tr, dmginfo)
 		dmginfo:ScaleDamage(1 - pct * (1 - bullet.DamageMinimumPercent))
 	end
 end
-
-hook.Add("StartCommand", "developer", function(pl, cmd)
-	if (pl:IsBot()) then
-		swap = not swap
-		--cmd:SetViewAngles(Angle(89, swap and 0 or 180, 0))
-	end
-end)
 
 local vector_origin = vector_origin
 
@@ -256,7 +251,43 @@ function SWEP:PrimaryAttack()
 
 	self:TakePrimaryAmmo(1)
 
-	self.Owner:ViewPunch(Angle(-1, 0, 0))
+	self:ViewPunch()
+end
+
+local quat_zero = Quaternion()
+
+function SWEP:GetCurrentViewPunch()
+	local delay = self.Primary.Delay
+	local time = self:GetViewPunchTime()
+	local frac = (CurTime() - time) / delay
+	
+	if (frac >= 1) then
+		return angle_zero
+	end
+
+	local vp = self:GetViewPunch()
+	local diff = Quaternion():SetEuler(-vp):Slerp(quat_zero, frac):ToEulerAngles()
+
+	return diff
+end
+
+function SWEP:GetViewPunchAngles()
+	return Angle(-self.Primary.Recoil, 0, 0)
+end
+
+function SWEP:ViewPunch()
+	local vp = self:GetViewPunchAngles()
+	self:SetViewPunch(vp)
+	self:SetViewPunchTime(CurTime())
+
+	if (not CLIENT or not IsFirstTimePredicted()) then
+		return
+	end
+
+	local own = self:GetOwner()
+	own:SetEyeAngles(own:EyeAngles() + vp)
+
+	self:CalcViewPunch()
 end
 
 function SWEP:Think()
@@ -267,6 +298,7 @@ function SWEP:Think()
 	if (CLIENT) then
 		self:CalcViewModel()
 		self:CalcFOV()
+		self:CalcViewPunch()
 	end
 end
 

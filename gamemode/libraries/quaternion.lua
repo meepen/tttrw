@@ -92,9 +92,7 @@ end
 
 function QUATERNION:SetEuler(x, y, z)		
 	if y == nil and z == nil then		
-		y = x.y
-		z = x.z	
-		x = x.x
+		x, y, z = x.x, x.y, x.z
 	end
 		
 	x = x * halfDegToRad
@@ -499,18 +497,18 @@ function QUATERNION:ToEulerAngles()
 						atan2(2 * (x * y + w * z), 1 - 2 * (x * x + z * z)))
 			SanitizeEuler(v)
 			v:Mul(rad2Deg)
-			return v
+			return Angle(v.x, v.y, v.z)
 		else
 			local v = Vector(half_pi, atan2(2 * (x * y - w * z), 1 - 2 * (y * y + z * z)), 0)
 			SanitizeEuler(v)
 			v:Mul(rad2Deg)
-			return v
+			return Angle(v.x, v.y, v.z)
 		end
 	else
 		local v = Vector(-half_pi, atan2(-2 * (x * y - w * z), 1 - 2 * (y * y + z * z)), 0)
 		SanitizeEuler(v)
 		v:Mul(rad2Deg)
-		return v		
+		return Angle(v.x, v.y, v.z)		
 	end
 end
 
