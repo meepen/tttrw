@@ -167,12 +167,13 @@ function self:Init()
 			</style>
 		</head>
 		<body>
-			<svg id="svgBorder" class="shadow" width="384" height="46">
-				<rect id="svgRect" x="5" y="5" rx="3" ry="3" width="377" height="36"
+			<img src="asset://garrysmod/materials/tttrw/heart.png" height="48">
+			<svg id="svgBorder" class="shadow" width="390" height="48">
+				<rect id="svgRect" x="10" y="5" rx="3" ry="3" width="377" height="36"
 					style="fill:black; stroke:#F7F7F7; stroke-width:2; fill-opacity:0.4; stroke-opacity:1" />
 			</svg>
-			<svg id="svgHealth" width="384" height="46">
-				<rect id="svgRect" x="7" y="7" rx="1" ry="1" width="250" height="32"
+			<svg id="svgHealth" width="390" height="48">
+				<rect id="svgRect" x="12" y="7" rx="1" ry="1" width="250" height="32"
 					style="fill:#39ac56; stroke:#39ac56; stroke-width:2; fill-opacity:1; stroke-opacity:1"/>
 				<text id="svgText" class="hp" x="50%" y="26" dominant-baseline="middle" fill="#F7F7F7" text-anchor="middle"></text>
 			</svg>
