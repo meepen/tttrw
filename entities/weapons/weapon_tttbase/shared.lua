@@ -79,6 +79,8 @@ function SWEP:SetupDataTables()
 	self:NetVar("FOVMultiplierDuration", "Float", 0.1)
 	self:NetVar("ViewPunch", "Angle", angle_zero)
 	self:NetVar("ViewPunchTime", "Float", -math.huge)
+	self:NetVar("RealLastShootTime", "Float", -math.huge)
+	self:NetVar("ConsecutiveShots", "Int", 0)
 	hook.Run("TTTInitWeaponNetVars", self)
 end
 
@@ -138,7 +140,6 @@ function SWEP:Reload()
 	end
 	BaseClass.Reload(self)
 end
-
 
 function SWEP:SecondaryAttack()
 	self:ChangeIronsights(true)
@@ -221,7 +222,7 @@ function SWEP:ShootBullet(bullet_info)
 		Damage = self.Primary.Damage,
 		Tracer = bullet_info.Tracer,
 		TracerName = bullet_info.TracerName,
-		Spread = bullet_info.Spread,
+		Spread = self:GetSpread(),
 		Callback = function(_, ...)
 			if (IsValid(self)) then
 				self:FireBulletsCallback(...)
@@ -232,15 +233,30 @@ function SWEP:ShootBullet(bullet_info)
 	}
 
 	--owner:LagCompensation(true)
+	self:SetRealLastShootTime(CurTime())
 	self:FireBullets(bullet)
 	--owner:LagCompensation(false)
 
 	self:ShootEffects()
 end
 
+function SWEP:GetSpread()
+	return self.Bullets.Spread * (0.5 + (-self:GetMultiplier() + 2) / 2)
+end
+
 function SWEP:PrimaryAttack()
 	if (not self:CanPrimaryAttack()) then
 		return
+	end
+
+	local interval = engine.TickInterval()
+	local delay = math.ceil(self.Primary.Delay / interval) * interval
+	local diff = (CurTime() - self:GetRealLastShootTime()) / delay
+
+	if (diff <= 1 + interval) then
+		self:SetConsecutiveShots(self:GetConsecutiveShots() + 1)
+	else
+		self:SetConsecutiveShots(0)
 	end
 
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
@@ -269,10 +285,6 @@ function SWEP:GetCurrentViewPunch()
 	local diff = Quaternion():SetEuler(-vp):Slerp(quat_zero, frac):ToEulerAngles()
 
 	return diff
-end
-
-function SWEP:GetViewPunchAngles()
-	return Angle(-self.Primary.Recoil, 0, 0)
 end
 
 function SWEP:ViewPunch()
@@ -311,10 +323,17 @@ function SWEP:GetCurrentFOVMultiplier()
 	return ofov + (fov - ofov) * cur
 end
 
-
 function SWEP:ChangeFOVMultiplier(fovmult, duration)
 	self:SetOldFOVMultiplier(self:GetCurrentFOVMultiplier())
 	self:SetFOVMultiplier(fovmult)
 	self:SetFOVMultiplierDuration(duration)
 	self:SetFOVMultiplierTime(CurTime())
+end
+
+function SWEP:GetMultiplier()
+	return 1 + math.max(0, 1 - self:GetConsecutiveShots() / 4)
+end
+
+function SWEP:GetViewPunchAngles()
+	return Angle(-self.Primary.Recoil * self:GetMultiplier(), 0, 0)
 end
