@@ -67,7 +67,7 @@ function GM:PlayerCanHearPlayersVoice(hear,talk)
 end
 
 function GM:KeyPress(ply, key)
-    if (ply ~= LocalPlayer() or !IsFirstTimePredicted()) then return end
+    if (!IsFirstTimePredicted()) then return end
     if (key == IN_SPEED) then
         if !(IsValid(ply)) then return end
         ply.tchat = true
@@ -77,7 +77,7 @@ function GM:KeyPress(ply, key)
 end
 
 function GM:KeyRelease(ply, key)
-    if (ply ~= LocalPlayer() or !IsFirstTimePredicted()) then return end
+    if (!IsFirstTimePredicted()) then return end
     if (key == IN_SPEED) then
         if !(IsValid(ply)) then return end
         ply.tchat = false
