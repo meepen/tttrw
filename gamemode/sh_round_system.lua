@@ -73,13 +73,3 @@ hook.Add("TTTPrepareNetworkingVariables", "RoundState", function(vars)
 		Default = 0
 	})
 end)
-
-
-hook.Add("TTTGetHiddenPlayerVariables", "RoundState", function(vars)
-	table.insert(vars, {
-		Name = "Role",
-		Type = "String",
-		Default = "Spectator",
-		Enums = {}
-	})
-end)

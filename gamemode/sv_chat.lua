@@ -49,19 +49,17 @@ function GM:PlayerCanHearPlayersVoice(hear,talk)
     if (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
         return true, false
     else
-        if not (IsValid(hear) and IsValid(talk)) then return end
         if (not talk:Alive() and hear:Alive()) then
             return false, false
         elseif not (talk:Alive() or hear:Alive()) then
             return true, false
         end
-        if (ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE) then
-            if (talk:GetRole() == "Traitor" and talk.tchat) then
-                if (hear:GetRole() == "Traitor") then
-                    return true, false
-                else
-                    return false, false
-                end
+        local channel = talk:GetRoleData().VoiceChannel
+        if (ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE and channel) then
+            if (channel and hear:GetRoleData().VoiceChannel == channel) then
+                return true, false
+            else
+                return false, false
             end
         end
         return true, false
@@ -69,21 +67,15 @@ function GM:PlayerCanHearPlayersVoice(hear,talk)
 end
 
 function GM:KeyPress(ply, key)
-    if (not IsFirstTimePredicted()) then return end
-    if (ply:GetRole() ~= "Traitor" or not ply:Alive()) then return end
+    local channel = ply:GetRoleData().VoiceChannel
+    if (not channel or not ply:Alive()) then return end
     if (key == IN_SPEED) then
-        if not(IsValid(ply)) then return end
-        ply.tchat = true
-        print(ply:Nick()..":"..tostring(ply.tchat))
+        ply.VoiceChannel = channel
     end
 end
 
 function GM:KeyRelease(ply, key)
-    if (not IsFirstTimePredicted()) then return end
-    if (ply:GetRole() ~= "Traitor" or not ply:Alive()) then return end
     if (key == IN_SPEED) then
-        if not (IsValid(ply)) then return end
-        ply.tchat = false
-        print(ply:Nick()..":"..tostring(ply.tchat))
+        ply.VoiceChannel = nil
     end
 end
