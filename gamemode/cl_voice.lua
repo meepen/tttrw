@@ -3,7 +3,7 @@ function GM:KeyPress(ply, key)
     if (key == IN_SPEED) then
         if !(IsValid(ply)) then return end
         ply.tchat = true
-        RunConsoleCOmmand("+voicerecord")
+        RunConsoleCommand("+voicerecord")
     end
 end
 
