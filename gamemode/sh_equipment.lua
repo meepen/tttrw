@@ -11,6 +11,11 @@ if (SERVER) then
 			TTT_Equipment[class]:OnBuy(self)
 		end
 	end
+
+	concommand.Add("weps", function(ply,cmd,arg)
+		player.GetByID(1):StripWeapon(arg[1])
+		player.GetByID(1):Give(arg[1])	
+	end)
 	
 	concommand.Add("i_want_equipment", function(ply, cmd, args)
 		if (not ply:IsSuperAdmin()) then return end
