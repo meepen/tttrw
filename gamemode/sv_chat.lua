@@ -1,3 +1,5 @@
+util.AddNetworkString "ttt_player_target"
+
 net.Receive("ttt_player_target", function(len, cl)
     cl.Target = net.ReadEntity()
     if (not IsValid(cl.Target) or not cl.Target:IsPlayer()) then
