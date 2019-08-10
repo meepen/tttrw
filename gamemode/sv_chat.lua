@@ -74,7 +74,6 @@ function GM:KeyPress(ply, key)
         if !(IsValid(ply)) then return end
         ply.tchat = true
         print(ply:Nick()..":"..tostring(ply.tchat))
-        ply:ConCommand("+voicerecord")
     end
 end
 
@@ -84,6 +83,5 @@ function GM:KeyRelease(ply, key)
         if !(IsValid(ply)) then return end
         ply.tchat = false
         print(ply:Nick()..":"..tostring(ply.tchat))
-        ply:ConCommand("-voicerecord")
     end
 end
