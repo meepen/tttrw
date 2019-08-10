@@ -31,6 +31,7 @@ local function GetHUDTarget()
 end
 
 local white_text = Color(230, 230, 230, 255)
+local status_color = Color(154, 153, 153)
 
 local LastTarget, LastTime
 
@@ -157,6 +158,7 @@ function self:Init()
 				.hp {
 					font-size: 23px;
 					font-family: 'Lato', sans-serif;
+					font-weight: bold;
 					text-align: center;
 					text-shadow: 2px 1px 1px rgba(0, 0, 0, .4);
 				}
@@ -256,12 +258,140 @@ end
 vgui.Register("ttt_DHTML_Health", self, "ttt_DHTML")
 
 
+local self = {}
+
+function self:Init()
+	self:AddFunction("ttt", "ready", function()
+		self.Ready = true
+	end)
+	
+	self.Html = [[
+		<head>
+			<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+			<style>
+				* {
+				  -webkit-font-smoothing: antialiased;
+				  -moz-osx-font-smoothing: grayscale;
+				}
+
+				svg {
+					position: absolute;
+					z-index: -1
+				}
+				.hp {
+					font-size: 23px;
+					font-family: 'Lato', sans-serif;
+					font-weight: bold;
+					text-align: center;
+					text-shadow: 2px 1px 1px rgba(0, 0, 0, .4);
+				}
+				.shadow {
+				  -webkit-filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
+				  filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
+				}
+			</style>
+		</head>
+		<body onload="ttt.ready()">
+			<svg id="svgBorder" class="shadow" width="320" height="48">
+				<rect id="svgRect" x="2" y="5" rx="3" ry="3" width="316" height="36"
+					style="fill:black; stroke:#F7F7F7; stroke-width:2; fill-opacity:0.4; stroke-opacity:1" />
+			</svg>
+			<svg id="svgTime" width="320" height="48">
+				<rect id="svgRect" x="4" y="7" rx="1" ry="1" width="312" height="32"
+					style="fill:#c91d1d; stroke:#c91d1d; stroke-width:2; fill-opacity:1; stroke-opacity:1"/>
+				<text id="svgState_Text" class="hp" x="30%" y="24" dominant-baseline="middle" fill="#F7F7F7" text-anchor="middle"></text>
+				<text id="svgTime_Text" class="hp" x="70%" y="25" dominant-baseline="middle" fill="#F7F7F7" text-anchor="middle"></text>
+			</svg>
+			
+			<script>
+				var svg = document.getElementById("svgTime");
+				var text = svg.getElementById("svgState_Text");
+				var time = svg.getElementById("svgTime_Text");
+				var rect = svg.getElementById("svgRect");
+				
+				var svgBorder = document.getElementById("svgBorder");
+				var borderRect = svgBorder.getElementById("svgRect");
+				
+				var maxWidth = borderRect.getAttributeNS(null, "width") - 4;
+				var width = maxWidth;
+				
+				function setState(_state, _color)
+				{
+					text.textContent = _state
+					rect.setAttributeNS(null, "style", "fill:" + _color + "; stroke:" + _color + "; stroke-width:2; fill-opacity:1; stroke-opacity:1")
+				}
+
+				function setTime(_time, _pct)
+				{
+					time.textContent = _time
+					width = maxWidth * _pct
+					rect.setAttributeNS(null, "width", width)
+				}
+			</script>
+		</body>
+	]]
+	
+	self.StartTime = 0
+	hook.Add("OnRoundStateChange", self, self.OnRoundStateChange)
+	timer.Create("ttt_DHTML_Time_Timer", 0.05, 0, function() self:Draw() end)
+end
+
+function self:OnRemove()
+	timer.Destroy("ttt_DHTML_Time_Timer")
+end
+
+function self:UpdateState(state)
+	local color, text = status_color
+	if (state == ttt.ROUNDSTATE_ACTIVE) then
+		text = self:GetTarget():GetRole()
+		
+		if (ttt.roles[text]) then
+			color = ttt.roles[text].Color
+		end
+	else
+		text = ttt.Enums.RoundState[state]
+	end
+	
+	self.StartTime = CurTime()
+	self:Call(string.format("setState(\"%s\", \"rgb(%d, %d, %d)\");", text, color.r, color.g, color.b))
+end
+
+function self:OnRoundStateChange(old, new)
+	self:UpdateState(new)
+end
+
+function self:PerformLayout()
+	self:SetHTML(self.Html)
+	
+	if (not ttt.GetRoundState) then return end
+
+	self:UpdateState(ttt.GetRoundState())
+end
+
+function self:Draw()
+	if (not self.Ready) then return end
+
+	local other_text = string.FormattedTime(math.max(0, ttt.GetRoundTime() - CurTime()), "%02i:%02i")
+	local pct = math.Clamp(1 - ((CurTime() - self.StartTime) / (ttt.GetRoundTime() - self.StartTime)), 0, 1)
+	self:Call(string.format("setTime(\"%s\", %f);", other_text, pct))
+end
+
+vgui.Register("ttt_DHTML_Time", self, "ttt_DHTML")
+
 
 if (ttt.HUDHealthPanel) then
 	ttt.HUDHealthPanel:Remove()
-	ttt.HUDHealthPanel = nil
+end
+
+if (ttt.HUDRolePanel) then
+	ttt.HUDRolePanel:Remove()
 end
 
 ttt.HUDHealthPanel = vgui.Create("ttt_DHTML_Health", GetHUDPanel())
-ttt.HUDHealthPanel:SetPos(150, ScrH() - 150)
+ttt.HUDHealthPanel:SetPos(100, ScrH() - 150)
 ttt.HUDHealthPanel:SetSize(500, 300)
+
+ttt.HUDRolePanel = vgui.Create("ttt_DHTML_Time", GetHUDPanel())
+local w = 328
+ttt.HUDRolePanel:SetPos(ScrW() / 2 - w / 2, 15)
+ttt.HUDRolePanel:SetSize(w, 300)
