@@ -56,8 +56,8 @@ function GM:PlayerCanHearPlayersVoice(hear,talk)
             return true, false
         end
         if (ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE) then
-            if (round.Players[talk:UserID()].Role == ttt.roles["Traitor"] and talk.tchat) then
-                if (round.Players[hear:UserID()].Role == ttt.roles["Traitor"]) then
+            if (talk:GetRole() == "Traitor" and talk.tchat) then
+                if (hear:GetRole() == "Traitor") then
                     return true, false
                 else
                     return false, false
@@ -70,6 +70,7 @@ end
 
 function GM:KeyPress(ply, key)
     if (!IsFirstTimePredicted()) then return end
+    if !(ply:GetRole() == "Traitor") then return end
     if (key == IN_SPEED) then
         if !(IsValid(ply)) then return end
         ply.tchat = true
@@ -79,6 +80,7 @@ end
 
 function GM:KeyRelease(ply, key)
     if (!IsFirstTimePredicted()) then return end
+    if !(ply:GetRole() == "Traitor") then return end
     if (key == IN_SPEED) then
         if !(IsValid(ply)) then return end
         ply.tchat = false
