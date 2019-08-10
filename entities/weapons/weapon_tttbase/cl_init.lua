@@ -46,12 +46,13 @@ net.Receive("tttrw_developer_hitboxes", function(len, pl)
 end)
 
 function SWEP:CalcUnpredictedTimings()
+	if (not IsFirstTimePredicted()) then return end
 	self.CurTime = CurTime()
 	self.RealTime = RealTime()
 end
 
 function SWEP:CalcViewModel()
-	if (not CLIENT) or (not IsFirstTimePredicted()) then return end
+	if (not IsFirstTimePredicted()) then return end
 	self.CurIronsights = self:GetIronsights()
 	self.IronTime = self:GetIronsightsTime()
 	self:CalcUnpredictedTimings()
@@ -73,6 +74,9 @@ function SWEP:GetViewModelPosition(pos, ang)
 	local is_ironsights = self.CurIronsights
 	local toggletime = self.IronTime
 	local time = is_ironsights and self.Ironsights.TimeTo or self.Ironsights.TimeFrom
+	if (LocalPlayer():KeyDown(KEY_M)) then
+		print(is_ironsights, toggletime, time)
+	end
 
 	local frac = math.min(1, (self:GetUnpredictedTime() - toggletime) / time)
 
@@ -103,7 +107,7 @@ function SWEP:GetViewModelPosition(pos, ang)
 		self.BobScale = 1
 	end
 
-	return pos, ang
+	return pos, ang + self:GetCurrentUnpredictedViewPunch()
 end
 
 function SWEP:CalcFOV()
@@ -135,4 +139,36 @@ function SWEP:TranslateFOV(fov)
 	end
  
 	return res
+end
+
+local quat_zero = Quaternion()
+
+function SWEP:GetCurrentUnpredictedViewPunch()
+	local delay = self.Primary.Delay
+	local time = self._ViewPunchTime or -math.huge
+	local frac = (self:GetUnpredictedTime() - time) / delay
+	
+	if (frac >= 1) then
+		return angle_zero
+	end
+
+	local vp = self._ViewPunch or angle_zero
+	local diff = Quaternion():SetEuler(-vp):Slerp(quat_zero, frac):ToEulerAngles()
+
+	return diff
+end
+
+function SWEP:CalcView(ply, pos, ang, fov)
+	local delay = self.Primary.Delay * 2
+
+	return pos, ang + self:GetCurrentUnpredictedViewPunch(), fov
+end
+
+function SWEP:CalcViewPunch()
+	if (not IsFirstTimePredicted()) then
+		return
+	end
+	self._ViewPunch = self:GetViewPunch()
+	self._ViewPunchTime = self:GetViewPunchTime()
+	self:CalcUnpredictedTimings()
 end
