@@ -1,4 +1,4 @@
-local function UpdatePlayerSpectating(ply, new_mode)
+local function UpdatePlayerSpectating(ply, new_mode, dir)
 	local current = ply:GetObserverTarget()
 	local mode = ply:GetObserverMode()
 	local target
@@ -18,7 +18,7 @@ local function UpdatePlayerSpectating(ply, new_mode)
 		end
 
 		if (current_num) then
-			target = active[1 + (current_num % #active)]
+			target = active[(1 * dir) + (current_num % #active)]
 		end
 	end
 
@@ -52,7 +52,9 @@ function GM:KeyPress(ply, key)
 				UpdatePlayerSpectating(ply, ply:GetObserverMode() == OBS_MODE_CHASE and OBS_MODE_IN_EYE or OBS_MODE_CHASE)
 			end
 		elseif (key == IN_ATTACK) then
-			UpdatePlayerSpectating(ply)
+			UpdatePlayerSpectating(ply, nil, -1)
+		elseif (key == IN_ATTACK2) then
+			UpdatePlayerSpectating(ply, nil, 1)
 		end
 	end
 end
