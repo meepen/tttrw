@@ -30,8 +30,9 @@ SWEP.Primary.Delay         = 0.38
 SWEP.Primary.Recoil        = 1.5
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Pistol"
-SWEP.Primary.ClipSize      = 20
-SWEP.Primary.DefaultClip   = 1000
+SWEP.Primary.ClipSize      = 16
+SWEP.Primary.DefaultClip   = 64
+SWEP.Primary.MaxClip       = 64
 SWEP.Primary.Sound         = Sound "Weapon_FiveSeven.Single"
 
 SWEP.AutoSpawnable         = true

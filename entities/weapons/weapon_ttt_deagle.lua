@@ -31,7 +31,8 @@ SWEP.Primary.Recoil        = 6
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "AlyxGun"
 SWEP.Primary.ClipSize      = 8
-SWEP.Primary.DefaultClip   = 64
+SWEP.Primary.DefaultClip   = 16
+SWEP.Primary.MaxClip       = 24
 SWEP.Primary.Sound         = Sound "Weapon_Deagle.Single"
 
 SWEP.HeadshotMultiplier    = 4
