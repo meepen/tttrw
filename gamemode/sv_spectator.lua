@@ -18,7 +18,7 @@ local function UpdatePlayerSpectating(ply, new_mode, dir)
 		end
 
 		if (current_num) then
-			target = active[(1 * dir) + (current_num % #active)]
+			target = active[(current_num - 1 + 1 * dir) % #active + 1]
 		end
 	end
 
@@ -35,15 +35,17 @@ local function UpdatePlayerSpectating(ply, new_mode, dir)
 		ply:SpectateEntity(target)
 	else
 		ply:Spectate(OBS_MODE_ROAMING)
+		ply:SetMoveType(MOVETYPE_NOCLIP)
 	end
 end
 
 function GM:TTTPlayerRemoveSpectate(ply)
 	ply:Spectate(OBS_MODE_ROAMING)
+	ply:SetMoveType(MOVETYPE_NOCLIP)
 end
 
 
-function GM:KeyPress(ply, key)
+function GM:SpectatorKey(ply, key)
 	if (not ply:Alive()) then
 		if (key == IN_RELOAD) then
 			if (IsValid(ply:GetObserverTarget())) then

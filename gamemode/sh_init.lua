@@ -39,3 +39,10 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmg)
 		wep:ScaleDamage(hitgroup, dmg)
 	end
 end
+
+function GM:KeyPress(ply, key)
+	self:VoiceKey(ply, key)
+	if (SERVER) then
+		self:SpectatorKey(ply, key)
+	end
+end

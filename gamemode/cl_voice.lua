@@ -1,4 +1,4 @@
-function GM:KeyPress(ply, key)
+function GM:VoiceKey(ply, key)
     if (not IsFirstTimePredicted()) then return end
     local channel = ply:GetRoleData().VoiceChannel
     if (not channel or not ply:Alive()) then return end

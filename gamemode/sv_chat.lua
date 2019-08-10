@@ -66,7 +66,7 @@ function GM:PlayerCanHearPlayersVoice(hear,talk)
     end
 end
 
-function GM:KeyPress(ply, key)
+function GM:VoiceKey(ply, key)
     local channel = ply:GetRoleData().VoiceChannel
     if (not channel or not ply:Alive()) then return end
     if (key == IN_SPEED) then
