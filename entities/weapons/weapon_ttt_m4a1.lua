@@ -30,7 +30,7 @@ SWEP.Primary.Delay         = 0.1
 SWEP.Primary.Recoil        = 1.6
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "ar2"
-SWEP.Primary.ClipSize      = 200
+SWEP.Primary.ClipSize      = 20
 SWEP.Primary.DefaultClip   = 1000
 SWEP.Primary.Sound         = Sound "Weapon_M4A1.Single"
 
