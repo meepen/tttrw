@@ -50,7 +50,7 @@ for k,v in pairs(list) do
 	
 	include("equipment/"..v)
 
-	if !(EQUIP.Name) then
+	if (EQUIP.Name == nil) then
 		ErrorNoHalt("[Equipment] Item \""..v.."\" has no name!")
 	elseif (EQUIP.OnBuy == nil) then
 		ErrorNoHalt("[Equipment] Item \""..v.."\" has no function! Add EQUIP:OnBuy()")

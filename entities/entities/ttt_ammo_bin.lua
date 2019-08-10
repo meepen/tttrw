@@ -54,7 +54,7 @@ function ENT:PostDrawEffects()
 end
 
 function ENT:Use(ply)
-    if !(self.Cooldown) then
+    if not (self.Cooldown) then
         if (IsValid(ply) and ply:IsPlayer()) then
             local wep = ply:GetActiveWeapon()
             if (wep.Primary.MaxClip == nil or wep.Primary.MaxClip == 0) then return end
