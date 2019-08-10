@@ -47,9 +47,8 @@ for k,v in pairs(list) do
 
 	if !(EQUIP.Name) then
 		ErrorNoHalt("[Equipment] Item \""..v.."\" has no name!")
-	elseif !(EQUIP.OnBuy~=nil) then
+	elseif (EQUIP.OnBuy == nil) then
 		ErrorNoHalt("[Equipment] Item \""..v.."\" has no function! Add EQUIP:OnBuy()")
 	end
 	TTT_Equipment[EQUIP.ID] = EQUIP
 end
-PrintTable(TTT_Equipment)
