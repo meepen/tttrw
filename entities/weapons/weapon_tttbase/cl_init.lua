@@ -46,12 +46,13 @@ net.Receive("tttrw_developer_hitboxes", function(len, pl)
 end)
 
 function SWEP:CalcUnpredictedTimings()
+	if (not IsFirstTimePredicted()) then return end
 	self.CurTime = CurTime()
 	self.RealTime = RealTime()
 end
 
 function SWEP:CalcViewModel()
-	if (not CLIENT) or (not IsFirstTimePredicted()) then return end
+	if (not IsFirstTimePredicted()) then return end
 	self.CurIronsights = self:GetIronsights()
 	self.IronTime = self:GetIronsightsTime()
 	self:CalcUnpredictedTimings()
@@ -73,6 +74,9 @@ function SWEP:GetViewModelPosition(pos, ang)
 	local is_ironsights = self.CurIronsights
 	local toggletime = self.IronTime
 	local time = is_ironsights and self.Ironsights.TimeTo or self.Ironsights.TimeFrom
+	if (LocalPlayer():KeyDown(KEY_M)) then
+		print(is_ironsights, toggletime, time)
+	end
 
 	local frac = math.min(1, (self:GetUnpredictedTime() - toggletime) / time)
 
