@@ -1,6 +1,3 @@
-util.AddNetworkString "ttt_player_target"
-util.AddNetworkString "ttt_traitor_voice"
-
 net.Receive("ttt_player_target", function(len, cl)
     cl.Target = net.ReadEntity()
     if (not IsValid(cl.Target) or not cl.Target:IsPlayer()) then
@@ -69,10 +66,22 @@ function GM:PlayerCanHearPlayersVoice(hear,talk)
     end
 end
 
-net.Receive("ttt_traitor_voice", function()
-    local ply = Player(net.ReadUInt(8))
-    if !(IsValid(ply)) then return end
-    local team = net.ReadBool()
-    ply.tchat = team
-    print(ply:Nick()..":"..tostring(ply.tchat))
-end)
+function GM:KeyPress(ply, key)
+    if (ply ~= LocalPlayer() or !IsFirstTimePredicted()) then return end
+    if (key == IN_SPEED) then
+        if !(IsValid(ply)) then return end
+        ply.tchat = true
+        print(ply:Nick()..":"..tostring(ply.tchat))
+        ply:ConCommand("+voicerecord")
+    end
+end
+
+function GM:KeyRelease(ply, key)
+    if (ply ~= LocalPlayer() or !IsFirstTimePredicted()) then return end
+    if (key == IN_SPEED) then
+        if !(IsValid(ply)) then return end
+        ply.tchat = false
+        print(ply:Nick()..":"..tostring(ply.tchat))
+        ply:ConCommand("-voicerecord")
+    end
+end
