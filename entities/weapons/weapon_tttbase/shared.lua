@@ -232,16 +232,16 @@ function SWEP:ShootBullet(bullet_info)
 		Dir = bullet_ang:Forward()
 	}
 
-	--owner:LagCompensation(true)
+	owner:LagCompensation(true)
 	self:SetRealLastShootTime(CurTime())
 	self:FireBullets(bullet)
-	--owner:LagCompensation(false)
+	owner:LagCompensation(false)
 
 	self:ShootEffects()
 end
 
 function SWEP:GetSpread()
-	return self.Bullets.Spread * (0.5 + (-self:GetMultiplier() + 2) / 2)
+	return self.Bullets.Spread * (0.25 + (-self:GetMultiplier() + 2) * 0.75)
 end
 
 function SWEP:PrimaryAttack()

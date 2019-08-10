@@ -22,7 +22,7 @@ SWEP.Bullets = {
 	DamageDropoffRange = 600,
 	DamageDropoffRangeMax = 3600,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(0.03, 0.03, 0)
+	Spread = Vector(0.025, 0.025, 0)
 }
 
 SWEP.Primary.Damage        = 18
