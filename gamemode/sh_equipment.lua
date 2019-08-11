@@ -63,6 +63,7 @@ function ttt.Equipment.Add(id,w)
 end
 
 function ttt.Equipment.Build()
+	table.Empty(ttt.Equipment.List)
 	local ents = scripted_ents.GetList()
 	local weps = weapons.GetList()
 	for k,v in pairs(ents) do

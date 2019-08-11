@@ -8,8 +8,11 @@ end
 ENT.Base = "ttt_point_info"
 ENT.Type = "anim"
 
-ENT.PercentRemaining = 300
 ENT.Cooldown = false
+
+function ENT:SetupDataTables()
+    self:NetworkVar("Int", 0, "PercentRemaining")
+end
 
 function ENT:Initialize()
     self:SetModel("models/props_junk/TrashBin01a.mdl")
@@ -25,6 +28,8 @@ function ENT:Initialize()
     if (CLIENT) then
         hook.Add("PostDrawEffects", self, self.PostDrawEffects)
     end
+
+    self:SetPercentRemaining(300)
 
     self:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER)
 end
@@ -42,12 +47,12 @@ if (CLIENT) then
 end
 
 function ENT:PostDrawEffects()
-    if (self:GetPos():DistToSqr(LocalPlayer():GetPos()) < 10000) then
+    if (self:GetPos():DistToSqr(LocalPlayer():GetPos()) < 15000) then
         cam.Start3D() -- this doesn't actually update dynamically, just stays at 300% rn
             local ang = (self:GetPos() - EyePos()):Angle():Right():Angle()
             ang:RotateAroundAxis(ang:Forward(), 90)
             cam.Start3D2D(self:GetPos()+Vector(0,0,30), ang, .1)
-                draw.DrawText( self.PercentRemaining.."% Remaining", "ttt_ammobin", 0, 0, Color( 0, 150, 175, 255 ), TEXT_ALIGN_CENTER )
+                draw.DrawText( self:GetPercentRemaining().."% Remaining", "ttt_ammobin", 0, 0, Color( 0, 150, 175, 255 ), TEXT_ALIGN_CENTER )
             cam.End3D2D()
         cam.End3D()
     end
@@ -62,8 +67,8 @@ function ENT:Use(ply)
             if (r > 0) then
                 local p = (r / wep.Primary.MaxClip)*100
                 local pr
-                if (p > self.PercentRemaining) then
-                    pr = self.PercentRemaining
+                if (p > self:GetPercentRemaining()) then
+                    pr = self:GetPercentRemaining()
                 else
                     pr = p
                 end
@@ -73,8 +78,8 @@ function ENT:Use(ply)
                 else
                     self:EmitSound(Sound("items/ammo_pickup.wav"))
                     ply:SetAmmo(d+ply:GetAmmoCount(wep:GetPrimaryAmmoType()),wep:GetPrimaryAmmoType())
-                    self.PercentRemaining = self.PercentRemaining - math.ceil(pr)
-                    ply:ChatPrint("Remaining: "..self.PercentRemaining.."%")
+                    self:SetPercentRemaining(self:GetPercentRemaining() - math.ceil(pr))
+                    ply:ChatPrint("Remaining: "..self:GetPercentRemaining().."%")
                 end
                 self.Cooldown = true
                 timer.Simple(1, function()
