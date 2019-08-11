@@ -144,7 +144,7 @@ end
 local quat_zero = Quaternion()
 
 function SWEP:GetCurrentUnpredictedViewPunch()
-	local delay = self.Primary.Delay
+	local delay = self.Primary.RecoilTiming or self.Primary.Delay
 	local time = self._ViewPunchTime or -math.huge
 	local frac = (self:GetUnpredictedTime() - time) / delay
 	

@@ -273,7 +273,7 @@ end
 local quat_zero = Quaternion()
 
 function SWEP:GetCurrentViewPunch()
-	local delay = self.Primary.Delay
+	local delay = self.Primary.RecoilTiming or self.Primary.Delay
 	local time = self:GetViewPunchTime()
 	local frac = (CurTime() - time) / delay
 	
