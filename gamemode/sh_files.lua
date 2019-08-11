@@ -15,6 +15,7 @@ AddCSLuaFile();
 		"cl_hud.lua",
 		"cl_scoreboard.lua",
 		"cl_hitmarkers.lua",
+		"cl_crosshair_menu.lua",
 		"cl_voice.lua",
 	},
 	Shared = {
@@ -29,6 +30,9 @@ AddCSLuaFile();
 		"sh_equipment.lua",
 		"sh_util.lua",
 	},
+	Resources = {
+		"materials/tttrw/heart.png",
+	},
 	Load = function(self)
 		for _, file in ipairs(self.Shared) do
 			if (SERVER) then
@@ -38,13 +42,15 @@ AddCSLuaFile();
 		end
 
 		for _, file in ipairs(SERVER and self.Server or self.Client) do
-			include (file)
+			include(file)
 		end
 
-		if (not SERVER) then
-			return
+		if (CLIENT) then return end
+		
+		for _, file in ipairs(self.Resources) do
+			resource.AddFile(file)
 		end
-
+		
 		for _, file in ipairs(self.Client) do
 			AddCSLuaFile(file)
 		end

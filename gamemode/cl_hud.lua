@@ -1,12 +1,23 @@
 local tttrw_force_ammo_bar = CreateConVar("tttrw_force_ammo_bar", 0, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "Force TTTRW HUD to use a bar for ammo")
+--local tttrw_crosshair_shape = CreateConVar("tttrw_crosshair_shape", "crosshair", {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
+local tttrw_crosshair_color_r = CreateConVar("tttrw_crosshair_color_r", 232, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
+local tttrw_crosshair_color_g = CreateConVar("tttrw_crosshair_color_g", 80, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
+local tttrw_crosshair_color_b = CreateConVar("tttrw_crosshair_color_b", 94, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
+local tttrw_crosshair_thickness = CreateConVar("tttrw_crosshair_thickness", 2, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
+local tttrw_crosshair_length = CreateConVar("tttrw_crosshair_length", 7, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
+local tttrw_crosshair_gap = CreateConVar("tttrw_crosshair_gap", 3, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
+local tttrw_crosshair_opacity = CreateConVar("tttrw_crosshair_opacity", 255, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
+local tttrw_crosshair_outline_opacity = CreateConVar("tttrw_crosshair_outline_opacity", 255, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
+local tttrw_crosshair_dot_size = CreateConVar("tttrw_crosshair_dot_size", 0, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
+local tttrw_crosshair_dot_opacity = CreateConVar("tttrw_crosshair_dot_opacity", 255, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
 
 DEFINE_BASECLASS "gamemode_base"
 
 local DrawTextShadowed = hud.DrawTextShadowed
 
-local health_full = Color(0, 0xff, 0x2b)
-local health_ok = Color(0xf0, 0xff, 0)
-local health_dead = Color(0xff, 0x33, 0)
+local health_full = Color(58, 180, 80)
+local health_ok = Color(240, 255, 0)
+local health_dead = Color(255, 51, 0)
 
 local function ColorLerp(col_from, col_mid, col_to, amt)
 	if (amt > 0.5) then
@@ -32,6 +43,7 @@ local function GetHUDTarget()
 end
 
 local white_text = Color(230, 230, 230, 255)
+local status_color = Color(154, 153, 153)
 
 local LastTarget, LastTime
 
@@ -137,247 +149,12 @@ function GM:PlayerPostThink()
 end
 
 
-if (IsValid(ttt.HUDPanel)) then
-	ttt.HUDPanel:Remove()
-end
-
-local hide_when_chat_open = CreateConVar("ttt_hide_hud_when_chat_open", "0", FCVAR_ARCHIVE)
-
-
-local border_size = 5
-
-vgui.Register("ttt_hud", {
-	Init = function(self)
-		self.Health = vgui.Create("ttt_hud_health", self)
-		self.Health:Dock(TOP)
-		self.Health:SetZPos(1)
-
-		self.Role = vgui.Create("ttt_hud_ammo", self)
-		self.Role:Dock(TOP)
-		self.Role:SetZPos(0)
-
-		self.Role2 = vgui.Create("ttt_hud_role", self)
-		self.Role2:Dock(TOP)
-		self.Role2:SetZPos(-1)
-		hook.Add("StartChat", self, self.StartChat)
-		hook.Add("FinishChat", self, self.FinishChat)
-	end,
-	StartChat = function(self)
-		if (hide_when_chat_open:GetBool()) then
-			self:SetVisible(false)
-		end
-	end,
-	FinishChat = function(self)
-		self:SetVisible(true)
-	end,
-	PerformLayout = function(self, w, h)
-		hook.Run("ScreenResolutionChanged")
-		local scrw, scrh = ScrW(), ScrH()
-		local cx, cy = chat.GetChatBoxPos()
-		local cw, ch = chat.GetChatBoxSize()
-		self:SetSize(scrw / 5, scrh - (cy + ch) - cx)
-		self:SetPos(cx, cy + ch)
-
-		border_size = self:GetTall() < 86 and 3 or 5
-		
-
-		self.Health:DockMargin(border_size, border_size, border_size, 0)
-		self.Role2:DockMargin(border_size, border_size, border_size, 0)
-		self.Role:DockMargin(border_size, border_size, border_size, 0)
-
-		local children = #self:GetChildren()
-		local tall = math.floor((h - border_size * (children + 1)) / children)
-		for _, pnl in ipairs(self:GetChildren()) do
-			pnl:SetTall(tall)
-		end
-
-		-- 2 is always better looking
-		local font_size = math.floor((tall - border_size * 2) / 2) * 2
-
-		surface.CreateFont("TTTHUDFont", {
-			font = "Roboto",
-			size = font_size,
-			weight = 800,
-			antialias = true,
-			shadow = false
-		})
-		
-		surface.CreateFont("TTTHUDAmmoFontLarge", {
-			font = "Roboto",
-			size = math.floor((tall - border_size * 2) / 3) * 2,
-			weight = 800,
-			antialias = true,
-			shadow = false
-		})
-
-		surface.CreateFont("TTTHUDAmmoFontSmall", {
-			font = "Roboto",
-			size = math.ceil((tall - border_size * 2) / 3 / 2) * 2,
-			weight = 800,
-			antialias = true,
-			shadow = false
-		})
-	end,
-	GetTarget = function()
-		return GetHUDTarget()
-	end,
-	Paint = function(self, w, h)
-		local ent = GetHUDTarget()
-
-		if (not ent:Alive()) then
-			return
-		end
-
-		surface.SetDrawColor(Color(0, 0, 0, 200))
-		surface.DrawRect(0, 0, w, h)
-
-		-- TODO(meep): role information
-	end
-}, "EditablePanel")
-
-
-vgui.Register("ttt_hud_health", {
-	Paint = function(self, w, h)
-		local ent = self:GetParent():GetTarget()
-
-		if (not ent:Alive()) then
-			return
-		end
-
-		local health, maxhealth = ent:Health(), ent:GetMaxHealth()
-		local pct = health / maxhealth
-		local lastpct = self.LastPercent or pct
-		local curchange = FrameTime() * 4 -- 500% hp/s
-		local change = pct - lastpct
-		local curpct = change == 0 and pct or lastpct + (change / math.abs(change)) * math.min(curchange, math.abs(change))
-
-		self.LastPercent = curpct
-
-		surface.SetDrawColor(ColorLerp(health_dead, health_ok, health_full, curpct))
-		surface.DrawRect(0, 0, w * curpct, h)
-
-		draw.SimpleTextOutlined(
-			string.format("%i HP", math.max(0, ent:Health())), "TTTHUDFont", w / 2, h / 2,
-			color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black
-		)
-	end
-})
-
-vgui.Register("ttt_hud_role", {
-	Paint = function(self, w, h)
-		local ent = self:GetParent():GetTarget()
-
-		if (not ent:Alive()) then
-			return
-		end
-
-		local text, color
-
-		if (ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE) then
-			text = ent:GetRole()
-
-			color = color_black
-			if (ttt.roles[text]) then
-				color = ttt.roles[text].Color
-			end
-		else
-			text = ttt.Enums.RoundState[ttt.GetRoundState()]
-			color = color_black
-		end
-
-		surface.SetDrawColor(color)
-		surface.DrawRect(0, 0, w, h)
-
-		surface.SetFont "TTTHUDFont"
-		
-		draw.SimpleTextOutlined(
-			text, "TTTHUDFont", border_size * 5, h / 2,
-			color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, 1, color_black
-		)
-
-		local other_text = string.FormattedTime(math.max(0, ttt.GetRoundTime() - CurTime()), "%02i:%02i")
-
-		draw.SimpleTextOutlined(
-			other_text, "TTTHUDFont", w - border_size * 5, h / 2,
-			color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER, 1, color_black
-		)
-	end
-})
-
-local ammo_color = Color(244, 229, 66)
-local ammo_empty_color = Color(20, 20, 20, 200)
-
-vgui.Register("ttt_hud_ammo", {
-	Paint = function(self, w, h)
-		local ent = self:GetParent():GetTarget()
-
-		if (not ent:Alive()) then
-			return
-		end
-
-		local wep = ent:GetActiveWeapon()
-
-		if (not IsValid(wep)) then
-			return
-		end
-
-		local max_bullets = wep.Primary.ClipSize
-		local cur_bullets = wep:Clip1()
-
-		local extra = ent:GetAmmoCount(wep:GetPrimaryAmmoType())
-
-		local one_xth = 12
-		local w_per_bullet = math.floor(w / max_bullets)
-
-
-		if (w_per_bullet < one_xth or tttrw_force_ammo_bar:GetBool()) then
-			surface.SetDrawColor(ammo_color)
-			local aw = math.ceil(w * (cur_bullets / max_bullets))
-
-			surface.DrawRect(w - aw, 0, aw, h)
-
-			surface.SetDrawColor(ammo_empty_color)
-			surface.DrawRect(0, 0, w - aw, h)
-		else
-			ammo_area = w_per_bullet * max_bullets
-			
-			surface.SetDrawColor(ammo_color)
-			local i = 0
-			for x = w, w - ammo_area + 1, -w_per_bullet do
-				if (i == cur_bullets) then
-					surface.SetDrawColor(ammo_empty_color)
-				end
-				surface.DrawRect(x - w_per_bullet * (one_xth - 1) / one_xth, 0, w_per_bullet * (one_xth - 1) / one_xth, h)
-				i = i + 1
-			end
-		end
-
-		if (h < 50) then
-			draw.SimpleTextOutlined(
-				cur_bullets.." + "..extra, "TTTHUDFont", border_size, border_size, color_white,
-				TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, color_black
-			)
-		else
-			surface.SetFont "TTTHUDAmmoFontLarge"
-			local w1 = surface.GetTextSize(max_bullets)
-			surface.SetFont "TTTHUDAmmoFontSmall"
-			local w2 = surface.GetTextSize("+"..extra)
-			local maxw = math.max(w1, w2)
-			draw.SimpleTextOutlined(
-				cur_bullets, "TTTHUDAmmoFontLarge", border_size + maxw / 2, border_size, color_white,
-				TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, color_black
-			)
-			draw.SimpleTextOutlined(
-				"+"..extra, "TTTHUDAmmoFontSmall", border_size + maxw / 2, h - border_size, color_white,
-				TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM, 1, color_black
-			)
-		end
-	end
-})
-
 local hide = {
 	CHudHealth = true,
-	CHudDamageIndicator = true
+	CHudDamageIndicator = true,
+	CHudAmmo = true,
+	CHudSecondaryAmmo = true,
+	CHudCrosshair = true
 }
 
 hook.Add("HUDShouldDraw", "TTTHud", function(name)
@@ -386,4 +163,339 @@ hook.Add("HUDShouldDraw", "TTTHud", function(name)
 	end
 end)
 
-ttt.HUDPanel = vgui.Create("ttt_hud", GetHUDPanel())
+
+local hide_when_chat_open = CreateConVar("ttt_hide_hud_when_chat_open", "0", FCVAR_ARCHIVE)
+
+
+local self = {}
+
+function self:GetTarget()
+	return GetHUDTarget()
+end
+
+vgui.Register("ttt_DHTML", self, "DHTML")
+
+
+local self = {}
+
+function self:Init()
+	self.Html = [[
+		<head>
+			<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+			<style>
+				* {
+				  -webkit-font-smoothing: antialiased;
+				  -moz-osx-font-smoothing: grayscale;
+				}
+
+				svg {
+					position: absolute;
+					z-index: -1
+				}
+				.hp {
+					font-size: 23px;
+					font-family: 'Lato', sans-serif;
+					font-weight: bold;
+					text-align: center;
+					text-shadow: 2px 1px 1px rgba(0, 0, 0, .4);
+				}
+				.shadow {
+				  -webkit-filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
+				  filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
+				}
+			</style>
+		</head>
+		<body>
+			<img src="asset://garrysmod/materials/tttrw/heart.png" height="48">
+			<svg id="svgBorder" class="shadow" width="390" height="48">
+				<rect id="svgRect" x="10" y="5" rx="3" ry="3" width="377" height="36"
+					style="fill:black; stroke:#F7F7F7; stroke-width:2; fill-opacity:0.4; stroke-opacity:1" />
+			</svg>
+			<svg id="svgHealth" width="390" height="48">
+				<rect id="svgRect" x="12" y="7" rx="1" ry="1" width="250" height="32"
+					style="fill:#39ac56; stroke:#39ac56; stroke-width:2; fill-opacity:1; stroke-opacity:1"/>
+				<text id="svgText" class="hp" x="50%" y="26" dominant-baseline="middle" fill="#F7F7F7" text-anchor="middle"></text>
+			</svg>
+			
+			<script>
+				var svg = document.getElementById("svgHealth");
+				var text = svg.getElementById("svgText");
+				var rect = svg.getElementById("svgRect");
+				
+				var svgBorder = document.getElementById("svgBorder");
+				var borderRect = svgBorder.getElementById("svgRect");
+				
+				var hp = 100;
+				var maxhp = 100;
+				var pct = hp / maxhp;
+				
+				
+				var maxWidth = borderRect.getAttributeNS(null, "width") - 4;
+				var width = maxWidth;
+				
+				function changeBar()
+				{
+					pct = hp / maxhp;
+					width = maxWidth * pct
+					rect.setAttributeNS(null, "width", width)
+				}
+				
+				function setHealth(_hp)
+				{
+					hp = _hp;
+					text.textContent = _hp + "/" + maxhp;
+					changeBar();
+				}
+				
+				function setMaxHealth(_maxhp)
+				{
+					maxhp = _maxhp;
+					text.textContent = hp + "/" + _maxhp;
+					changeBar();
+				}
+				
+				function setText(_hp, _maxhp)
+				{
+					hp = _hp;
+					maxhp = _maxhp;
+					text.textContent = _hp + "/" + _maxhp;
+					changeBar();
+				}
+			</script>
+		</body>
+	]]
+	
+	self.OldHealth = 0
+	self.OldMaxHealth = 0
+end
+
+function self:PerformLayout()
+	self:SetHTML(self.Html)
+	
+	self.OldHealth = self:GetTarget():Health()
+	self.OldMaxHealth = self:GetTarget():GetMaxHealth()
+	
+	self:Call(string.format("setText(%d, %d);", self.OldHealth, self.OldMaxHealth))
+end
+
+function self:Paint()
+	local hp = self:GetTarget():Health()
+	if (self.OldHealth ~= hp) then
+		self:Call(string.format("setHealth(%d);", hp))
+		self.OldHealth = hp
+	end
+	
+	local maxhp = self:GetTarget():GetMaxHealth()
+	if (self.OldMaxHealth ~= maxhp) then
+		self:Call(string.format("setMaxHealth(%d);", maxhp))
+		self.OldMaxHealth = maxhp
+	end
+end
+
+vgui.Register("ttt_DHTML_Health", self, "ttt_DHTML")
+
+
+local self = {}
+
+function self:Init()
+	self:AddFunction("ttt", "ready", function()
+		self.Ready = true
+	end)
+	
+	self.Html = [[
+		<head>
+			<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+			<style>
+				* {
+				  -webkit-font-smoothing: antialiased;
+				  -moz-osx-font-smoothing: grayscale;
+				}
+
+				svg {
+					position: absolute;
+					z-index: -1
+				}
+				.hp {
+					font-size: 23px;
+					font-family: 'Lato', sans-serif;
+					font-weight: bold;
+					text-align: center;
+					text-shadow: 2px 1px 1px rgba(0, 0, 0, .4);
+				}
+				.shadow {
+				  -webkit-filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
+				  filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
+				}
+			</style>
+		</head>
+		<body onload="ttt.ready()">
+			<svg id="svgBorder" class="shadow" width="320" height="48">
+				<rect id="svgRect" x="2" y="5" rx="3" ry="3" width="316" height="36"
+					style="fill:black; stroke:#F7F7F7; stroke-width:2; fill-opacity:0.4; stroke-opacity:1" />
+			</svg>
+			<svg id="svgTime" width="320" height="48">
+				<rect id="svgRect" x="4" y="7" rx="1" ry="1" width="312" height="32"
+					style="fill:#c91d1d; stroke:#c91d1d; stroke-width:2; fill-opacity:1; stroke-opacity:1"/>
+				<text id="svgState_Text" class="hp" x="30%" y="24" dominant-baseline="middle" fill="#F7F7F7" text-anchor="middle"></text>
+				<text id="svgTime_Text" class="hp" x="70%" y="25" dominant-baseline="middle" fill="#F7F7F7" text-anchor="middle"></text>
+			</svg>
+			
+			<script>
+				var svg = document.getElementById("svgTime");
+				var text = svg.getElementById("svgState_Text");
+				var time = svg.getElementById("svgTime_Text");
+				var rect = svg.getElementById("svgRect");
+				
+				var svgBorder = document.getElementById("svgBorder");
+				var borderRect = svgBorder.getElementById("svgRect");
+				
+				var maxWidth = borderRect.getAttributeNS(null, "width") - 4;
+				var width = maxWidth;
+				
+				function setState(_state, _color)
+				{
+					text.textContent = _state
+					rect.setAttributeNS(null, "style", "fill:" + _color + "; stroke:" + _color + "; stroke-width:2; fill-opacity:1; stroke-opacity:1")
+				}
+
+				function setTime(_time, _pct)
+				{
+					time.textContent = _time
+					width = maxWidth * _pct
+					rect.setAttributeNS(null, "width", width)
+				}
+			</script>
+		</body>
+	]]
+	
+	self.StartTime = 0
+	hook.Add("OnRoundStateChange", self, self.OnRoundStateChange)
+	timer.Create("ttt_DHTML_Time_Timer", 0.05, 0, function() self:Draw() end)
+end
+
+function self:OnRemove()
+	timer.Destroy("ttt_DHTML_Time_Timer")
+end
+
+function self:UpdateState(state)
+	local color, text = status_color
+	if (state == ttt.ROUNDSTATE_ACTIVE) then
+		text = self:GetTarget():GetRole()
+		
+		if (ttt.roles[text]) then
+			color = ttt.roles[text].Color
+		end
+	else
+		text = ttt.Enums.RoundState[state]
+	end
+	
+	self.StartTime = CurTime()
+	self:Call(string.format("setState(\"%s\", \"rgb(%d, %d, %d)\");", text, color.r, color.g, color.b))
+end
+
+function self:OnRoundStateChange(old, new)
+	self:UpdateState(new)
+end
+
+function self:PerformLayout()
+	self:SetHTML(self.Html)
+	
+	if (not ttt.GetRoundState) then return end
+
+	self:UpdateState(ttt.GetRoundState())
+end
+
+function self:Draw()
+	if (not self.Ready) then return end
+
+	local other_text = string.FormattedTime(math.max(0, ttt.GetRoundTime() - CurTime()), "%02i:%02i")
+	local pct = math.Clamp(1 - ((CurTime() - self.StartTime) / (ttt.GetRoundTime() - self.StartTime)), 0, 1)
+	self:Call(string.format("setTime(\"%s\", %f);", other_text, pct))
+end
+
+vgui.Register("ttt_DHTML_Time", self, "ttt_DHTML")
+
+local function drawCircle( x, y, radius, seg )
+	local cir = {}
+
+	table.insert( cir, { x = x, y = y, u = 0.5, v = 0.5 } )
+	for i = 0, seg do
+		local a = math.rad( ( i / seg ) * -360 )
+		table.insert( cir, { x = x + math.sin( a ) * radius, y = y + math.cos( a ) * radius, u = math.sin( a ) / 2 + 0.5, v = math.cos( a ) / 2 + 0.5 } )
+	end
+
+	local a = math.rad( 0 ) -- This is needed for non absolute segment counts
+	table.insert( cir, { x = x + math.sin( a ) * radius, y = y + math.cos( a ) * radius, u = math.sin( a ) / 2 + 0.5, v = math.cos( a ) / 2 + 0.5 } )
+
+	surface.DrawPoly( cir )
+end
+
+vgui.Register("ttt_crosshairs", {
+	Paint = function(self, w, h)
+		local r = tttrw_crosshair_color_r:GetInt()
+		local g = tttrw_crosshair_color_g:GetInt()
+		local b = tttrw_crosshair_color_b:GetInt()
+
+		local t = tttrw_crosshair_thickness:GetInt()
+		local len = tttrw_crosshair_length:GetInt()
+		local gap = tttrw_crosshair_gap:GetInt()*2
+		local opacity = tttrw_crosshair_opacity:GetInt()
+		local oopacity = tttrw_crosshair_outline_opacity:GetInt()
+
+		local dot = tttrw_crosshair_dot_size:GetInt()
+		local dopacity = tttrw_crosshair_dot_opacity:GetInt()
+
+		local s = len*2+gap
+		local startw = w/2-s/2
+		local starth = h/2-s/2
+		
+		if (len > 0 and t > 0) then
+			surface.SetDrawColor(0,0,0,oopacity*255) -- outlines, counterclockwise
+			surface.DrawRect(w/2-t/2-1,starth-1,t+2,len+2)
+			surface.DrawRect(startw-1,h/2-t/2-1,len+2,t+2)
+			surface.DrawRect(w/2-t/2-1,starth+s-len-1,t+2,len+2)
+			surface.DrawRect(startw+s-len-1,h/2-t/2-1,len+2,t+2)
+
+			surface.SetDrawColor(r,g,b,opacity) -- crosshairs, counterclockwise
+			surface.DrawRect(w/2-t/2,starth,t,len)
+			surface.DrawRect(startw,h/2-t/2,len,t)
+			surface.DrawRect(w/2-t/2,starth+s-len,t,len)
+			surface.DrawRect(startw+s-len,h/2-t/2,len,t)
+		end
+
+		if (dot > 0) then
+			draw.NoTexture()
+
+			surface.SetDrawColor(0,0,0,oopacity*255)
+			drawCircle(startw+s/2,starth+s/2,dot+2,45)
+
+			surface.SetDrawColor(r,g,b,dopacity)
+			drawCircle(startw+s/2,starth+s/2,dot,45)
+		end
+	end
+})
+
+if (ttt.HUDHealthPanel) then
+	ttt.HUDHealthPanel:Remove()
+end
+
+if (ttt.HUDRolePanel) then
+	ttt.HUDRolePanel:Remove()
+end
+
+if (ttt.Crosshair) then
+	ttt.Crosshair:Remove()
+end
+
+ttt.Crosshair = vgui.Create("ttt_crosshairs", GetHUDPanel())
+ttt.Crosshair:SetPos(0,0)
+ttt.Crosshair:SetSize(ScrW(),ScrH())
+
+ttt.HUDHealthPanel = vgui.Create("ttt_DHTML_Health", GetHUDPanel())
+ttt.HUDHealthPanel:SetPos(100, ScrH() - 150)
+ttt.HUDHealthPanel:SetSize(500, 300)
+
+ttt.HUDRolePanel = vgui.Create("ttt_DHTML_Time", GetHUDPanel())
+local w = 328
+ttt.HUDRolePanel:SetPos(ScrW() / 2 - w / 2, 15)
+ttt.HUDRolePanel:SetSize(w, 300)
