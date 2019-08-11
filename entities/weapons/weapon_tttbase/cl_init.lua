@@ -137,7 +137,13 @@ function SWEP:GetCurrentUnpredictedFOVMultiplier()
 
 	local cur = math.min(1, (self:GetUnpredictedTime() - time) / duration)
 
-	return ofov + (fov - ofov) * (self:GetOwner() ~= LocalPlayer() and math.sqrt(2) or 1) * cur ^ 0.5
+	local res = ofov + (fov - ofov) * cur ^ 0.5
+
+	if (self:GetOwner() ~= LocalPlayer()) then
+		return math.sqrt(res)
+	end
+
+	return res
 end
 
 function SWEP:TranslateFOV(fov)

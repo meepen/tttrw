@@ -122,11 +122,11 @@ function GM:HUDPaint()
 end
 
 function GM:PlayerPostThink()
-	local targ = GetHUDTarget()
-
 	if (not IsFirstTimePredicted()) then
 		return
 	end
+
+	local targ = GetHUDTarget()
 
 	if (targ ~= LocalPlayer()) then
 		local wep = targ:GetActiveWeapon()
