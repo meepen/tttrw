@@ -51,7 +51,7 @@ AddCSLuaFile();
 		for _, file in ipairs(self.Resources) do
 			resource.AddFile(file)
 		end
-		
+
 		for _, file in ipairs(self.Client) do
 			AddCSLuaFile(file)
 		end

@@ -157,12 +157,13 @@ local hide = {
 	CHudCrosshair = true
 }
 
-hook.Add("HUDShouldDraw", "TTTHud", function(name)
+function GM:HUDShouldDraw(name)
 	if (hide[name]) then
 		return false
 	end
-end)
-
+	
+	return true
+end
 
 local hide_when_chat_open = CreateConVar("ttt_hide_hud_when_chat_open", "0", FCVAR_ARCHIVE)
 
@@ -171,6 +172,15 @@ local self = {}
 
 function self:GetTarget()
 	return GetHUDTarget()
+end
+
+function self:CallSafe(s, ...)
+	local args = {...}
+	for i = 1, #args do
+		args[i] = string.JavascriptSafe(tostring(args[i]))
+	end
+	
+	self:Call(string.format(s, unpack(args)))
 end
 
 vgui.Register("ttt_DHTML", self, "DHTML")
@@ -275,19 +285,19 @@ function self:PerformLayout()
 	self.OldHealth = self:GetTarget():Health()
 	self.OldMaxHealth = self:GetTarget():GetMaxHealth()
 	
-	self:Call(string.format("setText(%d, %d);", self.OldHealth, self.OldMaxHealth))
+	self:CallSafe([[setText(%d, %d);]], self.OldHealth, self.OldMaxHealth)
 end
 
 function self:Paint()
 	local hp = self:GetTarget():Health()
 	if (self.OldHealth ~= hp) then
-		self:Call(string.format("setHealth(%d);", hp))
+		self:CallSafe([[setHealth(%d);]], hp)
 		self.OldHealth = hp
 	end
 	
 	local maxhp = self:GetTarget():GetMaxHealth()
 	if (self.OldMaxHealth ~= maxhp) then
-		self:Call(string.format("setMaxHealth(%d);", maxhp))
+		self:CallSafe([[setMaxHealth(%d);]], maxhp)
 		self.OldMaxHealth = maxhp
 	end
 end
@@ -370,7 +380,7 @@ function self:Init()
 	
 	self.StartTime = 0
 	hook.Add("OnRoundStateChange", self, self.OnRoundStateChange)
-	timer.Create("ttt_DHTML_Time_Timer", 0.05, 0, function() self:Draw() end)
+	timer.Create("ttt_DHTML_Time_Timer", 0.5, 0, function() self:Tick() end)
 end
 
 function self:UpdateState(state)
@@ -386,7 +396,7 @@ function self:UpdateState(state)
 	end
 	
 	self.StartTime = CurTime()
-	self:Call(string.format("setState(\"%s\", \"rgb(%d, %d, %d)\");", text, color.r, color.g, color.b))
+	self:CallSafe([[setState("%s", "rgb(%d, %d, %d)");]], text, color.r, color.g, color.b)
 end
 
 function self:OnRoundStateChange(old, new)
@@ -401,7 +411,7 @@ function self:PerformLayout()
 	self:UpdateState(ttt.GetRoundState())
 end
 
-function self:Draw()
+function self:Tick()
 	if (not self.Ready) then return end
 	
 	local pct = 1
@@ -410,7 +420,7 @@ function self:Draw()
 		pct = math.Clamp(1 - ((CurTime() - self.StartTime) / (ttt.GetRoundTime() - self.StartTime)), 0, 1)
 	end
 	
-	self:Call(string.format("setTime(\"%s\", %f);", other_text, pct))
+	self:CallSafe([[setTime("%s", %f);]], other_text, pct)
 end
 
 vgui.Register("ttt_DHTML_Time", self, "ttt_DHTML")
@@ -512,7 +522,7 @@ function self:UpdateAllAmmo(pl, wep)
 	self.OldAmmo = cur_bullets
 	self.ReserveAmmo = reserve
 	
-	self:Call(string.format("setAllAmmo(\"%s\", \"%s\", \"%s\")", cur_bullets, max_bullets, reserve))
+	self:CallSafe([[setAllAmmo("%s", "%s", "%s")]], cur_bullets, max_bullets, reserve)
 end
 
 function self:PlayerSwitchWeapon(pl, old, new)
@@ -538,13 +548,13 @@ function self:Tick()
 	local cur_bullets = wep:Clip1()
 	if (self.OldAmmo ~= cur_bullets) then
 		self.OldAmmo = cur_bullets
-		self:Call(string.format("setAmmo(\"%s\")", cur_bullets))
+		self:CallSafe([[setAmmo("%s")"]], cur_bullets)
 	end
 	
 	local reserve = pl:GetAmmoCount(wep:GetPrimaryAmmoType())
 	if (self.ReserveAmmo ~= reserve) then
 		self.ReserveAmmo = reserve
-		self:Call(string.format("setReserveAmmo(\"%s\")", reserve))
+		self:CallSafe([[setReserveAmmo("%s")]], reserve)
 	end
 end
 
