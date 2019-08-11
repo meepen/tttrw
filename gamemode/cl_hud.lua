@@ -282,14 +282,16 @@ end
 function self:PerformLayout()
 	self:SetHTML(self.Html)
 	
-	self.OldHealth = self:GetTarget():Health()
+	local health = math.max(self:GetTarget():Health(), 0)
+	
+	self.OldHealth = health
 	self.OldMaxHealth = self:GetTarget():GetMaxHealth()
 	
-	self:CallSafe([[setText(%d, %d);]], self.OldHealth, self.OldMaxHealth)
+	self:CallSafe([[setText(%d, %d);]], health, self.OldMaxHealth)
 end
 
 function self:Paint()
-	local hp = self:GetTarget():Health()
+	local hp = math.max(self:GetTarget():Health(), 0)
 	if (self.OldHealth ~= hp) then
 		self:CallSafe([[setHealth(%d);]], hp)
 		self.OldHealth = hp
