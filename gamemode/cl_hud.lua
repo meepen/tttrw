@@ -415,10 +415,6 @@ end
 
 vgui.Register("ttt_DHTML_Time", self, "ttt_DHTML")
 
-local function drawCircle( x, y, radius, seg )
-	local cir = {}
-
-
 local self = {}
 
 function self:Init()
@@ -553,6 +549,9 @@ end
 
 vgui.Register("ttt_DHTML_Ammo", self, "ttt_DHTML")
 
+
+local function drawCircle( x, y, radius, seg )
+	local cir = {}
 
 	table.insert( cir, { x = x, y = y, u = 0.5, v = 0.5 } )
 	for i = 0, seg do
