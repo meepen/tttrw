@@ -334,8 +334,12 @@ function SWEP:GetMultiplier()
 	return 1 + math.max(0, 1 - self:GetConsecutiveShots() / 4)
 end
 
+function SWEP:GetZoomMultiplier()
+	return self:GetIronsights() and self.Ironsights.Zoom ^ 0.7 or 1
+end
+
 function SWEP:GetViewPunchAngles()
-	return Angle(-self.Primary.Recoil * self:GetMultiplier(), 0, 0)
+	return Angle(-self.Primary.Recoil * self:GetMultiplier() * self:GetZoomMultiplier(), 0, 0)
 end
 
 function SWEP:AdjustMouseSensitivity()
