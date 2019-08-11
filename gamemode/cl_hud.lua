@@ -550,7 +550,7 @@ function self:Tick()
 	local cur_bullets = wep:Clip1()
 	if (self.OldAmmo ~= cur_bullets) then
 		self.OldAmmo = cur_bullets
-		self:CallSafe([[setAmmo("%s")"]], cur_bullets)
+		self:CallSafe([[setAmmo("%s")]], cur_bullets)
 	end
 	
 	local reserve = pl:GetAmmoCount(wep:GetPrimaryAmmoType())
