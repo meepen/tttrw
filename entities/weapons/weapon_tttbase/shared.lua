@@ -337,3 +337,9 @@ end
 function SWEP:GetViewPunchAngles()
 	return Angle(-self.Primary.Recoil * self:GetMultiplier(), 0, 0)
 end
+
+function SWEP:AdjustMouseSensitivity()
+	if (self:GetIronsights()) then
+		return self.Ironsights.Zoom
+	end
+end
