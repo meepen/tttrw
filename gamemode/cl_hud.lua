@@ -11,6 +11,8 @@ local tttrw_crosshair_outline_opacity = CreateConVar("tttrw_crosshair_outline_op
 local tttrw_crosshair_dot_size = CreateConVar("tttrw_crosshair_dot_size", 0, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
 local tttrw_crosshair_dot_opacity = CreateConVar("tttrw_crosshair_dot_opacity", 255, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
 
+DEFINE_BASECLASS "gamemode_base"
+
 local DrawTextShadowed = hud.DrawTextShadowed
 
 local health_full = Color(58, 180, 80)
@@ -33,12 +35,11 @@ local function ColorLerp(col_from, col_mid, col_to, amt)
 end
 
 local function GetHUDTarget()
-	local ent = hook.Run("GetSpectatingEntity", LocalPlayer())
-
-	if (not IsValid(ent)) then
-		ent = LocalPlayer()
+	local ply = LocalPlayer()
+	if (ply:GetObserverMode() == OBS_MODE_IN_EYE) then
+		return ply:GetObserverTarget()
 	end
-	return ent
+	return ply
 end
 
 local white_text = Color(230, 230, 230, 255)
@@ -121,6 +122,30 @@ function GM:HUDPaint()
 	hook.Run "HUDDrawTargetID"
 
 	hook.Run "TTTDrawHitmarkers"
+
+	local targ = GetHUDTarget()
+	if (targ ~= LocalPlayer()) then
+		-- https://github.com/Facepunch/garrysmod-issues/issues/3936
+		local wep = targ:GetActiveWeapon()
+		if (IsValid(wep)) then
+			wep:DoDrawCrosshair(ScrW() / 2, ScrH() / 2)
+		end
+	end
+end
+
+function GM:PlayerPostThink()
+	if (not IsFirstTimePredicted()) then
+		return
+	end
+
+	local targ = GetHUDTarget()
+
+	if (targ ~= LocalPlayer()) then
+		local wep = targ:GetActiveWeapon()
+		if (IsValid(wep)) then
+			wep:CalcAllUnpredicted()
+		end
+	end
 end
 
 

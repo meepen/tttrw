@@ -1,4 +1,4 @@
-local function UpdatePlayerSpectating(ply, new_mode)
+local function UpdatePlayerSpectating(ply, new_mode, dir)
 	local current = ply:GetObserverTarget()
 	local mode = ply:GetObserverMode()
 	local target
@@ -18,7 +18,7 @@ local function UpdatePlayerSpectating(ply, new_mode)
 		end
 
 		if (current_num) then
-			target = active[1 + (current_num % #active)]
+			target = active[(current_num - 1 + 1 * dir) % #active + 1]
 		end
 	end
 
@@ -35,15 +35,17 @@ local function UpdatePlayerSpectating(ply, new_mode)
 		ply:SpectateEntity(target)
 	else
 		ply:Spectate(OBS_MODE_ROAMING)
+		ply:SetMoveType(MOVETYPE_NOCLIP)
 	end
 end
 
 function GM:TTTPlayerRemoveSpectate(ply)
 	ply:Spectate(OBS_MODE_ROAMING)
+	ply:SetMoveType(MOVETYPE_NOCLIP)
 end
 
 
-function GM:KeyPress(ply, key)
+function GM:SpectatorKey(ply, key)
 	if (not ply:Alive()) then
 		if (key == IN_RELOAD) then
 			if (IsValid(ply:GetObserverTarget())) then
@@ -52,7 +54,9 @@ function GM:KeyPress(ply, key)
 				UpdatePlayerSpectating(ply, ply:GetObserverMode() == OBS_MODE_CHASE and OBS_MODE_IN_EYE or OBS_MODE_CHASE)
 			end
 		elseif (key == IN_ATTACK) then
-			UpdatePlayerSpectating(ply)
+			UpdatePlayerSpectating(ply, nil, -1)
+		elseif (key == IN_ATTACK2) then
+			UpdatePlayerSpectating(ply, nil, 1)
 		end
 	end
 end

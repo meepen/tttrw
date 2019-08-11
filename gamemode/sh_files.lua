@@ -15,7 +15,8 @@ AddCSLuaFile();
 		"cl_hud.lua",
 		"cl_scoreboard.lua",
 		"cl_hitmarkers.lua",
-		"cl_crosshair_menu.lua"
+		"cl_crosshair_menu.lua",
+		"cl_voice.lua",
 	},
 	Shared = {
 		"sh_init.lua",
@@ -24,11 +25,10 @@ AddCSLuaFile();
 		"sh_roles.lua",
 		"sh_proper_networking.lua",
 		"sh_round_system.lua",
-		"sh_spectator.lua",
 		"player_terror.lua",
 		"sh_movement.lua",
 		"sh_equipment.lua",
-		"sh_util.lua"
+		"sh_util.lua",
 	},
 	Resources = {
 		"materials/tttrw/heart.png",

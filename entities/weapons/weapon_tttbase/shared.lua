@@ -71,12 +71,16 @@ function SWEP:ScaleDamage(hitgroup, dmg)
 end
 
 function SWEP:SetupDataTables()
-	self:NetVar("Ironsights", "Bool", false, false)
-	self:NetVar("IronsightsTime", "Float", 0, false)
-	self:NetVar("FOVMultiplier", "Float", 1, false)
-	self:NetVar("OldFOVMultiplier", "Float", 1, false)
-	self:NetVar("FOVMultiplierTime", "Float", -0.1, false)
-	self:NetVar("FOVMultiplierDuration", "Float", 0.1, false)
+	self:NetVar("Ironsights", "Bool", false)
+	self:NetVar("IronsightsTime", "Float", 0)
+	self:NetVar("FOVMultiplier", "Float", 1)
+	self:NetVar("OldFOVMultiplier", "Float", 1)
+	self:NetVar("FOVMultiplierTime", "Float", -0.1)
+	self:NetVar("FOVMultiplierDuration", "Float", 0.1)
+	self:NetVar("ViewPunch", "Angle", angle_zero)
+	self:NetVar("ViewPunchTime", "Float", -math.huge)
+	self:NetVar("RealLastShootTime", "Float", -math.huge)
+	self:NetVar("ConsecutiveShots", "Int", 0)
 	hook.Run("TTTInitWeaponNetVars", self)
 end
 
@@ -108,9 +112,9 @@ function SWEP:ChangeIronsights(on)
 	local frac = math.min(1, (CurTime() - self:GetIronsightsTime()) / old) * new
 
 	self:SetIronsightsTime(CurTime() - new + frac)
-	self:SetNextPrimaryFire(CurTime() + new)
+	self:SetNextPrimaryFire(math.max(self:GetNextPrimaryFire(), CurTime() + new))
 
-	if (CLIENT) then
+	if (CLIENT and IsFirstTimePredicted()) then
 		self:CalcViewModel()
 	end
 
@@ -137,7 +141,6 @@ function SWEP:Reload()
 	BaseClass.Reload(self)
 end
 
-
 function SWEP:SecondaryAttack()
 	self:ChangeIronsights(true)
 end
@@ -162,13 +165,6 @@ function SWEP:FireBulletsCallback(tr, dmginfo)
 		dmginfo:ScaleDamage(1 - pct * (1 - bullet.DamageMinimumPercent))
 	end
 end
-
-hook.Add("StartCommand", "developer", function(pl, cmd)
-	if (pl:IsBot()) then
-		swap = not swap
-		--cmd:SetViewAngles(Angle(89, swap and 0 or 180, 0))
-	end
-end)
 
 local vector_origin = vector_origin
 
@@ -224,9 +220,9 @@ function SWEP:ShootBullet(bullet_info)
 		Num = 1,
 		Attacker = owner,
 		Damage = self.Primary.Damage,
-		Tracer = bullet_info.Tracer,
+		Tracer = bullet_info.Tracer or 1,
 		TracerName = bullet_info.TracerName,
-		Spread = bullet_info.Spread,
+		Spread = self:GetSpread(),
 		Callback = function(_, ...)
 			if (IsValid(self)) then
 				self:FireBulletsCallback(...)
@@ -236,16 +232,31 @@ function SWEP:ShootBullet(bullet_info)
 		Dir = bullet_ang:Forward()
 	}
 
-	--owner:LagCompensation(true)
+	owner:LagCompensation(true)
+	self:SetRealLastShootTime(CurTime())
 	self:FireBullets(bullet)
-	--owner:LagCompensation(false)
+	owner:LagCompensation(false)
 
 	self:ShootEffects()
+end
+
+function SWEP:GetSpread()
+	return self.Bullets.Spread * (0.25 + (-self:GetMultiplier() + 2) * 0.75)
 end
 
 function SWEP:PrimaryAttack()
 	if (not self:CanPrimaryAttack()) then
 		return
+	end
+
+	local interval = engine.TickInterval()
+	local delay = math.ceil(self.Primary.Delay / interval) * interval
+	local diff = (CurTime() - self:GetRealLastShootTime()) / delay
+
+	if (diff <= 1 + interval) then
+		self:SetConsecutiveShots(self:GetConsecutiveShots() + 1)
+	else
+		self:SetConsecutiveShots(0)
 	end
 
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
@@ -256,7 +267,39 @@ function SWEP:PrimaryAttack()
 
 	self:TakePrimaryAmmo(1)
 
-	self.Owner:ViewPunch(Angle(-1, 0, 0))
+	self:ViewPunch()
+end
+
+local quat_zero = Quaternion()
+
+function SWEP:GetCurrentViewPunch()
+	local delay = self.Primary.RecoilTiming or self.Primary.Delay
+	local time = self:GetViewPunchTime()
+	local frac = (CurTime() - time) / delay
+	
+	if (frac >= 1) then
+		return angle_zero
+	end
+
+	local vp = self:GetViewPunch()
+	local diff = Quaternion():SetEuler(-vp):Slerp(quat_zero, frac):ToEulerAngles()
+
+	return diff
+end
+
+function SWEP:ViewPunch()
+	local vp = self:GetViewPunchAngles()
+	self:SetViewPunch(vp)
+	self:SetViewPunchTime(CurTime())
+
+	if (not CLIENT or not IsFirstTimePredicted()) then
+		return
+	end
+
+	local own = self:GetOwner()
+	own:SetEyeAngles(own:EyeAngles() + vp)
+
+	self:CalcViewPunch()
 end
 
 function SWEP:Think()
@@ -265,8 +308,7 @@ function SWEP:Think()
 	end
 
 	if (CLIENT) then
-		self:CalcViewModel()
-		self:CalcFOV()
+		self:CalcAllUnpredicted()
 	end
 end
 
@@ -279,10 +321,27 @@ function SWEP:GetCurrentFOVMultiplier()
 	return ofov + (fov - ofov) * cur
 end
 
-
 function SWEP:ChangeFOVMultiplier(fovmult, duration)
 	self:SetOldFOVMultiplier(self:GetCurrentFOVMultiplier())
 	self:SetFOVMultiplier(fovmult)
 	self:SetFOVMultiplierDuration(duration)
 	self:SetFOVMultiplierTime(CurTime())
+end
+
+function SWEP:GetMultiplier()
+	return 1 + math.max(0, 1 - self:GetConsecutiveShots() / 4)
+end
+
+function SWEP:GetZoomMultiplier()
+	return self:GetIronsights() and self.Ironsights.Zoom ^ 0.7 or 1
+end
+
+function SWEP:GetViewPunchAngles()
+	return Angle(-self.Primary.Recoil * self:GetMultiplier() * self:GetZoomMultiplier(), 0, 0)
+end
+
+function SWEP:AdjustMouseSensitivity()
+	if (self:GetIronsights()) then
+		return self.Ironsights.Zoom
+	end
 end

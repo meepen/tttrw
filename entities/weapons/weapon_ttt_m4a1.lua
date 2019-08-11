@@ -22,15 +22,15 @@ SWEP.Bullets = {
 	DamageDropoffRange = 600,
 	DamageDropoffRangeMax = 3600,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(.02, .02, .02)
+	Spread = Vector(0.015, 0.015, 0),
 }
 
 SWEP.Primary.Damage        = 18
 SWEP.Primary.Delay         = 0.1
-SWEP.Primary.Recoil        = 1.6
+SWEP.Primary.Recoil        = 0.8
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "ar2"
-SWEP.Primary.ClipSize      = 20
+SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 1000
 SWEP.Primary.Sound         = Sound "Weapon_M4A1.Single"
 

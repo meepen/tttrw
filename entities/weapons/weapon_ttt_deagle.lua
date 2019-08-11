@@ -27,7 +27,8 @@ SWEP.Bullets = {
 
 SWEP.Primary.Damage        = 37
 SWEP.Primary.Delay         = 0.5
-SWEP.Primary.Recoil        = 6
+SWEP.Primary.Recoil        = 3
+SWEP.Primary.RecoilTiming  = 0.06
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "AlyxGun"
 SWEP.Primary.ClipSize      = 8
