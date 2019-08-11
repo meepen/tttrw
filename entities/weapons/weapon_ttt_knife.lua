@@ -43,6 +43,14 @@ SWEP.CanBuy                 = {ROLE_TRAITOR} -- only traitors can buy
 SWEP.LimitedStock           = true -- only buyable once
 SWEP.WeaponID               = AMMO_KNIFE
 
+SWEP.Equipment = {
+	Name		   = "Knife",
+	Desc 		   = "One slice, one kill.",
+	Roles	       = { Traitor = true },
+	Cost 	   	   = 1,
+	Limit	       = 1,
+}
+
 SWEP.IsSilent               = true
 
 -- Pull out faster than standard guns

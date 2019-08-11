@@ -33,6 +33,14 @@ SWEP.UseHands              = true
 SWEP.ViewModel             = "models/weapons/v_crowbar.mdl"
 SWEP.WorldModel            = "models/weapons/w_crowbar.mdl"
 
+SWEP.Equipment = {
+	Name		   = "Teleporter",
+	Desc 		   = "Store a location with right click, then travel there again with left click.",
+	Roles	       = { Traitor = true },
+	Cost 	   	   = 1,
+	Limit	       = 1,
+}
+
 DEFINE_BASECLASS "weapon_tttbase"
 
 local delay_beamup = 1

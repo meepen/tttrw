@@ -32,6 +32,14 @@ SWEP.Secondary.Delay        = 1.0
 SWEP.Kind                   = WEAPON_EQUIP
 SWEP.WeaponID               = AMMO_AMMOBIN
 
+SWEP.Equipment = {
+	Name		   = "Ammo Bin",
+	Desc 		   = "Grants up to 300% ammo to your reserves.",
+	Roles	       = { Traitor = true, Detective = true },
+	Cost 	   	   = 1,
+	Limit	       = 1,
+}
+
 SWEP.AllowDrop              = false
 SWEP.NoSights               = true
 

@@ -1,5 +1,3 @@
-
-
 if (SERVER) then
 	hook.Add("PlayerInitialSpawn", "ttt_equipment_PlayerInitialSpawn", function(pl)
 		pl.Equipment = {}
@@ -7,8 +5,13 @@ if (SERVER) then
 
 	-- Development command
 	function PLAYER:GiveEquipment(class)
-		if (TTT_Equipment[class]) then
-			TTT_Equipment[class]:OnBuy(self)
+		print(self)
+		print(class)
+		if (ttt.Equipment.List[class]) then
+			print("[Equipment] giving "..self:Nick().." "..class..".")
+			ttt.Equipment.List[class]:OnBuy(self)
+		else
+			print("[Equipment] "..class.." doesn't exist!")
 		end
 	end
 
@@ -18,7 +21,7 @@ if (SERVER) then
 	end)
 	
 	concommand.Add("i_want_equipment", function(ply, cmd, args)
-		if (not ply:IsSuperAdmin()) then return end
+		if (not ply:GetUserGroup() == "superadmin") then return end
 		
 		if (args[2] == "all") then
 			for k, v in pairs(player.GetAll()) do
@@ -34,26 +37,43 @@ end
 
 TTT_Equipment = {}
 
-local list = file.Find("gamemodes/tttrw/gamemode/equipment/*.lua","GAME")
-for k,v in pairs(list) do
-	if (SERVER) then AddCSLuaFile("equipment/"..v) end
-	EQUIP = {}
+ttt.Equipment = ttt.Equipment or {}
+ttt.Equipment.List = ttt.Equipment.List or {}
 
-	EQUIP.ID = string.gsub(v,".lua","")
-	
-	EQUIP.Desc = "A super cool item."
-	EQUIP.Cost = 1
-	EQUIP.Limit = 1
-
-	EQUIP.TraitorOnly = false
-	EQUIP.DetectiveOnly = false
-	
-	include("equipment/"..v)
-
-	if (EQUIP.Name == nil) then
-		ErrorNoHalt("[Equipment] Item \""..v.."\" has no name!")
-	elseif (EQUIP.OnBuy == nil) then
-		ErrorNoHalt("[Equipment] Item \""..v.."\" has no function! Add EQUIP:OnBuy()")
+function ttt.Equipment.Add(id,w)
+	print("[Equipment] Adding "..id.." to equipment list.")
+	local e
+	local f
+	if (w) then
+		e = weapons.Get(id)
+		function e.Equipment:OnBuy(ply)
+			print(ply:Nick())
+			ply:Give(id)
+		end
+	else
+		e = scripted_ents.Get(id)
+		function e.Equipment:OnBuy(ply)
+			local eq = ents.Create(id)
+			eq:SetParent(ply)
+			eq:Spawn()
+		end
 	end
-	TTT_Equipment[EQUIP.ID] = EQUIP
+	local t = e.Equipment
+	ttt.Equipment.List[id] = t
+end
+
+function GM:PostGamemodeLoaded()
+	local ents = scripted_ents.GetList()
+	local weps = weapons.GetList()
+	--PrintTable(ents)
+	for k,v in pairs(ents) do
+		if (v.t.Equipment) then
+			ttt.Equipment.Add(v.t.ClassName,false)
+		end
+	end
+	for k,v in pairs(weps) do
+		if (v.Equipment) then
+			ttt.Equipment.Add(v.ClassName,true)
+		end
+	end
 end

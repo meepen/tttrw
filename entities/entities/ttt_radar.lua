@@ -6,6 +6,14 @@ ENT.PrintName = "TTT Radar"
 ENT.Author = "Ling"
 ENT.Contact = "lingbleed@gmail.com"
 
+ENT.Equipment = {
+	Name		   = "Radar",
+	Desc 		   = "Pings players' locations, showing them to you.",
+	Roles	       = { Traitor = true, Detective = true },
+	Cost 	   	   = 1,
+	Limit	       = 1,
+}
+
 ENT.Delay = 30
 
 if (CLIENT) then

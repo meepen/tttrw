@@ -6,6 +6,14 @@ ENT.PrintName = "TTT Disguiser"
 ENT.Author = "Ling"
 ENT.Contact = "lingbleed@gmail.com"
 
+ENT.Equipment = {
+	Name		   = "Disguiser",
+	Desc 		   = "Hide your name from other players, so you can act without being known.",
+	Roles	       = { Traitor = true },
+	Cost 	   	   = 1,
+	Limit	       = 1,
+}
+
 function ENT:IsVisibleTo(ply)
 	local own = self:GetParent()
 	if (own == ply) then
