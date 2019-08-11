@@ -17,6 +17,7 @@ AddCSLuaFile();
 		"cl_hitmarkers.lua",
 		"cl_crosshair_menu.lua",
 		"cl_voice.lua",
+		"cl_crosshair_menu.lua",
 	},
 	Shared = {
 		"sh_init.lua",
@@ -50,7 +51,7 @@ AddCSLuaFile();
 		for _, file in ipairs(self.Resources) do
 			resource.AddFile(file)
 		end
-		
+
 		for _, file in ipairs(self.Client) do
 			AddCSLuaFile(file)
 		end
