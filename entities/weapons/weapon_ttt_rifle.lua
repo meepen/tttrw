@@ -15,6 +15,7 @@ SWEP.Base                  = "weapon_tttbase"
 
 SWEP.Kind                  = WEAPON_HEAVY
 SWEP.WeaponID              = AMMO_RIFLE
+SWEP.ViewModelFOV          = 85
 
 SWEP.Bullets = {
 	HullSize = 0,
@@ -51,7 +52,7 @@ SWEP.HasScope              = true
 SWEP.Ironsights = {
 	Pos = Vector(5, -15, -2),
 	Angle = Vector(2.6, 1.37, 3.5),
-	TimeTo = 0.1,
+	TimeTo = 0.075,
 	TimeFrom = 0.1,
 	SlowDown = 0.3,
 	Zoom = 0.2,

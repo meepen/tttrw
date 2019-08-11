@@ -11,6 +11,10 @@ function GM:Move(ply, mv)
 
 	-- bhop settings
 
+	if (not ply:Alive()) then
+		return
+	end
+
 	local cl_enabled = ttt_bhop_cl and ttt_bhop_cl:GetBool()
 	if (SERVER) then
 		cl_enabled = ply:GetInfoNum("ttt_bhop_cl", 0)
