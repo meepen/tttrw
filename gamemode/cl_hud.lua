@@ -410,33 +410,40 @@ vgui.Register("ttt_crosshairs", {
 		local r = tttrw_crosshair_color_r:GetInt()
 		local g = tttrw_crosshair_color_g:GetInt()
 		local b = tttrw_crosshair_color_b:GetInt()
+
 		local t = tttrw_crosshair_thickness:GetInt()
 		local len = tttrw_crosshair_length:GetInt()
 		local gap = tttrw_crosshair_gap:GetInt()*2
 		local opacity = tttrw_crosshair_opacity:GetInt()
 		local oopacity = tttrw_crosshair_outline_opacity:GetInt()
+
 		local dot = tttrw_crosshair_dot_size:GetInt()
 		local dopacity = tttrw_crosshair_dot_opacity:GetInt()
-		--print(dot)
+
 		local s = len*2+gap
 		local startw = w/2-s/2
 		local starth = h/2-s/2
+		
 		if (len > 0 and t > 0) then
 			surface.SetDrawColor(0,0,0,oopacity*255) -- outlines, counterclockwise
 			surface.DrawRect(w/2-t/2-1,starth-1,t+2,len+2)
 			surface.DrawRect(startw-1,h/2-t/2-1,len+2,t+2)
 			surface.DrawRect(w/2-t/2-1,starth+s-len-1,t+2,len+2)
 			surface.DrawRect(startw+s-len-1,h/2-t/2-1,len+2,t+2)
+
 			surface.SetDrawColor(r,g,b,opacity) -- crosshairs, counterclockwise
 			surface.DrawRect(w/2-t/2,starth,t,len)
 			surface.DrawRect(startw,h/2-t/2,len,t)
 			surface.DrawRect(w/2-t/2,starth+s-len,t,len)
 			surface.DrawRect(startw+s-len,h/2-t/2,len,t)
 		end
+
 		if (dot > 0) then
-			surface.SetDrawColor(0,0,0,oopacity*255)
 			draw.NoTexture()
+
+			surface.SetDrawColor(0,0,0,oopacity*255)
 			drawCircle(startw+s/2,starth+s/2,dot+2,45)
+
 			surface.SetDrawColor(r,g,b,dopacity)
 			drawCircle(startw+s/2,starth+s/2,dot,45)
 		end
