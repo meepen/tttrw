@@ -62,10 +62,9 @@ function ttt.Equipment.Add(id,w)
 	ttt.Equipment.List[id] = t
 end
 
-function GM:PostGamemodeLoaded()
+function ttt.Equipment.Build()
 	local ents = scripted_ents.GetList()
 	local weps = weapons.GetList()
-	--PrintTable(ents)
 	for k,v in pairs(ents) do
 		if (v.t.Equipment) then
 			ttt.Equipment.Add(v.t.ClassName,false)
@@ -76,4 +75,8 @@ function GM:PostGamemodeLoaded()
 			ttt.Equipment.Add(v.ClassName,true)
 		end
 	end
+end
+
+function GM:PostGamemodeLoaded()
+	ttt.Equipment.Build()
 end
