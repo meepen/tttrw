@@ -114,7 +114,7 @@ function SWEP:ChangeIronsights(on)
 	self:SetIronsightsTime(CurTime() - new + frac)
 	self:SetNextPrimaryFire(CurTime() + new)
 
-	if (CLIENT) then
+	if (CLIENT and IsFirstTimePredicted()) then
 		self:CalcViewModel()
 	end
 
@@ -308,9 +308,7 @@ function SWEP:Think()
 	end
 
 	if (CLIENT) then
-		self:CalcViewModel()
-		self:CalcFOV()
-		self:CalcViewPunch()
+		self:CalcAllUnpredicted()
 	end
 end
 

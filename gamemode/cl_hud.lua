@@ -121,19 +121,6 @@ function GM:HUDPaint()
 	end
 end
 
-function GM:CalcView(ply, origin, angles, fov, znear, zfar)
-	local targ = GetHUDTarget()
-	local view = BaseClass.CalcView(self, targ, origin, angles, fov, znear, zfar)
-	if (targ ~= ply) then
-		local wep = targ:GetActiveWeapon()
-		if (IsValid(wep)) then
-			view.fov = wep:TranslateFOV(view.fov) or view.fov
-		end
-	end
-		
-	return view
-end
-
 function GM:PlayerPostThink()
 	local targ = GetHUDTarget()
 
@@ -144,9 +131,7 @@ function GM:PlayerPostThink()
 	if (targ ~= LocalPlayer()) then
 		local wep = targ:GetActiveWeapon()
 		if (IsValid(wep)) then
-			wep:CalcFOV()
-			wep:CalcViewPunch()
-			wep:CalcViewModel()
+			wep:CalcAllUnpredicted()
 		end
 	end
 end

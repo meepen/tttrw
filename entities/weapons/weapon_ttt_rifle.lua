@@ -54,5 +54,5 @@ SWEP.Ironsights = {
 	TimeTo = 0.25,
 	TimeFrom = 0.15,
 	SlowDown = 0.3,
-	Zoom = 0.17,
+	Zoom = 0.1,
 }

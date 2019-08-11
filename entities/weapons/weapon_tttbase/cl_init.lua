@@ -81,19 +81,6 @@ net.Receive("tttrw_developer_hitboxes", function(len, pl)
 	end
 end)
 
-function SWEP:CalcUnpredictedTimings()
-	if (not IsFirstTimePredicted()) then return end
-	self.CurTime = CurTime()
-	self.RealTime = RealTime()
-end
-
-function SWEP:CalcViewModel()
-	if (not IsFirstTimePredicted()) then return end
-	self.CurIronsights = self:GetIronsights()
-	self.IronTime = self:GetIronsightsTime()
-	self:CalcUnpredictedTimings()
-end
-
 local host_timescale = GetConVar("host_timescale")
 
 function SWEP:GetUnpredictedTime()
@@ -143,13 +130,6 @@ function SWEP:GetViewModelPosition(pos, ang)
 	return pos, ang + self:GetCurrentUnpredictedViewPunch()
 end
 
-function SWEP:CalcFOV()
-	self.FOVMultiplier = self:GetFOVMultiplier()
-	self.FOVMultiplierTime = self:GetFOVMultiplierTime()
-	self.FOVMultiplierDuration = self:GetFOVMultiplierDuration()
-	self.OldFOVMultiplier = self:GetOldFOVMultiplier()
-	self:CalcUnpredictedTimings()
-end
 
 function SWEP:GetCurrentUnpredictedFOVMultiplier()
 	local fov, time, duration = self.FOVMultiplier or 1, self.FOVMultiplierTime or -0.1, self.FOVMultiplierDuration or 0.1
@@ -157,21 +137,11 @@ function SWEP:GetCurrentUnpredictedFOVMultiplier()
 
 	local cur = math.min(1, (self:GetUnpredictedTime() - time) / duration)
 
-	return ofov + (fov - ofov) * cur
+	return ofov + (fov - ofov) * cur ^ 0.5
 end
 
 function SWEP:TranslateFOV(fov)
-	local mult = self:GetCurrentUnpredictedFOVMultiplier()
-
-	local res = math.deg(math.atan(math.tan(math.rad(fov) * mult)))
-	
-	if (res < 0) then
-		res = res + 180
-	elseif (res > 180) then
-		res = res - 180
-	end
- 
-	return res
+	return fov * self:GetCurrentUnpredictedFOVMultiplier()
 end
 
 local quat_zero = Quaternion()
@@ -198,10 +168,34 @@ function SWEP:CalcView(ply, pos, ang, fov)
 end
 
 function SWEP:CalcViewPunch()
+	self._ViewPunch = self:GetViewPunch()
+	self._ViewPunchTime = self:GetViewPunchTime()
+end
+
+function SWEP:CalcFOV()
+	self.FOVMultiplier = self:GetFOVMultiplier()
+	self.FOVMultiplierTime = self:GetFOVMultiplierTime()
+	self.FOVMultiplierDuration = self:GetFOVMultiplierDuration()
+	self.OldFOVMultiplier = self:GetOldFOVMultiplier()
+end
+
+function SWEP:CalcUnpredictedTimings()
+	self.CurTime = CurTime()
+	self.RealTime = RealTime()
+end
+
+function SWEP:CalcViewModel()
+	self.CurIronsights = self:GetIronsights()
+	self.IronTime = self:GetIronsightsTime()
+end
+
+function SWEP:CalcAllUnpredicted()
 	if (not IsFirstTimePredicted()) then
 		return
 	end
-	self._ViewPunch = self:GetViewPunch()
-	self._ViewPunchTime = self:GetViewPunchTime()
+
 	self:CalcUnpredictedTimings()
+	self:CalcViewPunch()
+	self:CalcViewModel()
+	self:CalcFOV()
 end
