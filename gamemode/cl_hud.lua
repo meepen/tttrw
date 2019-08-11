@@ -315,7 +315,7 @@ function self:Init()
 					position: absolute;
 					z-index: -1
 				}
-				.hp {
+				.text {
 					font-size: 23px;
 					font-family: 'Lato', sans-serif;
 					font-weight: bold;
@@ -336,8 +336,8 @@ function self:Init()
 			<svg id="svgTime" width="320" height="48">
 				<rect id="svgRect" x="4" y="7" rx="1" ry="1" width="312" height="32"
 					style="fill:#c91d1d; stroke:#c91d1d; stroke-width:2; fill-opacity:1; stroke-opacity:1"/>
-				<text id="svgState_Text" class="hp" x="30%" y="24" dominant-baseline="middle" fill="#F7F7F7" text-anchor="middle"></text>
-				<text id="svgTime_Text" class="hp" x="70%" y="25" dominant-baseline="middle" fill="#F7F7F7" text-anchor="middle"></text>
+				<text id="svgState_Text" class="text" x="30%" y="24" dominant-baseline="middle" fill="#F7F7F7" text-anchor="middle"></text>
+				<text id="svgTime_Text" class="text" x="70%" y="25" dominant-baseline="middle" fill="#F7F7F7" text-anchor="middle"></text>
 			</svg>
 			
 			<script>
@@ -373,10 +373,6 @@ function self:Init()
 	timer.Create("ttt_DHTML_Time_Timer", 0.05, 0, function() self:Draw() end)
 end
 
-function self:OnRemove()
-	timer.Destroy("ttt_DHTML_Time_Timer")
-end
-
 function self:UpdateState(state)
 	local color, text = status_color
 	if (state == ttt.ROUNDSTATE_ACTIVE) then
@@ -407,9 +403,13 @@ end
 
 function self:Draw()
 	if (not self.Ready) then return end
-
+	
+	local pct = 1
 	local other_text = string.FormattedTime(math.max(0, ttt.GetRoundTime() - CurTime()), "%02i:%02i")
-	local pct = math.Clamp(1 - ((CurTime() - self.StartTime) / (ttt.GetRoundTime() - self.StartTime)), 0, 1)
+	if (ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE) then
+		pct = math.Clamp(1 - ((CurTime() - self.StartTime) / (ttt.GetRoundTime() - self.StartTime)), 0, 1)
+	end
+	
 	self:Call(string.format("setTime(\"%s\", %f);", other_text, pct))
 end
 
@@ -417,6 +417,142 @@ vgui.Register("ttt_DHTML_Time", self, "ttt_DHTML")
 
 local function drawCircle( x, y, radius, seg )
 	local cir = {}
+
+
+local self = {}
+
+function self:Init()
+	self:AddFunction("ttt", "ready", function()
+		self.Ready = true
+	end)
+	
+	self.Html = [[
+		<head>
+			<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+			<style>
+				* {
+				  -webkit-font-smoothing: antialiased;
+				  -moz-osx-font-smoothing: grayscale;
+				  line-height: 15px;
+				}
+				h1 {
+					font-size: 30px;
+					font-family: 'Lato', sans-serif;
+					text-align: center;
+					text-shadow: 2px 1px 1px rgba(0, 0, 0, .4);
+					color: #F7F7F7;
+				}
+				h2 {
+					font-size: 23px;
+					font-family: 'Lato', sans-serif;
+					text-align: center;
+					text-shadow: 2px 1px 1px rgba(0, 0, 0, .4);
+					color: #F7F7F7;
+				}
+				.shadow {
+				  -webkit-filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
+				  filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
+				}
+			</style>
+		</head>
+		<body onload="ttt.ready()">
+			<h1 id="ammoCounter" class="shadow">13/30</h1>
+			<h2 id="reserveAmmo" class="shadow">43</h1>
+			<img src="asset://garrysmod/materials/tttrw/heart.png" width="48">
+			<script>
+				var ammoCounter = document.getElementById("ammoCounter");
+				var reserveAmmo = document.getElementById("reserveAmmo");
+				
+				
+				var ammo = 0;
+				var maxAmmo = 0;
+				
+				function setAmmo(_ammo)
+				{
+					ammo = _ammo
+					
+					ammoCounter.innerHTML = _ammo + "/" + maxAmmo
+				}
+				
+				function setMaxAmmo(_maxAmmo)
+				{
+					maxAmmo = _maxAmmo
+					
+					ammoCounter.innerHTML = ammo + "/" + _maxAmmo
+				}
+				
+				function setAllAmmo(_ammo, _maxAmmo, _reserve)
+				{
+					ammo = _ammo
+					maxAmmo = _maxAmmo
+					
+					ammoCounter.innerHTML = _ammo + "/" + _maxAmmo
+					reserveAmmo.innerHTML = _reserve
+				}
+				
+				function setReserveAmmo(_reserve)
+				{
+					reserveAmmo.innerHTML = _reserve
+				}
+
+			</script>
+		</body>
+	]]
+	
+	self.OldAmmo = 0
+	self.ReserveAmmo = 0
+
+	hook.Add("PlayerSwitchWeapon", self, self.PlayerSwitchWeapon)
+	timer.Create("ttt_DHTML_Ammo_Timer", 0.1, 0, function() self:Tick() end)
+end
+
+function self:UpdateAllAmmo(pl)
+	local wep = pl:GetActiveWeapon()
+	if (not IsValid(wep)) then return end
+
+	local max_bullets = wep.Primary.ClipSize
+	local cur_bullets = wep:Clip1()
+	local reserve = pl:GetAmmoCount(wep:GetPrimaryAmmoType())
+	
+	self.OldAmmo = cur_bullets
+	self:Call(string.format("setAllAmmo(\"%s\", \"%s\", \"%s\")", cur_bullets, max_bullets, extra))
+end
+
+function self:PlayerSwitchWeapon(pl, old, new)
+	if (pl ~= self:GetTarget()) then return end
+
+	self:UpdateAllAmmo(pl)
+end
+
+function self:PerformLayout()
+	self:SetHTML(self.Html)
+	
+	self:UpdateAllAmmo(self:GetTarget())
+end
+
+function self:Tick()
+	if (not self.Ready) then return end
+	
+	local pl = self:GetTarget()
+	local wep = pl:GetActiveWeapon()
+	if (not IsValid(wep)) then return end
+
+	local cur_bullets = wep:Clip1()
+	if (self.OldAmmo ~= cur_bullets) then
+		self.OldAmmo = cur_bullets
+		self:Call(string.format("setAmmo(\"%s\")", cur_bullets))
+	end
+	
+	local reserve = pl:GetAmmoCount(wep:GetPrimaryAmmoType())
+	if (self.ReserveAmmo ~= reserve) then
+		self.ReserveAmmo = reserve
+		self:Call(string.format("setReserveAmmo(\"%s\")", reserve))
+	end
+end
+
+
+vgui.Register("ttt_DHTML_Ammo", self, "ttt_DHTML")
+
 
 	table.insert( cir, { x = x, y = y, u = 0.5, v = 0.5 } )
 	for i = 0, seg do
@@ -476,6 +612,10 @@ if (ttt.HUDRolePanel) then
 	ttt.HUDRolePanel:Remove()
 end
 
+if (ttt.HUDAmmoPanel) then
+	ttt.HUDAmmoPanel:Remove()
+end
+
 if (ttt.Crosshair) then
 	ttt.Crosshair:Remove()
 end
@@ -485,10 +625,15 @@ ttt.Crosshair:SetPos(0,0)
 ttt.Crosshair:SetSize(ScrW(),ScrH())
 
 ttt.HUDHealthPanel = vgui.Create("ttt_DHTML_Health", GetHUDPanel())
-ttt.HUDHealthPanel:SetPos(100, ScrH() - 150)
+ttt.HUDHealthPanel:SetPos(70, ScrH() - 115)
 ttt.HUDHealthPanel:SetSize(500, 300)
 
 ttt.HUDRolePanel = vgui.Create("ttt_DHTML_Time", GetHUDPanel())
 local w = 328
 ttt.HUDRolePanel:SetPos(ScrW() / 2 - w / 2, 15)
 ttt.HUDRolePanel:SetSize(w, 300)
+
+
+ttt.HUDAmmoPanel = vgui.Create("ttt_DHTML_Ammo", GetHUDPanel())
+ttt.HUDAmmoPanel:SetPos(ScrW() - 230, ScrH() - 200)
+ttt.HUDAmmoPanel:SetSize(200, 300)
