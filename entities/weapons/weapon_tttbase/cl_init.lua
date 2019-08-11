@@ -10,7 +10,15 @@ function SWEP:DrawHUD()
 		surface.SetMaterial(self.ScopeArcTexture)
 		local x = ScrW() / 2
 
-		surface.SetDrawColor( color_black )
+
+		local is_ironsights = self.CurIronsights
+		local toggletime = self.IronTime or 0
+		local time = is_ironsights and self.Ironsights.TimeTo or self.Ironsights.TimeFrom
+	
+		local frac = math.min(1, (self:GetUnpredictedTime() - toggletime) / time)
+
+		surface.SetDrawColor(0, 0, 0, frac ^ 0.1 * 255)
+
 		-- top right
 		surface.DrawTexturedRectUV(x, 0, ScrH() / 2, ScrH() / 2, 0, 1, 1, 0)
 
@@ -22,7 +30,6 @@ function SWEP:DrawHUD()
 		-- bottom right
 		surface.DrawTexturedRect(x, ScrH() / 2, ScrH() / 2, ScrH() / 2)
 
-		surface.DrawRect(0, 0, math.ceil(x - ScrH() / 2), ScrH())
 		surface.DrawRect(0, 0, math.ceil(x - ScrH() / 2), ScrH())
 		surface.DrawRect(math.floor(x + ScrH() / 2), 0, math.ceil(x - ScrH() / 2), ScrH())
 	end
@@ -95,7 +102,7 @@ function SWEP:GetViewModelPosition(pos, ang)
 	end
 
 	local is_ironsights = self.CurIronsights
-	local toggletime = self.IronTime
+	local toggletime = self.IronTime or 0
 	local time = is_ironsights and self.Ironsights.TimeTo or self.Ironsights.TimeFrom
 
 	local frac = math.min(1, (self:GetUnpredictedTime() - toggletime) / time)

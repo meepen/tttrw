@@ -19,8 +19,8 @@ SWEP.WeaponID              = AMMO_RIFLE
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
-	DamageDropoffRange = 600,
-	DamageDropoffRangeMax = 3600,
+	DamageDropoffRange = 5300,
+	DamageDropoffRangeMax = 9600,
 	DamageMinimumPercent = 0.1,
 	Spread = Vector(0.002, 0.002, 0.002)
 }
@@ -51,8 +51,8 @@ SWEP.HasScope              = true
 SWEP.Ironsights = {
 	Pos = Vector(5, -15, -2),
 	Angle = Vector(2.6, 1.37, 3.5),
-	TimeTo = 0.25,
-	TimeFrom = 0.15,
+	TimeTo = 0.1,
+	TimeFrom = 0.1,
 	SlowDown = 0.3,
-	Zoom = 0.1,
+	Zoom = 0.2,
 }
