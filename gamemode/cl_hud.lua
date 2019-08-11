@@ -502,28 +502,30 @@ function self:Init()
 	timer.Create("ttt_DHTML_Ammo_Timer", 0.1, 0, function() self:Tick() end)
 end
 
-function self:UpdateAllAmmo(pl)
-	local wep = pl:GetActiveWeapon()
+function self:UpdateAllAmmo(pl, wep)
 	if (not IsValid(wep)) then return end
-
-	local max_bullets = wep.Primary.ClipSize
+	
+	local max_bullets = wep.Primary and wep.Primary.ClipSize or wep:Clip1()
 	local cur_bullets = wep:Clip1()
 	local reserve = pl:GetAmmoCount(wep:GetPrimaryAmmoType())
 	
 	self.OldAmmo = cur_bullets
-	self:Call(string.format("setAllAmmo(\"%s\", \"%s\", \"%s\")", cur_bullets, max_bullets, extra))
+	self.ReserveAmmo = reserve
+	
+	self:Call(string.format("setAllAmmo(\"%s\", \"%s\", \"%s\")", cur_bullets, max_bullets, reserve))
 end
 
 function self:PlayerSwitchWeapon(pl, old, new)
 	if (pl ~= self:GetTarget()) then return end
 
-	self:UpdateAllAmmo(pl)
+	self:UpdateAllAmmo(pl, new)
 end
 
 function self:PerformLayout()
 	self:SetHTML(self.Html)
 	
-	self:UpdateAllAmmo(self:GetTarget())
+	local pl = self:GetTarget()
+	self:UpdateAllAmmo(pl, pl:GetActiveWeapon())
 end
 
 function self:Tick()
