@@ -13,7 +13,6 @@ net.Receive("ttt_player_target", function(len, cl)
 end)
 
 function GM:PlayerSay(ply, text, team)
-    print(ply,text,team)
     local replacements = {}
 
     if (IsValid(ply.Target)) then

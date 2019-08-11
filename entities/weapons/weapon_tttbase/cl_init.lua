@@ -2,9 +2,45 @@ include "shared.lua"
 
 local ttt_lowered = CreateConVar("ttt_ironsights_lowered", "1", FCVAR_ARCHIVE)
 
+SWEP.ScopeArcTexture = Material "sprites/scope_arc"
+
+function SWEP:DrawHUD()
+	if (self:GetIronsights() and self.HasScope) then
+		-- scope arc
+		surface.SetMaterial(self.ScopeArcTexture)
+		local x = ScrW() / 2
+
+		surface.SetDrawColor( color_black )
+		-- top right
+		surface.DrawTexturedRectUV(x, 0, ScrH() / 2, ScrH() / 2, 0, 1, 1, 0)
+
+		-- top left
+		surface.DrawTexturedRectUV(x - ScrH() / 2, 0, ScrH() / 2, ScrH() / 2, 1, 1, 0, 0)
+
+		-- bottom left
+		surface.DrawTexturedRectUV(x - ScrH() / 2, ScrH() / 2, ScrH() / 2, ScrH() / 2, 1, 0, 0, 1)
+		-- bottom right
+		surface.DrawTexturedRect(x, ScrH() / 2, ScrH() / 2, ScrH() / 2)
+
+		surface.DrawRect(0, 0, math.ceil(x - ScrH() / 2), ScrH())
+		surface.DrawRect(0, 0, math.ceil(x - ScrH() / 2), ScrH())
+		surface.DrawRect(math.floor(x + ScrH() / 2), 0, math.ceil(x - ScrH() / 2), ScrH())
+	end
+end
+
 function SWEP:DoDrawCrosshair(x, y)
-	if (self:GetIronsights()) then
-		--return true
+	if (self:GetIronsights() and self.HasScope) then
+		local w, h = ScrW(), ScrH()
+		surface.SetDrawColor(0, 0, 0, 255)
+
+		surface.DrawLine(x - w / 2, y, x + w / 2, y)
+		surface.DrawLine(x, y - h / 2, x, y + h / 2)
+
+		surface.SetDrawColor(255, 0, 0, 255)
+
+		surface.DrawRect(x - 1, y - 1, 3, 3)
+
+		return true
 	end
 	surface.SetDrawColor(255, 0, 255, 255)
 	surface.DrawLine(x - 5, y, x + 6, y)
@@ -74,9 +110,6 @@ function SWEP:GetViewModelPosition(pos, ang)
 	local is_ironsights = self.CurIronsights
 	local toggletime = self.IronTime
 	local time = is_ironsights and self.Ironsights.TimeTo or self.Ironsights.TimeFrom
-	if (LocalPlayer():KeyDown(KEY_M)) then
-		print(is_ironsights, toggletime, time)
-	end
 
 	local frac = math.min(1, (self:GetUnpredictedTime() - toggletime) / time)
 

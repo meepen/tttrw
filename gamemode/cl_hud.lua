@@ -1,5 +1,7 @@
 local tttrw_force_ammo_bar = CreateConVar("tttrw_force_ammo_bar", 0, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "Force TTTRW HUD to use a bar for ammo")
 
+DEFINE_BASECLASS "gamemode_base"
+
 local DrawTextShadowed = hud.DrawTextShadowed
 
 local health_full = Color(0, 0xff, 0x2b)
@@ -22,12 +24,11 @@ local function ColorLerp(col_from, col_mid, col_to, amt)
 end
 
 local function GetHUDTarget()
-	local ent = hook.Run("GetSpectatingEntity", LocalPlayer())
-
-	if (not IsValid(ent)) then
-		ent = LocalPlayer()
+	local ply = LocalPlayer()
+	if (ply:GetObserverMode() == OBS_MODE_IN_EYE) then
+		return ply:GetObserverTarget()
 	end
-	return ent
+	return ply
 end
 
 local white_text = Color(230, 230, 230, 255)
@@ -109,6 +110,45 @@ function GM:HUDPaint()
 	hook.Run "HUDDrawTargetID"
 
 	hook.Run "TTTDrawHitmarkers"
+
+	local targ = GetHUDTarget()
+	if (targ ~= LocalPlayer()) then
+		-- https://github.com/Facepunch/garrysmod-issues/issues/3936
+		local wep = targ:GetActiveWeapon()
+		if (IsValid(wep)) then
+			wep:DoDrawCrosshair(ScrW() / 2, ScrH() / 2)
+		end
+	end
+end
+
+function GM:CalcView(ply, origin, angles, fov, znear, zfar)
+	local targ = GetHUDTarget()
+	local view = BaseClass.CalcView(self, targ, origin, angles, fov, znear, zfar)
+	if (targ ~= ply) then
+		local wep = targ:GetActiveWeapon()
+		if (IsValid(wep)) then
+			view.fov = wep:TranslateFOV(view.fov) or view.fov
+		end
+	end
+		
+	return view
+end
+
+function GM:PlayerPostThink()
+	local targ = GetHUDTarget()
+
+	if (not IsFirstTimePredicted()) then
+		return
+	end
+
+	if (targ ~= LocalPlayer()) then
+		local wep = targ:GetActiveWeapon()
+		if (IsValid(wep)) then
+			wep:CalcFOV()
+			wep:CalcViewPunch()
+			wep:CalcViewModel()
+		end
+	end
 end
 
 
