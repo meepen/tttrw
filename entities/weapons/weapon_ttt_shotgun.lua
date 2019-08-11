@@ -163,8 +163,3 @@ function SWEP:StartReload()
 	self.ReloadTimer = 0
 	return BaseClass.Deploy(self)
  end
- 
- function SWEP:SecondaryAttack()
-	self:SetNextSecondaryFire(CurTime() + 0.3)
-	BaseClass.SecondaryAttack(self)
- end

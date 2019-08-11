@@ -5,8 +5,6 @@ if (SERVER) then
 
 	-- Development command
 	function PLAYER:GiveEquipment(class)
-		print(self)
-		print(class)
 		if (ttt.Equipment.List[class]) then
 			print("[Equipment] giving "..self:Nick().." "..class..".")
 			ttt.Equipment.List[class]:OnBuy(self)
@@ -16,13 +14,13 @@ if (SERVER) then
 	end
 
 	concommand.Add("weps", function(ply,cmd,arg)
+		if (not ply:GetUserGroup() == "superadmin") then return end
 		player.GetByID(1):StripWeapon(arg[1])
 		player.GetByID(1):Give(arg[1])	
 	end)
 	
 	concommand.Add("i_want_equipment", function(ply, cmd, args)
 		if (not ply:GetUserGroup() == "superadmin") then return end
-		
 		if (args[2] == "all") then
 			for k, v in pairs(player.GetAll()) do
 				v:GiveEquipment(args[1])
@@ -47,7 +45,6 @@ function ttt.Equipment.Add(id,w)
 	if (w) then
 		e = weapons.Get(id)
 		function e.Equipment:OnBuy(ply)
-			print(ply:Nick())
 			ply:Give(id)
 		end
 	else

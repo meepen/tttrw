@@ -48,6 +48,7 @@ SWEP.Ironsights = {
 	TimeTo = 0.25,
 	TimeFrom = 0.15,
 	SlowDown = 0.3,
+	Zoom = .5,
 }
 
 DEFINE_BASECLASS "weapon_tttbase"
@@ -58,9 +59,4 @@ function SWEP:DoZoom(state)
 	else
 		self:ChangeFOVMultiplier(1, self.Ironsights.TimeFrom)
 	end
-end
-
-function SWEP:OnDrop()
-    BaseClass.OnDrop(self)
-    self:SetZoom(false)
 end
