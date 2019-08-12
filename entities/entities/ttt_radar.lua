@@ -9,7 +9,7 @@ ENT.Contact = "lingbleed@gmail.com"
 ENT.Equipment = {
 	Name		   = "Radar",
 	Desc 		   = "Pings players' locations, showing them to you.",
-	Roles	       = { traitor = true, detective = true },
+	CanBuy	       = { traitor = true, Detective = true },
 	Cost 	   	   = 1,
 	Limit	       = 1,
 }

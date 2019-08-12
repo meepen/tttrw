@@ -34,7 +34,7 @@ SWEP.WeaponID               = AMMO_AMMOBIN
 SWEP.Equipment = {
 	Name		   = "Ammo Bin",
 	Desc 		   = "Grants up to 300% ammo to your reserves.",
-	CanBuy	       = { traitor = true, detective = true },
+	CanBuy	       = { traitor = true, Detective = true },
 	Cost 	   	   = 1,
 	Limit	       = 1,
 }
