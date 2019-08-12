@@ -19,6 +19,9 @@ end
 
 function GM:InitPostEntity()
 	self:InitPostEntity_Networking()
+	if (SERVER) then
+		self:SetupTextFileEntities()
+	end
 end
 
 function GM:Initialize()
