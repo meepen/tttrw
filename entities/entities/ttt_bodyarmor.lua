@@ -9,7 +9,7 @@ ENT.Contact = "lingbleed@gmail.com"
 ENT.Equipment = {
 	Name		   = "Bodyarmor",
 	Desc 		   = "Reduces incoming damage.",
-	Roles	       = { Traitor = true, Detective = true },
+	CanBuy	       = { traitor = true, Detective = true },
 	Cost 	   	   = 1,
 	Limit	       = 1,
 }

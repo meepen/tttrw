@@ -9,7 +9,7 @@ ENT.Contact = "lingbleed@gmail.com"
 ENT.Equipment = {
 	Name		   = "Disguiser",
 	Desc 		   = "Hide your name from other players, so you can act without being known.",
-	Roles	       = { Traitor = true },
+	CanBuy	       = { traitor = true },
 	Cost 	   	   = 1,
 	Limit	       = 1,
 }

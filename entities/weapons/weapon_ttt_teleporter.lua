@@ -36,7 +36,7 @@ SWEP.WorldModel            = "models/weapons/w_crowbar.mdl"
 SWEP.Equipment = {
 	Name		   = "Teleporter",
 	Desc 		   = "Store a location with right click, then travel there again with left click.",
-	Roles	       = { Traitor = true },
+	CanBuy	       = { traitor = true },
 	Cost 	   	   = 1,
 	Limit	       = 1,
 }
