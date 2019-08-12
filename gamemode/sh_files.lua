@@ -12,6 +12,10 @@ AddCSLuaFile();
 	},
 	Client = {
 		"cl_hud_helpers.lua",
+		"vgui/ttt_html_base.lua",
+		"vgui/ttt_ammo.lua",
+		"vgui/ttt_health.lua",
+		"vgui/ttt_time.lua",
 		"cl_hud.lua",
 		"cl_scoreboard.lua",
 		"cl_hitmarkers.lua",
