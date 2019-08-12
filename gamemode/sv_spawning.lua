@@ -68,8 +68,6 @@ function ttt.GetSpawnEnts(force_all)
 		end
 	end
 
-	PrintTable(tbl)
-
 	return tbl
 end
 
@@ -181,7 +179,6 @@ function GM:SetupTextFileEntities()
 			end
 
 			e:SetPos(Vector(x, y, z))
-			print(e:GetPos())
 			e:SetAngles(Angle(pitch, yaw, roll))
 
 			if (kv and kv ~= "") then

@@ -26,6 +26,7 @@ end
 
 function GM:PlayerCanSeePlayersChat(text, team, listener, speaker)
     if (listener:Alive() and not speaker:Alive()) then
+        print "false3"
         return false
     end
 

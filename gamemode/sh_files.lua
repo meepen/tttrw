@@ -37,6 +37,7 @@ AddCSLuaFile();
 	},
 	Resources = {
 		"materials/tttrw/heart.png",
+		"materials/tttrw/tbutton.png",
 	},
 	Load = function(self)
 		for _, file in ipairs(self.Shared) do
