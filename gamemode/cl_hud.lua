@@ -23,7 +23,7 @@ end
 
 function ttt.GetHUDTarget()
 	local ply = LocalPlayer()
-	if (ply:GetObserverMode() == OBS_MODE_IN_EYE) then
+	if (ply.GetObserverMode and ply:GetObserverMode() == OBS_MODE_IN_EYE) then
 		return ply:GetObserverTarget()
 	end
 	return ply
@@ -163,11 +163,5 @@ if (ttt.HUDAmmoPanel) then
 end
 
 ttt.HUDHealthPanel = vgui.Create("ttt_health", GetHUDPanel())
-ttt.HUDHealthPanel:SetPos(70, ScrH() - 115)
-ttt.HUDHealthPanel:SetSize(500, 300)
-
 ttt.HUDRolePanel = vgui.Create("ttt_time", GetHUDPanel())
-
 ttt.HUDAmmoPanel = vgui.Create("ttt_ammo", GetHUDPanel())
-ttt.HUDAmmoPanel:SetPos(ScrW() - 230, ScrH() - 200)
-ttt.HUDAmmoPanel:SetSize(200, 300)

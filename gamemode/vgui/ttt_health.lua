@@ -6,20 +6,26 @@ function PANEL:Init()
 		<head>
 			<style>
 				* {
-				  -webkit-font-smoothing: antialiased;
-				  -moz-osx-font-smoothing: grayscale;
+					margin: 0;
+					padding: 0;
+					-webkit-font-smoothing: antialiased;
+					-moz-osx-font-smoothing: grayscale;
 				}
-
 				svg {
 					position: absolute;
 					z-index: -1
 				}
-				.hp {
-					font-size: 23px;
+				.tttrw_text {
+					font-size: 145%;
 					font-family: 'Lato', sans-serif;
 					font-weight: bold;
 					text-align: center;
 					text-shadow: 2px 1px 1px rgba(0, 0, 0, .4);
+					filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, .7));
+				}
+				.barRect {
+					stroke-width: 2px;
+					stroke-opacity: 1;
 				}
 				.shadow {
 				  -webkit-filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
@@ -29,37 +35,53 @@ function PANEL:Init()
 		</head>
 		<body>
 			<img src="asset://garrysmod/materials/tttrw/heart.png" height="48">
-			<svg id="svgBorder" class="shadow" width="390" height="48">
-				<rect id="svgRect" x="10" y="5" rx="3" ry="3" width="377" height="36"
-					style="fill:black; stroke:#F7F7F7; stroke-width:2; fill-opacity:0.4; stroke-opacity:1" />
+			<svg id="resizeSVG" viewBox="0 0 100 100" preserveAspectRatio="none">
+				<rect id="outlineRect" class="barRect" x="10" y="5" rx="3" ry="3" width="200" height="36"
+					style="fill:black; stroke:#F7F7F7; fill-opacity:0.4" />
+				<rect id="fillRect" class="barRect" x="12" y="7" rx="1" ry="1" width="200" height="32"
+					style="fill:#39ac56; stroke:#39ac56; fill-opacity:1"/>
 			</svg>
-			<svg id="svgHealth" width="390" height="48">
-				<rect id="svgRect" x="12" y="7" rx="1" ry="1" width="250" height="32"
-					style="fill:#39ac56; stroke:#39ac56; stroke-width:2; fill-opacity:1; stroke-opacity:1"/>
-				<text id="svgText" class="hp" x="50%" y="26" dominant-baseline="middle" fill="#F7F7F7" text-anchor="middle"></text>
+			<svg>
+				<text class="tttrw_text" id="healthText" x="50%" y="26" dominant-baseline="middle" fill="#F7F7F7" text-anchor="middle"></text>
 			</svg>
 			
 			<script>
-				var svg = document.getElementById("svgHealth");
-				var text = svg.getElementById("svgText");
-				var rect = svg.getElementById("svgRect");
+				var text = document.querySelector("#healthText");
 				
-				var svgBorder = document.getElementById("svgBorder");
-				var borderRect = svgBorder.getElementById("svgRect");
+				var svg = document.querySelector("#resizeSVG");
+				var outlineRect = svg.querySelector("#outlineRect");
+				var fillRect = svg.querySelector("#fillRect");
 				
 				var hp = 100;
 				var maxhp = 100;
 				var pct = hp / maxhp;
 				
+				var width = fillRect.getAttributeNS(null, "width");
 				
-				var maxWidth = borderRect.getAttributeNS(null, "width") - 4;
-				var width = maxWidth;
+				function resize() {
+					var w = window.innerWidth, h = window.innerHeight;
+					svg.setAttributeNS(null, "viewBox", "0 0 " + w + " " + h);
+					svg.style.width = w - 2;
+					svg.style.height = h - 2;
+					outlineRect.setAttributeNS(null, "width", w - 2);
+					outlineRect.setAttributeNS(null, "height", h - 2);
+					width = w - 6;
+					fillRect.setAttributeNS(null, "width", width);
+					fillRect.setAttributeNS(null, "height", h - 6);
+					var list = document.querySelectorAll("text");
+					for (var i = 0; i < list.length; i++) {
+						list[i].setAttributeNS(null, "y", h / 2 + 1);
+					}
+				}
+
+				resize();
+				window.onresize = resize;
+				
 				
 				function changeBar()
 				{
 					pct = hp / maxhp;
-					width = maxWidth * pct
-					rect.setAttributeNS(null, "width", width)
+					fillRect.setAttributeNS(null, "width", width * pct)
 				}
 				
 				function setHealth(_hp)
@@ -92,6 +114,9 @@ function PANEL:Init()
 end
 
 function PANEL:PerformLayout()
+	self:SetPos(ScrW() * 0.04375, ScrH() * 0.8722)
+	self:SetSize(ScrW() * 0.3125, 75)
+
 	local health = math.max(self:GetTarget():Health(), 0)
 	
 	self.OldHealth = health
@@ -107,7 +132,7 @@ function PANEL:Paint()
 		self.OldHealth = hp
 	end
 	
-	local maxhp = self:GetTarget():GetMaxHealth()
+	local maxhp = math.max(self:GetTarget():GetMaxHealth(), 1)
 	if (self.OldMaxHealth ~= maxhp) then
 		self:CallSafe([[setMaxHealth(%d);]], maxhp)
 		self.OldMaxHealth = maxhp

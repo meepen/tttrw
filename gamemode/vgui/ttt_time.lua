@@ -14,41 +14,34 @@ function PANEL:Init()
 		* {
 			margin: 0;
 			padding: 0;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
 		}
-		body {overflow:hidden;}
-
+		body {
+			overflow:hidden;
+		}
+		svg {
+			position: absolute;
+		}
 		.tttrw_text {
 			font-size: 145%;
 			font-family: 'Lato', sans-serif;
 			font-weight: bold;
 			text-align: center;
 			text-shadow: 2px 1px 1px rgba(0, 0, 0, .4);
+			filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, .7));
 		}
-
-		* {
-			-webkit-font-smoothing: antialiased;
-			-moz-osx-font-smoothing: grayscale;
-		}
-
-		svg {
-			position: absolute;
-		}
-
 		.barRect {
 			stroke-width: 2px;
 			stroke-opacity: 1;
-		}
-
-		.shadow {
-		  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, .7));
 		}
 	</style>
 </head>
 <body onload="ttt.ready()">
 	<div>
-		<svg class="shadow" id="resizeSVG" class="shadow" viewBox="0 0 100 100" preserveAspectRatio="none">
-			<rect id="outlineRect" class="barRect" width="98" height="98" x="1" y="1" rx="2" ry="2" style="fill:black; stroke:#F7F7F7; fill-opacity:0.4;" />
-			<rect id="fillRect" width="94" height="94" class="barRect" x="3" y="3" rx="1" ry="1" style="fill:#c91d1d; stroke:#c91d1d; fill-opacity:1"/>
+		<svg id="resizeSVG" viewBox="0 0 100 100" preserveAspectRatio="none">
+			<rect id="outlineRect" class="barRect" width="98" height="98" x="1" y="1" rx="3" ry="3" style="fill:black; stroke:#F7F7F7; fill-opacity:0.4" />
+			<rect id="fillRect" class="barRect" width="94" height="94" x="3" y="3" rx="1" ry="1" style="fill:#c91d1d; stroke:#c91d1d; fill-opacity:1"/>
 		</svg>
 		
 		<svg >
@@ -84,19 +77,18 @@ function PANEL:Init()
 		}
 
 		resize();
-
 		window.onresize = resize;
 		
 		function setState(_state, _color)
 		{
-			text.textContent = _state + "00";
+			text.textContent = _state;
 			fillRect.style.fill = _color;
 			fillRect.style.stroke = _color;
 		}
 
 		function setTime(_time, _pct)
 		{
-			time.textContent = _time + "00";
+			time.textContent = _time;
 			fillRect.setAttributeNS(null, "width", width * _pct);
 		}
 	</script>
@@ -105,8 +97,10 @@ function PANEL:Init()
 	
 	self.StartTime = 0
 	hook.Add("OnRoundStateChange", self, self.OnRoundStateChange)
-	local self = self
-	timer.Create("ttt_DHTML_Time_Timer", 0.5, 0, function() self:Tick() end)
+end
+
+function PANEL:OnRemove()
+	timer.Destroy("ttt_DHTML_Time_Timer")
 end
 
 function PANEL:UpdateState(state)
@@ -130,8 +124,12 @@ function PANEL:OnRoundStateChange(old, new)
 end
 
 function PANEL:PerformLayout()
-	self:SetPos(128, ScrH() * 0.95)
-	self:SetSize(ScrW() * .2, ScrH() * 0.04)
+	local w = ScrW() * .2
+	self:SetSize(w, ScrH() * 0.04)
+	self:SetPos(ScrW() / 2 - w / 2, ScrH() * 0.03)
+	
+	timer.Create("ttt_DHTML_Time_Timer", 0.5, 0, function() self:Tick() end)
+	
 	if (not ttt.GetRoundState) then return end
 
 	self:UpdateState(ttt.GetRoundState())
@@ -145,7 +143,7 @@ function PANEL:Tick()
 	if (ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE) then
 		pct = math.Clamp(1 - ((CurTime() - self.StartTime) / (ttt.GetRoundTime() - self.StartTime)), 0, 1)
 	end
-	
+
 	self:CallSafe([[setTime("%s", %f);]], other_text, pct)
 end
 
