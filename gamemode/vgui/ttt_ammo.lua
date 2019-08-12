@@ -6,83 +6,77 @@ function PANEL:Init()
 	end)
 	
 	self:SetHTML [[
-        <head>
-			<style>
-				* {
-					-webkit-font-smoothing: antialiased;
-					-moz-osx-font-smoothing: grayscale;
-					line-height: 15px;
-                }
-                /* latin */
-                @font-face {
-					font-family: 'Lato';
-					font-style: normal;
-					font-weight: 400;
-					src: local('Lato Regular'), local('Lato-Regular'), url(https://fonts.gstatic.com/s/lato/v16/S6uyw4BMUTPHjx4wXg.woff2) format('woff2');
-					unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-                }
-				h1 {
-					font-size: 30px;
-					font-family: 'Lato', sans-serif;
-					text-align: center;
-					text-shadow: 2px 1px 1px rgba(0, 0, 0, .4);
-					color: #F7F7F7;
-				}
-				h2 {
-					font-size: 23px;
-					font-family: 'Lato', sans-serif;
-					text-align: center;
-					text-shadow: 2px 1px 1px rgba(0, 0, 0, .4);
-					color: #F7F7F7;
-				}
-				.shadow {
-				  -webkit-filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
-				  filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
-				}
-			</style>
-		</head>
-		<body onload="ttt.ready()">
-			<h1 id="ammoCounter" class="shadow" />
-			<h2 id="reserveAmmo" class="shadow" />
-			<img src="asset://garrysmod/materials/tttrw/heart.png" width="48">
-			<script>
-				var ammoCounter = document.getElementById("ammoCounter");
-				var reserveAmmo = document.getElementById("reserveAmmo");
-				
-				
-				var ammo = 0;
-				var maxAmmo = 0;
-				
-				
-				function setAmmo(_ammo)
-				{
-					ammo = _ammo
-					
-					ammoCounter.innerHTML = _ammo + "/" + maxAmmo
-				}
-				
-				function setMaxAmmo(_maxAmmo)
-				{
-					maxAmmo = _maxAmmo
-					
-					ammoCounter.innerHTML = ammo + "/" + _maxAmmo
-				}
-				
-				function setAllAmmo(_ammo, _maxAmmo, _reserve)
-				{
-					ammo = _ammo
-					maxAmmo = _maxAmmo
-					
-					ammoCounter.innerHTML = _ammo + "/" + _maxAmmo
-					reserveAmmo.innerHTML = _reserve
-				}
-				
-				function setReserveAmmo(_reserve)
-				{
-					reserveAmmo.innerHTML = _reserve
-				}
-			</script>
-		</body>
+<!-- AMMO -->
+<head>
+	<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+	<style>
+		* {
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+			line-height: 15px;
+		}
+		h1 {
+			font-size: 30px;
+			font-family: 'Lato', sans-serif;
+			text-align: center;
+			text-shadow: 2px 1px 1px rgba(0, 0, 0, .4);
+			color: #F7F7F7;
+		}
+		h2 {
+			font-size: 23px;
+			font-family: 'Lato', sans-serif;
+			text-align: center;
+			text-shadow: 2px 1px 1px rgba(0, 0, 0, .4);
+			color: #F7F7F7;
+		}
+		.shadow {
+		  -webkit-filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
+		  filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
+		}
+	</style>
+</head>
+<body onload="ttt.ready()">
+	<h1 id="ammoCounter" class="shadow" />
+	<h2 id="reserveAmmo" class="shadow" />
+	<img src="asset://garrysmod/materials/tttrw/heart.png" width="48">
+	<script>
+		var ammoCounter = document.getElementById("ammoCounter");
+		var reserveAmmo = document.getElementById("reserveAmmo");
+		
+		
+		var ammo = 0;
+		var maxAmmo = 0;
+		
+		
+		function setAmmo(_ammo)
+		{
+			ammo = _ammo
+			
+			ammoCounter.innerHTML = _ammo + "/" + maxAmmo
+		}
+		
+		function setMaxAmmo(_maxAmmo)
+		{
+			maxAmmo = _maxAmmo
+			
+			ammoCounter.innerHTML = ammo + "/" + _maxAmmo
+		}
+		
+		function setAllAmmo(_ammo, _maxAmmo, _reserve)
+		{
+			ammo = _ammo
+			maxAmmo = _maxAmmo
+			
+			ammoCounter.innerHTML = _ammo + "/" + _maxAmmo
+			reserveAmmo.innerHTML = _reserve
+		}
+		
+		function setReserveAmmo(_reserve)
+		{
+			reserveAmmo.innerHTML = _reserve
+		}
+	</script>
+</body>
 	]]
 	
 	self.OldAmmo = 0

@@ -8,6 +8,7 @@ function PANEL:Init()
 	end)
 	
 	self:SetHTML [[
+<!-- TIME -->
 <head>
 	<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
 	<style>

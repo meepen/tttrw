@@ -3,7 +3,9 @@ local PANEL = {}
 
 function PANEL:Init()
 	self:SetHTML [[
+<!-- HEALTH -->
 <head>
+	<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
 	<style>
 		* {
 			margin: 0;
@@ -17,6 +19,12 @@ function PANEL:Init()
 		svg {
 			position: absolute;
 		}
+		img {
+			padding: 0 13;
+		}
+		div {
+			display: inline;
+		}
 		.tttrw_text {
 			font-size: 145%;
 			font-family: 'Lato', sans-serif;
@@ -29,25 +37,20 @@ function PANEL:Init()
 			stroke-width: 2px;
 			stroke-opacity: 1;
 		}
-		img {
-			padding: 0 13;
-		}
-		div {
-			display: inline;
+		.shadow {
+			-webkit-filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
+			filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
 		}
 	</style>
 </head>
 <body>
 	<img src="asset://garrysmod/materials/tttrw/heart.png" height="100%">
 	<div>
-		<svg id="resizeSVG" viewBox="0 0 100 100" preserveAspectRatio="none">
+		<svg class="shadow" id="resizeSVG" viewBox="0 0 100 100" preserveAspectRatio="none">
 			<rect id="outlineRect" class="barRect" x="1" y="1" rx="3" ry="3" width="98" height="98"
 				style="fill:black; stroke:#F7F7F7; fill-opacity:0.4" />
 			<rect id="fillRect" class="barRect" x="3" y="3" rx="1" ry="1" width="94" height="94"
 				style="fill:#39ac56; stroke:#39ac56; fill-opacity:1"/> 
-		</svg>
-
-		<svg>
 			<text class="tttrw_text" id="healthText" x="50%" y="26" dominant-baseline="middle" fill="#F7F7F7" text-anchor="middle"></text>
 		</svg>
 	</div>
@@ -127,7 +130,7 @@ end
 
 function PANEL:PerformLayout()
 	self:SetPos(ScrW() * 0.04375, ScrH() * 0.8722)
-	self:SetSize(ScrW() * 0.3125, 75)
+	self:SetSize(ScrW() * 0.3, ScrH() * 0.045)
 
 	local health = math.max(self:GetTarget():Health(), 0)
 	
