@@ -32,14 +32,15 @@ function PANEL:Init()
 			text-align: center;
 			text-shadow: 2px 1px 1px rgba(0, 0, 0, .4);
 			filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, .7));
+			letter-spacing: 0.085em;
 		}
 		.barRect {
 			stroke-width: 2px;
 			stroke-opacity: 1;
 		}
 		.shadow {
-			-webkit-filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
-			filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
+			-webkit-filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, .7));
+			filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, .7));
 		}
 	</style>
 </head>
@@ -82,10 +83,7 @@ function PANEL:Init()
 			width = w - 6;
 			fillRect.setAttributeNS(null, "width", width);
 			fillRect.setAttributeNS(null, "height", h - 6);
-			var list = document.querySelectorAll("text");
-			for (var i = 0; i < list.length; i++) {
-				list[i].setAttributeNS(null, "y", h / 2 + 1);
-			}
+			text.setAttributeNS(null, "y", h / 2 + 1);
 		}
 
 		img.onload = resize;

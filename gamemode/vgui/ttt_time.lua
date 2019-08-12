@@ -36,11 +36,15 @@ function PANEL:Init()
 			stroke-width: 2px;
 			stroke-opacity: 1;
 		}
+		.shadow {
+			-webkit-filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, .7));
+			filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, .7));
+		}
 	</style>
 </head>
 <body onload="ttt.ready()">
 	<div>
-		<svg id="resizeSVG" viewBox="0 0 100 100" preserveAspectRatio="none">
+		<svg id="resizeSVG" class="shadow" viewBox="0 0 100 100" preserveAspectRatio="none">
 			<rect id="outlineRect" class="barRect" width="98" height="98" x="1" y="1" rx="3" ry="3" style="fill:black; stroke:#F7F7F7; fill-opacity:0.4" />
 			<rect id="fillRect" class="barRect" width="94" height="94" x="3" y="3" rx="1" ry="1" style="fill:#c91d1d; stroke:#c91d1d; fill-opacity:1"/>
 		</svg>
