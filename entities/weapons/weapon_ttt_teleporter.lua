@@ -120,13 +120,8 @@ local function TeleportPlayer(ply, teleport)
 
 	-- perform teleport
 	ply:SetPos(pos)
-	ply:SetEyeAngles(ang) -- ineffective due to freeze...
-
-	timer.Simple(delay_beamdown, function ()
-									if IsValid(ply) then
-										ply:Freeze(false)
-									end
-								end)
+	ply:Freeze(false)
+	ply:SetEyeAngles(ang)
 
 	sound.Play(zap, oldpos, 65, 100)
 	sound.Play(unzap, pos, 55, 100)
@@ -232,7 +227,7 @@ local function StartTeleport(ply, teleport, weapon)
 	if (not IsValid(ply)) or (not teleport) then
 		return end
 
-	teleport.ang = ply:EyeAngles()
+	--teleport.ang = ply:EyeAngles()
 
 	timer.Simple(delay_beamup, function() DoTeleport(ply, teleport, weapon) end)
 
