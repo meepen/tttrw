@@ -32,7 +32,7 @@ function ENT:FindUseEntity(ply, ent)
 
 	local dot = (pos - plypos):GetNormalized():Dot(ply:EyeAngles():Forward())
 
-	return dot > 0.99 and self or nil
+	return dot > 0.995 and self or nil
 end
 
 function ENT:IsUsable()

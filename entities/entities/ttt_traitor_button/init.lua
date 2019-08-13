@@ -38,7 +38,6 @@ function ENT:SV_Initialize()
 end
 
 function ENT:KeyValue(key, value)
-	print(key, value)
 	if key == "OnPressed" then
 		self:StoreOutput(key, value)
 	elseif key == "wait" then -- as Delay Before Reset in func_button
