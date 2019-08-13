@@ -73,7 +73,9 @@ function PANEL:Init()
 		
 		function resize() {
 			var w = window.innerWidth - img.clientWidth, h = window.innerHeight;
-			console.log("resize " + w + " " + h);
+			if (w <= 0 || h <= 0) {	// Hacky fix
+				return;
+			}
 
 			svg.setAttributeNS(null, "viewBox", "0 0 " + w + " " + h);
 			svg.style.width = w - 2;
