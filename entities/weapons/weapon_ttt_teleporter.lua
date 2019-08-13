@@ -58,7 +58,6 @@ function SWEP:PrimaryAttack()
 	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 
 	if self:Clip1() <= 0 then
-		self:DryFire(self.SetNextSecondaryFire)
 		return
 	end
 
