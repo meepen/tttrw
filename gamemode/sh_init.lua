@@ -20,6 +20,7 @@ end
 function GM:InitPostEntity()
 	self:InitPostEntity_Networking()
 	if (SERVER) then
+		self:SetupTTTCompatibleEntities()
 		self:SetupTextFileEntities()
 	end
 end

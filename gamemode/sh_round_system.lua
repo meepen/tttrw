@@ -25,10 +25,17 @@ function GM:OnRoundStateChange(old, new)
 	else
 		print(str)
 	end
+	
 	if (new == ttt.ROUNDSTATE_PREPARING) then
 		local list = {}
 		hook.Run("TTTAddPermanentEntities", list)
 		game.CleanUpMap(false, list)
+	end
+
+	if (new == ttt.ROUNDSTATE_PREPARING) then
+		hook.Run "TTTPrepareRound"
+	elseif (new == ttt.ROUNDSTATE_ENDED) then
+		hook.Run "TTTEndRound"
 	end
 end
 

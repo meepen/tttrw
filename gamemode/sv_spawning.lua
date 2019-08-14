@@ -22,11 +22,7 @@ function GM:PlayerLoadout(ply)
 	end
 
 	if (not slots[1]) then
-		for k,v in pairs(weapons.GetList()) do
-			if (v.AutoSpawnable) then
-				ply:Give(v.ClassName)
-			end
-		end
+		ply:Give "weapon_ttt_ak47"
 	end
 end
 
