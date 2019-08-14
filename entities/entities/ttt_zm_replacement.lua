@@ -9,11 +9,12 @@ function ENT:Initialize()
     if (not self.OverrideClass) then
         self.OverrideClass = self:GetClass():gsub("_zm_", "_ttt_")
     end
-    self.KeyValues = {}
+    if (not self.KeyValues) then self.KeyValues = {} end
     hook.Add("TTTPrepareRound", self, self.TTTPrepareRound)
 end
 
 function ENT:KeyValue(key, val)
+    if (not self.KeyValues) then self.KeyValues = {} end
     self.KeyValues[key] = val
 end
 
