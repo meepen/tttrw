@@ -6,6 +6,14 @@ ENT.PrintName = "TTT Body Armour"
 ENT.Author = "Ling"
 ENT.Contact = "lingbleed@gmail.com"
 
+ENT.Equipment = {
+	Name		   = "Bodyarmor",
+	Desc 		   = "Reduces incoming damage.",
+	CanBuy	       = { traitor = true, Detective = true },
+	Cost 	   	   = 1,
+	Limit	       = 1,
+}
+
 
 function ENT:Initialize()
 	BaseClass.Initialize(self)

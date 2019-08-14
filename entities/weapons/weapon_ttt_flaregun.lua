@@ -34,9 +34,15 @@ SWEP.Primary.ClipMax       = 4
 SWEP.Primary.Sound         = Sound( "Weapon_USP.SilencedShot" )
 
 SWEP.Kind                  = WEAPON_EQUIP
-SWEP.CanBuy                = {ROLE_TRAITOR} -- only traitors can buy
-SWEP.LimitedStock          = true -- only buyable once
 SWEP.WeaponID              = AMMO_FLARE
+
+SWEP.Equipment = {
+	Name		   = "Flare Gun",
+	Desc 		   = "Burns bodies to a crisp.",
+	CanBuy	       = { traitor = true },
+	Cost 	   	   = 1,
+	Limit	       = 1,
+}
 
 SWEP.Tracer                = "AR2Tracer"
 
