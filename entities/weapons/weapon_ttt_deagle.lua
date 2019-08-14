@@ -4,6 +4,9 @@ SWEP.HoldType              = "pistol"
 
 SWEP.PrintName          = "Deagle"
 SWEP.Slot               = 1
+SWEP.TTTCompat = {
+	"weapon_zm_revolver"
+}
 
 SWEP.ViewModelFlip      = false
 SWEP.ViewModelFOV       = 54

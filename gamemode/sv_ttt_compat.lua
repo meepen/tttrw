@@ -10,7 +10,7 @@ function GM:SetupTTTCompatibleEntities()
                 scripted_ents.Register({
                     Base = "ttt_zm_replacement",
                     OverrideClass = ent.ClassName
-                }, ent.ClassName:gsub("_ttt_", "_zm_"))
+                }, name)
             end
         end
     end
