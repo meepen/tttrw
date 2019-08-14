@@ -6,7 +6,9 @@ function ENT:UpdateTransmitState()
 end
 
 function ENT:Initialize()
-    self.ClassName = self:GetClass():gsub("_zm_", "_ttt_")
+    if (not self.OverrideClass) then
+        self.OverrideClass = self:GetClass():gsub("_zm_", "_ttt_")
+    end
     self.KeyValues = {}
     hook.Add("TTTPrepareRound", self, self.TTTPrepareRound)
 end
@@ -16,10 +18,10 @@ function ENT:KeyValue(key, val)
 end
 
 function ENT:TTTPrepareRound()
-    local e = ents.Create(self.ClassName)
+    local e = ents.Create(self.OverrideClass)
 
     if (not IsValid(e)) then
-        warn("Class %s does not exist! Removing replacement entity.\n", self.ClassName)
+        warn("Class %s does not exist! Removing replacement entity.\n", self.OverrideClass)
         self:Remove()
         return
     end
