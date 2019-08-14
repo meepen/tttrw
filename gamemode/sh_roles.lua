@@ -6,25 +6,22 @@ local ttt_detective_min_players = CreateConVar("ttt_detective_min_players", "10"
 
 local TEAM = {}
 
-ttt.SeenBy = ttt.SeenBy or {}
-
-
 function ttt.CanPlayerSeePlayersRole(looker, ply)
-	local r, t = ply:GetRole()
-	t = ttt.roles[r].Team.Name
-
-	r, t = ttt.SeenBy[r], ttt.SeenBy[t]
-
-	local lr, lt = looker:GetRole()
-	lt = ttt.roles[lr].Team.Name
-
-	if (r and (r[lr] or r[lt])) then
-		return true
+	local SeenBy = ply:GetRoleData().CanBeSeenBy
+	local TeamSeenBy = ply:GetTeamData().CanBeSeenBy
+	if (SeenBy) then
+		if (SeenBy[looker:GetRole()] or SeenBy[looker:GetTeam()] or SeenBy["*"]) then
+			return true
+		end
 	end
-	if (t and (t[lr] or t[lt])) then
-		return true
+
+	if (TeamSeenBy and TeamSeenBy ~= SeenBy) then
+		if (TeamSeenBy[looker:GetRole()] or TeamSeenBy[looker:GetTeam()] or TeamSeenBy["*"]) then
+			print(looker, ply)
+			return true
+		end
 	end
-	
+
 	return false
 end
 
@@ -44,13 +41,13 @@ local SEEN_BY_ALL = {
 }
 
 function TEAM:SeenByAll()
-	ttt.SeenBy[self.Name] = setmetatable({}, SEEN_BY_ALL)
+	self.CanBeSeenBy = setmetatable({}, SEEN_BY_ALL)
 	return self
 end
 
 function TEAM:SeenBy(what)
-	if (not ttt.SeenBy[self.Name]) then
-		ttt.SeenBy[self.Name] = {}
+	if (not self.CanBeSeenBy) then
+		self.CanBeSeenBy = {}
 	end
 
 	if (type(what) ~= "table") then
@@ -58,7 +55,7 @@ function TEAM:SeenBy(what)
 	end
 
 	for _, what in ipairs(what) do
-		ttt.SeenBy[self.Name][what] = true
+		self.CanBeSeenBy[what] = true
 	end
 
 	return self
@@ -88,8 +85,8 @@ setmetatable(SEEN_BY_ALL, SEEN_BY_ALL)
 
 local ROLE = {
 	SetColor = TEAM.SetColor,
-	SeenBy = TEAM.SeenBy,
-	SeenByAll = TEAM.SeenByAll
+	SeenBy = TEAM.CanBeSeenBy,
+	SeenByAll = TEAM.CanBeSeenByAll
 }
 
 function ROLE:SetCalculateAmountFunction(fn)

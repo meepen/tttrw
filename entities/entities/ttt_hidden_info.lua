@@ -27,11 +27,13 @@ function ENT:SetupDataTables()
 		--self:NetworkVar(var.Type, types[var.Type], var.Name)
 		if (SERVER and var.Default) then
 			--self["Set"..var.Name](self, var.Default)
-			self["SetNW2"..var.Type](self, var.Default)
+			self["SetNW"..var.Type](self, var.Default)
 		end
 
-		local nw2getter = "GetNW2"..var.Type
-		local nw2setter = "SetNW2"..var.Type
+		-- nw2 vars don't get updated properly when using SetupPlayerVisibility :(
+
+		local nw2getter = "GetNW"..var.Type
+		local nw2setter = "SetNW"..var.Type
 		self["Get"..var.Name] = function(_)
 			return self[nw2getter](self, var.Name, var.Default) or 0
 		end
@@ -39,7 +41,7 @@ function ENT:SetupDataTables()
 			self[nw2setter](self, var.Name, value)
 		end
 
-		self:SetNW2VarProxy(var.Name, self.NetworkVarNotifyCallback)
+		self:SetNWVarProxy(var.Name, self.NetworkVarNotifyCallback)
 
 		--self:NetworkVarNotify(var.Name, self.NetworkVarNotifyCallback)
 
