@@ -314,7 +314,7 @@ end
 
 function GM:TTTPlayerRemoved(removed)
 	if (IsValid(removed)) then
-		removed:SetRole "Spectator"
+		-- removed:SetRole "Spectator"
 	end
 
 	timer.Simple(0, function()
