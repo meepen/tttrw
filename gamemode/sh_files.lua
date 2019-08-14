@@ -12,6 +12,7 @@ AddCSLuaFile();
 	},
 	Client = {
 		"cl_hud_helpers.lua",
+		"vgui/ttt_close_button.lua",
 		"vgui/ttt_html_base.lua",
 		"vgui/ttt_ammo.lua",
 		"vgui/ttt_health.lua",
@@ -39,7 +40,8 @@ AddCSLuaFile();
 	Resources = {
 		"materials/tttrw/heart.png",
 		"materials/tttrw/tbutton.png",
-		"materials/tttrw/close.png",
+		"materials/tttrw/xbutton128.png",
+		"materials/tttrw/evil.png",
 	},
 	Load = function(self)
 		for _, file in ipairs(self.Shared) do
