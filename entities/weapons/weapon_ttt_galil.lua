@@ -31,7 +31,8 @@ SWEP.Primary.Recoil        = 0.9
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "ar2"
 SWEP.Primary.ClipSize      = 30
-SWEP.Primary.DefaultClip   = 1000
+SWEP.Primary.DefaultClip   = 60
+SWEP.Primary.MaxClip	   = 60
 SWEP.Primary.Sound         = Sound "Weapon_GALIL.Single"
 
 SWEP.AutoSpawnable         = true

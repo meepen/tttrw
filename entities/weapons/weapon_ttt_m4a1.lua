@@ -32,6 +32,7 @@ SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "ar2"
 SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 1000
+SWEP.Primary.MaxClip	   = 1000
 SWEP.Primary.Sound         = Sound "Weapon_M4A1.Single"
 
 SWEP.AutoSpawnable         = true
