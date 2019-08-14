@@ -26,23 +26,22 @@ end
 
 function GM:PlayerCanSeePlayersChat(text, team, listener, speaker)
     if (listener:Alive() and not speaker:Alive()) then
-        print "false3"
         return false
     end
 
     if (team) then
-        local lr, sr = ttt.roles[listener:GetRole()], ttt.roles[speaker:GetRole()]
+        local lr = speaker:GetRoleData()
 
-        if (not lr.TeamChatSeenBy or not sr.TeamChatSeenBy) then
-            print"false2"
+        if (not lr.TeamChatCanBeSeenBy) then
             return false
         end
         
-        if (not sr.TeamChatCanBeSeenBy[listener:GetRole()] or not sr.TeamChatCanBeSeenBy[lr.Team.Name]) then
-            print"false"
+        if (not lr.TeamChatCanBeSeenBy[listener:GetRole()] and not lr.TeamChatCanBeSeenBy[listener:GetTeam()]) then
             return false
         end
     end
+
+    return true
 end
 
 function GM:PlayerCanHearPlayersVoice(hear,talk)
