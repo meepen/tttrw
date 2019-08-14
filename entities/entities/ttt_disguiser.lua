@@ -31,7 +31,6 @@ if (SERVER) then
 	-- Temporary until we get a UI
 	concommand.Add("ttt_disguiser_toggle", function(pl)
 		for k, v in pairs(pl:GetChildren()) do
-			print(k,v)
 			if (v:GetClass() == "ttt_disguiser") then
 				v:Toggle()
 			end

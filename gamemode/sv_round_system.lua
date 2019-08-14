@@ -317,9 +317,13 @@ function GM:TTTPlayerRemoved(removed)
 		removed:SetRole "Spectator"
 	end
 
-	self:TTTPlayerRemoveSpectate(removed)
+	timer.Simple(0, function()
+		if (IsValid(removed)) then
+			self:TTTPlayerRemoveSpectate(removed)
+		end
 
-	ttt.CheckTeamWin()
+		ttt.CheckTeamWin()
+	end)
 end
 
 

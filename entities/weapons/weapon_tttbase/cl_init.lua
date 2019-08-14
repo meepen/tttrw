@@ -2,13 +2,57 @@ include "shared.lua"
 
 local ttt_lowered = CreateConVar("ttt_ironsights_lowered", "1", FCVAR_ARCHIVE)
 
-function SWEP:DoDrawCrosshair(x, y)
-	if (self:GetIronsights()) then
-		--return true
+SWEP.DrawCrosshair = true
+SWEP.ScopeArcTexture = Material "sprites/scope_arc"
+
+function SWEP:DrawHUD()
+	if (self:GetIronsights() and self.HasScope) then
+		-- scope arc
+		surface.SetMaterial(self.ScopeArcTexture)
+		local x = ScrW() / 2
+
+
+		local is_ironsights = self.CurIronsights
+		local toggletime = self.IronTime or 0
+		local time = is_ironsights and self.Ironsights.TimeTo or self.Ironsights.TimeFrom
+	
+		local frac = math.min(1, (self:GetUnpredictedTime() - toggletime) / time)
+
+		surface.SetDrawColor(0, 0, 0, frac ^ 0.1 * 255)
+
+		-- top right
+		surface.DrawTexturedRectUV(x, 0, ScrH() / 2, ScrH() / 2, 0, 1, 1, 0)
+
+		-- top left
+		surface.DrawTexturedRectUV(x - ScrH() / 2, 0, ScrH() / 2, ScrH() / 2, 1, 1, 0, 0)
+
+		-- bottom left
+		surface.DrawTexturedRectUV(x - ScrH() / 2, ScrH() / 2, ScrH() / 2, ScrH() / 2, 1, 0, 0, 1)
+		-- bottom right
+		surface.DrawTexturedRect(x, ScrH() / 2, ScrH() / 2, ScrH() / 2)
+
+		surface.DrawRect(0, 0, math.ceil(x - ScrH() / 2), ScrH())
+		surface.DrawRect(math.floor(x + ScrH() / 2), 0, math.ceil(x - ScrH() / 2), ScrH())
 	end
-	surface.SetDrawColor(255, 0, 255, 255)
-	surface.DrawLine(x - 5, y, x + 6, y)
-	surface.DrawLine(x, y - 5, x, y + 6)
+end
+
+function SWEP:DoDrawCrosshair(x, y)
+	if (self:GetIronsights() and self.HasScope) then
+		local w, h = ScrW(), ScrH()
+		surface.SetDrawColor(0, 0, 0, 255)
+
+		surface.DrawLine(x - w / 2, y, x + w / 2, y)
+		surface.DrawLine(x, y - h / 2, x, y + h / 2)
+
+		surface.SetDrawColor(255, 0, 0, 255)
+
+		surface.DrawRect(x - 1, y - 1, 3, 3)
+
+		return true
+	end
+	
+	ttt.DefaultCrosshair(x, y)
+
 	return true
 end
 
@@ -45,18 +89,6 @@ net.Receive("tttrw_developer_hitboxes", function(len, pl)
 	end
 end)
 
-function SWEP:CalcUnpredictedTimings()
-	self.CurTime = CurTime()
-	self.RealTime = RealTime()
-end
-
-function SWEP:CalcViewModel()
-	if (not CLIENT) or (not IsFirstTimePredicted()) then return end
-	self.CurIronsights = self:GetIronsights()
-	self.IronTime = self:GetIronsightsTime()
-	self:CalcUnpredictedTimings()
-end
-
 local host_timescale = GetConVar("host_timescale")
 
 function SWEP:GetUnpredictedTime()
@@ -71,7 +103,7 @@ function SWEP:GetViewModelPosition(pos, ang)
 	end
 
 	local is_ironsights = self.CurIronsights
-	local toggletime = self.IronTime
+	local toggletime = self.IronTime or 0
 	local time = is_ironsights and self.Ironsights.TimeTo or self.Ironsights.TimeFrom
 
 	local frac = math.min(1, (self:GetUnpredictedTime() - toggletime) / time)
@@ -103,15 +135,7 @@ function SWEP:GetViewModelPosition(pos, ang)
 		self.BobScale = 1
 	end
 
-	return pos, ang
-end
-
-function SWEP:CalcFOV()
-	self.FOVMultiplier = self:GetFOVMultiplier()
-	self.FOVMultiplierTime = self:GetFOVMultiplierTime()
-	self.FOVMultiplierDuration = self:GetFOVMultiplierDuration()
-	self.OldFOVMultiplier = self:GetOldFOVMultiplier()
-	self:CalcUnpredictedTimings()
+	return pos, ang + self:GetCurrentUnpredictedViewPunch()
 end
 
 function SWEP:GetCurrentUnpredictedFOVMultiplier()
@@ -120,19 +144,71 @@ function SWEP:GetCurrentUnpredictedFOVMultiplier()
 
 	local cur = math.min(1, (self:GetUnpredictedTime() - time) / duration)
 
-	return ofov + (fov - ofov) * cur
+	local res = ofov + (fov - ofov) * cur ^ 0.5
+
+	if (self:GetOwner() ~= LocalPlayer()) then
+		return math.sqrt(res)
+	end
+
+	return res
 end
 
 function SWEP:TranslateFOV(fov)
-	local mult = self:GetCurrentUnpredictedFOVMultiplier()
+	return fov * self:GetCurrentUnpredictedFOVMultiplier()
+end
 
-	local res = math.deg(math.atan(math.tan(math.rad(fov) * mult)))
+local quat_zero = Quaternion()
+
+function SWEP:GetCurrentUnpredictedViewPunch()
+	local delay = self.Primary.RecoilTiming or self.Primary.Delay
+	local time = self._ViewPunchTime or -math.huge
+	local frac = (self:GetUnpredictedTime() - time) / delay
 	
-	if (res < 0) then
-		res = res + 180
-	elseif (res > 180) then
-		res = res - 180
+	if (frac >= 1) then
+		return angle_zero
 	end
- 
-	return res
+
+	local vp = self._ViewPunch or angle_zero
+	local diff = Quaternion():SetEuler(-vp):Slerp(quat_zero, frac):ToEulerAngles()
+
+	return diff
+end
+
+function SWEP:CalcView(ply, pos, ang, fov)
+	local delay = self.Primary.Delay * 2
+
+	return pos, ang + self:GetCurrentUnpredictedViewPunch(), fov
+end
+
+function SWEP:CalcViewPunch()
+	self._ViewPunch = self:GetViewPunch()
+	self._ViewPunchTime = self:GetViewPunchTime()
+end
+
+function SWEP:CalcFOV()
+	self.FOVMultiplier = self:GetFOVMultiplier()
+	self.FOVMultiplierTime = self:GetFOVMultiplierTime()
+	self.FOVMultiplierDuration = self:GetFOVMultiplierDuration()
+	self.OldFOVMultiplier = self:GetOldFOVMultiplier()
+end
+
+function SWEP:CalcUnpredictedTimings()
+	self.CurTime = CurTime()
+	self.RealTime = RealTime()
+end
+
+function SWEP:CalcViewModel()
+	self.CurIronsights = self:GetIronsights()
+	self.IronTime = self:GetIronsightsTime()
+end
+
+function SWEP:CalcAllUnpredicted()
+	if (not IsFirstTimePredicted()) then
+		return
+	end
+
+	self:CalcUnpredictedTimings()
+	self:CalcViewPunch()
+	self:CalcViewModel()
+	self:CalcFOV()
 end

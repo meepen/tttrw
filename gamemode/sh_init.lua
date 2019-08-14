@@ -19,6 +19,9 @@ end
 
 function GM:InitPostEntity()
 	self:InitPostEntity_Networking()
+	if (SERVER) then
+		self:SetupTextFileEntities()
+	end
 end
 
 function GM:Initialize()
@@ -37,5 +40,12 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmg)
 	local wep = dmg:GetInflictor()
 	if (IsValid(wep) and wep.ScaleDamage) then
 		wep:ScaleDamage(hitgroup, dmg)
+	end
+end
+
+function GM:KeyPress(ply, key)
+	self:VoiceKey(ply, key)
+	if (SERVER) then
+		self:SpectatorKey(ply, key)
 	end
 end

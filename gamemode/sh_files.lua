@@ -12,9 +12,16 @@ AddCSLuaFile();
 	},
 	Client = {
 		"cl_hud_helpers.lua",
+		"vgui/ttt_html_base.lua",
+		"vgui/ttt_ammo.lua",
+		"vgui/ttt_health.lua",
+		"vgui/ttt_time.lua",
 		"cl_hud.lua",
 		"cl_scoreboard.lua",
 		"cl_hitmarkers.lua",
+		"cl_crosshair_menu.lua",
+		"cl_voice.lua",
+		"cl_crosshair_menu.lua",
 	},
 	Shared = {
 		"sh_init.lua",
@@ -23,11 +30,14 @@ AddCSLuaFile();
 		"sh_roles.lua",
 		"sh_proper_networking.lua",
 		"sh_round_system.lua",
-		"sh_spectator.lua",
 		"player_terror.lua",
 		"sh_movement.lua",
 		"sh_equipment.lua",
-		"sh_util.lua"
+		"sh_util.lua",
+	},
+	Resources = {
+		"materials/tttrw/heart.png",
+		"materials/tttrw/tbutton.png",
 	},
 	Load = function(self)
 		for _, file in ipairs(self.Shared) do
@@ -38,11 +48,13 @@ AddCSLuaFile();
 		end
 
 		for _, file in ipairs(SERVER and self.Server or self.Client) do
-			include (file)
+			include(file)
 		end
 
-		if (not SERVER) then
-			return
+		if (CLIENT) then return end
+		
+		for _, file in ipairs(self.Resources) do
+			resource.AddFile(file)
 		end
 
 		for _, file in ipairs(self.Client) do

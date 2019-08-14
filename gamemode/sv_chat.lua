@@ -13,7 +13,6 @@ net.Receive("ttt_player_target", function(len, cl)
 end)
 
 function GM:PlayerSay(ply, text, team)
-    print(ply,text,team)
     local replacements = {}
 
     if (IsValid(ply.Target)) then
@@ -27,6 +26,7 @@ end
 
 function GM:PlayerCanSeePlayersChat(text, team, listener, speaker)
     if (listener:Alive() and not speaker:Alive()) then
+        print "false3"
         return false
     end
 
@@ -42,5 +42,40 @@ function GM:PlayerCanSeePlayersChat(text, team, listener, speaker)
             print"false"
             return false
         end
+    end
+end
+
+function GM:PlayerCanHearPlayersVoice(hear,talk)
+    if (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
+        return true, false
+    else
+        if (not talk:Alive() and hear:Alive()) then
+            return false, false
+        elseif not (talk:Alive() or hear:Alive()) then
+            return true, false
+        end
+        local channel = talk:GetRoleData().VoiceChannel
+        if (ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE and channel) then
+            if (channel and hear:GetRoleData().VoiceChannel == channel) then
+                return true, false
+            else
+                return false, false
+            end
+        end
+        return true, false
+    end
+end
+
+function GM:VoiceKey(ply, key)
+    local channel = ply:GetRoleData().VoiceChannel
+    if (not channel or not ply:Alive()) then return end
+    if (key == IN_SPEED) then
+        ply.VoiceChannel = channel
+    end
+end
+
+function GM:KeyRelease(ply, key)
+    if (key == IN_SPEED) then
+        ply.VoiceChannel = nil
     end
 end

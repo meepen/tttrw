@@ -80,9 +80,11 @@ function TEAM:TeamChatSeenBy(what)
 	return self
 end
 
+function TEAM:SetVoiceChannel(channel)
+	self.VoiceChannel = channel
+end
 
 setmetatable(SEEN_BY_ALL, SEEN_BY_ALL)
-
 
 local ROLE = {
 	SetColor = TEAM.SetColor,
@@ -139,7 +141,7 @@ end
 
 function GM:TTTPrepareRoles(Team, Role)
 	Team "innocent":SetColor(Color(20, 240, 20))
-	Team "traitor":SeenBy {"traitor"}:SetColor(Color(240, 20, 20)):TeamChatSeenBy "traitor"
+	Team "traitor":SeenBy {"traitor"}:SetColor(Color(240, 20, 20)):TeamChatSeenBy "traitor" :SetVoiceChannel "traitor"
 	Team "spectator":SeenByAll():SetColor(Color(20, 120, 120))
 
 	Role("Innocent", "innocent")
@@ -149,7 +151,7 @@ function GM:TTTPrepareRoles(Team, Role)
 			return 0
 		end
 		return math.min(ttt_detective_max:GetInt(), math.ceil(total_players * ttt_detective_pct:GetFloat()))
-	end):SetColor(20, 20, 240):TeamChatSeenBy "Detective"
+	end):SetColor(20, 20, 240):TeamChatSeenBy "Detective" :SetVoiceChannel "Detective"
 	Role("Traitor", "traitor"):SetCalculateAmountFunction(function(total_players)
 		return math.min(ttt_traitor_max:GetInt(), math.ceil(total_players * ttt_traitor_pct:GetFloat()))
 	end)
@@ -178,4 +180,27 @@ function GM:SetupRoles()
 			role.Color = color_black
 		end
 	end
+end
+
+hook.Add("TTTGetHiddenPlayerVariables", "Roles", function(vars)
+	table.insert(vars, {
+		Name = "Role",
+		Type = "String",
+		Default = "Spectator",
+		Enums = {}
+	})
+end)
+
+local PLY = FindMetaTable "Player"
+
+function PLY:GetRoleData()
+	return ttt.roles[self:GetRole()]
+end
+
+function PLY:GetTeamData()
+	return ttt.roles[self:GetRole()].Team
+end
+
+function PLY:GetTeam()
+	return ttt.roles[self:GetRole()].Team.Name
 end
