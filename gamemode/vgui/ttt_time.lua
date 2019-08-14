@@ -102,20 +102,22 @@ function PANEL:Init()
 	
 	self.StartTime = 0
 	hook.Add("OnRoundStateChange", self, self.OnRoundStateChange)
+	hook.Add("OnPlayerRoleChange", self, self.OnPlayerRoleChange)
 end
 
 function PANEL:OnRemove()
 	timer.Destroy("ttt_DHTML_Time_Timer")
 end
 
-function PANEL:UpdateState(state)
+function PANEL:UpdateState()
 	local color, text = status_color
+	local state = ttt.GetRoundState()
+	print(state)
 	if (state == ttt.ROUNDSTATE_ACTIVE) then
-		text = self:GetTarget():GetRole()
-		
-		if (ttt.roles[text]) then
-			color = ttt.roles[text].Color
-		end
+		local data = self:GetTarget():GetRoleData()
+		text = data.Name
+
+		color = data.Color
 	else
 		text = ttt.Enums.RoundState[state]
 	end
@@ -124,8 +126,15 @@ function PANEL:UpdateState(state)
 	self:CallSafe([[setState("%s", "rgb(%d, %d, %d)");]], text, color.r, color.g, color.b)
 end
 
-function PANEL:OnRoundStateChange(old, new)
-	self:UpdateState(new)
+function PANEL:OnRoundStateChange()
+	self:UpdateState()
+end
+
+function PANEL:OnPlayerRoleChange(ply)
+	print(ply)
+	if (ply == LocalPlayer()) then
+		self:UpdateState()
+	end
 end
 
 function PANEL:PerformLayout()
@@ -134,10 +143,6 @@ function PANEL:PerformLayout()
 	self:SetPos(ScrW() / 2 - w / 2, ScrH() * 0.03)
 	
 	timer.Create("ttt_DHTML_Time_Timer", 0.5, 0, function() self:Tick() end)
-	
-	if (not ttt.GetRoundState) then return end
-
-	self:UpdateState(ttt.GetRoundState())
 end
 
 function PANEL:Tick()

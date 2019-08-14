@@ -7,8 +7,15 @@ ENT.Author = "Meepen"
 ENT.Contact = "meepdarknessmeep@gmail.com"
 
 function ENT:NetworkVarNotifyCallback(name, old, new)
-	printf("%s::%s: %s -> %s", self:GetClass(), name, old, new)
-	hook.Run("OnPlayer"..name.."Change", self:GetParent(), old, new)
+	local parent = self:GetParent()
+	printf("Player(%i) [%s] %s::%s: %s -> %s (seen as %s)", IsValid(parent) and parent:UserID() or -1, IsValid(parent) and parent:Nick() or "NULL", self:GetClass(), name, old, new, self["Get" .. name](self))
+	timer.Simple(0, function()
+		-- NW2Vars are late??
+		if (not IsValid(self)) then
+			return
+		end
+		hook.Run("OnPlayer"..name.."Change", self:GetParent(), old, new)
+	end)
 end
 
 function ENT:SetupDataTables()
@@ -32,8 +39,8 @@ function ENT:SetupDataTables()
 
 		-- nw2 vars don't get updated properly when using SetupPlayerVisibility :(
 
-		local nw2getter = "GetNW"..var.Type
-		local nw2setter = "SetNW"..var.Type
+		local nw2getter = "GetNW2"..var.Type
+		local nw2setter = "SetNW2"..var.Type
 		self["Get"..var.Name] = function(_)
 			return self[nw2getter](self, var.Name, var.Default) or 0
 		end
@@ -41,9 +48,7 @@ function ENT:SetupDataTables()
 			self[nw2setter](self, var.Name, value)
 		end
 
-		self:SetNWVarProxy(var.Name, self.NetworkVarNotifyCallback)
-
-		--self:NetworkVarNotify(var.Name, self.NetworkVarNotifyCallback)
+		self:SetNW2VarProxy(var.Name, self.NetworkVarNotifyCallback)
 
 		--types[var.Type] = types[var.Type] + 1
 	end
