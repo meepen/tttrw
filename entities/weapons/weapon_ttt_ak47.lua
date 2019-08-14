@@ -29,7 +29,7 @@ SWEP.Primary.Damage        = 22
 SWEP.Primary.Delay         = 0.08
 SWEP.Primary.Recoil        = 1.2
 SWEP.Primary.Automatic     = true
-SWEP.Primary.Ammo          = "ar2"
+SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.MaxClip       = 45
@@ -37,7 +37,7 @@ SWEP.Primary.Sound         = Sound "Weapon_AK47.Single"
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
-SWEP.AmmoEnt               = "item_ammo_ar2_ttt"
+SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
 
 SWEP.UseHands              = true
 SWEP.ViewModel             = "models/weapons/cstrike/c_rif_ak47.mdl"

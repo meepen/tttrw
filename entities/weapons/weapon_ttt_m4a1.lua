@@ -29,7 +29,7 @@ SWEP.Primary.Damage        = 18
 SWEP.Primary.Delay         = 0.1
 SWEP.Primary.Recoil        = 0.8
 SWEP.Primary.Automatic     = true
-SWEP.Primary.Ammo          = "ar2"
+SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 1000
 SWEP.Primary.MaxClip	   = 1000
@@ -37,7 +37,7 @@ SWEP.Primary.Sound         = Sound "Weapon_M4A1.Single"
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
-SWEP.AmmoEnt               = "item_ammo_ar2_ttt"
+SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
 
 SWEP.UseHands              = true
 SWEP.ViewModel             = "models/weapons/cstrike/c_rif_m4a1.mdl"
