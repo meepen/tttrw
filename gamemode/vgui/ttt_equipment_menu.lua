@@ -4,7 +4,7 @@ local Spacing = ScrH() / 90
 
 local HeaderSize = ScrH() / 30
 
-local box_background = Color(41, 41, 41, 252)
+local box_background = Color(41, 41, 41, 240)
 
 surface.CreateFont("ttt_credit_font", {
 	font = 'Lato',
@@ -18,7 +18,8 @@ surface.CreateFont("ttt_equipment_header_font", {
 	weight = 200
 })
 
-local evil_color = Color(255, 0, 0, 255)
+local evil_color = Color(0x93, 0x23, 0x24, 255)
+local evil_icons_color = Color(255, 255, 255)
 local good_color = Color(0, 0, 255, 255)
 
 function PANEL:Init()
@@ -63,36 +64,71 @@ vgui.Register("ttt_equipment_list", PANEL, "DPanel")
 local PANEL = {}
 
 function PANEL:Init()
-	self.Text = vgui.Create("ttt_credit_remaining", self)
-	self.BuyList = vgui.Create("ttt_equipment_list", self)
+	self.Text = self:Add "ttt_credit_remaining"
+	self.BuyList = self:Add "ttt_equipment_list"
 	self.BuyList:Dock(LEFT)
 	self.Text:Dock(TOP)
 end
 
 function PANEL:PerformLayout(w, h)
-	self.BuyList:DockMargin(0, Spacing, 0, 0)
+	self.Text:DockMargin(0, 0, 0, Spacing)
 end
 
-function PANEL:Paint() end
+function PANEL:Paint()
+end
 
 vgui.Register("ttt_credit_screen", PANEL, "DPanel")
 
-
 local PANEL = {}
-
-function PANEL:PerformLayout()
+function PANEL:Init()
 end
-
 function PANEL:Paint(w, h)
 	draw.RoundedBox(5, 0, 0, w, h, box_background)
 end
 
-vgui.Register("ttt_item_screen", PANEL, "DPanel")
+vgui.Register("ttt_equipment_background", PANEL, "EditablePanel")
 
 
 local PANEL = {}
 
-local mat = Material("tttrw/evil.png", "noclamp smooth")
+function PANEL:Init()
+	self.ItemName = self:Add "ttt_equipment_background"
+	self.ItemName:SetZPos(0)
+	self.ItemName:Dock(TOP)
+	self.ItemName:DockMargin(0, 0, 0, 10)
+
+	self.ItemDesc = self:Add "ttt_equipment_background"
+	self.ItemDesc:SetZPos(1)
+	self.ItemDesc:Dock(TOP)
+	self.ItemDesc:DockMargin(0, 0, 0, 10)
+
+	self.BoughtText = self:Add "ttt_equipment_background"
+	self.BoughtText:SetZPos(2)
+	self.BoughtText:Dock(TOP)
+	self.BoughtText:DockMargin(0, 0, 0, 10)
+
+	self.BoughtItems = self:Add "ttt_equipment_background"
+	self.BoughtItems:SetZPos(3)
+	self.BoughtItems:Dock(TOP)
+end
+
+function PANEL:PerformLayout()
+	self.ItemName:SetTall(HeaderSize)
+	self.ItemDesc:SetTall((self:GetTall() - Spacing * 2 - HeaderSize * 2) * 4/7)
+	self.BoughtText:SetTall(HeaderSize)
+	self.BoughtItems:SetTall((self:GetTall() - Spacing * 2 - HeaderSize * 2) * 3/7)
+end
+
+function PANEL:Paint(w, h)
+	--draw.RoundedBox(5, 0, 0, w, h, box_background)
+end
+
+vgui.Register("ttt_item_screen", PANEL, "EditablePanel")
+
+
+local PANEL = {}
+
+local mat = Material("tttrw/transparent_evil.png", "noclamp smooth")
 
 function PANEL:Init()
 	self.CloseButton = vgui.Create("ttt_close_button", self)
@@ -105,7 +141,7 @@ function PANEL:PerformLayout()
 	local scrw, scrh = ScrW(), ScrH()
 	local w, h = scrw / 2.5, scrh / 2.1
 	self:SetSize(w, h)
-	self:SetPos(scrw / 2 - w / 2, scrh / 2 - h / 2)
+	self:Center()
 
 	local size = w * 0.045
 	size = 2 ^ math.Round(math.log(size, 2))
@@ -119,15 +155,16 @@ function PANEL:PerformLayout()
 	local spaceLeft = w - Spacing * 4 - size
 	
 	self.CreditScreen:Dock(LEFT)
-	self.CreditScreen:SetWide(spaceLeft / 2)
+	self.CreditScreen:SetWide(spaceLeft * 3 / 7)
 	self.CreditScreen:DockMargin(Spacing, Spacing, Spacing / 2, Spacing)
 	
 	-- Item screen
-	self.ItemScreen:Dock(LEFT)
-	self.ItemScreen:SetWide(spaceLeft / 2)
+	self.ItemScreen:Dock(TOP)
+	self.ItemScreen:SetTall(h - Spacing * 2)
 	self.ItemScreen:DockMargin(Spacing / 2, Spacing, Spacing / 2, Spacing)
 	
-	mat:SetFloat("$alpha", 0.6)
+	mat:SetFloat("$alpha", 0.03)
+	mat:SetVector("$color", evil_icons_color:ToVector())
 	local curve = 6
 	local function addpos(x, y)
 		mesh.Position(Vector(x, y))
@@ -179,12 +216,17 @@ function PANEL:PerformLayout()
 	self:MakePopup()
 end
 local colour = Material "pp/colour"
-colour:SetFloat("$alpha", 0.1)
+
+local bg_color = CreateMaterial("ttt_color_material"..math.random(0, 0xffff), "UnlitGeneric", {
+	["$basetexture"] = "color/white",
+	["$color"] = "{ 13 12 13 }",
+	["$alpha"] = 0.92
+})
 
 local matrix = Matrix()
 function PANEL:Paint(w, h)
 	matrix:SetTranslation(Vector(self:LocalToScreen(0, 0)))
-		
+
 	render.SetStencilWriteMask(1)
 	render.SetStencilTestMask(1)
 	render.SetStencilReferenceValue(1)
@@ -203,6 +245,9 @@ function PANEL:Paint(w, h)
 
 			render.SetStencilPassOperation(STENCIL_KEEP)
 			render.SetStencilCompareFunction(STENCIL_EQUAL)
+
+			render.SetMaterial(bg_color)
+			render.DrawScreenQuad()
 
 			render.SetMaterial(mat)
 			local pw, ph = mat:GetInt "$realwidth", mat:GetInt "$realheight"
