@@ -19,6 +19,12 @@ surface.CreateFont("ttt_equipment_header_font", {
 	weight = 200
 })
 
+surface.CreateFont("ttt_equipment_button_font", {
+	font = 'Lato',
+	size = ScrH() / 47,
+	weight = 1000
+})
+
 surface.CreateFont("ttt_equipment_description_font", {
 	font = 'Lato',
 	size = ScrH() / 80,
@@ -118,7 +124,40 @@ function PANEL:PerformLayout(w, h)
 	self:SetText(self.Text:GetText())
 	self:SetTall(HeaderSize)
 end
-vgui.Register("ttt_equpiment_header", PANEL, "ttt_equipment_background")
+vgui.Register("ttt_equipment_header", PANEL, "ttt_equipment_background")
+
+
+local buy_button_mat = CreateMaterial("ttt_buy_material", "UnlitGeneric", {
+	["$basetexture"] = "color/white",
+	["$color"] = string.format("{ %i %i %i }", evil_color.r, evil_color.g, evil_color.b),
+	["$alpha"] = 1
+})
+local PANEL = {}
+function PANEL:Init()
+	self:PerformLayout(self:GetSize())
+	self:SetFont "ttt_equipment_button_font"
+	self:SetText "Buy"
+	self:SetTextColor(box_background)
+end
+function PANEL:PerformLayout(w, h)
+	self:SizeToContentsY(Spacing / 2)
+	if (self.Mesh) then
+		self.Mesh:Destroy()
+		self.Mesh = nil
+	end
+
+	local w = w * 2 / 3
+
+	self.Mesh = hud.BuildCurvedMesh(5, 0, 0, w, h)
+end
+function PANEL:Paint(w, h)
+	hud.StartStenciledMesh(self.Mesh, self:LocalToScreen(w * 1 / 6, 0))
+		render.SetMaterial(buy_button_mat)
+		render.DrawScreenQuad()
+	hud.EndStenciledMesh()
+end
+
+vgui.Register("ttt_equipment_buy_button", PANEL, "DButton")
 
 local PANEL = {}
 function PANEL:Init()
@@ -128,6 +167,10 @@ function PANEL:Init()
 	self.Description:SetAutoStretchVertical(true)
 	self.Description:SetWrap(true)
 	self.Description:SetFont "ttt_equipment_description_font"
+
+	self.Buy = self:Add "ttt_equipment_buy_button"
+	self.Buy:Dock(BOTTOM)
+
 	self:DockPadding(Spacing * 1.5, Spacing * 1.5, Spacing * 1.5, Spacing * 1.5)
 end
 
@@ -145,7 +188,7 @@ vgui.Register("ttt_equipment_description", PANEL, "ttt_equipment_background")
 local PANEL = {}
 
 function PANEL:Init()
-	self.ItemName = self:Add "ttt_equpiment_header"
+	self.ItemName = self:Add "ttt_equipment_header"
 	self.ItemName:SetZPos(0)
 	self.ItemName:Dock(TOP)
 	self.ItemName:DockMargin(0, 0, 0, Spacing)
@@ -160,7 +203,7 @@ function PANEL:Init()
 		Description = ("Very long string to meme with "):rep(10)
 	}
 
-	self.BoughtText = self:Add "ttt_equpiment_header"
+	self.BoughtText = self:Add "ttt_equipment_header"
 	self.BoughtText:SetZPos(2)
 	self.BoughtText:Dock(TOP)
 	self.BoughtText:DockMargin(0, 0, 0, Spacing)
@@ -233,7 +276,7 @@ function PANEL:PerformLayout()
 	self:MakePopup()
 end
 
-local bg_color = CreateMaterial("ttt_color_material"..math.random(0, 0xffff), "UnlitGeneric", {
+local bg_color = CreateMaterial("ttt_color_material", "UnlitGeneric", {
 	["$basetexture"] = "color/white",
 	["$color"] = "{ 13 12 13 }",
 	["$alpha"] = 0.92
