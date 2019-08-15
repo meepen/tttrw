@@ -1,6 +1,6 @@
 local PANEL = {}
 
-local Spacing = ScrH() / 90
+local Spacing = math.Round(ScrH() / 100)
 
 local HeaderSize = ScrH() / 30
 
@@ -65,13 +65,14 @@ local PANEL = {}
 
 function PANEL:Init()
 	self.Text = self:Add "ttt_credit_remaining"
+	self.Text:Dock(TOP)
+	self.Text:DockMargin(0, 0, 0, Spacing)
+
 	self.BuyList = self:Add "ttt_equipment_list"
 	self.BuyList:Dock(LEFT)
-	self.Text:Dock(TOP)
 end
 
 function PANEL:PerformLayout(w, h)
-	self.Text:DockMargin(0, 0, 0, Spacing)
 end
 
 function PANEL:Paint()
@@ -95,17 +96,17 @@ function PANEL:Init()
 	self.ItemName = self:Add "ttt_equipment_background"
 	self.ItemName:SetZPos(0)
 	self.ItemName:Dock(TOP)
-	self.ItemName:DockMargin(0, 0, 0, 10)
+	self.ItemName:DockMargin(0, 0, 0, Spacing)
 
 	self.ItemDesc = self:Add "ttt_equipment_background"
 	self.ItemDesc:SetZPos(1)
 	self.ItemDesc:Dock(TOP)
-	self.ItemDesc:DockMargin(0, 0, 0, 10)
+	self.ItemDesc:DockMargin(0, 0, 0, Spacing)
 
 	self.BoughtText = self:Add "ttt_equipment_background"
 	self.BoughtText:SetZPos(2)
 	self.BoughtText:Dock(TOP)
-	self.BoughtText:DockMargin(0, 0, 0, 10)
+	self.BoughtText:DockMargin(0, 0, 0, Spacing)
 
 	self.BoughtItems = self:Add "ttt_equipment_background"
 	self.BoughtItems:SetZPos(3)
@@ -140,28 +141,31 @@ end
 function PANEL:PerformLayout()
 	local scrw, scrh = ScrW(), ScrH()
 	local w, h = scrw / 2.5, scrh / 2.1
-	self:SetSize(w, h)
-	self:Center()
 
-	local size = w * 0.045
-	size = 2 ^ math.Round(math.log(size, 2))
+	local size = math.Round(HeaderSize)
+
+	self.CloseButton:Dock(TOP)
+	self.CloseButton:DockMargin(0, 0, 0, 0)
 	self.CloseButton:SetSize(size, size)
-
-	self.CloseButton:Dock(RIGHT)
-	self.CloseButton:DockMargin(Spacing, Spacing, Spacing, h - size - Spacing)
+	self.CloseButton:SetZPos(1)
 
 
 	-- Credit screen
 	local spaceLeft = w - Spacing * 4 - size
+
+	self:DockPadding(Spacing, Spacing, Spacing, Spacing)
 	
 	self.CreditScreen:Dock(LEFT)
 	self.CreditScreen:SetWide(spaceLeft * 3 / 7)
-	self.CreditScreen:DockMargin(Spacing, Spacing, Spacing / 2, Spacing)
+	self.CreditScreen:DockMargin(0, 0, Spacing, 0)
 	
 	-- Item screen
-	self.ItemScreen:Dock(TOP)
-	self.ItemScreen:SetTall(h - Spacing * 2)
-	self.ItemScreen:DockMargin(Spacing / 2, Spacing, Spacing / 2, Spacing)
+	self.ItemScreen:Dock(LEFT)
+	self.ItemScreen:SetWide(spaceLeft * 4 / 7)
+	self.ItemScreen:DockMargin(0, 0, Spacing, 0)
+
+	self:SetSize(spaceLeft + Spacing * 4 + HeaderSize, h)
+	self:Center()
 	
 	mat:SetFloat("$alpha", 0.03)
 	mat:SetVector("$color", evil_icons_color:ToVector())
