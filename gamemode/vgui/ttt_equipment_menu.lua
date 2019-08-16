@@ -83,7 +83,23 @@ local PANEL = {}
 function PANEL:Init()
 	self.List = self:Add "DIconLayout"
 	self.List:Dock(FILL)
+	hook.Add("OnPlayerRoleChange", self, self.OnPlayerRoleChange)
+	self:OnPlayerRoleChange(LocalPlayer(), LocalPlayer():GetRole(), LocalPlayer():GetRole())
+end
+
+function PANEL:OnPlayerRoleChange(ply, old, new)
+	if (ply ~= LocalPlayer()) then
+		return
+	end
+
+	for _, child in pairs(self.List:GetChildren()) do
+		child:Remove()
+	end
+
 	for classname, ent in pairs(ttt.Equipment.List) do
+		if (not LocalPlayer():CanReceiveEquipment(ent.ClassName)) then
+			continue
+		end
 		local btn = self.List:Add "ttt_equipment_item"
 		btn:SetImage "tttrw/disagree.png"
 		btn:SetSize(64, 64)
@@ -177,6 +193,12 @@ function PANEL:Init()
 	self.Button.PerformLayout = function(self, w, h)
 		self:SetTall(self:GetParent():GetTall())
 	end
+
+	function self.Button:DoClick()
+		RunConsoleCommand("ttt_buy_equipment", self.Equipment.ClassName)
+		print("ttt_buy_equipment", self.Equipment.ClassName)
+	end
+
 	self:SetMouseInputEnabled(true)
 
 	self:PerformLayout(self:GetSize())
@@ -206,6 +228,10 @@ function PANEL:PaintButton(w, h)
 end
 
 function PANEL:Paint() end
+
+function PANEL:SetEquipment(eq)
+	self.Button.Equipment = eq
+end
 
 vgui.Register("ttt_equipment_buy_button", PANEL, "EditablePanel")
 
@@ -289,6 +315,8 @@ end
 function PANEL:SetEquipment(item)
 	self.Description:SetText(item.Desc or "NO DESC")
 	self.Description:SizeToContents()
+	PrintTable(item)
+	self.Buy:SetEquipment(item)
 end
 
 vgui.Register("ttt_equipment_description", PANEL, "ttt_equipment_background")
@@ -416,13 +444,6 @@ if (IsValid(ttt.equipment_menu)) then
 	ttt.equipment_menu:Remove()
 	ttt.equipment_menu = nil
 end
-ttt.equipment_menu = GetHUDPanel():Add "ttt_equipment_menu"
-ttt.equipment_menu:SetVisible(false)
-
-ttt.equipment_menu:SetEquipment {
-	Desc = "Reduces all damage taken by 20%",
-	Name = "Body armor",
-}
 
 function GM:OnContextMenuOpen()
 	if (IsValid(ttt.equipment_menu)) then
@@ -431,6 +452,7 @@ function GM:OnContextMenuOpen()
 		end
 	else
 		ttt.equipment_menu = GetHUDPanel():Add "ttt_equipment_menu"
+		ttt.equipment_menu:SetVisible(true)
 	end
 	ttt.equipment_menu:MakePopup()
 	ttt.equipment_menu:SetMouseInputEnabled(true)

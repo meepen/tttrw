@@ -5,12 +5,12 @@ if (SERVER) then
 
 	-- Development command
 	function PLAYER:GiveEquipment(class)
-		if (ttt.Equipment.List[class]) then
-			print("[Equipment] giving "..self:Nick().." "..class..".")
-			ttt.Equipment.List[class]:OnBuy(self)
-		else
-			print("[Equipment] "..class.." doesn't exist!")
+		if (not self:CanReceiveEquipment(class)) then
+			return false
 		end
+
+		printf("[Equipment] giving %s %s.", self:Nick(), class)
+		ttt.Equipment.List[class]:OnBuy(self)
 	end
 
 	concommand.Add("weps", function(ply,cmd,arg)
@@ -19,18 +19,40 @@ if (SERVER) then
 		player.GetByID(1):Give(arg[1])	
 	end)
 	
-	concommand.Add("i_want_equipment", function(ply, cmd, args)
-		if (not ply:GetUserGroup() == "superadmin") then return end
-		if (args[2] == "all") then
-			for k, v in pairs(player.GetAll()) do
-				v:GiveEquipment(args[1])
-			end
-		else
-			ply:GiveEquipment(args[1])
-		end
+	concommand.Add("ttt_buy_equipment", function(ply, cmd, args)
+		ply:GiveEquipment(args[1])
 	end)
-else
-	
+end
+
+function PLAYER:CanReceiveEquipment(class)
+	local eq = ttt.Equipment.List[class]
+	if (not eq) then
+		return false
+	end
+
+	if (eq.CanBuy and not (eq.CanBuy[self:GetRole()] or eq.CanBuy[self:GetTeam()])) then
+		print "a"
+		return false
+	end
+
+	if (eq.Limit) then
+		if (not eq.IsWeapon) then
+			local children = self:GetChildren()
+
+			local count = 0
+			for _, child in pairs(self:GetChildren()) do
+				if (child:GetClass() == class) then
+					count = count + 1
+				end
+			end
+
+			if (count >= eq.Limit) then
+				return false
+			end
+		end
+	end
+
+	return true
 end
 
 TTT_Equipment = {}
@@ -45,17 +67,18 @@ function ttt.Equipment.Add(id, w)
 	if (w) then
 		e = weapons.Get(id)
 		function e.Equipment:OnBuy(ply)
-			ply:Give(id)
+			ply:Give(self.ClassName)
 		end
 	else
 		e = scripted_ents.Get(id)
 		function e.Equipment:OnBuy(ply)
-			local eq = ents.Create(id)
+			local eq = ents.Create(self.ClassName)
 			eq:SetParent(ply)
 			eq:Spawn()
 		end
 	end
 	local t = e.Equipment
+	t.IsWeapon = w
 	t.ClassName = id
 	ttt.Equipment.List[id] = t
 end
