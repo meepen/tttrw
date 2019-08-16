@@ -31,6 +31,12 @@ surface.CreateFont("ttt_equipment_description_font", {
 	weight = 200
 })
 
+surface.CreateFont("ttt_equipment_status_font", {
+	font = 'Lato',
+	size = ScrH() / 90,
+	weight = 200
+})
+
 local evil_color = Color(0x93, 0x23, 0x24, 255)
 local evil_icons_color = Color(255, 255, 255)
 local good_color = Color(0, 0, 255, 255)
@@ -176,18 +182,31 @@ vgui.Register("ttt_equipment_buy_button", PANEL, "EditablePanel")
 local PANEL = {}
 function PANEL:Init()
 	self.Text = self:Add "DLabel"
-	self.Text:SetFont "ttt_equipment_description_font"
+	self.Text:SetFont "ttt_equipment_status_font"
 	self.Text:SetTextColor(white_text_color)
 	self.Image = self:Add "DImage"
+	self.EnabledText = "Enabled"
+	self.DisabledText = "Disabled"
 	self:SetEnabled(true)
 end
 
+function PANEL:SetEnabledText(t)
+	self.EnabledText = t
+	self:SetEnabled(self.Enabled)
+end
+
+function PANEL:SetDisabledText(t)
+	self.DisabledText = t
+	self:SetEnabled(self.Enabled)
+end
+
 function PANEL:SetEnabled(b)
+	self.Enabled = b
 	if (b) then
-		self.Text:SetText "This item is in stock."
+		self.Text:SetText(self.EnabledText)
 		self.Image:SetImage("tttrw/agree.png", "icon16/tick.png")
 	else
-		self.Text:SetText "This item is not in stock."
+		self.Text:SetText(self.DisabledText)
 		self.Image:SetImage("tttrw/disagree.png", "icon16/cross.png")
 	end
 	self:PerformLayout(self:GetSize())
@@ -204,7 +223,7 @@ function PANEL:PerformLayout(w, h)
 	self.Image:SetPos(x + self.Text:GetWide(), y)
 end
 
-vgui.Register("ttt_equipment_available", PANEL, "EditablePanel")
+vgui.Register("ttt_equipment_status", PANEL, "EditablePanel")
 
 local PANEL = {}
 function PANEL:Init()
@@ -221,9 +240,17 @@ function PANEL:Init()
 	self.Buy:DockMargin(0, Spacing / 2, 0, 0)
 	self:SetMouseInputEnabled(true)
 
-	self.Available = self:Add "ttt_equipment_available"
-	self.Available:Dock(BOTTOM)
-	self.Available:SetZPos(1)
+	self.Carry = self:Add "ttt_equipment_status"
+	self.Carry:Dock(BOTTOM)
+	self.Carry:SetZPos(1)
+	self.Carry:SetEnabledText "You can carry this equipment"
+	self.Carry:SetDisabledText "You cannot carry this equipment"
+
+	self.Stock = self:Add "ttt_equipment_status"
+	self.Stock:Dock(BOTTOM)
+	self.Stock:SetZPos(2)
+	self.Stock:SetEnabledText "This item is in stock."
+	self.Stock:SetDisabledText "You item is not in stock."
 
 	self:DockPadding(Spacing * 1.5, Spacing * 1.5, Spacing * 1.5, Spacing * 1.5)
 end
