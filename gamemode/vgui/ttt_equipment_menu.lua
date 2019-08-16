@@ -69,6 +69,11 @@ vgui.Register("ttt_credit_remaining", PANEL, "EditablePanel")
 local PANEL = {}
 
 function PANEL:SetEquipment(eq)
+	self.Equipment = eq
+end
+
+function PANEL:DoClick()
+	ttt.equipment_menu:SetEquipment(self.Equipment)
 end
 
 vgui.Register("ttt_equipment_item", PANEL, "DImageButton")
@@ -78,10 +83,11 @@ local PANEL = {}
 function PANEL:Init()
 	self.List = self:Add "DIconLayout"
 	self.List:Dock(FILL)
-	for i = 1, 200 do
+	for classname, ent in pairs(ttt.Equipment.List) do
 		local btn = self.List:Add "ttt_equipment_item"
 		btn:SetImage "tttrw/disagree.png"
 		btn:SetSize(64, 64)
+		btn:SetEquipment(ent)
 	end
 end
 
@@ -151,10 +157,6 @@ end
 function PANEL:PerformLayout(w, h)
 	self:SetText(self.Text:GetText())
 	self:SetTall(GetHeaderSize())
-end
-
-function PANEL:SetItem(item)
-	self:SetText(item.Name)
 end
 
 vgui.Register("ttt_equipment_header", PANEL, "ttt_equipment_background")
@@ -284,8 +286,8 @@ function PANEL:Init()
 	self:DockPadding(GetSpacing() * 1.5, GetSpacing() * 1.5, GetSpacing() * 1.5, GetSpacing() * 1.5)
 end
 
-function PANEL:SetItem(item)
-	self.Description:SetText(item.Description)
+function PANEL:SetEquipment(item)
+	self.Description:SetText(item.Desc or "NO DESC")
 	self.Description:SizeToContents()
 end
 
@@ -306,11 +308,6 @@ function PANEL:Init()
 	self.ItemDesc:Dock(TOP)
 	self.ItemDesc:DockMargin(0, 0, 0, GetSpacing())
 
-	self:SetItem {
-		Description = "Reduces all damage taken by 20%",
-		Name = "Body armor",
-	}
-
 	self.BoughtText = self:Add "ttt_equipment_header"
 	self.BoughtText:SetZPos(2)
 	self.BoughtText:Dock(TOP)
@@ -322,12 +319,9 @@ function PANEL:Init()
 	self.BoughtItems:Dock(TOP)
 end
 
-function PANEL:SetItem(item)
-	for _, child in pairs(self:GetChildren()) do
-		if (child.SetItem) then
-			child:SetItem(item)
-		end
-	end
+function PANEL:SetEquipment(item)
+	self.ItemName:SetText(item.Name)
+	self.ItemDesc:SetEquipment(item)
 end
 
 function PANEL:PerformLayout()
@@ -385,6 +379,10 @@ function PANEL:OnScreenSizeChanged(w, h)
 	self:Center()
 end
 
+function PANEL:SetEquipment(eq)
+	self.ItemScreen:SetEquipment(eq)
+end
+
 function PANEL:PerformLayout(w, h)
 	self.Mesh = hud.BuildCurvedMesh(6, 0, 0, self:GetWide(), self:GetTall())
 end
@@ -420,6 +418,11 @@ if (IsValid(ttt.equipment_menu)) then
 end
 ttt.equipment_menu = GetHUDPanel():Add "ttt_equipment_menu"
 ttt.equipment_menu:SetVisible(false)
+
+ttt.equipment_menu:SetEquipment {
+	Desc = "Reduces all damage taken by 20%",
+	Name = "Body armor",
+}
 
 function GM:OnContextMenuOpen()
 	if (IsValid(ttt.equipment_menu)) then

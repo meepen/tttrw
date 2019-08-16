@@ -38,7 +38,7 @@ TTT_Equipment = {}
 ttt.Equipment = ttt.Equipment or {}
 ttt.Equipment.List = ttt.Equipment.List or {}
 
-function ttt.Equipment.Add(id,w)
+function ttt.Equipment.Add(id, w)
 	print("[Equipment] Adding "..id.." to equipment list.")
 	local e
 	local f
@@ -56,6 +56,7 @@ function ttt.Equipment.Add(id,w)
 		end
 	end
 	local t = e.Equipment
+	t.ClassName = id
 	ttt.Equipment.List[id] = t
 end
 
