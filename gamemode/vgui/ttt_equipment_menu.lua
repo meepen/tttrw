@@ -265,9 +265,6 @@ function PANEL:SetItem(item)
 	self.Description:SizeToContents()
 end
 
-function PANEL:PerformLayout(w, h)
-end
-
 vgui.Register("ttt_equipment_description", PANEL, "ttt_equipment_background")
 
 
@@ -346,29 +343,26 @@ function PANEL:PerformLayout()
 	self.CloseButton:SetSize(size, size)
 	self.CloseButton:SetZPos(1)
 
-
-	-- Credit screen
 	local spaceLeft = w - Spacing * 4 - size
 
 	self:DockPadding(Spacing, Spacing, Spacing, Spacing)
-	
+
 	self.CreditScreen:Dock(LEFT)
 	self.CreditScreen:SetWide(spaceLeft * 3 / 7)
 	self.CreditScreen:DockMargin(0, 0, Spacing, 0)
-	
-	-- Item screen
+
 	self.ItemScreen:Dock(LEFT)
 	self.ItemScreen:SetWide(spaceLeft * 4 / 7)
 	self.ItemScreen:DockMargin(0, 0, Spacing, 0)
 
 	self:SetSize(spaceLeft + Spacing * 4 + HeaderSize, h)
 	self:Center()
-	
+
 	mat:SetFloat("$alpha", 0.03)
 	mat:SetVector("$color", evil_icons_color:ToVector())
 
 	self.Mesh = hud.BuildCurvedMesh(6, 0, 0, self:GetWide(), self:GetTall())
-	
+
 	self:MakePopup()
 end
 
@@ -380,6 +374,8 @@ local bg_color = CreateMaterial("ttt_color_material", "UnlitGeneric", {
 
 local matrix = Matrix()
 function PANEL:Paint(w, h)
+	self:SetKeyboardInputEnabled(false)
+	self:SetMouseInputEnabled(true)
 	hud.StartStenciledMesh(self.Mesh, self:LocalToScreen(0, 0))
 		render.SetMaterial(bg_color)
 		render.DrawScreenQuad()
@@ -394,13 +390,27 @@ function PANEL:Paint(w, h)
 			end
 		end
 	hud.EndStenciledMesh()
+	print(vgui.GetKeyboardFocus())
 end
-vgui.Register("ttt_equipment_menu", PANEL, "DPanel")
+vgui.Register("ttt_equipment_menu", PANEL, "EditablePanel")
 
-
-if (ttt.equipment_menu) then
+if (IsValid(ttt.equipment_menu)) then
 	ttt.equipment_menu:Remove()
 	ttt.equipment_menu = nil
 end
 ttt.equipment_menu = vgui.Create("ttt_equipment_menu", GetHUDPanel())
+ttt.equipment_menu:SetVisible(false)
 
+function GM:OnContextMenuOpen()
+	if (IsValid(ttt.equipment_menu)) then
+		ttt.equipment_menu:SetVisible(true)
+	else
+		ttt.equipment_menu = vgui.Create("ttt_equipment_menu", GetHUDPanel())
+	end
+end
+
+function GM:OnContextMenuClose()
+	if (IsValid(ttt.equipment_menu)) then
+		ttt.equipment_menu:SetVisible(false)
+	end
+end
