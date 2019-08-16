@@ -7,7 +7,6 @@ local roleConversion = { [0] = "Innocent", "traitor", "Detective", }
 
 function ENT:KeyValue(key, value)
 	if key == "OnPass" or key == "OnFail" then
-		-- this is our output, so handle it as such
 		self:StoreOutput(key, value)
 	elseif key == "Role" then
 		self.Role = roleConversion[tonumber(value)]
@@ -22,13 +21,12 @@ end
 function ENT:AcceptInput(name, activator)
 	if name == "TestActivator" then
 		if IsValid(activator) and activator:IsPlayer() then
-			if (self.Role == "any" or self.Role == activator:GetRole() or self.Role == activator:Team()) then
+			if (self.Role == "any" or self.Role == activator:GetRole() or self.Role == activator:GetTeam()) then
 				self:TriggerOutput("OnPass", activator)
 			else
 				self:TriggerOutput("OnFail", activator)
 			end
 		end
-
 		return true
 	end
 end
