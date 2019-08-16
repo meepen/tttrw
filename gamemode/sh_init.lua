@@ -8,6 +8,7 @@ DeriveGamemode "base"
 ttt = ttt or GM or {}
 
 PLAYER = FindMetaTable "Player"
+ENTITY = FindMetaTable "Entity"
 
 function printf(...)
 	print(string.format(...))

@@ -194,7 +194,6 @@ function GM:OnPlayerRoleChange(ply, old, new)
 		end
 	end
 
-	print "check"
 	ttt.CheckTeamWin()
 end
 
