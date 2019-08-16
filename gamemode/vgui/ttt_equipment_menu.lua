@@ -1,8 +1,13 @@
 local PANEL = {}
 
-local Spacing = math.Round(ScrH() / 100)
 
-local HeaderSize = ScrH() / 30
+local function GetSpacing()
+	return math.Round(ScrH() / 100)
+end
+
+local function GetHeaderSize()
+	return math.Round(ScrH() / 30)
+end
 
 local box_background = Color(41, 41, 41, 230)
 local white_text_color = Color(0xe0, 0xe0, 0xe0)
@@ -42,17 +47,16 @@ local evil_icons_color = Color(255, 255, 255)
 local good_color = Color(0, 0, 255, 255)
 
 function PANEL:Init()
-	self.Text = vgui.Create("DLabel", self)
+	self.Text = self:Add "DLabel"
 	self.Text:SetTextColor(evil_color) -- TODO: font
 	self.Text:SetContentAlignment(5) -- Center
 	self.Text:SetFont "ttt_credit_font"
-	self.Text:SetText("You have 0 credits remaining")
-	self:PerformLayout(self:GetSize())
+	self.Text:SetText "You have 0 credits remaining"
 end
 
 function PANEL:PerformLayout(w, h)
+	self:SetTall(GetHeaderSize())
 	self.Text:SizeToContents()
-	self:SetTall(HeaderSize)
 	self.Text:Center()
 end
 
@@ -60,44 +64,64 @@ function PANEL:Paint(w, h)
 	draw.RoundedBox(5, 0, 0, w, h, box_background)
 end
 
-vgui.Register("ttt_credit_remaining", PANEL, "DPanel")
+vgui.Register("ttt_credit_remaining", PANEL, "EditablePanel")
 
+local PANEL = {}
+
+function PANEL:SetEquipment(eq)
+end
+
+vgui.Register("ttt_equipment_item", PANEL, "DImageButton")
 
 local PANEL = {}
 
 function PANEL:Init()
-	-- TODO(meep): add this lol
+	self.List = self:Add "DIconLayout"
+	self.List:Dock(FILL)
+	for i = 1, 200 do
+		local btn = self.List:Add "ttt_equipment_item"
+		btn:SetImage "tttrw/disagree.png"
+		btn:SetSize(64, 64)
+	end
 end
 
-function PANEL:PerformLayout(w, h)
-	self:SetWide(self:GetParent():GetWide())
+vgui.Register("ttt_equipment_list_scroll", PANEL, "DScrollPanel")
+
+local PANEL = {}
+
+function PANEL:Init()
+	self:SetMouseInputEnabled(true)
+	self.List = self:Add "ttt_equipment_list_scroll"
+	self.List:Dock(FILL)
+	self:DockPadding(GetSpacing(), GetSpacing(), GetSpacing(), GetSpacing())
 end
 
 function PANEL:Paint(w, h)
 	draw.RoundedBox(5, 0, 0, w, h, box_background)
 end
 
-vgui.Register("ttt_equipment_list", PANEL, "DPanel")
+vgui.Register("ttt_equipment_list", PANEL, "EditablePanel")
 
 
 local PANEL = {}
 
 function PANEL:Init()
+	self:SetMouseInputEnabled(true)
 	self.Text = self:Add "ttt_credit_remaining"
 	self.Text:Dock(TOP)
-	self.Text:DockMargin(0, 0, 0, Spacing)
+	self.Text:DockMargin(0, 0, 0, GetSpacing())
 
 	self.BuyList = self:Add "ttt_equipment_list"
 	self.BuyList:Dock(LEFT)
 end
 
 function PANEL:PerformLayout(w, h)
+	self.BuyList:SetWide(w)
 end
 
-function PANEL:Paint()
-end
+function PANEL:Paint() end
 
-vgui.Register("ttt_credit_screen", PANEL, "DPanel")
+vgui.Register("ttt_credit_screen", PANEL, "EditablePanel")
 
 local PANEL = {}
 function PANEL:Paint(w, h)
@@ -126,7 +150,7 @@ end
 
 function PANEL:PerformLayout(w, h)
 	self:SetText(self.Text:GetText())
-	self:SetTall(HeaderSize)
+	self:SetTall(GetHeaderSize())
 end
 
 function PANEL:SetItem(item)
@@ -157,7 +181,7 @@ function PANEL:Init()
 end
 
 function PANEL:PerformLayout(w, h)
-	self.Button:SizeToContentsY(Spacing)
+	self.Button:SizeToContentsY(GetSpacing())
 	self.Button:SetWide(w * 2 / 3)
 	self.Button:Center()
 	self:SetTall(self.Button:GetTall())
@@ -242,7 +266,7 @@ function PANEL:Init()
 	self.Buy = self:Add "ttt_equipment_buy_button"
 	self.Buy:Dock(BOTTOM)
 	self.Buy:SetZPos(0)
-	self.Buy:DockMargin(0, Spacing / 2, 0, 0)
+	self.Buy:DockMargin(0, GetSpacing() / 2, 0, 0)
 	self:SetMouseInputEnabled(true)
 
 	self.Carry = self:Add "ttt_equipment_status"
@@ -257,7 +281,7 @@ function PANEL:Init()
 	self.Stock:SetEnabledText "This item is in stock."
 	self.Stock:SetDisabledText "You item is not in stock."
 
-	self:DockPadding(Spacing * 1.5, Spacing * 1.5, Spacing * 1.5, Spacing * 1.5)
+	self:DockPadding(GetSpacing() * 1.5, GetSpacing() * 1.5, GetSpacing() * 1.5, GetSpacing() * 1.5)
 end
 
 function PANEL:SetItem(item)
@@ -271,17 +295,16 @@ vgui.Register("ttt_equipment_description", PANEL, "ttt_equipment_background")
 local PANEL = {}
 
 function PANEL:Init()
-	self:SetMouseInputEnabled(true)
 	self.ItemName = self:Add "ttt_equipment_header"
 	self.ItemName:SetZPos(0)
 	self.ItemName:Dock(TOP)
-	self.ItemName:DockMargin(0, 0, 0, Spacing)
+	self.ItemName:DockMargin(0, 0, 0, GetSpacing())
 	self.ItemName:SetText "Example item"
 
 	self.ItemDesc = self:Add "ttt_equipment_description"
 	self.ItemDesc:SetZPos(1)
 	self.ItemDesc:Dock(TOP)
-	self.ItemDesc:DockMargin(0, 0, 0, Spacing)
+	self.ItemDesc:DockMargin(0, 0, 0, GetSpacing())
 
 	self:SetItem {
 		Description = "Reduces all damage taken by 20%",
@@ -291,7 +314,7 @@ function PANEL:Init()
 	self.BoughtText = self:Add "ttt_equipment_header"
 	self.BoughtText:SetZPos(2)
 	self.BoughtText:Dock(TOP)
-	self.BoughtText:DockMargin(0, 0, 0, Spacing)
+	self.BoughtText:DockMargin(0, 0, 0, GetSpacing())
 	self.BoughtText:SetText "Bought items"
 
 	self.BoughtItems = self:Add "ttt_equipment_background"
@@ -308,10 +331,10 @@ function PANEL:SetItem(item)
 end
 
 function PANEL:PerformLayout()
-	self.ItemName:SetTall(HeaderSize)
-	self.ItemDesc:SetTall((self:GetTall() - Spacing * 2 - HeaderSize * 2) * 4/7)
-	self.BoughtText:SetTall(HeaderSize)
-	self.BoughtItems:SetTall((self:GetTall() - Spacing * 2 - HeaderSize * 2) * 3/7)
+	self.ItemName:SetTall(GetHeaderSize())
+	self.ItemDesc:SetTall((self:GetTall() - GetSpacing() * 2 - GetHeaderSize() * 2) * 4/7)
+	self.BoughtText:SetTall(GetHeaderSize())
+	self.BoughtItems:SetTall((self:GetTall() - GetSpacing() * 2 - GetHeaderSize() * 2) * 3/7)
 end
 
 function PANEL:Paint(w, h)
@@ -326,44 +349,44 @@ local PANEL = {}
 local mat = Material("tttrw/transparentevil.png", "noclamp smooth")
 
 function PANEL:Init()
-	self.CloseButton = vgui.Create("ttt_close_button", self)
+	self:SetMouseInputEnabled(true)
+	self.CloseButton = self:Add "ttt_close_button"
+	self.CreditScreen = self:Add "ttt_credit_screen"
+	self.ItemScreen = self:Add "ttt_item_screen"
+
 	self.CloseButton:SetColor(evil_color)
-	self.CreditScreen = vgui.Create("ttt_credit_screen", self)
-	self.ItemScreen = vgui.Create("ttt_item_screen", self)
+
+	self.CloseButton:SetZPos(1)
+	self.CloseButton:Dock(TOP)
+	self.CreditScreen:Dock(LEFT)
+	self.ItemScreen:Dock(LEFT)
+
+	self:OnScreenSizeChanged(ScrW(), ScrH())
+	timer.Simple(0, function()
+		mat:SetFloat("$alpha", 0.03)
+		mat:SetVector("$color", evil_icons_color:ToVector())
+	end)
 end
 
-function PANEL:PerformLayout()
-	local scrw, scrh = ScrW(), ScrH()
-	local w, h = scrw / 2.5, scrh / 2.1
+function PANEL:OnScreenSizeChanged(w, h)
+	w = w * 0.4
+	h = h * 0.5
+	self:DockPadding(GetSpacing(), GetSpacing(), GetSpacing(), GetSpacing())
+	self.CloseButton:SetSize(GetHeaderSize(), GetHeaderSize())
 
-	local size = math.Round(HeaderSize)
-
-	self.CloseButton:Dock(TOP)
-	self.CloseButton:DockMargin(0, 0, 0, 0)
-	self.CloseButton:SetSize(size, size)
-	self.CloseButton:SetZPos(1)
-
-	local spaceLeft = w - Spacing * 4 - size
-
-	self:DockPadding(Spacing, Spacing, Spacing, Spacing)
-
-	self.CreditScreen:Dock(LEFT)
+	local spaceLeft = w - GetSpacing() * 4 - GetHeaderSize()
 	self.CreditScreen:SetWide(spaceLeft * 3 / 7)
-	self.CreditScreen:DockMargin(0, 0, Spacing, 0)
-
-	self.ItemScreen:Dock(LEFT)
 	self.ItemScreen:SetWide(spaceLeft * 4 / 7)
-	self.ItemScreen:DockMargin(0, 0, Spacing, 0)
 
-	self:SetSize(spaceLeft + Spacing * 4 + HeaderSize, h)
+	self.CreditScreen:DockMargin(0, 0, GetSpacing(), 0)
+	self.ItemScreen:DockMargin(0, 0, GetSpacing(), 0)
+
+	self:SetSize(w, h)
 	self:Center()
+end
 
-	mat:SetFloat("$alpha", 0.03)
-	mat:SetVector("$color", evil_icons_color:ToVector())
-
+function PANEL:PerformLayout(w, h)
 	self.Mesh = hud.BuildCurvedMesh(6, 0, 0, self:GetWide(), self:GetTall())
-
-	self:MakePopup()
 end
 
 local bg_color = CreateMaterial("ttt_color_material", "UnlitGeneric", {
@@ -374,8 +397,6 @@ local bg_color = CreateMaterial("ttt_color_material", "UnlitGeneric", {
 
 local matrix = Matrix()
 function PANEL:Paint(w, h)
-	self:SetKeyboardInputEnabled(false)
-	self:SetMouseInputEnabled(true)
 	hud.StartStenciledMesh(self.Mesh, self:LocalToScreen(0, 0))
 		render.SetMaterial(bg_color)
 		render.DrawScreenQuad()
@@ -390,7 +411,6 @@ function PANEL:Paint(w, h)
 			end
 		end
 	hud.EndStenciledMesh()
-	print(vgui.GetKeyboardFocus())
 end
 vgui.Register("ttt_equipment_menu", PANEL, "EditablePanel")
 
@@ -398,15 +418,20 @@ if (IsValid(ttt.equipment_menu)) then
 	ttt.equipment_menu:Remove()
 	ttt.equipment_menu = nil
 end
-ttt.equipment_menu = vgui.Create("ttt_equipment_menu", GetHUDPanel())
+ttt.equipment_menu = GetHUDPanel():Add "ttt_equipment_menu"
 ttt.equipment_menu:SetVisible(false)
 
 function GM:OnContextMenuOpen()
 	if (IsValid(ttt.equipment_menu)) then
-		ttt.equipment_menu:SetVisible(true)
+		if (not ttt.equipment_menu:IsVisible()) then
+			ttt.equipment_menu:SetVisible(true)
+		end
 	else
-		ttt.equipment_menu = vgui.Create("ttt_equipment_menu", GetHUDPanel())
+		ttt.equipment_menu = GetHUDPanel():Add "ttt_equipment_menu"
 	end
+	ttt.equipment_menu:MakePopup()
+	ttt.equipment_menu:SetMouseInputEnabled(true)
+	ttt.equipment_menu:SetKeyboardInputEnabled(false)
 end
 
 function GM:OnContextMenuClose()
