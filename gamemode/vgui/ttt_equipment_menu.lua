@@ -140,13 +140,14 @@ function PANEL:Init()
 	self.Button.PerformLayout = function(self, w, h)
 		self:SetTall(self:GetParent():GetTall())
 	end
+	self:SetMouseInputEnabled(true)
 
 	self:PerformLayout(self:GetSize())
 end
 
 function PANEL:PerformLayout(w, h)
 	self.Button:SizeToContentsY(Spacing)
-	self.Button:SetWide(math.Round(w * 2 / 3 / 2) * 2)
+	self.Button:SetWide(w * 2 / 3)
 	self.Button:Center()
 	self:SetTall(self.Button:GetTall())
 
@@ -169,21 +170,38 @@ end
 
 function PANEL:Paint() end
 
-vgui.Register("ttt_equipment_buy_button", PANEL, "DButton")
+vgui.Register("ttt_equipment_buy_button", PANEL, "EditablePanel")
 
 
 local PANEL = {}
 function PANEL:Init()
-	self.Stock = self:Add "DLabel"
-	self.Stock:SetFont "ttt_equipment_description_font"
-	self.Stock:SetText "This item is in stock."
-	self.Stock:SetTextColor(white_text_color)
+	self.Text = self:Add "DLabel"
+	self.Text:SetFont "ttt_equipment_description_font"
+	self.Text:SetTextColor(white_text_color)
+	self.Image = self:Add "DImage"
+	self:SetEnabled(true)
+end
+
+function PANEL:SetEnabled(b)
+	if (b) then
+		self.Text:SetText "This item is in stock."
+		self.Image:SetImage("tttrw/agree.png", "icon16/tick.png")
+	else
+		self.Text:SetText "This item is not in stock."
+		self.Image:SetImage("tttrw/disagree.png", "icon16/cross.png")
+	end
 	self:PerformLayout(self:GetSize())
 end
 
 function PANEL:PerformLayout(w, h)
-	self.Stock:SizeToContents()
-	self.Stock:Center()
+	self.Image:SizeToContents()
+	self.Text:SizeToContents()
+	local w, h = self.Text:GetSize()
+	self.Image:SetSize(h / self.Image:GetTall() * self.Image:GetWide(), h)
+	self.Text:Center()
+	local x, y = self.Text:GetPos()
+	self.Text:SetPos(x - self.Image:GetWide() / 2, y)
+	self.Image:SetPos(x + self.Text:GetWide(), y)
 end
 
 vgui.Register("ttt_equipment_available", PANEL, "EditablePanel")
