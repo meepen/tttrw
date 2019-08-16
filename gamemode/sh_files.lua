@@ -13,10 +13,12 @@ AddCSLuaFile();
 	},
 	Client = {
 		"cl_hud_helpers.lua",
+		"vgui/ttt_close_button.lua",
 		"vgui/ttt_html_base.lua",
 		"vgui/ttt_ammo.lua",
 		"vgui/ttt_health.lua",
 		"vgui/ttt_time.lua",
+		"vgui/ttt_equipment_menu.lua",
 		"cl_hud.lua",
 		"cl_scoreboard.lua",
 		"cl_hitmarkers.lua",
@@ -39,6 +41,10 @@ AddCSLuaFile();
 	Resources = {
 		"materials/tttrw/heart.png",
 		"materials/tttrw/tbutton.png",
+		"materials/tttrw/xbutton128.png",
+		"materials/tttrw/transparentevil.png",
+		"materials/tttrw/agree.png",
+		"materials/tttrw/disagree.png",
 	},
 	Load = function(self)
 		for _, file in ipairs(self.Shared) do
