@@ -94,8 +94,6 @@ end
 vgui.Register("ttt_credit_screen", PANEL, "DPanel")
 
 local PANEL = {}
-function PANEL:Init()
-end
 function PANEL:Paint(w, h)
 	draw.RoundedBox(5, 0, 0, w, h, box_background)
 end
@@ -152,9 +150,6 @@ function PANEL:PerformLayout(w, h)
 	self.Button:Center()
 	self:SetTall(self.Button:GetTall())
 
-	print("button",self.Button:GetSize())
-	print("self", self:GetSize())
-
 	if (self.Button.Mesh) then
 		self.Button.Mesh:Destroy()
 		self.Button.Mesh = nil
@@ -206,6 +201,7 @@ function PANEL:Init()
 	self.Buy:Dock(BOTTOM)
 	self.Buy:SetZPos(0)
 	self.Buy:DockMargin(0, Spacing / 2, 0, 0)
+	self:SetMouseInputEnabled(true)
 
 	self.Available = self:Add "ttt_equipment_available"
 	self.Available:Dock(BOTTOM)
@@ -228,6 +224,7 @@ vgui.Register("ttt_equipment_description", PANEL, "ttt_equipment_background")
 local PANEL = {}
 
 function PANEL:Init()
+	self:SetMouseInputEnabled(true)
 	self.ItemName = self:Add "ttt_equipment_header"
 	self.ItemName:SetZPos(0)
 	self.ItemName:Dock(TOP)
