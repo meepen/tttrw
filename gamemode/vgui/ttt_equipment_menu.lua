@@ -134,30 +134,64 @@ local buy_button_mat = CreateMaterial("ttt_buy_material", "UnlitGeneric", {
 })
 local PANEL = {}
 function PANEL:Init()
+	self.Button = self:Add "DButton"
+	self.Button:SetFont "ttt_equipment_button_font"
+	self.Button:SetText "Buy"
+	self.Button:SetTextColor(box_background)
+	self.Button.Paint = self.PaintButton
+	self.Button.PerformLayout = function(self, w, h)
+		self:SetTall(self:GetParent():GetTall())
+	end
+
 	self:PerformLayout(self:GetSize())
-	self:SetFont "ttt_equipment_button_font"
-	self:SetText "Buy"
-	self:SetTextColor(box_background)
 end
+
 function PANEL:PerformLayout(w, h)
-	self:SizeToContentsY(Spacing / 2)
-	if (self.Mesh) then
-		self.Mesh:Destroy()
-		self.Mesh = nil
+	self.Button:SizeToContentsY(Spacing)
+	self.Button:SetWide(math.Round(w * 2 / 3 / 2) * 2)
+	self.Button:Center()
+	self:SetTall(self.Button:GetTall())
+
+	print("button",self.Button:GetSize())
+	print("self", self:GetSize())
+
+	if (self.Button.Mesh) then
+		self.Button.Mesh:Destroy()
+		self.Button.Mesh = nil
 	end
 
 	local w = w * 2 / 3
 
-	self.Mesh = hud.BuildCurvedMesh(5, 0, 0, w, h)
+	self.Button.Mesh = hud.BuildCurvedMesh(5, 0, 0, w, h)
 end
-function PANEL:Paint(w, h)
-	hud.StartStenciledMesh(self.Mesh, self:LocalToScreen(w * 1 / 6, 0))
+
+function PANEL:PaintButton(w, h)
+	hud.StartStenciledMesh(self.Mesh, self:LocalToScreen(0, 0))
 		render.SetMaterial(buy_button_mat)
 		render.DrawScreenQuad()
 	hud.EndStenciledMesh()
 end
 
+function PANEL:Paint() end
+
 vgui.Register("ttt_equipment_buy_button", PANEL, "DButton")
+
+
+local PANEL = {}
+function PANEL:Init()
+	self.Stock = self:Add "DLabel"
+	self.Stock:SetFont "ttt_equipment_description_font"
+	self.Stock:SetText "This item is in stock."
+	self.Stock:SetTextColor(white_text_color)
+	self:PerformLayout(self:GetSize())
+end
+
+function PANEL:PerformLayout(w, h)
+	self.Stock:SizeToContents()
+	self.Stock:Center()
+end
+
+vgui.Register("ttt_equipment_available", PANEL, "EditablePanel")
 
 local PANEL = {}
 function PANEL:Init()
@@ -170,6 +204,12 @@ function PANEL:Init()
 
 	self.Buy = self:Add "ttt_equipment_buy_button"
 	self.Buy:Dock(BOTTOM)
+	self.Buy:SetZPos(0)
+	self.Buy:DockMargin(0, Spacing / 2, 0, 0)
+
+	self.Available = self:Add "ttt_equipment_available"
+	self.Available:Dock(BOTTOM)
+	self.Available:SetZPos(1)
 
 	self:DockPadding(Spacing * 1.5, Spacing * 1.5, Spacing * 1.5, Spacing * 1.5)
 end
