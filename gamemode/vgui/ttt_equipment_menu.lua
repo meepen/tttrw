@@ -4,7 +4,7 @@ local Spacing = math.Round(ScrH() / 100)
 
 local HeaderSize = ScrH() / 30
 
-local box_background = Color(41, 41, 41, 240)
+local box_background = Color(41, 41, 41, 230)
 local white_text_color = Color(0xe0, 0xe0, 0xe0)
 
 surface.CreateFont("ttt_credit_font", {
@@ -128,6 +128,11 @@ function PANEL:PerformLayout(w, h)
 	self:SetText(self.Text:GetText())
 	self:SetTall(HeaderSize)
 end
+
+function PANEL:SetItem(item)
+	self:SetText(item.Name)
+end
+
 vgui.Register("ttt_equipment_header", PANEL, "ttt_equipment_background")
 
 
@@ -281,8 +286,9 @@ function PANEL:Init()
 	self.ItemDesc:Dock(TOP)
 	self.ItemDesc:DockMargin(0, 0, 0, Spacing)
 
-	self.ItemDesc:SetItem {
-		Description = ("Very long string to meme with "):rep(10)
+	self:SetItem {
+		Description = "Reduces all damage taken by 20%",
+		Name = "Body armor",
 	}
 
 	self.BoughtText = self:Add "ttt_equipment_header"
@@ -294,6 +300,14 @@ function PANEL:Init()
 	self.BoughtItems = self:Add "ttt_equipment_background"
 	self.BoughtItems:SetZPos(3)
 	self.BoughtItems:Dock(TOP)
+end
+
+function PANEL:SetItem(item)
+	for _, child in pairs(self:GetChildren()) do
+		if (child.SetItem) then
+			child:SetItem(item)
+		end
+	end
 end
 
 function PANEL:PerformLayout()
