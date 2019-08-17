@@ -4,11 +4,11 @@ resource.AddFile "sound/tttrw/hitmarker_hs_.mp3"
 function GM:EntityTakeDamage(vic, dmg)
     local atk = dmg:GetAttacker()
 
-    if (not IsValid(atk) or not atk:IsPlayer() or not vic:IsPlayer()) then
+    if (not IsValid(atk) or not vic:IsPlayer()) then
         return
     end
 
-    if (not hook.Run("PlayerShouldTakeDamage", vic, atk)) then
+    if (not hook.Run("PlayerShouldTakeDamage", vic, atk) and not (not atk:IsPlayer() and atk:GetClass() == "trigger_hurt")) then
         return
     end
 

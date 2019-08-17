@@ -5,7 +5,6 @@ ENT.Damager = nil
 ENT.KillName = nil
 
 function ENT:KeyValue(key, value)
-	print(key, value)
 	if key == "damager" then
 		self.Damager = tostring(value)
 	elseif key == "killname" then
@@ -20,9 +19,7 @@ function ENT:AcceptInput(name, activator, caller, data)
 		end
 
 		if (IsValid(activator) and activator:IsPlayer()) then
-			print(activator)
 			for _, ent in pairs(ents.FindByName(self.Damager) or {}) do
-				print(ent)
 				if (IsValid(ent) and ent.SetDamageOwner) then
 					printf("Setting damageowner on %s <%s> to %s", ent:GetName(), ent:GetClass(), activator:Nick())
 

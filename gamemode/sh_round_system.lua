@@ -51,6 +51,8 @@ function GM:PlayerShouldTakeDamage(ply, atk)
 	if (IsValid(atk) and atk:IsPlayer()) then
 		local state = ttt.GetRoundState()
 		return state == ttt.ROUNDSTATE_ACTIVE or ttt_postround_dm:GetBool() and state == ttt.ROUNDSTATE_ENDED
+	elseif (atk:GetClass() == "trigger_hurt") then
+		return true
 	end
 end
 
