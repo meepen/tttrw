@@ -3,7 +3,7 @@ ENT.Base = "base_point"
 
 ENT.Role = "any"
 
-local roleConversion = { [0] = "Innocent", "traitor", "Detective" }
+local roleConversion = { [0] = "Innocent", "traitor", "Detective", "any" }
 
 function ENT:KeyValue(key, value)
 	if key == "OnPass" or key == "OnFail" then
