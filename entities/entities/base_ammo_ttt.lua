@@ -8,6 +8,7 @@ ENT.AmmoAmount = 1
 ENT.AmmoMax = 10
 ENT.AmmoEntMax = 1
 ENT.Model = Model( "models/items/boxsrounds.mdl" )
+ENT.IsAmmo = true
 
 
 function ENT:RealInit() end -- bw compat
