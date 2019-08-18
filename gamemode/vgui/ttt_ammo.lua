@@ -6,7 +6,6 @@ function PANEL:Init()
 	end)
 	
 	self:SetHTML [[
-<!-- AMMO -->
 <head>
 	<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
 	<style>
@@ -38,7 +37,6 @@ function PANEL:Init()
 <body onload="ttt.ready()">
 	<h1 id="ammoCounter" class="shadow" />
 	<h2 id="reserveAmmo" class="shadow" />
-	<img src="asset://garrysmod/materials/tttrw/heart.png" width="48">
 	<script>
 		var ammoCounter = document.getElementById("ammoCounter");
 		var reserveAmmo = document.getElementById("reserveAmmo");
@@ -86,7 +84,7 @@ function PANEL:Init()
 end
 
 function PANEL:OnRemove()
-	timer.Destroy("ttt_DHTML_Ammo_Timer")
+	timer.Destroy("ttt_ammo_timer")
 end
 
 function PANEL:UpdateAllAmmo(pl, wep)
@@ -103,19 +101,31 @@ function PANEL:UpdateAllAmmo(pl, wep)
 end
 
 function PANEL:PlayerSwitchWeapon(pl, old, new)
+	if (not IsFirstTimePredicted()) then
+		return
+	end
+
 	if (pl ~= self:GetTarget()) then return end
+
+	if (IsValid(self.Model)) then
+		self.Model:Remove()
+	end
+
+	if (IsValid(new)) then
+		self.Model = ClientsideModel(new.WorldModel, RENDERGROUP_OTHER)
+	end
 
 	self:UpdateAllAmmo(pl, new)
 end
 
 function PANEL:PerformLayout()
 	self:SetPos(ScrW() * 0.85625, ScrH() * 0.777)
-	self:SetSize(ScrW() * 0.125, ScrH() * 0.33)
+	self:SetSize(ScrW() * 0.125, ScrH() * 0.2)
 
 	local pl = self:GetTarget()
 	self:UpdateAllAmmo(pl, pl:GetActiveWeapon())
 	
-	timer.Create("ttt_DHTML_Ammo_Timer", 0.1, 0, function() self:Tick() end)
+	timer.Create("ttt_ammo_timer", 0.1, 0, function() self:Tick() end)
 end
 
 function PANEL:Tick()
@@ -136,6 +146,62 @@ function PANEL:Tick()
 		self.ReserveAmmo = reserve
 		self:CallSafe([[setReserveAmmo("%s")]], reserve)
 	end
+end
+
+local err = ClientsideModel("models/weapons/w_rif_ak47.mdl", RENDERGROUP_OTHER)
+local colour = Material "pp/colour"
+
+function PANEL:Paint(w, h)
+
+	local targ = self:GetTarget()
+	if (not IsValid(targ)) then
+		return
+	end
+
+	local wep = targ:GetActiveWeapon()
+
+	if (not IsValid(wep)) then
+		return
+	end
+
+	local err = self.Model
+	if (not IsValid(err)) then
+		return
+	end
+
+	local x, y = self:LocalToScreen(0, 30)
+	cam.Start3D(vector_origin, angle_zero, 90, x, y, w, h - 30)
+		render.SuppressEngineLighting(true)
+			local renderpos, renderang = wep:GetRenderOrigin(), wep:GetRenderAngles()
+			err:SetRenderOrigin(Vector(25, 0, 0))
+			err:SetRenderAngles(Angle(0, 90, 0))
+
+				render.SetStencilWriteMask(1)
+				render.SetStencilTestMask(1)
+				render.SetStencilReferenceValue(1)
+				render.SetStencilCompareFunction(STENCIL_ALWAYS)
+				render.SetStencilPassOperation(STENCIL_REPLACE)
+				render.SetStencilFailOperation(STENCIL_KEEP)
+				render.SetStencilZFailOperation(STENCIL_KEEP)
+				render.ClearStencil()
+
+				render.SetStencilEnable(true)
+				render.SetMaterial(colour)
+					render.OverrideColorWriteEnable(true, false)
+						err:DrawModel()
+					render.OverrideColorWriteEnable(false, false)
+
+					render.SetStencilPassOperation(STENCIL_KEEP)
+					render.SetStencilCompareFunction(STENCIL_EQUAL)
+
+					render.SetColorMaterial()
+					render.DrawScreenQuad()
+				render.SetStencilEnable(false)
+
+			err:SetRenderOrigin(renderpos)
+			err:SetRenderAngles(renderang)
+		render.SuppressEngineLighting(false)
+	cam.End3D()
 end
 
 vgui.Register("ttt_ammo", PANEL, "ttt_html_base")
