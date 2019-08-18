@@ -138,7 +138,9 @@ function IgniteTarget(att, path, dmginfo)
 		local dur = ent:IsPlayer() and 5 or 10
 
 		-- disallow if prep or post round
-		if ent:IsPlayer() and (not GAMEMODE:AllowPVP()) then return end
+		if (ent:IsPlayer() and not hook.Run("PlayerShouldTakeDamage", ent, atk)) then
+			return
+		end
 
 		ent:Ignite(dur, 100)
 
