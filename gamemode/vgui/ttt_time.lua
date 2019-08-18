@@ -112,7 +112,7 @@ end
 
 function PANEL:UpdateState()
 	local color, text = status_color
-	local state = self.State or ttt.GetRoundState()
+	local state = self.State or ttt and ttt.GetRoundState and ttt.GetRoundState()
 	if (state == ttt.ROUNDSTATE_ACTIVE and self:GetTarget() == LocalPlayer()) then
 		local data = ttt.roles[self.Role or LocalPlayer():GetRole()]
 		text = data.Name

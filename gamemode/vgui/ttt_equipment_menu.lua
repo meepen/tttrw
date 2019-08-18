@@ -451,6 +451,11 @@ if (IsValid(ttt.equipment_menu)) then
 end
 
 function GM:OnContextMenuOpen()
+
+	if (not LocalPlayer():GetRoleData().CanUseBuyMenu) then
+		return
+	end
+
 	if (IsValid(ttt.equipment_menu)) then
 		if (not ttt.equipment_menu:IsVisible()) then
 			ttt.equipment_menu:SetVisible(true)

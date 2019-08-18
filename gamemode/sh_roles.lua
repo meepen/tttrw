@@ -77,8 +77,24 @@ function TEAM:TeamChatSeenBy(what)
 	return self
 end
 
+function TEAM:SetEvil()
+	self.Evil = true
+	return self
+end
+
+function TEAM:SetGood()
+	self.Good = true
+	return self
+end
+
+function TEAM:SetCanUseBuyMenu(b)
+	self.CanUseBuyMenu = b
+	return self
+end
+
 function TEAM:SetVoiceChannel(channel)
 	self.VoiceChannel = channel
+	return self
 end
 
 setmetatable(SEEN_BY_ALL, SEEN_BY_ALL)
@@ -137,8 +153,8 @@ local function Role(name, team)
 end
 
 function GM:TTTPrepareRoles(Team, Role)
-	Team "innocent":SetColor(Color(20, 240, 20))
-	Team "traitor":SeenBy {"traitor"}:SetColor(Color(240, 20, 20)):TeamChatSeenBy "traitor" :SetVoiceChannel "traitor"
+	Team "innocent":SetColor(Color(20, 240, 20)) :SetGood()
+	Team "traitor":SeenBy {"traitor"}:SetColor(Color(240, 20, 20)):TeamChatSeenBy "traitor" :SetVoiceChannel "traitor" :SetEvil() :SetCanUseBuyMenu(true)
 	Team "spectator":SeenByAll():SetColor(Color(20, 120, 120))
 
 	Role("Innocent", "innocent")
@@ -148,7 +164,7 @@ function GM:TTTPrepareRoles(Team, Role)
 			return 0
 		end
 		return math.min(ttt_detective_max:GetInt(), math.ceil(total_players * ttt_detective_pct:GetFloat()))
-	end):SetColor(20, 20, 240):TeamChatSeenBy "Detective" :SetVoiceChannel "Detective"
+	end):SetColor(20, 20, 240):TeamChatSeenBy "Detective" :SetVoiceChannel "Detective" :SetCanUseBuyMenu(true)
 	Role("Traitor", "traitor"):SetCalculateAmountFunction(function(total_players)
 		return math.min(ttt_traitor_max:GetInt(), math.ceil(total_players * ttt_traitor_pct:GetFloat()))
 	end)
