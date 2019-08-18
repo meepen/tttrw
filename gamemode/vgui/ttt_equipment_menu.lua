@@ -451,8 +451,7 @@ if (IsValid(ttt.equipment_menu)) then
 end
 
 function GM:OnContextMenuOpen()
-
-	if (not LocalPlayer():GetRoleData().CanUseBuyMenu) then
+	if (not LocalPlayer():GetRoleData().CanUseBuyMenu or ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
 		return
 	end
 
