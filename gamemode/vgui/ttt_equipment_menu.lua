@@ -315,7 +315,12 @@ end
 function PANEL:SetEquipment(item)
 	self.Description:SetText(item.Desc or "NO DESC")
 	self.Description:SizeToContents()
-	PrintTable(item)
+	
+	if (item.IsWeapon) then
+	else
+		self.Stock:SetEnabled(LocalPlayer():CanReceiveEquipment(item.ClassName))
+		self.Carry:SetEnabled(LocalPlayer():CanReceiveEquipment(item.ClassName))
+	end
 	self.Buy:SetEquipment(item)
 end
 
