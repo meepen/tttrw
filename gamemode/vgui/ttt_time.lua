@@ -5,6 +5,7 @@ local status_color = Color(154, 153, 153)
 function PANEL:Init()
 	self:AddFunction("ttt", "ready", function()
 		self.Ready = true
+		self:UpdateState()
 	end)
 	
 	self:SetHTML [[
@@ -111,30 +112,31 @@ end
 
 function PANEL:UpdateState()
 	local color, text = status_color
-	local state = ttt.GetRoundState()
-	print(state)
-	if (state == ttt.ROUNDSTATE_ACTIVE) then
-		local data = self:GetTarget():GetRoleData()
+	local state = self.State or ttt.GetRoundState()
+	if (state == ttt.ROUNDSTATE_ACTIVE and self:GetTarget() == LocalPlayer()) then
+		local data = ttt.roles[self.Role or LocalPlayer():GetRole()]
 		text = data.Name
 
 		color = data.Color
 	else
 		text = ttt.Enums.RoundState[state]
 	end
-	
+
 	self.StartTime = CurTime()
 	self:CallSafe([[setState("%s", "rgb(%d, %d, %d)");]], text, color.r, color.g, color.b)
 end
 
-function PANEL:OnRoundStateChange()
+function PANEL:OnRoundStateChange(old, new)
+	self.State = new
 	self:UpdateState()
 end
 
-function PANEL:OnPlayerRoleChange(ply)
-	print(ply)
-	if (ply == LocalPlayer()) then
-		self:UpdateState()
+function PANEL:OnPlayerRoleChange(ply, old, new)
+	if (ply ~= LocalPlayer()) then
+		return
 	end
+	self.Role = new
+	self:UpdateState()
 end
 
 function PANEL:PerformLayout()

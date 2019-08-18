@@ -8,7 +8,7 @@ ENT.Contact = "meepdarknessmeep@gmail.com"
 
 function ENT:NetworkVarNotifyCallback(name, old, new)
 	printf("%s::%s: %s -> %s", self:GetClass(), name, old, new)
-	hook.Run("On"..name.."Change", old, new)
+	hook.Run("On" .. name .. "Change", old, new)
 end
 
 function ENT:SetupDataTables()
