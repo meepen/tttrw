@@ -25,6 +25,7 @@ AddCSLuaFile();
 		"cl_crosshair_menu.lua",
 		"cl_voice.lua",
 		"cl_crosshair_menu.lua",
+		"cl_dev_stats.lua",
 	},
 	Shared = {
 		"sh_init.lua",
