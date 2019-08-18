@@ -225,6 +225,16 @@ function GM:TTTRoundStart()
 	return true
 end
 
+function GM:TTTBeginRound()
+	for _, info in pairs(round.GetActivePlayers()) do
+		if (not IsValid(info.Player)) then
+			continue
+		end
+		info.Player:SetHealth(info.Player:GetMaxHealth())
+		info.Player:Extinguish()
+	end
+end
+
 function GM:TTTRoundEnd(winning_team, winners)
 	local winner_names = {}
 	local winner_ents  = {}
@@ -347,4 +357,5 @@ end
 
 function GM:PlayerDeath(ply)
 	round.RemovePlayer(ply)
+	ply:Extinguish()
 end

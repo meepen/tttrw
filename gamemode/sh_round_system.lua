@@ -34,6 +34,8 @@ function GM:OnRoundStateChange(old, new)
 
 	if (new == ttt.ROUNDSTATE_PREPARING) then
 		hook.Run "TTTPrepareRound"
+	elseif (new == ttt.ROUNDSTATE_ACTIVE) then
+		hook.Run "TTTBeginRound"
 	elseif (new == ttt.ROUNDSTATE_ENDED) then
 		hook.Run "TTTEndRound"
 	end
