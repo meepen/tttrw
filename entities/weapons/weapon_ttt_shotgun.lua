@@ -38,7 +38,7 @@ SWEP.Primary.Sound         = Sound "Weapon_XM1014.Single"
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
-SWEP.AmmoEnt               = "item_ammo_buckshot_ttt"
+SWEP.AmmoEnt               = "item_box_buckshot_ttt"
 
 SWEP.UseHands              = true
 SWEP.ViewModel             = "models/weapons/cstrike/c_shot_xm1014.mdl"

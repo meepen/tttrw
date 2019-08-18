@@ -61,7 +61,7 @@ ttt.Equipment = ttt.Equipment or {}
 ttt.Equipment.List = ttt.Equipment.List or {}
 
 function ttt.Equipment.Add(id, w)
-	print("[Equipment] Adding "..id.." to equipment list.")
+	--print("[Equipment] Adding "..id.." to equipment list.")
 	local e
 	local f
 	if (w) then
@@ -85,6 +85,7 @@ end
 
 function ttt.Equipment.Build()
 	table.Empty(ttt.Equipment.List)
+	print("[Equipment] Rebuilding Equipment List")
 	local ents = scripted_ents.GetList()
 	local weps = weapons.GetList()
 	for k,v in pairs(ents) do
@@ -102,3 +103,5 @@ end
 function GM:PostGamemodeLoaded()
 	ttt.Equipment.Build()
 end
+
+hook.Add("OnReloaded","ReloadEquipmentList",ttt.Equipment.Build)
