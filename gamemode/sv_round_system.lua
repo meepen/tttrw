@@ -59,13 +59,23 @@ function round.SetState(state, time)
 	return promise
 end
 
-
 function round.GetActivePlayers()
 	return round.Players
 end
 
 function round.GetStartingPlayers()
 	return round.Started
+end
+
+function round.GetActivePlayersByRole(roleteam)
+	local ret = {}
+	for _, ply in pairs(round.GetActivePlayers()) do
+		if (ply.Role.Name == roleteam or ply.Role.Team.Name == roleteam) then
+			ret[#ret + 1] = ply.Player
+		end
+	end
+
+	return ret
 end
 
 function round.IsPlayerActive(ply)

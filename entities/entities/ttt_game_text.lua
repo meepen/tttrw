@@ -35,23 +35,27 @@ end
 
 function ENT:AcceptInput(name, activator)
 	if name == "Display" then
-		local recv = activator
+		local recv
 
 		local r = self.Receiver
 		if r == RECEIVE_ALL then
 			recv = nil
 		elseif r == RECEIVE_DETECTIVE then
-			recv = GetDetectiveFilter()
+			recv = round.GetActivePlayersByRole "Detective"
 		elseif r == RECEIVE_TRAITOR then
-			recv = GetTraitorFilter()
+			recv = round.GetActivePlayersByRole "traitor"
 		elseif r == RECEIVE_INNOCENT then
-			recv = GetInnocentFilter()
+			recv = round.GetActivePlayersByRole "Innocent"
 		elseif r == RECEIVE_ACTIVATOR then
 			if not (IsValid(activator) and activator:IsPlayer()) then
 				ErrorNoHalt("ttt_game_text tried to show message to invalid !activator\n")
 				return true
 			end
+			recv = {activator}
 		end
+
+		print(self.Message)
+		PrintTable(recv)
 		--Temporary, until the UI elements are added for real, this is needed for compatability
 		for k,v in pairs(recv or player.GetAll()) do
 			v:ChatPrint(self.Message)
