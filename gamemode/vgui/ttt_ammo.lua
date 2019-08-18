@@ -3,6 +3,12 @@ local PANEL = {}
 function PANEL:Init()
 	self:AddFunction("ttt", "ready", function()
 		self.Ready = true
+		local targ = self:GetTarget()
+		if (not IsValid(targ)) then
+			return
+		end
+
+		self:PlayerSwitchWeapon(targ, targ:GetActiveWeapon(), targ:GetActiveWeapon())
 	end)
 	
 	self:SetHTML [[
@@ -101,10 +107,6 @@ function PANEL:UpdateAllAmmo(pl, wep)
 end
 
 function PANEL:PlayerSwitchWeapon(pl, old, new)
-	if (not IsFirstTimePredicted()) then
-		return
-	end
-
 	if (pl ~= self:GetTarget()) then return end
 
 	if (IsValid(self.Model)) then
