@@ -117,7 +117,7 @@ local TEAM_MT = {
 local function Team(name)
 	local t = ttt.teams[name] or setmetatable({
 		Name = name,
-		Speed = 300,
+		Speed = 260,
 		--[[
 		RunSpeed = 400,
 		RunTime = 3, -- seconds
