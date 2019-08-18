@@ -8,7 +8,7 @@ function GM:EntityTakeDamage(vic, dmg)
         return
     end
 
-    if (not hook.Run("PlayerShouldTakeDamage", vic, atk) and not (not atk:IsPlayer() and atk:GetClass() == "trigger_hurt")) then
+    if (not hook.Run("PlayerShouldTakeDamage", vic, atk)) then
         return
     end
 

@@ -48,12 +48,12 @@ function GM:PlayerSpawn(ply)
 end
 
 function GM:PlayerShouldTakeDamage(ply, atk)
+	print(ply, atk)
 	if (IsValid(atk) and atk:IsPlayer()) then
 		local state = ttt.GetRoundState()
 		return state == ttt.ROUNDSTATE_ACTIVE or ttt_postround_dm:GetBool() and state == ttt.ROUNDSTATE_ENDED
-	elseif (atk:GetClass() == "trigger_hurt") then
-		return true
 	end
+	return true
 end
 
 hook.Add("TTTPrepareNetworkingVariables", "RoundState", function(vars)
