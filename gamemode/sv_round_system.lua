@@ -188,6 +188,10 @@ function round.TryStart()
 end
 
 function round.End(winning_team, winners)
+	if (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
+		warn("round.End called when ROUNDSTATE = %i\n", ttt.GetRoundState())
+		return
+	end
 	hook.Run("TTTRoundEnd", winning_team, winners)
 end
 
