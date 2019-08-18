@@ -25,6 +25,10 @@ if (SERVER) then
 end
 
 function PLAYER:CanReceiveEquipment(class)
+	if (not self:GetRoleData().CanUseBuyMenu) then
+		return false
+	end
+
 	local eq = ttt.Equipment.List[class]
 	if (not eq) then
 		return false
