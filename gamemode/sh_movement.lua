@@ -31,6 +31,24 @@ end
 
 if (SERVER) then
 	function GM:GetFallDamage(ply, speed)
-		return math.max(0, math.ceil(0.325 * speed - 141.75))
+		local ent = ply:GetGroundEntity()
+		local damage = math.max(0, math.ceil(0.325 * speed - 141.75))
+		if (IsValid(ent) and ent:IsPlayer()) then
+			local dmg = DamageInfo()
+			dmg:SetAttacker(ply)
+			dmg:SetInflictor(ply)
+			dmg:SetDamage(damage)
+			dmg:SetDamageType(DMG_DIRECT)
+			ent:TakeDamageInfo(dmg)
+			return 0
+		end
+		return damage
 	end
+
+	--[[
+	concommand.Add("go_upwards", function(ply, cmd, arg)
+		ply:SetHealth(1000)
+		ply:SetPos(ply:GetPos() + Vector(0, 0, arg[1]))
+	end)
+	]]
 end

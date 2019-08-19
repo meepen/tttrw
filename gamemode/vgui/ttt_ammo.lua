@@ -91,6 +91,9 @@ end
 
 function PANEL:OnRemove()
 	timer.Destroy("ttt_ammo_timer")
+	if (IsValid(self.Model)) then
+		self.Model:Remove()
+	end
 end
 
 function PANEL:UpdateAllAmmo(pl, wep)
@@ -115,6 +118,7 @@ function PANEL:PlayerSwitchWeapon(pl, old, new)
 
 	if (IsValid(new)) then
 		self.Model = ClientsideModel(new.WorldModel, RENDERGROUP_OTHER)
+		self.Model:SetNoDraw(true)
 	end
 
 	self:UpdateAllAmmo(pl, new)
