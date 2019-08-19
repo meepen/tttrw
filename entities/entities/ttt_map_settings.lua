@@ -29,7 +29,9 @@ end
 
 function ENT:Think()
 	if self.FirstThink then
-		--There isn't a hook for RoundPreparing yet, base ttt supports an output for this
+		hook.Add("TTTPrepareRound", "MapSettingsPrepareRound", function()
+			self:TriggerOutput("RoundPreparation", self)
+		end)
 		hook.Add("TTTRoundStart", "MapSettingsOutputStart", function()
 			self:TriggerOutput("RoundStart", self)
 		end)
