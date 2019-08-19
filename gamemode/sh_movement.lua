@@ -28,3 +28,9 @@ function GM:Move(ply, mv)
 		end
 	end
 end
+
+if (SERVER) then
+	function GM:GetFallDamage(ply, speed)
+		return math.max(0, math.ceil(0.325 * speed - 141.75))
+	end
+end
