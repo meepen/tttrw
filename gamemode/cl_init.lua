@@ -11,9 +11,15 @@ function GM:player_disconnect(info)
 end
 
 function GM:player_spawn(info)
+	local wait = 0
 	local function Do()
 		local ply = Player(info.userid)
 		if (not IsValid(ply)) then
+			return false
+		end
+
+		if (wait == 0) then
+			wait = wait + 1
 			return false
 		end
 

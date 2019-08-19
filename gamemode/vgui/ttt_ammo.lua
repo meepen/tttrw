@@ -87,6 +87,7 @@ function PANEL:Init()
 	self.ReserveAmmo = 0
 
 	hook.Add("PlayerSwitchWeapon", self, self.PlayerSwitchWeapon)
+	hook.Add("PlayerSpawn", self, self.PlayerSpawn)
 end
 
 function PANEL:OnRemove()
@@ -114,6 +115,27 @@ function PANEL:PlayerSwitchWeapon(pl, old, new)
 
 	if (IsValid(self.Model)) then
 		self.Model:Remove()
+	end
+
+	if (IsValid(new)) then
+		self.Model = ClientsideModel(new.WorldModel, RENDERGROUP_OTHER)
+		self.Model:SetNoDraw(true)
+	end
+
+	self:UpdateAllAmmo(pl, new)
+end
+
+function PANEL:PlayerSpawn(pl)
+	if (not IsValid(pl) or pl ~= self:GetTarget()) then return end
+
+	if (IsValid(self.Model)) then
+		self.Model:Remove()
+	end
+
+	local new = pl:GetActiveWeapon()
+
+	if (not IsValid(new)) then
+		return
 	end
 
 	if (IsValid(new)) then
@@ -154,11 +176,9 @@ function PANEL:Tick()
 	end
 end
 
-local err = ClientsideModel("models/weapons/w_rif_ak47.mdl", RENDERGROUP_OTHER)
 local colour = Material "pp/colour"
 
 function PANEL:Paint(w, h)
-
 	local targ = self:GetTarget()
 	if (not IsValid(targ)) then
 		return
