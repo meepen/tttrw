@@ -35,7 +35,6 @@ function PLAYER:CanReceiveEquipment(class)
 	end
 
 	if (eq.CanBuy and not (eq.CanBuy[self:GetRole()] or eq.CanBuy[self:GetTeam()])) then
-		print "a"
 		return false
 	end
 
