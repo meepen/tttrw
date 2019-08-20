@@ -55,10 +55,9 @@ function hud.DrawTextOutlined(text, textcol, shadowcol, posx, posy, shadowsize)
 	surface.DrawText(text)
 end
 
-function hud.BuildCurvedMesh(curve, x, y, w, h)
+function hud.BuildCurvedMesh(curve, x, y, w, h, tl, tr, bl, br)
 	local Mesh = Mesh()
-	
-	local curve = 6
+
 	local function addpos(x, y)
 		mesh.Position(Vector(x, y))
 		mesh.AdvanceVertex()
@@ -73,10 +72,10 @@ function hud.BuildCurvedMesh(curve, x, y, w, h)
 		addpos(x, y + h)
 	end
 
-	mesh.Begin(Mesh, MATERIAL_TRIANGLES, 6 + curve * 4)
+	mesh.Begin(Mesh, MATERIAL_TRIANGLES, 6 + curve * ((tl and -1 or 0) + 4))
 		addbox(curve, 0, w - curve * 2, h)
-		addbox(0, curve, curve, h - curve * 2)
-		addbox(w - curve, curve, curve, h - curve * 2)
+		addbox(0, tl and 0 or curve, curve, h - curve * ((tl and 0 or 1) + (bl and 0 or 1)))
+		addbox(w - curve, tr and 0 or curve, curve, h - curve * ((tr and 0 or 1) + (br and 0 or 1)))
 		local lastsin, lastcos
 
 		for i = 0, curve do
@@ -84,9 +83,11 @@ function hud.BuildCurvedMesh(curve, x, y, w, h)
 			local sin, cos = math.sin(rad), math.cos(rad)
 
 			if (lastsin) then
-				addpos(curve - sin * curve, curve - cos * curve)
-				addpos(curve - lastsin * curve, curve - lastcos * curve)
-				addpos(curve, curve)
+				if (not tl) then
+					addpos(curve - sin * curve, curve - cos * curve)
+					addpos(curve - lastsin * curve, curve - lastcos * curve)
+					addpos(curve, curve)
+				end
 
 				addpos(w - curve + lastsin * curve, curve - lastcos * curve)
 				addpos(w - curve + sin * curve, curve - cos * curve)

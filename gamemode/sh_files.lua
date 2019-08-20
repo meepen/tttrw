@@ -19,6 +19,7 @@ AddCSLuaFile();
 		"vgui/ttt_health.lua",
 		"vgui/ttt_time.lua",
 		"vgui/ttt_equipment_menu.lua",
+		"vgui/ttt_body_inspect.lua",
 		"cl_hud.lua",
 		"cl_scoreboard.lua",
 		"cl_hitmarkers.lua",
