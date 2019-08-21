@@ -7,6 +7,8 @@ function GM:PlayerCanPickupWeapon(ply, wep)
         end
     end
 
+    wep:SetPos(ply:GetShootPos())
+
     return true
 end
 

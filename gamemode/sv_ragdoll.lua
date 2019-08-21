@@ -44,8 +44,6 @@ function ttt.CreatePlayerRagdoll(ply)
 	rag:SetAngles(ply:GetAngles())
 	rag:SetColor(ply:GetColor())
 
-	rag:Spawn()
-	rag:Activate()
 
 
 	for i = 0, rag:GetPhysicsObjectCount() - 1 do
@@ -62,4 +60,7 @@ function ttt.CreatePlayerRagdoll(ply)
 	end
 
 	rag:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+
+	rag:Spawn()
+	rag:Activate()
 end

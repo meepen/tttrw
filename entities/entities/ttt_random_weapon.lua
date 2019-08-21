@@ -6,7 +6,7 @@ local Weapons
 local function Regenerate()
     Weapons = {}
     for _, ent in pairs(weapons.GetList()) do
-        if (ent.AutoSpawnable) then
+        if (ent.AutoSpawnable and not ent.Duped) then
             table.insert(Weapons, ent.ClassName)
         end
     end

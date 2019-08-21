@@ -144,6 +144,22 @@ function GM:PlayerSelectSpawn(ply)
 end
 
 GM.MapEntities = GM.MapEntities or {}
+GM.TTTCompatibleClasses = GM.TTTCompatibleClasses or setmetatable({}, {
+	__index = function(self, k)
+		return k
+	end
+})
+
+function GM:SetupTTTCompatibleEntities()
+	-- table.Copy is necessary for non dupe
+	for _, ent in pairs(weapons.GetList()) do
+		if (ent.TTTCompat) then
+			for _, name in pairs(ent.TTTCompat) do
+				self.TTTCompatibleClasses[name] = ent.ClassName
+			end
+		end
+	end
+end
 
 function GM:SetupTextFileEntities()
 	local fname = "maps/" .. game.GetMap() .. "_ttt.txt"
@@ -166,30 +182,39 @@ function GM:SetupTextFileEntities()
 		else
 			local class, x, y, z, pitch, yaw, roll, kv = line:match("^" .. string.rep("(%S+)%s*", 7) .. "(.*)$")
 
-			table.insert(self.MapEntities, class)
-
-			local e = ents.Create(class)
-			if (not IsValid(e)) then
-				warn("Tried to create %s (invalid class)\n", class)
-				continue
-			end
-
-			e:SetPos(Vector(x, y, z))
-			e:SetAngles(Angle(pitch, yaw, roll))
-
-			if (kv and kv ~= "") then
-				for k, v in kv:gmatch("(%S+)%s*(%S+)%s*") do
-					e:SetKeyValue(k, v)
-				end
-			end
-
-			e:Spawn()
+			table.insert(self.MapEntities, {
+				class = self.TTTCompatibleClasses[class],
+				pos = Vector(x, y, z),
+				ang = Angle(pitch, yaw, roll),
+				kv = kv
+			})
 		end
 	end
 end
 
-function GM:TTTAddPermanentEntities(list)
-	for _, class in pairs(self.MapEntities) do
-		table.insert(list, class)
+function GM:SpawnMapEntities()
+	for _, ent in pairs(self.MapEntities) do
+		local e = ents.Create(ent.class)
+		if (not IsValid(e)) then
+			warn("Tried to create %s (invalid class)\n", ent.class)
+			continue
+		end
+
+		printf("Spawned %s", ent.class)
+
+		e:SetPos(ent.pos)
+		e:SetAngles(ent.ang)
+
+		if (ent.kv and ent.kv ~= "") then
+			for k, v in ent.kv:gmatch("(%S+)%s*(%S+)%s*") do
+				e:SetKeyValue(k, v)
+			end
+		end
+
+		e:Spawn()
 	end
+end
+
+function GM:TTTPrepareRound()
+	self:SpawnMapEntities()
 end

@@ -25,6 +25,8 @@ SWEP.Bullets = {
 	Spread = Vector(.085, .085, .085)
 }
 
+SWEP.TTTCompat = {"weapon_zm_shotgun"}
+
 SWEP.Primary.Damage        = 11
 SWEP.Primary.Delay         = 0.8
 SWEP.Primary.RecoilTiming  = 0.1

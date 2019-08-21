@@ -33,13 +33,6 @@ function ENT:Initialize()
 
 	self.tickRemoval = false
 
-	-- this made the ammo get physics'd too early, meaning it would fall
-	-- through physics surfaces it was lying on on the client, leading to
-	-- inconsistencies
-	--	local phys = self:GetPhysicsObject()
-	--	if (phys:IsValid()) then
-	--		phys:Wake()
-	--	end
 	self.AmmoEntMax = self.AmmoAmount
 end
 
@@ -105,19 +98,5 @@ function ENT:Touch(ent)
 			self:Remove()
 		 end
 	  end
-	end
-end
-
--- Hack to force ammo to physwake
-if SERVER then
-	function ENT:Think()
-		if not self.first_think then
-			self:PhysWake()
-			self.first_think = true
-
-			-- Immediately unhook the Think, save cycles. The first_think thing is
-			-- just there in case it still Thinks somehow in the future.
-			self.Think = nil
-		end
 	end
 end
