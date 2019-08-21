@@ -9,7 +9,8 @@ AddCSLuaFile();
 		"sv_ragdoll.lua",
 		"sv_chat.lua",
 		"sv_hitmarkers.lua",
-		"sv_ttt_compat.lua"
+		"sv_ttt_compat.lua",
+		"sv_weapons.lua",
 	},
 	Client = {
 		"cl_hud_helpers.lua",
