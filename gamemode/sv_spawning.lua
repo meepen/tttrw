@@ -156,6 +156,10 @@ function GM:SetupTTTCompatibleEntities()
 		if (ent.TTTCompat) then
 			for _, name in pairs(ent.TTTCompat) do
 				self.TTTCompatibleClasses[name] = ent.ClassName
+				scripted_ents.Register({
+					Base = "replacement_entity",
+					OverrideClass = ent.ClassName
+				}, name)
 			end
 		end
 	end

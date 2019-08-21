@@ -21,13 +21,15 @@ end
 function GM:InitPostEntity()
 	self:InitPostEntity_Networking()
 	if (SERVER) then
-		self:SetupTTTCompatibleEntities()
 		self:SetupTextFileEntities()
 	end
 end
 
 function GM:Initialize()
 	self:SetupRoles()
+	if (SERVER) then
+		self:SetupTTTCompatibleEntities()
+	end
 end
 
 function GM:PlayerTick(ply)
