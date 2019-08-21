@@ -34,6 +34,8 @@ function ENT:Initialize()
 	self.tickRemoval = false
 
 	self.AmmoEntMax = self.AmmoAmount
+
+	self:PhysWake()
 end
 
 -- Pseudo-clone of SDK's UTIL_ItemCanBeTouchedByPlayer
