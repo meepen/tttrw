@@ -47,7 +47,10 @@ end
 
 function GM:KeyPress(ply, key)
 	self:VoiceKey(ply, key)
-	if (SERVER) then
+
+	if (key == IN_WEAPON1) then
+		self:DropCurrentWeapon(ply)
+	elseif (SERVER) then
 		self:SpectatorKey(ply, key)
 	end
 end
