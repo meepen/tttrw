@@ -54,8 +54,6 @@ function ENT:AcceptInput(name, activator)
 			recv = {activator}
 		end
 
-		print(self.Message)
-		PrintTable(recv)
 		--Temporary, until the UI elements are added for real, this is needed for compatability
 		for k,v in pairs(recv or player.GetAll()) do
 			v:ChatPrint(self.Message)
