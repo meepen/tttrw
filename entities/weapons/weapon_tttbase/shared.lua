@@ -53,6 +53,13 @@ function SWEP:NetVar(name, type, default, notify)
 	end
 end
 
+local scales = {
+	[HITGROUP_LEFTARM] = 0.7,
+	[HITGROUP_RIGHTARM] = 0.7,
+	[HITGROUP_LEFTLEG] = 0.7,
+	[HITGROUP_RIGHTLEG] = 0.7,
+	[HITGROUP_GEAR] = 0.7
+}
 function SWEP:ScaleDamage(hitgroup, dmg)
 	-- More damage if we're shot in the head
 	if (hitgroup == HITGROUP_HEAD) then
@@ -60,13 +67,8 @@ function SWEP:ScaleDamage(hitgroup, dmg)
 	end
 
 	-- Less damage if we're shot in the arms or legs
-	if (hitgroup == HITGROUP_LEFTARM or
-		hitgroup == HITGROUP_RIGHTARM or
-		hitgroup == HITGROUP_LEFTLEG or
-		hitgroup == HITGROUP_RIGHTLEG or
-		hitgroup == HITGROUP_GEAR) then
-
-		dmg:ScaleDamage(0.6)
+	if (scales[hitgroup]) then
+		dmg:ScaleDamage(scales[hitgroup])
 	end
 end
 
@@ -234,8 +236,8 @@ function SWEP:ShootBullet(bullet_info)
 		Dir = bullet_ang:Forward()
 	}
 
-	owner:LagCompensation(true)
 	self:SetRealLastShootTime(CurTime())
+	owner:LagCompensation(true)
 	self:FireBullets(bullet)
 	owner:LagCompensation(false)
 

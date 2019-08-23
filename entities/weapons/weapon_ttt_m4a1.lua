@@ -29,12 +29,12 @@ SWEP.Bullets = {
 }
 
 SWEP.Primary.Damage        = 18
-SWEP.Primary.Delay         = 0.105
+SWEP.Primary.Delay         = 0.095
 SWEP.Primary.Recoil        = 1.7
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.ClipSize      = 30
-SWEP.Primary.DefaultClip   = 30
+SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_M4A1.Single"
 
 SWEP.AutoSpawnable         = true

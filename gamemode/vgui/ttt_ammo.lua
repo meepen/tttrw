@@ -86,7 +86,6 @@ function PANEL:Init()
 	self.OldAmmo = 0
 	self.ReserveAmmo = 0
 
-	hook.Add("PlayerSwitchWeapon", self, self.PlayerSwitchWeapon)
 	hook.Add("PlayerSpawn", self, self.PlayerSpawn)
 end
 
@@ -162,6 +161,11 @@ function PANEL:Tick()
 	local pl = self:GetTarget()
 	local wep = pl:GetActiveWeapon()
 	if (not IsValid(wep)) then return end
+
+	if (wep ~= self.OldWeapon) then
+		self:PlayerSwitchWeapon(pl, self.OldWeapon, wep)
+		self.OldWeapon = wep
+	end
 
 	local cur_bullets = wep:Clip1()
 	if (self.OldAmmo ~= cur_bullets) then
