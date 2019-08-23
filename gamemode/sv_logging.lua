@@ -12,7 +12,8 @@ function GM:DamageLogs_FormatPlayer(ply)
 end
 
 function GM:DamageLogs_EntityTakeDamage(vic, dmg)
-    if (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
+    
+    if (not ttt.GetRoundState or ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
         return
     end
 

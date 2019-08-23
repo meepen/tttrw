@@ -28,3 +28,11 @@ end
 function GM:TTTEndRound()
     self:DamageLogs_TTTEndRound()
 end
+
+local tttrw_door_speedup = CreateConVar("tttrw_door_speed_mult", 1, FCVAR_NONE, "How much faster doors are (2 = double, 0.5 = half)")
+
+function GM:EntityKeyValue(ent, key, value)
+    if (key:lower() == "speed") then
+        return value / 66 / engine.TickInterval() * tttrw_door_speedup:GetFloat()
+    end
+end
