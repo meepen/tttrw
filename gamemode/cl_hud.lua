@@ -71,15 +71,13 @@ function GM:HUDDrawTargetID()
 
 		if (IsValid(state) and not state:IsDormant()) then
 			y = y + th + 4
-			local role = ttt.roles[ent:GetRole()]
-			if (role) then
-				local col = role.Color
-				local txt = role.Name
+			local role = ent:GetRoleData()
+			local col = role.Color
+			local txt = role.Name
 
-				tw, th = surface.GetTextSize(txt)
+			tw, th = surface.GetTextSize(txt)
 
-				hud.DrawTextOutlined(txt, col, color_black, x - tw / 2, y, 1)
-			end
+			hud.DrawTextOutlined(txt, col, color_black, x - tw / 2, y, 1)
 		end
 
 		local health, maxhealth = ent:Health(), ent:GetMaxHealth()
