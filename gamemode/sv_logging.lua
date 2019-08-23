@@ -52,3 +52,7 @@ function GM:DamageLogs_TTTEndRound()
         ply:ConsolePrint(text)
     end
 end
+
+function GM:TTTTraitorButtonActivated(ent, ply)
+    self:InsertLog("%s [%s] has actived %s", ply:Nick(), ply:SteamID(), ent:GetClass())
+end
