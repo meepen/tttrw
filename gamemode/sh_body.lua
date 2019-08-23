@@ -24,6 +24,7 @@ function GM:PlayerInspectBody(ply, ent, pos)
 			return
 		end
 
+		ttt.InspectBody = ent
 		ttt.InspectMenu = vgui.Create "ttt_body_inspect"
 		ttt.InspectMenu:SetSize(ScrW() * 0.25, ScrH() * 0.25)
 		ttt.InspectMenu:Center()
@@ -31,7 +32,6 @@ function GM:PlayerInspectBody(ply, ent, pos)
 		ttt.InspectMenu:SetKeyboardInputEnabled(false)
 		ttt.InspectMenu.Position = pos
 		ttt.InspectMenu.MaxDistance = MAX_DISTANCE
-		ttt.InspectMenu:SetBody(ent)
 	else
 		ent.HiddenState:SetVisibleTo(ply)
 	end

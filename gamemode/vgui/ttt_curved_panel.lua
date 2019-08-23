@@ -59,3 +59,7 @@ function PANEL:Paint(w, h)
 end
 
 vgui.Register("ttt_curved_panel", PANEL, "EditablePanel")
+
+local PANEL = table.Copy(PANEL)
+
+vgui.Register("ttt_curved_button", table.Copy(PANEL), "DButton")

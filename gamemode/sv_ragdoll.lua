@@ -70,8 +70,28 @@ function ttt.CreatePlayerRagdoll(ply, atk, dmg)
 end
 
 function GM:InitializeBodyData(variables, Information)
+	local wep = Information.DamageInfo:GetInflictor()
+
 	table.insert(variables, {
-		Icon = "materials/tttrw/disagree.png",
-		Description = "This mans died from " .. Information.Attacker:Nick()
+		Title = Information.Victim:GetRole() .. (Information.Victim:GetRoleData().Evil and "!" or ""),
+		Icon = "materials/tttrw/xbutton128.png",
+		Description = "This person was a " .. Information.Victim:GetRole()
 	})
+
+	table.insert(variables, {
+		Title = "Weapon",
+		Icon = "materials/tttrw/disagree.png",
+		Description = "This person appears to have died from a " .. (wep.PrintName or wep:GetClass())
+	})
+
+
+	local hitgroup = Information.Victim:LastHitGroup()
+
+	if (hitgroup == HITGROUP_HEAD) then
+		table.insert(variables, {
+			Title = "Missing brain",
+			Icon = "materials/tttrw/agree.png",
+			Description = "This person appears to have been shot clean through the skull"
+		})
+	end
 end
