@@ -57,6 +57,9 @@ function GM:SpectatorKey(ply, key)
 			UpdatePlayerSpectating(ply, nil, -1)
 		elseif (key == IN_ATTACK2) then
 			UpdatePlayerSpectating(ply, nil, 1)
+		elseif (key == IN_DUCK) then
+			ply:Spectate(OBS_MODE_ROAMING)
+			ply:SetMoveType(MOVETYPE_NOCLIP)
 		end
 	end
 end

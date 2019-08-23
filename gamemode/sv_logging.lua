@@ -7,6 +7,10 @@ function GM:InsertLog(...)
     print(string.format("%.2f: %s", CurTime() - self.StartTime, string.format(...)))
 end
 
+function GM:DamageLogs_FormatPlayer(ply)
+    return string.format("%s <%s>", ply:Nick(), ply:GetRole())
+end
+
 function GM:DamageLogs_EntityTakeDamage(vic, dmg)
     if (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
         return
@@ -16,7 +20,7 @@ function GM:DamageLogs_EntityTakeDamage(vic, dmg)
         return
     end
 
-    local text = vic:Nick() .. " [" .. vic:SteamID() .. "] took " .. dmg:GetDamage() .. " damage"
+    local text = self:DamageLogs_FormatPlayer(vic) .. " took " .. dmg:GetDamage() .. " damage"
     local wep, atk = dmg:GetInflictor(), dmg:GetAttacker()
     if (IsValid(wep) and wep:IsWeapon()) then
         text = text .. " from a " .. (wep.PrintName or wep:GetClass())
@@ -24,7 +28,7 @@ function GM:DamageLogs_EntityTakeDamage(vic, dmg)
 
     if (IsValid(atk)) then
         if (atk:IsPlayer()) then
-            text = text .. " by " .. atk:Nick() .. " [" .. atk:SteamID() .. "]"
+            text = self:DamageLogs_FormatPlayer(atk) .. " damaged " .. self:DamageLogs_FormatPlayer(vic) .. " for " .. dmg:GetDamage() .. " damage"
         else
             text = text .. " by " .. atk:GetClass()
         end
@@ -54,5 +58,5 @@ function GM:DamageLogs_TTTEndRound()
 end
 
 function GM:TTTTraitorButtonActivated(ent, ply)
-    self:InsertLog("%s [%s] has actived %s", ply:Nick(), ply:SteamID(), ent:GetClass())
+    self:InsertLog("%s has actived %s", self:DamageLogs_FormatPlayer(ply), ent:GetClass())
 end
