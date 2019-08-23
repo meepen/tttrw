@@ -9,7 +9,7 @@ local function RagdollShow(self, ply, ent)
 	hook.Run("PlayerInspectRagdoll", ply, ent, self.Info)
 end
 
-function ttt.CreatePlayerRagdoll(ply)
+function ttt.CreatePlayerRagdoll(ply, atk, dmg)
 	if (IsValid(ply.Ragdoll)) then
 		return
 	end
@@ -32,7 +32,6 @@ function ttt.CreatePlayerRagdoll(ply)
 	rag:SetPos(ply:GetPos())
 	rag:SetModel(ply:GetModel())
 	rag:SetSkin(ply:GetSkin())
-	rag:SetNW2Bool("IsPlayerBody", true)
 
 	for key, value in pairs(ply:GetBodyGroups()) do
 		rag:SetBodygroup(value.id, ply:GetBodygroup(value.id))
@@ -41,7 +40,9 @@ function ttt.CreatePlayerRagdoll(ply)
 	rag:SetAngles(ply:GetAngles())
 	rag:SetColor(ply:GetColor())
 
-
+	rag:SetNW2Bool("IsPlayerBody", true)
+	rag:Spawn()
+	rag:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 
 	for i = 0, rag:GetPhysicsObjectCount() - 1 do
 		local bone = rag:GetPhysicsObjectNum(i)
@@ -55,7 +56,22 @@ function ttt.CreatePlayerRagdoll(ply)
 			bone:SetVelocity(ply:GetVelocity())
 		end
 	end
+	
+	rag.HiddenState = ents.Create "ttt_body_info_container"
 
-	rag:Spawn()
-	rag:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+	rag.HiddenState.Information = {
+		Victim = ply,
+		Attacker = atk,
+		DamageInfo = dmg
+	}
+
+	rag.HiddenState:SetParent(rag)
+	rag.HiddenState:Spawn()
+end
+
+function GM:InitializeBodyData(variables, Information)
+	table.insert(variables, {
+		Icon = "materials/tttrw/disagree.png",
+		Description = "This mans died from " .. Information.Attacker:Nick()
+	})
 end

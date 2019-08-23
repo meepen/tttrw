@@ -30,10 +30,9 @@ function GM:PlayerInspectBody(ply, ent, pos)
 		ttt.InspectMenu:MakePopup()
 		ttt.InspectMenu:SetKeyboardInputEnabled(false)
 		ttt.InspectMenu.Position = pos
-		ttt.InspectMenu.Body = ent
 		ttt.InspectMenu.MaxDistance = MAX_DISTANCE
+		ttt.InspectMenu:SetBody(ent)
 	else
-
-
+		ent.HiddenState:SetVisibleTo(ply)
 	end
 end

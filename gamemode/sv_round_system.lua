@@ -350,8 +350,8 @@ function GM:TTTPlayerRemoved(removed)
 end
 
 
-function GM:DoPlayerDeath(ply)
-	ttt.CreatePlayerRagdoll(ply)
+function GM:DoPlayerDeath(ply, atk, dmg)
+	ttt.CreatePlayerRagdoll(ply, atk, dmg)
 end
 
 

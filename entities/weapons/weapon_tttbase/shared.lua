@@ -257,7 +257,7 @@ function SWEP:PrimaryAttack()
 	local delay = math.ceil(self.Primary.Delay / interval) * interval
 	local diff = (CurTime() - self:GetRealLastShootTime()) / delay
 
-	if (diff <= 2) then
+	if (diff <= 1.25) then
 		self:SetConsecutiveShots(self:GetConsecutiveShots() + 1)
 	else
 		self:SetConsecutiveShots(0)

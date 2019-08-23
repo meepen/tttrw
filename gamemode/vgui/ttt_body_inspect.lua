@@ -4,15 +4,7 @@ local bg_color = CreateMaterial("ttt_body_inspect_color" .. math.random(0, 0x800
 	["$alpha"] = 0.92
 })
 
-local ttt_body_normal = CreateMaterial("ttt_body_normal" .. math.random(0, 0x8000), "UnlitGeneric", {
-	["$basetexture"] = "color/white",
-    ["$color"] = "{ 51 51 52 }",
-})
-
-local ttt_body_darken = CreateMaterial("ttt_body_darken" .. math.random(0, 0x8000), "UnlitGeneric", {
-	["$basetexture"] = "color/white",
-    ["$color"] = "{ 41 41 42 }",
-})
+local ttt_body_normal = Color(51, 51, 52)
 
 surface.CreateFont("ttt_body_inspect_tab_font", {
 	font = 'Lato',
@@ -27,46 +19,22 @@ local PANEL = {}
 function PANEL:Init()
     self.Inner = self:Add "ttt_body_inspect_body_inner"
     self.Inner:Dock(FILL)
+    self:SetCurve(5)
+    self:SetColor(ttt_body_normal)
     self:DockPadding(Padding, Padding, Padding, Padding)
+    self:SetCurveTopLeft(false)
 end
 
-function PANEL:PerformLayout(w, h)
-    if (IsValid(self.Mesh)) then
-        self.Mesh:Remove()
-        self.Mesh = nil
-    end
-
-    self.Mesh = hud.BuildCurvedMesh(5, 0, 0, w, h, true)
-end
-
-function PANEL:Paint(w, h)
-	hud.StartStenciledMesh(self.Mesh, self:LocalToScreen(0, 0))
-		render.SetMaterial(ttt_body_normal)
-		render.DrawScreenQuad()
-	hud.EndStenciledMesh()
-end
-
-vgui.Register("ttt_body_inspect_body", PANEL, "EditablePanel")
+vgui.Register("ttt_body_inspect_body", PANEL, "ttt_curved_panel")
 
 local PANEL = {}
 
-function PANEL:PerformLayout(w, h)
-    if (IsValid(self.Mesh)) then
-        self.Mesh:Remove()
-        self.Mesh = nil
-    end
-
-    self.Mesh = hud.BuildCurvedMesh(5, 0, 0, w, h)
+function PANEL:Init()
+    self:SetCurve(5)
+    self:SetColor(Color(41, 41, 42))
 end
 
-function PANEL:Paint(w, h)
-	hud.StartStenciledMesh(self.Mesh, self:LocalToScreen(0, 0))
-		render.SetMaterial(ttt_body_darken)
-		render.DrawScreenQuad()
-	hud.EndStenciledMesh()
-end
-
-vgui.Register("ttt_body_inspect_body_inner", PANEL, "EditablePanel")
+vgui.Register("ttt_body_inspect_body_inner", PANEL, "ttt_curved_panel")
 
 local PANEL = {}
 
@@ -88,29 +56,23 @@ vgui.Register("ttt_body_inspect_tab_holder", PANEL, "EditablePanel")
 
 local PANEL = {}
 
+DEFINE_BASECLASS "ttt_curved_panel"
+
 function PANEL:Init()
     self.Text = self:Add "DLabel"
     self.Text:SetFont "ttt_body_inspect_tab_font"
-    self:SetText("a")
+    self:SetText "a"
+    self:SetCurve(5)
+    self:SetColor(ttt_body_normal)
+    self:SetCurveBottomLeft(false)
+    self:SetCurveBottomRight(false)
 end
 
 function PANEL:PerformLayout(w, h)
-    if (IsValid(self.Mesh)) then
-        self.Mesh:Remove()
-        self.Mesh = nil
-    end
-
     self.Text:SizeToContents()
     self.Text:SetPos(self:GetWide() / 2 - self.Text:GetWide() / 2, self:GetTall() - self.Text:GetTall())
 
-    self.Mesh = hud.BuildCurvedMesh(5, 0, 0, w, h, false, false, true, true)
-end
-
-function PANEL:Paint(w, h)
-	hud.StartStenciledMesh(self.Mesh, self:LocalToScreen(0, 0))
-		render.SetMaterial(ttt_body_normal)
-		render.DrawScreenQuad()
-	hud.EndStenciledMesh()
+    BaseClass.PerformLayout(self, w, h)
 end
 
 function PANEL:SetText(t)
@@ -120,7 +82,7 @@ function PANEL:SetText(t)
     self.Text:SetPos(self:GetWide() / 2 - self.Text:GetWide() / 2, self:GetTall() - self.Text:GetTall())
 end
 
-vgui.Register("ttt_body_inspect_tab", PANEL, "EditablePanel")
+vgui.Register("ttt_body_inspect_tab", PANEL, "ttt_curved_panel")
 
 local PANEL = {}
 
@@ -137,6 +99,9 @@ function PANEL:Init()
     self.Tabs:SetTall(ScrH() * 0.02)
     self.Tabs:AddTab "Body Search Results"
     self:DockPadding(Padding, Padding, Padding, Padding)
+
+    self:SetColor(Color(13, 12, 13, 240))
+    self:SetCurve(3)
 
     hook.Add("KeyPress", self, self.KeyPress)
 end
@@ -163,23 +128,15 @@ end
 
 function PANEL:PerformLayout(w, h)
     local _, endy = self:ScreenToLocal(self.Tabs:LocalToScreen(0, self.Tabs:GetTall()))
-    print(_, endy)
     local rounded2 = math.Round(endy / 2)
     self.Close:SetSize(rounded2, rounded2)
     self.Close:SetPos(w - self.Close:GetWide() - rounded2 / 2, rounded2 / 2)
-    if (IsValid(self.Mesh)) then
-        self.Mesh:Remove()
-        self.Mesh = nil
-    end
-
-    self.Mesh = hud.BuildCurvedMesh(4, 0, 0, w, h)
+    
+    BaseClass.PerformLayout(self, w, h)
 end
 
-function PANEL:Paint(w, h)
-	hud.StartStenciledMesh(self.Mesh, self:LocalToScreen(0, 0))
-		render.SetMaterial(bg_color)
-		render.DrawScreenQuad()
-	hud.EndStenciledMesh()
+function PANEL:SetBody(body)
+    self.Body = body
 end
 
-vgui.Register("ttt_body_inspect", PANEL, "EditablePanel")
+vgui.Register("ttt_body_inspect", PANEL, "ttt_curved_panel")

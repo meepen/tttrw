@@ -14,6 +14,7 @@ AddCSLuaFile();
 	},
 	Client = {
 		"cl_hud_helpers.lua",
+		"vgui/ttt_curved_panel.lua",
 		"vgui/ttt_close_button.lua",
 		"vgui/ttt_html_base.lua",
 		"vgui/ttt_ammo.lua",
