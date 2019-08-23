@@ -22,7 +22,7 @@ SWEP.Bullets = {
 	DamageDropoffRange = 720,
 	DamageDropoffRangeMax = 2500,
 	DamageMinimumPercent = 0.5,
-	Spread = Vector(.047, .047, .055)
+	Spread = Vector(.057, .057, .055)
 }
 
 SWEP.TTTCompat = {"weapon_zm_sledge"}
