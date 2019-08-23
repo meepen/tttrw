@@ -32,6 +32,7 @@ function ttt.CreatePlayerRagdoll(ply)
 	rag:SetPos(ply:GetPos())
 	rag:SetModel(ply:GetModel())
 	rag:SetSkin(ply:GetSkin())
+	rag:SetNW2Bool("IsPlayerBody", true)
 
 	for key, value in pairs(ply:GetBodyGroups()) do
 		rag:SetBodygroup(value.id, ply:GetBodygroup(value.id))

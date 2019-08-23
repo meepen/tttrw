@@ -8,6 +8,10 @@ function GM:TryInspectBody(ply)
 		return false
 	end
 
+	if (not tr.Entity:GetNW2Bool("IsPlayerBody", false)) then
+		return false
+	end
+
 	hook.Run("PlayerInspectBody", ply, tr.Entity, tr.HitPos)
 	
 	return true
