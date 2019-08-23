@@ -11,7 +11,7 @@ function GM:Move(ply, mv)
 
 	-- bhop settings
 
-	if (not ply:Alive()) then
+	if (not ply:Alive() or ply:WaterLevel() >= 2) then
 		return
 	end
 
