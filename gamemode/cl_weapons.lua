@@ -16,7 +16,12 @@ end
 function GM:DropCurrentWeapon(ply)
     local nextwep
 
-    local curwep = ply:GetActiveWeapon():GetSlot()
+    local wep = ply:GetActiveWeapon()
+    if (not IsValid(wep)) then
+        return
+    end
+
+    local curwep = wep:GetSlot()
 
     for _, wep in pairs(ply:GetWeapons()) do
         if (not IsValid(nextwep)) then
