@@ -22,15 +22,15 @@ SWEP.WeaponID              = AMMO_DEAGLE
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
-	DamageDropoffRange = 900,
-	DamageDropoffRangeMax = 3600,
-	DamageMinimumPercent = 0.1,
-	Spread = Vector(.02, .02, .02)
+	DamageDropoffRange = 1000,
+	DamageDropoffRangeMax = 1500,
+	DamageMinimumPercent = 0.3,
+	Spread = Vector(.01, .01, .01)
 }
 
 SWEP.Primary.Damage        = 37
-SWEP.Primary.Delay         = 0.5
-SWEP.Primary.Recoil        = 3
+SWEP.Primary.Delay         = 0.66
+SWEP.Primary.Recoil        = 3.2
 SWEP.Primary.RecoilTiming  = 0.06
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "AlyxGun"
@@ -39,7 +39,7 @@ SWEP.Primary.DefaultClip   = 16
 SWEP.Primary.MaxClip       = 24
 SWEP.Primary.Sound         = Sound "Weapon_Deagle.Single"
 
-SWEP.HeadshotMultiplier    = 4
+SWEP.HeadshotMultiplier    = 4.2
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
