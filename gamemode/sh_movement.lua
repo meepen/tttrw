@@ -25,6 +25,9 @@ function GM:DoBunnyHop(ply, mv)
 end
 
 function GM:PreventCrouchJump(ply, mv)
+	if (ply:GetMoveType() ~= MOVETYPE_WALK) then
+		return
+	end
 	if (mv:KeyDown(IN_DUCK) and NULL == ply:GetGroundEntity()) then
 		local velocity = mv:GetVelocity()
 
