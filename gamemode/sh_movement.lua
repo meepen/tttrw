@@ -37,19 +37,19 @@ function GM:PreventCrouchJump(ply, mv)
 		ang.p = 0
 
 		if (side ~= 0) then
-			extravel = extravel + ang:Right() * (side / math.abs(side)) * 10
+			extravel = extravel + ang:Right() * (side / math.abs(side)) * 5
 		end
 		local forward = mv:GetForwardSpeed()
 		if (forward ~= 0) then
-			extravel = extravel + ang:Forward() * (forward / math.abs(forward)) * 10
+			extravel = extravel + ang:Forward() * (forward / math.abs(forward)) * 5
 		end
 
-		velocity = velocity + extravel
+		velocity = (velocity + extravel) * engine.TickInterval()
 
 		local obbmins, obbmaxs = ply:GetHull()
 		local tr = util.TraceHull {
 			start = mv:GetOrigin(),
-			endpos = mv:GetOrigin() + velocity * engine.TickInterval(),
+			endpos = mv:GetOrigin() + velocity,
 			mins = obbmins,
 			maxs = obbmaxs,
 			filter = ply,
@@ -62,7 +62,7 @@ function GM:PreventCrouchJump(ply, mv)
 			local origin = mv:GetOrigin() + Vector(0, 0, obbmaxs.z - maxs.z)
 			local tr = util.TraceHull {
 				start = origin,
-				endpos = origin + velocity * engine.TickInterval(),
+				endpos = origin + velocity,
 				mins = mins,
 				maxs = maxs,
 				filter = ply,
