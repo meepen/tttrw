@@ -22,15 +22,15 @@ SWEP.TTTCompat = {
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
-	DamageDropoffRange = 600,
-	DamageDropoffRangeMax = 3600,
+	DamageDropoffRange = 400,
+	DamageDropoffRangeMax = 5500,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(0.015, 0.015, 0),
+	Spread = Vector(0.03, 0.03, 0.0),
 }
 
-SWEP.Primary.Damage        = 18
-SWEP.Primary.Delay         = 0.095
-SWEP.Primary.Recoil        = 1.7
+SWEP.Primary.Damage        = 19
+SWEP.Primary.Delay         = 0.14
+SWEP.Primary.Recoil        = 1.6
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.ClipSize      = 30
