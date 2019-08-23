@@ -28,7 +28,7 @@ function GM:PreventCrouchJump(ply, mv)
 	if (ply:GetMoveType() ~= MOVETYPE_WALK) then
 		return
 	end
-	if (mv:KeyDown(IN_DUCK) and NULL == ply:GetGroundEntity()) then
+	if (not ply:Crouching() and mv:KeyDown(IN_DUCK) and NULL == ply:GetGroundEntity()) then
 		local velocity = mv:GetVelocity()
 
 		local extravel = vector_origin
