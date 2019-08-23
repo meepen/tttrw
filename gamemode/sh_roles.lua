@@ -17,7 +17,6 @@ function ttt.CanPlayerSeePlayersRole(looker, ply)
 
 	if (TeamSeenBy and TeamSeenBy ~= SeenBy) then
 		if (TeamSeenBy[looker:GetRole()] or TeamSeenBy[looker:GetTeam()] or TeamSeenBy["*"]) then
-			print(looker, ply)
 			return true
 		end
 	end

@@ -50,6 +50,10 @@ end
 function GM:KeyPress(ply, key)
 	self:VoiceKey(ply, key)
 
+	if (key == IN_USE and self:TryInspectBody(ply)) then
+		return
+	end
+
 	if (key == IN_WEAPON1) then
 		self:DropCurrentWeapon(ply)
 	elseif (SERVER) then

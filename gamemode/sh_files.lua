@@ -41,6 +41,7 @@ AddCSLuaFile();
 		"sh_movement.lua",
 		"sh_equipment.lua",
 		"sh_util.lua",
+		"sh_body.lua",
 	},
 	Resources = {
 		"materials/tttrw/heart.png",

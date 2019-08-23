@@ -6,11 +6,7 @@ local function RagdollShow(self, ply, ent)
 		return
 	end
 
-	self:SetOwner(self.Info.Player)
-	self:SetNW2String("PlayerName", self.Info.Nick)
-	self:SetNW2String("PlayerRole", self.Info.Role)
-	self:SetNW2String("PlayerSteamID", self.Info.SteamID)
-	hook.Remove("PlayerUse", self)
+	hook.Run("PlayerInspectRagdoll", ply, ent, self.Info)
 end
 
 function ttt.CreatePlayerRagdoll(ply)
@@ -19,7 +15,7 @@ function ttt.CreatePlayerRagdoll(ply)
 	end
 
 	local rag = ents.Create("prop_ragdoll")
-	rag:SetNW2Bool("IsPlayerRagdoll", true)
+
 	local info
 	for _, _info in pairs(round.GetStartingPlayers()) do
 		if (_info.Player == ply) then
@@ -59,8 +55,6 @@ function ttt.CreatePlayerRagdoll(ply)
 		end
 	end
 
-	rag:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-
 	rag:Spawn()
-	rag:Activate()
+	rag:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 end

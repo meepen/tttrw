@@ -137,7 +137,29 @@ function PANEL:Init()
     self.Tabs:SetTall(ScrH() * 0.02)
     self.Tabs:AddTab "Body Search Results"
     self:DockPadding(Padding, Padding, Padding, Padding)
+
+    hook.Add("KeyPress", self, self.KeyPress)
 end
+
+local Free = {
+    [IN_USE] = true,
+}
+function PANEL:KeyPress(ply, key)
+    if (Free[key] and IsFirstTimePredicted()) then
+        timer.Simple(0, function()
+            if (IsValid(self)) then
+                self:Remove()
+            end
+        end)
+    end
+end
+
+function PANEL:Think()
+    if (not IsValid(self.Body) or LocalPlayer():GetPos():Distance(self.Position) > self.MaxDistance) then
+        self:Remove()
+    end
+end
+    
 
 function PANEL:PerformLayout(w, h)
     local _, endy = self:ScreenToLocal(self.Tabs:LocalToScreen(0, self.Tabs:GetTall()))
@@ -161,16 +183,3 @@ function PANEL:Paint(w, h)
 end
 
 vgui.Register("ttt_body_inspect", PANEL, "EditablePanel")
-
---[[]
-if (IsValid(ttt.InspectMenu)) then
-    ttt.InspectMenu:Remove()
-end
-
-ttt.InspectMenu = vgui.Create "ttt_body_inspect"
-ttt.InspectMenu:SetSize(ScrW() * 0.25, ScrH() * 0.25)
-ttt.InspectMenu:Center()
-ttt.InspectMenu:MakePopup()
-ttt.InspectMenu:SetKeyboardInputEnabled(false)
-print(ttt.InspectMenu)
-]]
