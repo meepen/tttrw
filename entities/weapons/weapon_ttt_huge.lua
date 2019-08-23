@@ -2,11 +2,11 @@ AddCSLuaFile()
 
 SWEP.HoldType              = "crossbow"
 
-SWEP.PrintName          = "H.U.G.E-249"
+SWEP.PrintName          = "H.U.G.E"
 SWEP.Slot               = 2
 
 SWEP.ViewModelFlip      = false
-SWEP.ViewModelFOV       = 54
+SWEP.ViewModelFOV       = 69
 
 SWEP.Icon               = "vgui/ttt/icon_m249"
 SWEP.IconLetter         = "w"
@@ -19,23 +19,25 @@ SWEP.WeaponID              = AMMO_M249
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
-	DamageDropoffRange = 600,
-	DamageDropoffRangeMax = 3600,
-	DamageMinimumPercent = 0.1,
-	Spread = Vector(.09, .09, .09)
+	DamageDropoffRange = 720,
+	DamageDropoffRangeMax = 2500,
+	DamageMinimumPercent = 0.5,
+	Spread = Vector(.047, .047, .055)
 }
 
 SWEP.TTTCompat = {"weapon_zm_sledge"}
 
-SWEP.Primary.Damage        = 7
-SWEP.Primary.Delay         = 0.06
-SWEP.Primary.Recoil        = 0.09
+SWEP.Primary.Damage        = 6
+SWEP.Primary.Delay         = 0.04
+SWEP.Primary.Recoil        = 1.2
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "AirboatGun"
 SWEP.Primary.ClipSize      = 150
 SWEP.Primary.MaxClip	   = 150
 SWEP.Primary.DefaultClip   = 300
 SWEP.Primary.Sound         = Sound "Weapon_m249.Single"
+
+SWEP.HeadshotMultiplier    = 1.2
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
