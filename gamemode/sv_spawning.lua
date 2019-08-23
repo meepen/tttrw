@@ -204,8 +204,6 @@ function GM:SpawnMapEntities()
 			continue
 		end
 
-		printf("Spawned %s", ent.class)
-
 		e:SetPos(ent.pos)
 		e:SetAngles(ent.ang)
 
