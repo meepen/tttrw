@@ -30,7 +30,7 @@ SWEP.TTTCompat = {"weapon_zm_rifle"}
 
 SWEP.Primary.Damage        = 35
 SWEP.Primary.Delay         = 1.5
-SWEP.Primary.Recoil        = 7
+SWEP.Primary.Recoil        = 4
 SWEP.Primary.RecoilTiming  = 0.09
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "357"

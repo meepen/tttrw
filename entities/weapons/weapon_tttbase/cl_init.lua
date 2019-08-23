@@ -18,7 +18,7 @@ function SWEP:DrawHUD()
 	
 		local frac = math.min(1, (self:GetUnpredictedTime() - toggletime) / time)
 
-		surface.SetDrawColor(0, 0, 0, frac ^ 0.1 * 255)
+		surface.SetDrawColor(0, 0, 0, 255)
 
 		-- top right
 		surface.DrawTexturedRectUV(x, 0, ScrH() / 2, ScrH() / 2, 0, 1, 1, 0)
@@ -44,7 +44,7 @@ function SWEP:DoDrawCrosshair(x, y)
 		surface.DrawLine(x - w / 2, y, x + w / 2, y)
 		surface.DrawLine(x, y - h / 2, x, y + h / 2)
 
-		surface.SetDrawColor(255, 0, 0, 255)
+		surface.SetDrawColor(255, 255, 255, 255)
 
 		surface.DrawRect(x - 1, y - 1, 3, 3)
 

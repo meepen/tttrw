@@ -22,7 +22,8 @@ function GM:PlayerLoadout(ply)
 	end
 
 	if (not slots[1]) then
-		ply:Give "weapon_ttt_ak47"
+		ply:Give "weapon_ttt_rifle"
+		ply:Give "weapon_ttt_deagle"
 	end
 end
 

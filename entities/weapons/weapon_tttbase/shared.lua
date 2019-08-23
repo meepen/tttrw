@@ -128,6 +128,8 @@ function SWEP:DoZoom(state)
 
 	if (state) then
 		self:ChangeFOVMultiplier(self.Ironsights.Zoom, self.Ironsights.TimeTo)
+	elseif (self.HasScope) then
+		self:ChangeFOVMultiplier(1, 0)
 	else
 		self:ChangeFOVMultiplier(1, self.Ironsights.TimeFrom)
 	end
