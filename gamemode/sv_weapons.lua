@@ -22,6 +22,11 @@ end
 
 function GM:DropCurrentWeapon(ply)
 	local wep = ply:GetActiveWeapon()
+
+	if (not IsValid(wep)) then
+		return
+	end
+
 	ply:DropWeapon(wep)
 
 	local pri = wep:GetPrimaryAmmoType()
