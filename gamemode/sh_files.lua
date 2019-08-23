@@ -11,6 +11,7 @@ AddCSLuaFile();
 		"sv_hitmarkers.lua",
 		"sv_ttt_compat.lua",
 		"sv_weapons.lua",
+		"sv_logging.lua",
 	},
 	Client = {
 		"cl_hud_helpers.lua",

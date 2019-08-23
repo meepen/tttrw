@@ -52,3 +52,13 @@ function GM:player_connect_client(info)
 		timer.Remove("ttt_player_connect_" .. info.userid)
 	end)
 end
+
+net.Receive("tttrw_console_print", function()
+	local text = net.ReadString()
+
+	for i = 1, text:len() + 199, 200 do
+		Msg(text:sub(i, i + 199))
+	end
+
+	MsgN ""
+end)

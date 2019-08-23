@@ -17,7 +17,7 @@ ENT.Equipment = {
 	Limit	       = 1,
 }
 
-ENT.Delay = 30
+ENT.Delay = 10
 
 if (CLIENT) then
 	ENT.Targets = {}
@@ -112,18 +112,13 @@ else
 		
 		local i = 0
 		for _, pl in pairs(player.GetAll()) do
-			if (not IsValid(pl)) then return end
-			if (pl == self:GetParent()) then continue end
+			if (pl == self:GetParent() or not pl:Alive()) then continue end
 			
 			i = i + 1
 			
 			self:SetNW2Vector("scan_pos_" .. i, pl:GetPos())
 			
-			local role = pl:GetRole()
-			local color = color_black
-			if (ttt.roles[role]) then
-				color = ttt.roles[role].Color
-			end
+			local color = pl:GetRoleData().Color or color_black
 			
 			self:SetNW2Vector("scan_color_" .. i, color:ToVector())
 		end

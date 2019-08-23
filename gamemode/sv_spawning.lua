@@ -217,7 +217,3 @@ function GM:SpawnMapEntities()
 		e:Spawn()
 	end
 end
-
-function GM:TTTPrepareRound()
-	self:SpawnMapEntities()
-end
