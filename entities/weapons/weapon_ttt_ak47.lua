@@ -19,15 +19,15 @@ SWEP.WeaponID              = AMMO_AK47
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
-	DamageDropoffRange = 600,
-	DamageDropoffRangeMax = 3600,
+	DamageDropoffRange = 300,
+	DamageDropoffRangeMax = 4200,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(.03, .03, .03)
+	Spread = Vector(.03, .035, .0)
 }
 
 SWEP.Primary.Damage        = 22
 SWEP.Primary.Delay         = 0.09
-SWEP.Primary.Recoil        = 2
+SWEP.Primary.Recoil        = 1.95
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.ClipSize      = 30
