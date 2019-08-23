@@ -3,12 +3,7 @@ if (CLIENT) then
 	ttt_bhop_cl = CreateConVar("ttt_bhop_cl", "1", FCVAR_USERINFO + FCVAR_ARCHIVE, "Enable auto bhop if ttt_bhop_sv is enabled")
 end
 
-function GM:Move(ply, mv)
-	local data = player_manager.RunClass(ply, "GetSpeedData")
-
-	mv:SetMaxSpeed(mv:GetMaxSpeed() * data.Multiplier * data.FinalMultiplier)
-	mv:SetMaxClientSpeed(mv:GetMaxClientSpeed() * data.Multiplier * data.FinalMultiplier)
-
+function GM:DoBunnyHop(ply, mv)
 	-- bhop settings
 
 	if (not ply:Alive() or ply:WaterLevel() >= 2) then
@@ -27,6 +22,68 @@ function GM:Move(ply, mv)
 			mv:SetButtons(bit.bor(mv:GetButtons(), IN_JUMP))
 		end
 	end
+end
+
+function GM:PreventCrouchJump(ply, mv)
+	if (mv:KeyDown(IN_DUCK) and NULL == ply:GetGroundEntity()) then
+		local velocity = mv:GetVelocity()
+
+		local extravel = vector_origin
+		local side = mv:GetSideSpeed()
+		local ang = mv:GetAngles()
+		ang.p = 0
+
+		if (side ~= 0) then
+			extravel = extravel + ang:Right() * (side / math.abs(side)) * 10
+		end
+		local forward = mv:GetForwardSpeed()
+		if (forward ~= 0) then
+			extravel = extravel + ang:Forward() * (forward / math.abs(forward)) * 10
+		end
+
+		velocity = velocity + extravel
+
+		local obbmins, obbmaxs = ply:GetHull()
+		local tr = util.TraceHull {
+			start = mv:GetOrigin(),
+			endpos = mv:GetOrigin() + velocity * engine.TickInterval(),
+			mins = obbmins,
+			maxs = obbmaxs,
+			filter = ply,
+			mask = MASK_PLAYERSOLID,
+		}
+
+		if (tr.Hit) then
+			local mins, maxs = ply:GetHullDuck()
+			local extravel = Vector()
+			local origin = mv:GetOrigin() + Vector(0, 0, obbmaxs.z - maxs.z)
+			local tr = util.TraceHull {
+				start = origin,
+				endpos = origin + velocity * engine.TickInterval(),
+				mins = mins,
+				maxs = maxs,
+				filter = ply,
+				mask = MASK_PLAYERSOLID,
+			}
+
+			if (not tr.Hit) then
+				return
+			end
+		
+		end
+		mv:SetButtons(bit.band(bit.bnot(IN_DUCK), mv:GetButtons()))
+	end
+end
+
+function GM:Move(ply, mv)
+	local data = player_manager.RunClass(ply, "GetSpeedData")
+
+	mv:SetMaxSpeed(mv:GetMaxSpeed() * data.Multiplier * data.FinalMultiplier)
+	mv:SetMaxClientSpeed(mv:GetMaxClientSpeed() * data.Multiplier * data.FinalMultiplier)
+
+	self:DoBunnyHop(ply, mv)
+
+	self:PreventCrouchJump(ply, mv)
 end
 
 if (SERVER) then
