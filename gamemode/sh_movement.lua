@@ -54,6 +54,7 @@ function GM:PreventCrouchJump(ply, mv)
 			maxs = obbmaxs,
 			filter = ply,
 			mask = MASK_PLAYERSOLID,
+			collisiongroup = ply:GetCollisionGroup(),
 		}
 
 		if (tr.Hit) then
@@ -67,6 +68,7 @@ function GM:PreventCrouchJump(ply, mv)
 				maxs = maxs,
 				filter = ply,
 				mask = MASK_PLAYERSOLID,
+				collisiongroup = ply:GetCollisionGroup(),
 			}
 
 			if (not tr.Hit) then
