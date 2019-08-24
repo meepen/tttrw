@@ -36,8 +36,6 @@ end
 
 function PANEL:PerformLayout(w, h)
     self:RebuildMesh(w, h)
-
-    self.Bounds = {self:GetRenderBounds()}
 end
 
 function PANEL:RebuildMesh(w, h)
@@ -49,24 +47,34 @@ function PANEL:RebuildMesh(w, h)
     self.Mesh = hud.BuildCurvedMesh(self:GetCurve(), 0, 0, w, h, self:GetNoCurveTopLeft(), self:GetNoCurveTopRight(), self:GetNoCurveBottomLeft(), self:GetNoCurveBottomRight())
 end
 
-function PANEL:GetRenderBounds()
-    local nx, ny = self:LocalToScreen(0, 0)
-    local mx, my = nx + self:GetWide(), ny + self:GetTall()
+local memoize = {}
+
+hook.Add("PostRenderVGUI", "ttt_curved_panel", function()
+    memoize = {}
+end)
+
+local function GetRenderBounds(self)
+    local m = memoize[self]
+    if (m ~= nil) then
+        return m[1], m[2], m[3], m[4]
+    end
+
+    local x0, y0 = self:LocalToScreen(0, 0)
+    local x1, y1 = self:LocalToScreen(self:GetSize())
 
     local parent = self:GetParent()
 
-    while (IsValid(parent)) do
-        local x, y = parent:LocalToScreen(0, 0)
-        local w, h = parent:GetSize()
-        nx = math.max(nx, x)
-        ny = math.max(ny, y)
-        mx = math.min(mx, x + w)
-        my = math.min(my, y + h)
-    
-        parent = parent:GetParent()
+    if (IsValid(parent)) then
+        local px0, py0, px1, py1 = GetRenderBounds(parent)
+        x0 = math.max(x0, px0)
+        y0 = math.max(y0, py0)
+        x1 = math.min(x1, px1)
+        y1 = math.min(y1, py1)
     end
 
-    return nx, ny, mx, my
+    memoize[self] = {x0, y0, x1, y1}
+
+    return x0, y0, x1, y1
 end
 
 function PANEL:Paint(w, h)
@@ -78,12 +86,10 @@ function PANEL:Paint(w, h)
 	hud.StartStenciledMesh(self.Mesh, scrx, scry)
         render.SetMaterial(self.Material)
 
-
-        -- slow :(
-        --local nx, ny, mx, my = self:GetRenderBounds()
-        --render.SetScissorRect(nx, ny, mx, my, true)
+        local x0, y0, x1, y1 = GetRenderBounds(self)
+        render.SetScissorRect(x0, y0, x1, y1, true)
         render.DrawScreenQuad()
-        --render.SetScissorRect(0, 0, 0, 0, false)
+        render.SetScissorRect(0, 0, 0, 0, false)
 	hud.EndStenciledMesh()
 end
 
