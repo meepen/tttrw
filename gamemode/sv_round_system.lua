@@ -216,6 +216,7 @@ function GM:TTTRoundStart()
 		if (IsValid(info.Player)) then
 			info.Player:ChatPrint("Your role is "..info.Role.Name.." on team "..info.Role.Team.Name)
 			info.Player:SetRole(info.Role.Name)
+			info.Player:SetTeam(TEAM_TERROR)
 		end
 		if (not info.Player:Alive()) then
 			info.Player:Spawn()

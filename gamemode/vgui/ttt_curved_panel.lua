@@ -36,6 +36,8 @@ end
 
 function PANEL:PerformLayout(w, h)
     self:RebuildMesh(w, h)
+
+    self.Bounds = {self:GetRenderBounds()}
 end
 
 function PANEL:RebuildMesh(w, h)
@@ -47,14 +49,41 @@ function PANEL:RebuildMesh(w, h)
     self.Mesh = hud.BuildCurvedMesh(self:GetCurve(), 0, 0, w, h, self:GetNoCurveTopLeft(), self:GetNoCurveTopRight(), self:GetNoCurveBottomLeft(), self:GetNoCurveBottomRight())
 end
 
+function PANEL:GetRenderBounds()
+    local nx, ny = self:LocalToScreen(0, 0)
+    local mx, my = nx + self:GetWide(), ny + self:GetTall()
+
+    local parent = self:GetParent()
+
+    while (IsValid(parent)) do
+        local x, y = parent:LocalToScreen(0, 0)
+        local w, h = parent:GetSize()
+        nx = math.max(nx, x)
+        ny = math.max(ny, y)
+        mx = math.min(mx, x + w)
+        my = math.min(my, y + h)
+    
+        parent = parent:GetParent()
+    end
+
+    return nx, ny, mx, my
+end
+
 function PANEL:Paint(w, h)
     if (not self.Material) then
         self:SetColor(color_white)
     end
 
-	hud.StartStenciledMesh(self.Mesh, self:LocalToScreen(0, 0))
-		render.SetMaterial(self.Material)
-		render.DrawScreenQuad()
+    local scrx, scry = self:LocalToScreen(0, 0)
+	hud.StartStenciledMesh(self.Mesh, scrx, scry)
+        render.SetMaterial(self.Material)
+
+
+        -- slow :(
+        --local nx, ny, mx, my = self:GetRenderBounds()
+        --render.SetScissorRect(nx, ny, mx, my, true)
+        render.DrawScreenQuad()
+        --render.SetScissorRect(0, 0, 0, 0, false)
 	hud.EndStenciledMesh()
 end
 

@@ -19,7 +19,6 @@ end
 function PLAYER:Spawn()
 	if (SERVER) then
 		self.Player:SetupHands()
-		self.Player:SetTeam(TEAM_TERROR)
 	end
 end
 

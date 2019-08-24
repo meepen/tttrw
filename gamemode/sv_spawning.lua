@@ -96,7 +96,7 @@ local function IsSpawnpointSuitable(ply, pos, rigged)
 	end
 
 	if (not util.IsInWorld(pos)) then
-		warn("Spawn osition out of world: %s\n", tostring(pos))
+		warn("Spawn position out of world: %s\n", tostring(pos))
 		return false
 	end
 

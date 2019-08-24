@@ -227,6 +227,9 @@ function PANEL:Init()
 	self.Guide.Name:DockMargin(42, 0, 0, 0)
 	self.Guide.Avatar:Remove()
 
+	self.Scroller = self:Add "DScrollPanel"
+	self.Scroller:Dock(FILL)
+
 	local living = {}
 	local dead = {}
 	local spectators = {}
@@ -251,7 +254,7 @@ function PANEL:Init()
 
 	local alpha = 25
 
-	self:AddGroup("Living", Color(10, 250, 100, alpha), living)
+	self:AddGroup("Terrorists", Color(10, 250, 100, alpha), living)
 	self:AddGroup("Unidentified", Color(250, 150, 150, alpha), unidentified)
 	self:AddGroup("Dead", Color(78, 55, 53, alpha * 3), dead)
 	self:AddGroup("Spectators", Color(255, 255, 255, alpha), spectators)
@@ -262,7 +265,7 @@ function PANEL:Init()
 end
 
 function PANEL:AddGroup(name, color, plys)
-	local pnl = self:Add "ttt_scoreboard_group"
+	local pnl = self.Scroller:Add "ttt_scoreboard_group"
 
 	pnl:SetColor(color)
 	pnl:SetText(name)
