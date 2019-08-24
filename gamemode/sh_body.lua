@@ -33,10 +33,14 @@ function GM:PlayerInspectBody(ply, ent, pos)
 		ttt.InspectMenu.Position = pos
 		ttt.InspectMenu.MaxDistance = MAX_DISTANCE
 	else
-		if (ply:KeyDown(IN_WALK)) then
+		if (ply:KeyDown(IN_WALK) or not ply:Alive()) then
 			ent.HiddenState:SetVisibleTo(ply)
-		else
+		elseif (not ent.HiddenState:GetIdentified()) then
 			ent.HiddenState:SetIdentified(true)
+
+			for _, oply in pairs(player.GetAll()) do
+				oply:Notify(ply:Nick() .. " has confirmed " .. ent.HiddenState:GetOwner():Nick() .. "'s death")
+			end
 		end
 	end
 end

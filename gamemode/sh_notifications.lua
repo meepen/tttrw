@@ -26,7 +26,7 @@ else
 		ttt.Notifications.Add(net.ReadString())
 	end)
 
-	local lifetime = 3
+	local lifetime = 8
 	function ttt.Notifications.Add(msg)
 		local notif = {}
 		notif.msg = msg
