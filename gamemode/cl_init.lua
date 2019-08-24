@@ -62,3 +62,13 @@ net.Receive("tttrw_console_print", function()
 
 	MsgN ""
 end)
+
+DEFINE_BASECLASS "gamemode_base"
+local color_dead = Color(0xf8, 0xf9, 0x91)
+function GM:GetTeamColor(ent)
+	if (not ent:Alive()) then
+		return color_dead
+	end
+
+	return BaseClass.GetTeamColor(self, ent)
+end

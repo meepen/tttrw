@@ -60,3 +60,8 @@ function GM:KeyPress(ply, key)
 		self:SpectatorKey(ply, key)
 	end
 end
+
+TEAM_TERROR = 1
+function GM:CreateTeams()
+	team.SetUp(TEAM_TERROR, "Terrorist", Color(46, 192, 94), false)
+end

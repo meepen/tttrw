@@ -6,7 +6,7 @@ PLAYER.WalkSpeed 			= 200
 PLAYER.RunSpeed				= 200
 
 TEAM_TERROR = 1
-team.SetUp(TEAM_TERROR, "Terrorist", color_white, false)
+team.SetUp(TEAM_TERROR, "Terrorist", Color(46, 192, 94), false)
 
 function PLAYER:Loadout()
 	local ply = self.Player
