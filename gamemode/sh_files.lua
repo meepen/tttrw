@@ -23,6 +23,7 @@ AddCSLuaFile();
 		"vgui/ttt_time.lua",
 		"vgui/ttt_equipment_menu.lua",
 		"vgui/ttt_body_inspect.lua",
+		"vgui/ttt_scoreboard.lua",
 		"cl_hud.lua",
 		"cl_scoreboard.lua",
 		"cl_hitmarkers.lua",
