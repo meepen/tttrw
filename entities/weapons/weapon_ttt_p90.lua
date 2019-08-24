@@ -32,7 +32,7 @@ SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.ClipSize      = 50 --50
 SWEP.Primary.DefaultClip   = 50 --50
-SWEP.Primary.MaxClip	   = 60
+SWEP.Primary.MaxClip	   = 150
 SWEP.Primary.Sound         = Sound "Weapon_P90.Single"
 
 SWEP.HeadshotMultiplier    = 1.20
