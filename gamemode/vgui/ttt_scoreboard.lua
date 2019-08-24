@@ -145,6 +145,7 @@ function PANEL:Paint(w, h)
 		self.Ping:SetText(self.Player:Ping().."ms")
 		self.Ping:SizeToContents()
 		self.Ping:Dock(RIGHT)
+		self.Karma:DockMargin(0, 0, Padding * 12 - self.Ping:GetWide(), 0)
 	end
 	hud.StartStenciledMesh(self.Mesh, self:LocalToScreen(0, 0))
 		render.SetMaterial(self.Mat)
@@ -236,7 +237,7 @@ function PANEL:Init()
 	self.Guide = self:Add("ttt_scoreboard_player")
 	self.Guide.Mat = ttt_scoreboard_header
 	self.Guide:DockMargin(Padding * 2, 10, Padding * 2, Padding/4)
-	self.Guide.Karma:DockMargin(0, 0, Padding * 10 - 11, 0)
+	self.Guide.Karma:DockMargin(0, 0, Padding * 12 - self.Guide.Ping:GetWide()-10, 0)
 	self.Guide.Name:DockMargin(42, 0, 0, 0)
 	self.Guide.Avatar:Remove()
 

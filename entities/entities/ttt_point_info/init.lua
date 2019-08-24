@@ -9,7 +9,7 @@ function ENT:SetupPlayerVisibility(ply)
 end
 
 function ENT:UpdateTransmitState()
-	return TRANSMIT_PVS
+	return TRANSMIT_ALWAYS
 end
 
 function ENT:OnRoundStateChange(old, new)
