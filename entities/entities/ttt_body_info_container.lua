@@ -7,6 +7,7 @@ DEFINE_BASECLASS(ENT.Base)
 function ENT:Initialize()
     BaseClass.Initialize(self)
     self:GetParent().HiddenState = self
+    self:GetOwner().DeadState = self
     if (SERVER) then
         self:SetOwner(self.Information.Victim)
         self.VisibleList = {}
@@ -32,6 +33,10 @@ end
 
 function ENT:IsVisibleTo(ply)
     return self.VisibleList[ply] or false
+end
+
+function ENT:SetupDataTables()
+    self:NetworkVar("Bool", 0, "Identified")
 end
 
 function ENT:GetData()

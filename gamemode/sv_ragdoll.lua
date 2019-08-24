@@ -66,6 +66,7 @@ function ttt.CreatePlayerRagdoll(ply, atk, dmg)
 	}
 
 	rag.HiddenState:SetParent(rag)
+	rag.HiddenState:SetOwner(ply)
 	rag.HiddenState:Spawn()
 end
 

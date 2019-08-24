@@ -4,7 +4,7 @@ local ttt_scoreboard_header_color = Color(20, 19, 20, 0.92 * 255)
 
 surface.CreateFont("ttt_scoreboard_player", {
 	font = 'Lato',
-	size = ScrH() / 80,
+	size = ScrH() / 70,
 	weight = 300,
 })
 
@@ -169,41 +169,33 @@ function PANEL:Init()
 	self.Guide.Name:DockMargin(42, 0, 0, 0)
 	self.Guide.Avatar:Remove()
 
-	if ((LocalPlayer():GetTeam() == "traitor" and ttt.GetRoundState() ~= ttt.ROUNDSTATE_PREPARING) or ttt.GetRoundState() == ttt.ROUNDSTATE_ENDED) then
-		self:AddGroup("Living", Color(50, 200, 100), function()
-			local t = {}
-			for k,v in pairs(player.GetAll()) do
-				if (v:Alive()) then
-					table.insert(t, v)
-				end
-			end
-			return t
-		end)
-		self:AddGroup("Unidentified Bodies", Color(150, 50, 50), function() 
-			return {}
-		end)
-	else
-		self:AddGroup("Living", Color(50, 200, 100), function()
-			local t = {}
-			for k,v in pairs(player.GetAll()) do
-				if (v:Alive()) then
-					table.insert(t, v)
-				end
-			end
-			return t
-		end)
-	end
-	self:AddGroup("Dead", Color(200, 50, 50), function() 
-		local t = {}
-		for k,v in pairs(player.GetAll()) do
-			if (not v:Alive()) then
-				table.insert(t, v)
-			end
+	local living = {}
+	local dead = {}
+	local spectators = {}
+	local unidentified = {}
+	local connecting = {}
+
+	for _, ply in pairs(player.GetAll()) do
+		local result_tbl = living
+		
+		if (ply:Team() == TEAM_CONNECTING) then
+			result_tbl = connecting
+		elseif (ply:Team() == TEAM_SPECTATOR) then
+			result_tbl = spectators
+		elseif (not ply:Alive() and IsValid(ply.DeadState)) then
+			result_tbl = ply.DeadState:GetIdentified() and dead or unidentified
 		end
-		return t
-	end)
+
+		table.insert(result_tbl, ply)
+	end
+
+	self:AddGroup("Living", Color(50, 200, 100), living)
+	self:AddGroup("Unidentified", Color(150, 50, 50), unidentified)
+	self:AddGroup("Dead", Color(200, 50, 50), dead)
+	self:AddGroup("Spectators", color_white, spectators)
+	self:AddGroup("Connecting", color_white, connecting)
 	self:InvalidateLayout()
-	--self:SizeToChildren(false, true)
+
 	self:SetPos((ScrW() - self:GetWide()) / 2, (ScrH() - self:GetTall()) / 2)
 end
 
@@ -212,7 +204,7 @@ function PANEL:AddGroup(name, color, plys)
 
 	pnl:SetColor(color)
 	pnl:SetText(name)
-	pnl:SetPlayers(plys())
+	pnl:SetPlayers(plys)
 	pnl:Dock(TOP)
 
 	table.insert(self.Contents, pnl)

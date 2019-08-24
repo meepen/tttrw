@@ -256,6 +256,7 @@ function GM:PlayerInitialSpawn(ply)
 	state:SetParent(ply)
 	state:Spawn()
 	ply:AllowFlashlight(true)
+	ply:SetTeam(TEAM_SPECTATOR)
 end
 
 function GM:SV_PlayerSpawn(ply)

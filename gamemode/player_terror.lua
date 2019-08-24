@@ -5,6 +5,9 @@ local PLAYER = {}
 PLAYER.WalkSpeed 			= 200
 PLAYER.RunSpeed				= 200
 
+TEAM_TERROR = 1
+team.SetUp(TEAM_TERROR, "Terrorist", color_white, false)
+
 function PLAYER:Loadout()
 	local ply = self.Player
 	ply:StripAmmo()
@@ -16,6 +19,7 @@ end
 function PLAYER:Spawn()
 	if (SERVER) then
 		self.Player:SetupHands()
+		self.Player:SetTeam(TEAM_TERROR)
 	end
 end
 
