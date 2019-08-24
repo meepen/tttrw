@@ -60,6 +60,10 @@ function ENT:IsVisibleTo(ply)
 
 	local roundstate = ttt.GetRoundState()
 
+	if (not own:Alive() and IsValid(own.DeadState)) then
+		return own.DeadState:IsVisibleTo(ply)
+	end
+
 	if (roundstate == ttt.ROUNDSTATE_ACTIVE) then
 		return ttt.CanPlayerSeePlayersRole(ply, own)
 	end

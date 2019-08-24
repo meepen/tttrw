@@ -40,5 +40,5 @@ function ENT:IsUsable()
 end
 
 function ENT:PlayerCanSee(ply)
-	return IsValid(ply) and ply:GetTeam() == "traitor"
+	return IsValid(ply) and ply:GetRoleTeam() == "traitor"
 end

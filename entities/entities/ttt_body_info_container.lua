@@ -32,7 +32,7 @@ function ENT:SetVisibleTo(ply)
 end
 
 function ENT:IsVisibleTo(ply)
-    return self.VisibleList[ply] or false
+    return self:GetIdentified() or self.VisibleList[ply] or false
 end
 
 function ENT:SetupDataTables()

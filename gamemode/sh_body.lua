@@ -33,6 +33,10 @@ function GM:PlayerInspectBody(ply, ent, pos)
 		ttt.InspectMenu.Position = pos
 		ttt.InspectMenu.MaxDistance = MAX_DISTANCE
 	else
-		ent.HiddenState:SetVisibleTo(ply)
+		if (ply:KeyDown(IN_WALK)) then
+			ent.HiddenState:SetVisibleTo(ply)
+		else
+			ent.HiddenState:SetIdentified(true)
+		end
 	end
 end

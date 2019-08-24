@@ -8,15 +8,15 @@ local TEAM = {}
 
 function ttt.CanPlayerSeePlayersRole(looker, ply)
 	local SeenBy = ply:GetRoleData().CanBeSeenBy
-	local TeamSeenBy = ply:GetTeamData().CanBeSeenBy
+	local TeamSeenBy = ply:GetRoleTeamData().CanBeSeenBy
 	if (SeenBy) then
-		if (SeenBy[looker:GetRole()] or SeenBy[looker:GetTeam()] or SeenBy["*"]) then
+		if (SeenBy[looker:GetRole()] or SeenBy[looker:GetRoleTeam()] or SeenBy["*"]) then
 			return true
 		end
 	end
 
 	if (TeamSeenBy and TeamSeenBy ~= SeenBy) then
-		if (TeamSeenBy[looker:GetRole()] or TeamSeenBy[looker:GetTeam()] or TeamSeenBy["*"]) then
+		if (TeamSeenBy[looker:GetRole()] or TeamSeenBy[looker:GetRoleTeam()] or TeamSeenBy["*"]) then
 			return true
 		end
 	end
@@ -209,10 +209,10 @@ function PLY:GetRoleData()
 	return ttt.roles[self:GetRole()]
 end
 
-function PLY:GetTeamData()
+function PLY:GetRoleTeamData()
 	return ttt.roles[self:GetRole()].Team
 end
 
-function PLY:GetTeam()
+function PLY:GetRoleTeam()
 	return ttt.roles[self:GetRole()].Team.Name
 end

@@ -36,7 +36,7 @@ function GM:PlayerCanSeePlayersChat(text, team, listener, speaker)
             return false
         end
         
-        if (not lr.TeamChatCanBeSeenBy[listener:GetRole()] and not lr.TeamChatCanBeSeenBy[listener:GetTeam()]) then
+        if (not lr.TeamChatCanBeSeenBy[listener:GetRole()] and not lr.TeamChatCanBeSeenBy[listener:GetRoleTeam()]) then
             return false
         end
     end

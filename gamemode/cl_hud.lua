@@ -39,10 +39,17 @@ function GM:HUDDrawTargetID()
 
 	ent = tr.Entity
 
+	if (not IsValid(ent)) then
+		return
+	end
 
-	if (IsValid(ent) and ent:IsPlayer()) then
+	local text = "n/a"
+	local extra
+	local color = white_text
+
+	if (ent:IsPlayer()) then
 		if (ent.HasDisguiser and ent:HasDisguiser()) then return end
-		
+
 		if (LastTarget ~= ent or LastTime and LastTime < CurTime() - 1) then
 			LastTarget = ent
 			LastTime = CurTime()
@@ -51,21 +58,39 @@ function GM:HUDDrawTargetID()
 			net.SendToServer()
 		end
 
-		surface.SetFont "TargetIDSmall"
+		text = ent:Nick()
+	elseif (ent:GetNW2Bool("IsPlayerBody", false)) then
+		local state = ent.HiddenState
+		if (not IsValid(state)) then
+			text = "Unidentified Body"
+		else
+			local own = ent.HiddenState:GetOwner()
+			if (IsValid(own)) then
+				color = own:GetRoleData().Color
+				if (ent.HiddenState:GetIdentified()) then
+					text = own:Nick() .. "'s Identified Body"
+				else
+					text = own:Nick() .. "'s Unidentified Body"
+				end
+			end
+		end
+	else
+		return
+	end
 
-		local nick = ent:Nick()
-		local health = ent:Health()
+	surface.SetFont "TargetIDSmall"
+	surface.SetTextColor(color_black)
 
-		surface.SetTextColor(color_black)
+	local x, y = ScrW() / 2, ScrH() / 2
 
-		local x, y = ScrW() / 2, ScrH() / 2
+	y = y + math.max(50, ScrH() / 20)
 
-		y = y + math.max(50, ScrH() / 20)
+	local tw, th = surface.GetTextSize(text)
 
-		local text = nick
-		local tw, th = surface.GetTextSize(text)
+	hud.DrawTextOutlined(text, color, color_black, x - tw / 2, y, 1)
 
-		hud.DrawTextOutlined(text, white_text, color_black, x - tw / 2, y, 1)
+
+	if (IsValid(ent) and ent:IsPlayer()) then
 
 		local state = ent.HiddenState
 

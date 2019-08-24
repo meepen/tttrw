@@ -26,7 +26,7 @@ local PANEL = {}
 
 function PANEL:Init()
 	self:SetCurve(4)
-	self:SetColor(Color(20, 19, 20, 0.92 * 255))
+	self:SetColor(Color(20, 19, 20, 0.8 * 255))
 
 	self.Logo = self:Add "DLabel"
 	self.Logo:SetFont "ttt_scoreboard_header"
@@ -175,7 +175,7 @@ function PANEL:Init()
 	local unidentified = {}
 	local connecting = {}
 
-	for _, ply in pairs(player.GetAll()) do
+	for _, ply in ipairs(player.GetAll()) do
 		local result_tbl = living
 		
 		if (ply:Team() == TEAM_CONNECTING) then
@@ -184,16 +184,20 @@ function PANEL:Init()
 			result_tbl = spectators
 		elseif (not ply:Alive() and IsValid(ply.DeadState)) then
 			result_tbl = ply.DeadState:GetIdentified() and dead or unidentified
+		elseif (not ply:Alive() and LocalPlayer():GetRoleData().Evil) then
+			result_tbl = unidentified
 		end
 
 		table.insert(result_tbl, ply)
 	end
 
-	self:AddGroup("Living", Color(50, 200, 100), living)
-	self:AddGroup("Unidentified", Color(150, 50, 50), unidentified)
-	self:AddGroup("Dead", Color(200, 50, 50), dead)
-	self:AddGroup("Spectators", color_white, spectators)
-	self:AddGroup("Connecting", color_white, connecting)
+	local alpha = 25
+
+	self:AddGroup("Living", Color(10, 250, 100, alpha), living)
+	self:AddGroup("Unidentified", Color(250, 150, 150, alpha), unidentified)
+	self:AddGroup("Dead", Color(78, 55, 53, alpha * 3), dead)
+	self:AddGroup("Spectators", Color(255, 255, 255, alpha), spectators)
+	self:AddGroup("Connecting", Color(255, 255, 255, alpha), connecting)
 	self:InvalidateLayout()
 
 	self:SetPos((ScrW() - self:GetWide()) / 2, (ScrH() - self:GetTall()) / 2)
