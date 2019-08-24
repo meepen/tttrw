@@ -9,7 +9,7 @@ function ENT:SetupPlayerVisibility(ply)
 end
 
 function ENT:UpdateTransmitState()
-	return TRANSMIT_ALWAYS
+	return TRANSMIT_PVS
 end
 
 function ENT:OnRoundStateChange(old, new)
@@ -17,5 +17,6 @@ function ENT:OnRoundStateChange(old, new)
 end
 
 function ENT:SV_Initialize()
+	self:SetCollisionBoundsWS(Vector(-16000, -16000, -16000), Vector(16000, 16000, 16000))
 	hook.Add("SetupPlayerVisibility", self, self.SetupPlayerVisibility)
 end
