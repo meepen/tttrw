@@ -97,16 +97,9 @@ function PANEL:Paint(w, h)
 			self:SetColor(ColorAlpha(self.Player:GetRoleData().Color, 100))
 			-- TODO(meep): event based hook
 		end
-		self.Ping:SetText(self.Player:Ping() .. "ms")
-		self.Ping:SizeToContents()
-		self.Karma:DockMargin(0, 0, Padding * 12 - self.Ping:GetWide(), 0)
 	end
 
 	BaseClass.Paint(self, w, h)
-end
-
-function PANEL:PerformLayout(w, h)
-	BaseClass.PerformLayout(self, w, h)
 end
 
 function PANEL:SetPlayer(ply)
@@ -124,6 +117,10 @@ function PANEL:SetPlayer(ply)
 	self.Karma:SetText "1000"
 	self.Karma:SizeToContents()
 	self.Karma:Dock(RIGHT)
+
+	self.Ping:SetText(self.Player:Ping() .. "ms")
+	self.Ping:SizeToContents()
+	self.Karma:DockMargin(0, 0, Padding * 12 - self.Ping:GetWide(), 0)
 end
 
 vgui.Register("ttt_scoreboard_player", PANEL, "ttt_curved_panel")
