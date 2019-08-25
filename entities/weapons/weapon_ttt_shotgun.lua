@@ -19,24 +19,24 @@ SWEP.WeaponID              = AMMO_SHOTGUN
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 8,
-	DamageDropoffRange = 600,
-	DamageDropoffRangeMax = 3600,
+	DamageDropoffRange = 100,
+	DamageDropoffRangeMax = 600,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(.085, .085, .085)
+	Spread = Vector(.075, .065, .085)
 }
 
 SWEP.TTTCompat = {"weapon_zm_shotgun"}
 
-SWEP.Primary.Damage        = 11
-SWEP.Primary.Delay         = 0.8
+SWEP.Primary.Damage        = 7
+SWEP.Primary.Delay         = 0.7
 SWEP.Primary.RecoilTiming  = 0.1
 SWEP.Primary.Recoil        = 7
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Buckshot"
 SWEP.Primary.NumShots 	   = 8
-SWEP.Primary.ClipSize      = 8
-SWEP.Primary.DefaultClip   = 16
-SWEP.Primary.MaxClip       = 32
+SWEP.Primary.ClipSize      = 999 --8
+SWEP.Primary.DefaultClip   = 999 --16
+SWEP.Primary.MaxClip       = 999 --32
 SWEP.Primary.Sound         = Sound "Weapon_XM1014.Single"
 
 SWEP.AutoSpawnable         = true
