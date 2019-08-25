@@ -19,23 +19,23 @@ SWEP.WeaponID              = AMMO_GLOCK
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
-	DamageDropoffRange = 600,
-	DamageDropoffRangeMax = 3600,
+	DamageDropoffRange = 350,
+	DamageDropoffRangeMax = 2000,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(.028, .028, .028)
+	Spread = Vector(.018, .018, .028)
 }
 
-SWEP.Primary.Damage        = 12
-SWEP.Primary.Delay         = .1
-SWEP.Primary.Recoil        = .9
+SWEP.Primary.Damage        = 11
+SWEP.Primary.Delay         = 0.099
+SWEP.Primary.Recoil        = 1.3
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Pistol"
-SWEP.Primary.ClipSize      = 20
-SWEP.Primary.DefaultClip   = 40
-SWEP.Primary.MaxClip       = 40
+SWEP.Primary.ClipSize      = 20 --20
+SWEP.Primary.DefaultClip   = 40 --40
+SWEP.Primary.MaxClip       = 40 --80
 SWEP.Primary.Sound         = Sound "Weapon_Glock.Single"
 
-SWEP.HeadshotMultiplier    = 1.75
+SWEP.HeadshotMultiplier    = 1.60
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
