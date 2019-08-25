@@ -23,7 +23,7 @@ end
 
 
 function ENT:EntityTakeDamage(target, dmg)
-	if (dmg:IsBulletDamage()) then
+	if (target == self:GetParent() and dmg:IsBulletDamage()) then
 		-- Body armor nets you a damage reduction.
 		dmg:ScaleDamage(0.7)
 	end
