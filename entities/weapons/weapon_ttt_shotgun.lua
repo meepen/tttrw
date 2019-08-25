@@ -34,9 +34,9 @@ SWEP.Primary.Recoil        = 7
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Buckshot"
 SWEP.Primary.NumShots 	   = 8
-SWEP.Primary.ClipSize      = 999 --8
-SWEP.Primary.DefaultClip   = 999 --16
-SWEP.Primary.MaxClip       = 999 --32
+SWEP.Primary.ClipSize      = 8 --8
+SWEP.Primary.DefaultClip   = 16 --16
+SWEP.Primary.MaxClip       = 32 --32
 SWEP.Primary.Sound         = Sound "Weapon_XM1014.Single"
 
 SWEP.AutoSpawnable         = true
