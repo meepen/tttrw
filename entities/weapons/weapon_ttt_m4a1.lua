@@ -25,12 +25,12 @@ SWEP.Bullets = {
 	DamageDropoffRange = 400,
 	DamageDropoffRangeMax = 5500,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(0.03, 0.03, 0.0),
+	Spread = Vector(0.025, 0.025, 0.0),
 }
 
 SWEP.Primary.Damage        = 19
 SWEP.Primary.Delay         = 0.14
-SWEP.Primary.Recoil        = 1.6
+SWEP.Primary.Recoil        = 1.75
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.ClipSize      = 30
