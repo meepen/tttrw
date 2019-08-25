@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 SWEP.HoldType              = "ar2"
 
-SWEP.PrintName          = "mp5"
+SWEP.PrintName          = "MP5"
 SWEP.Slot               = 2
 
 SWEP.ViewModelFlip      = false
