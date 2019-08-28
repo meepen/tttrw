@@ -227,6 +227,7 @@ function GM:TTTRoundStart()
 end
 
 function GM:TTTBeginRound()
+	self:MapVote_TTTBeginRound()
 	for _, info in pairs(round.GetActivePlayers()) do
 		if (not IsValid(info.Player)) then
 			continue

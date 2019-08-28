@@ -29,6 +29,7 @@ function GM:Initialize()
 	self:SetupRoles()
 	if (SERVER) then
 		self:SetupTTTCompatibleEntities()
+		self:TrackCurrentCommit()
 	end
 end
 
