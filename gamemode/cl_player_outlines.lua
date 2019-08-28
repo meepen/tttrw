@@ -25,11 +25,12 @@ function GM:PreDrawOpaqueRenderables()
     render.MaterialOverride(mat)
 
     for _, ply in pairs(player.GetAll()) do
+        local mn, mx 
         if (ply:GetRoleTeam() ~= "traitor" or not ply:Alive()) then
-            continue
+            goto endarea
         end
 
-        local mn, mx = ply:GetCollisionBounds()
+        mn, mx = ply:GetCollisionBounds()
 
         matr:SetTranslation(Vector(0, 0, -(mx.z - mn.z) * (scale.z - 1) / 2))
 
@@ -38,6 +39,7 @@ function GM:PreDrawOpaqueRenderables()
 
             ply:DrawModel()
 
+        ::endarea::
         ply:EnableMatrix("RenderMultiply", matr_zero)
         ply:SetupBones()
     end
