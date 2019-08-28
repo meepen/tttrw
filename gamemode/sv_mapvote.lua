@@ -22,8 +22,6 @@ end
 function GM:TrackCurrentCommit()
     local Commit = ReadCommitFile()
 
-    print(Commit)
-
     if (Commit) then
 		self.CurrentCommit = Commit.commit
     else

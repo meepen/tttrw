@@ -33,6 +33,7 @@ AddCSLuaFile();
 		"cl_crosshair_menu.lua",
 		"cl_dev_stats.lua",
 		"cl_weapons.lua",
+		"cl_player_outlines.lua",
 	},
 	Shared = {
 		"sh_init.lua",
