@@ -150,7 +150,7 @@ function SWEP:SecondaryAttack()
 end
 
 function SWEP:GetDeveloperMode()
-	return true
+	return false
 end
 
 local informations = {}
