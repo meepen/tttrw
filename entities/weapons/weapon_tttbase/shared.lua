@@ -237,7 +237,7 @@ function SWEP:ShootBullet(bullet_info)
 	}
 
 	self:SetRealLastShootTime(CurTime())
-	--owner:LagCompensation(true)
+	owner:LagCompensation(true)
 	self:FireBullets(bullet)
 	--owner:LagCompensation(false)
 
