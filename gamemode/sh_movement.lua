@@ -6,7 +6,7 @@ end
 function GM:DoBunnyHop(ply, mv)
 	-- bhop settings
 
-	if (not ply:Alive() or ply:WaterLevel() >= 2) then
+	if (not ply:Alive() or ply:WaterLevel() >= 2 or ply:GetMoveType() ~= MOVETYPE_WALK) then
 		return
 	end
 
