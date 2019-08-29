@@ -180,7 +180,6 @@ function SWEP:ShootBullet(bullet_info)
 		local tick = math.floor(CurTime() / engine.TickInterval())
 		local hitboxes = {}
 		for _, ply in pairs(player.GetAll()) do
-			ply:SetupBones()
 			for group = 0, ply:GetHitBoxGroupCount() - 1 do 
 				for hitbox = 0, ply:GetHitBoxCount(group) - 1 do
 					local bone = ply:GetHitBoxBone(hitbox, group)
