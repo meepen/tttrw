@@ -19,13 +19,6 @@ function ttt.GetRoleColor(role)
 end
 
 function GM:OnRoundStateChange(old, new)
-	local str = string.format("Round state was %s and is now %s", ttt.Enums.RoundState[old] or "nil", ttt.Enums.RoundState[new])
-	if (CLIENT) then
-		chat.AddText(str)
-	else
-		print(str)
-	end
-	
 	if (new == ttt.ROUNDSTATE_PREPARING) then
 		local list = {}
 		hook.Run("TTTAddPermanentEntities", list)
