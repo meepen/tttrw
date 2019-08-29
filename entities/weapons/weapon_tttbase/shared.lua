@@ -162,6 +162,7 @@ function SWEP:OnDrop()
 end
 
 function SWEP:FireBulletsCallback(tr, dmginfo)
+	dmginfo:SetInflictor(self)
 	local bullet = dmginfo:GetInflictor().Bullets
 	local distance = tr.HitPos:Distance(tr.StartPos)
 	if (distance > bullet.DamageDropoffRange) then
@@ -237,9 +238,7 @@ function SWEP:ShootBullet(bullet_info)
 	}
 
 	self:SetRealLastShootTime(CurTime())
-	owner:LagCompensation(true)
-	self:FireBullets(bullet)
-	--owner:LagCompensation(false)
+	owner:FireBullets(bullet)
 
 	self:ShootEffects()
 end
