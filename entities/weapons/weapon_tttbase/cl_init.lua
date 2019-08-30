@@ -56,8 +56,8 @@ function SWEP:DoDrawCrosshair(x, y)
 	return true
 end
 
-local server, client = Color(255,20,20), Color(20,20,255)
-local lifetime = 2
+local server, client = Color(20,20,255,0), Color(255,20,20,0)
+local lifetime = 0.5
 
 net.Receive("tttrw_developer_hitboxes", function(len, pl)
 	local tick = net.ReadUInt(32)
@@ -70,23 +70,46 @@ net.Receive("tttrw_developer_hitboxes", function(len, pl)
 		return
 	end
 
-	--local hitply = net.ReadEntity()
+	local hitboxes = {}
+	pl = LocalPlayer()
 
-	--debugoverlay.Cross(net.ReadVector(), 2, lifetime, color_white, true)
-	--debugoverlay.Cross(cl.HitPos, 2, lifetime, color_black, true)
+	for i = 1, net.ReadUInt(16) do
+		local pos, min, max, angle = net.ReadVector(), net.ReadVector(), net.ReadVector(), net.ReadAngle()
+		hitboxes[i] = {pos, min, max, angle}
 
-	--debugoverlay.Cross(net.ReadVector(), 2, lifetime, server, true)
-	--debugoverlay.Cross(cl.StartPos, 2, lifetime, client, true)
+		local name = pl:GetBoneName(pl:GetHitBoxBone(i - 1, pl:GetHitboxSet()))
 
-	local hitboxes = net.ReadTable()
+		if (name == "ValveBiped.Bip01_L_Foot" and pos:Distance(cl.hitboxes[i][1]) <= 10) then
+			return
+		end
+	
+	end
 
 	for i = 1, #hitboxes do
 		local hitbox = hitboxes[i]
-		debugoverlay.BoxAngles(hitbox.pos, hitbox.mins, hitbox.maxs, hitbox.angles, lifetime, server)
+		debugoverlay.BoxAngles(hitbox[1], hitbox[2], hitbox[3], hitbox[4], lifetime, server)
 
-		local hitbox = cl.hitboxes[i]
-		debugoverlay.BoxAngles(hitbox.pos, hitbox.mins, hitbox.maxs, hitbox.angles, lifetime, client)
+		hitbox = cl.hitboxes[i]
+		debugoverlay.BoxAngles(hitbox[1], hitbox[2], hitbox[3], hitbox[4], lifetime, client)
 	end
+
+	--[[
+	local otherstuff = net.ReadTable()
+
+	printf("TIME\n    SV - %.4f\n    CL - %.4f", otherstuff.CurTime, cl.otherstuff.CurTime)
+	for ply, data in pairs(otherstuff) do
+		if (type(ply) == "string") then
+			continue
+		end
+
+		printf("%s", ply:Nick())
+		printf("    SV - Velocity(%.2f %.2f %.2f) Sequence(%s) EyeAngles(%.2f %.2f %.2f) Angles(%.2f %.2f %.2f) Position(%.2f %.2f %.2f) Cycle(%.2f)", data.Velocity.x, data.Velocity.y, data.Velocity.z, ply:GetSequenceActivityName(data.Sequence), data.EyeAngles.p, data.EyeAngles.y, data.EyeAngles.r, data.Angles.p, data.Angles.y, data.Angles.r, data.Pos.x, data.Pos.y, data.Pos.z, data.Cycle)
+		printf("         m_bJumping(%s) m_fGroundTime(%.2f) m_bFirstJumpFrame(%s) m_flJumpStartTime(%.2f) OnGround(%s)", data.m_bJumping, data.m_fGroundTime or -1, data.m_bFirstJumpFrame, data.m_flJumpStartTime, not not data.OnGround)
+		data = cl.otherstuff[ply]
+		printf("    CL - Velocity(%.2f %.2f %.2f) Sequence(%s) EyeAngles(%.2f %.2f %.2f) Angles(%.2f %.2f %.2f) Position(%.2f %.2f %.2f) Cycle(%.2f)", data.Velocity.x, data.Velocity.y, data.Velocity.z, ply:GetSequenceActivityName(data.Sequence), data.EyeAngles.p, data.EyeAngles.y, data.EyeAngles.r, data.Angles.p, data.Angles.y, data.Angles.r, data.Pos.x, data.Pos.y, data.Pos.z, data.Cycle)
+		printf("         m_bJumping(%s) m_fGroundTime(%.2f) m_bFirstJumpFrame(%s) m_flJumpStartTime(%.2f) OnGround(%s)", data.m_bJumping, data.m_fGroundTime or -1, data.m_bFirstJumpFrame, data.m_flJumpStartTime, not not data.OnGround)
+	end
+	]]
 end)
 
 local host_timescale = GetConVar("host_timescale")

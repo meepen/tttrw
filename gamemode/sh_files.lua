@@ -48,6 +48,7 @@ AddCSLuaFile();
 		"sh_util.lua",
 		"sh_body.lua",
 		"sh_notifications.lua",
+		-- "sh_dev.lua",
 	},
 	Resources = {
 		"materials/tttrw/heart.png",

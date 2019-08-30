@@ -4,6 +4,7 @@ GM.Email   = "meepdarknessmeep@gmail.com"
 GM.Website = "https://github.com/meepen"
 
 DeriveGamemode "base"
+DEFINE_BASECLASS "gamemode_base"
 
 ttt = ttt or GM or {}
 
@@ -38,7 +39,22 @@ function GM:PlayerTick(ply)
 end
 
 function GM:StartCommand(ply, cmd)
+	if (SERVER and cmd.SetTickCount and VERSION <= 190730) then -- server is always one tick ahead for some reason :(
+		cmd:SetTickCount(cmd:TickCount() - 1)
+	end
+	-- fixes some hitreg issues
+	ply:SetAngles(Angle(0, cmd:GetViewAngles().y))
 	player_manager.RunClass(ply, "StartCommand", cmd)
+end
+
+function GM:UpdateAnimation(ply, ...)
+	ply:SetPoseParameter("head_yaw", 0)
+	ply:SetPoseParameter("head_pitch", 0)
+	if (CLIENT) then
+		ply:InvalidateBoneCache()
+	end
+
+	BaseClass.UpdateAnimation(self, ply, ...)
 end
 
 function GM:ScalePlayerDamage(ply, hitgroup, dmg)

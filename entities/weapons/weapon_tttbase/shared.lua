@@ -162,7 +162,6 @@ function SWEP:OnDrop()
 end
 
 function SWEP:FireBulletsCallback(tr, dmginfo)
-	dmginfo:SetInflictor(self)
 	local bullet = dmginfo:GetInflictor().Bullets
 	local distance = tr.HitPos:Distance(tr.StartPos)
 	if (distance > bullet.DamageDropoffRange) then
@@ -171,16 +170,85 @@ function SWEP:FireBulletsCallback(tr, dmginfo)
 	end
 end
 
+function SWEP:Hitboxes()
+	if (self:GetDeveloperMode()) then
+		local owner = self:GetOwner()
+		if (not IsValid(owner) or owner:IsBot()) then
+			return 
+		end
+		local tick = math.floor(CurTime() / engine.TickInterval())
+
+		if (math.floor(tick % 5) ~= 0) then
+			return
+		end
+
+		local hitboxes = {}
+		local otherstuff = {}
+
+		otherstuff.CurTime = CurTime()
+
+		owner:LagCompensation(true)
+
+
+		if (SERVER) then
+			net.Start("tttrw_developer_hitboxes", true)
+			net.WriteUInt(tick, 32)
+			net.WriteEntity(self)
+		end
+		for _, ply in pairs(player.GetAll()) do
+			if (not ply:Alive() or ply == owner) then
+				continue
+			end
+
+			local group = ply:GetHitboxSet()
+			net.WriteUInt(ply:GetHitBoxCount(group), 16)
+			for hitbox = 0, ply:GetHitBoxCount(group) - 1 do
+				local bone = ply:GetHitBoxBone(hitbox, group)
+				local pos, angles = ply:GetBonePosition(bone)
+				local min, max = ply:GetHitBoxBounds(hitbox, group)
+				if (SERVER) then
+					net.WriteVector(pos)
+					net.WriteVector(min)
+					net.WriteVector(max)
+					net.WriteAngle(angles)
+				else
+					hitboxes[#hitboxes + 1] = {pos, min, max, angles}
+				end
+			end
+		end
+		owner:LagCompensation(false)
+
+		if (CLIENT) then
+			self.DeveloperInformations = {
+				Tick = tick,
+				hitboxes = hitboxes,
+			}
+		else
+			net.Send(self:GetOwner())
+		end
+	end
+end
+
+
 local vector_origin = vector_origin
 
 function SWEP:ShootBullet(bullet_info)
 	local owner = self:GetOwner()
-
 	if (self:GetDeveloperMode()) then
-		owner:LagCompensation(true)
+		local owner = self:GetOwner()
 		local tick = math.floor(CurTime() / engine.TickInterval())
 		local hitboxes = {}
+		local otherstuff = {}
+
+		otherstuff.CurTime = CurTime()
+
+		owner:LagCompensation(true)
+
+
 		for _, ply in pairs(player.GetAll()) do
+			if (not ply:Alive() or ply == owner) then
+				continue
+			end
 			for group = 0, ply:GetHitBoxGroupCount() - 1 do 
 				for hitbox = 0, ply:GetHitBoxCount(group) - 1 do
 					local bone = ply:GetHitBoxBone(hitbox, group)
@@ -194,6 +262,19 @@ function SWEP:ShootBullet(bullet_info)
 					}
 				end
 			end
+			otherstuff[ply] = {
+				EyeAngles = ply:EyeAngles(),
+				Angles = ply:GetAngles(),
+				Pos = ply:GetPos(),
+				Cycle = ply:GetCycle(),
+				Sequence = ply:GetSequence(),
+				Velocity = ply:GetVelocity(),
+				m_bJumping = ply.m_bJumping,
+				m_fGroundTime = ply.m_fGroundTime,
+				m_bFirstJumpFrame = ply.m_bFirstJumpFrame,
+				m_flJumpStartTime = ply.m_flJumpStartTime,
+				OnGround = ply:OnGround(),
+			}
 		end
 		owner:LagCompensation(false)
 
@@ -205,6 +286,7 @@ function SWEP:ShootBullet(bullet_info)
 				--net.WriteVector(tr.HitPos)
 				--net.WriteVector(tr.StartPos)
 				net.WriteTable(hitboxes)
+				net.WriteTable(otherstuff)
 			net.Send(self:GetOwner())
 		else
 			self.DeveloperInformations = {
@@ -212,7 +294,8 @@ function SWEP:ShootBullet(bullet_info)
 				--Entity = tr.Entity,
 				--HitPos = tr.HitPos,
 				--StartPos = tr.StartPos,
-				hitboxes = hitboxes
+				hitboxes = hitboxes,
+				otherstuff = otherstuff
 			}
 		end
 	end
@@ -238,7 +321,9 @@ function SWEP:ShootBullet(bullet_info)
 	}
 
 	self:SetRealLastShootTime(CurTime())
-	owner:FireBullets(bullet)
+	owner:LagCompensation(true)
+	self:FireBullets(bullet)
+	owner:LagCompensation(false)
 
 	self:ShootEffects()
 end
@@ -266,9 +351,11 @@ function SWEP:PrimaryAttack()
 
 	self:EmitSound(self.Primary.Sound, self.Primary.SoundLevel)
 
-	self:ShootBullet(150, 1, 0.01)
+	self:ShootBullet()
 
-	self:TakePrimaryAmmo(1)
+	if (not self:GetDeveloperMode()) then
+		self:TakePrimaryAmmo(1)
+	end
 
 	self:ViewPunch()
 end
@@ -291,6 +378,11 @@ function SWEP:GetCurrentViewPunch()
 end
 
 function SWEP:ViewPunch()
+
+	if (self:GetDeveloperMode()) then
+		return
+	end
+	
 	local vp = self:GetViewPunchAngles()
 	self:SetViewPunch(vp)
 	self:SetViewPunchTime(CurTime())
@@ -313,6 +405,8 @@ function SWEP:Think()
 	if (CLIENT) then
 		self:CalcAllUnpredicted()
 	end
+
+	self:Hitboxes()
 end
 
 function SWEP:GetCurrentFOVMultiplier()
