@@ -17,11 +17,6 @@ function ENT:CL_Initialize()
 	self:SetRenderBoundsWS(Vector(-56000, -56000, -56000), Vector(56000, 56000, 56000))
 end
 
-function ENT:DoUse()
-	RunConsoleCommand("ttt_use_tbutton", tostring(self:EntIndex()))
-end
-
-
 local size = 8
 
 function ENT:DrawTranslucent()

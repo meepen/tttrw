@@ -108,18 +108,3 @@ end
 function ENT:UpdateTransmitState()
 	return TRANSMIT_ALWAYS
 end
-
-local function TraitorUseCmd(ply, cmd, args)
-	if #args != 1 then return end
-
-	if IsValid(ply) and ply:IsActiveTraitor() then
-		local idx = tonumber(args[1])
-		if idx then
-			local ent = Entity(idx)
-			if (IsValid(ent) and ent:GetClass() == "ttt_traitor_button" and ent.TraitorUse) then
-				ent:TraitorUse(ply)
-			end
-		end
-	end
-end
-concommand.Add("ttt_use_tbutton", TraitorUseCmd)
