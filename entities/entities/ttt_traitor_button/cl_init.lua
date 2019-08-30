@@ -2,7 +2,7 @@ include "shared.lua"
 ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
 surface.CreateFont("ttt_traitor_button_font", {
 	font = 'Lato',
-	size = ScrH() / 75,
+	size = 70,
 	weight = 300,
 	shadow = true
 })
@@ -48,7 +48,9 @@ function ENT:DrawTranslucent()
 		return
 	end
 
-	local dot = (pos - plypos):GetNormalized():Dot(EyeAngles():Forward())
+	local dir = (pos - plypos):GetNormalized()
+
+	local dot = dir:Dot(EyeAngles():Forward())
 
 	if (dot < 0) then
 		return
@@ -59,23 +61,18 @@ function ENT:DrawTranslucent()
 	local ang = (pos - plypos):Angle()
 	ang:RotateAroundAxis(ang:Right(), 90)
 	ang:RotateAroundAxis(ang:Up(), -90)
-	cam.Start3D2D(self:GetPos(), ang, 0.5)
-		cam.IgnoreZ(true)
-			surface.SetDrawColor(255, 255, 255, alpha * 200)
-			surface.SetMaterial(self.Material)
-			surface.DrawTexturedRect(-size, -size, size * 2, size* 2)
-		cam.IgnoreZ(false)
-	cam.End3D2D()
-
-	if (self:FindUseEntity(me, NULL) ~= self) then
-		return
-	end
-
-	cam.Start2D()
-		local scrpos = (self:GetPos() - Vector(0, 0, size)):ToScreen()
-
-		draw.DrawText(self:GetDescription(), "ttt_traitor_button_font", scrpos.x, scrpos.y, white_text, TEXT_ALIGN_CENTER)
-	cam.End2D()
+	cam.IgnoreZ(true)
+		cam.Start3D2D(self:GetPos(), ang, 0.5)
+				surface.SetDrawColor(255, 255, 255, alpha * 200)
+				surface.SetMaterial(self.Material)
+				surface.DrawTexturedRect(-size, -size, size * 2, size* 2)
+		cam.End3D2D()
+		if (self:FindUseEntity(me, NULL) == self) then
+			cam.Start3D2D(self:GetPos(), ang, 0.1)
+				draw.DrawText(self:GetDescription(), "ttt_traitor_button_font", 0, size * 9, white_text, TEXT_ALIGN_CENTER)
+			cam.End3D2D()
+		end
+	cam.IgnoreZ(false)
 end
 
 
