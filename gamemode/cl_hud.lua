@@ -29,7 +29,7 @@ function ttt.GetHUDTarget()
 	return ply
 end
 
-local white_text = Color(230, 230, 230, 255)
+white_text = Color(230, 230, 230, 255)
 
 local LastTarget, LastTime
 

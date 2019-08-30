@@ -1,5 +1,12 @@
 include "shared.lua"
 ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
+surface.CreateFont("ttt_traitor_button_font", {
+	font = 'Lato',
+	size = ScrH() / 65,
+	weight = 300,
+	shadow = true
+})
+
 
 ENT.Material = Material("tttrw/tbutton.png")
 ENT.Material:SetInt("$vertexalpha", 1)
@@ -59,6 +66,16 @@ function ENT:DrawTranslucent()
 			surface.DrawTexturedRect(-size, -size, size * 2, size* 2)
 		cam.IgnoreZ(false)
 	cam.End3D2D()
+
+	if (self:FindUseEntity(me, NULL) ~= self) then
+		return
+	end
+
+	cam.Start2D()
+		local scrpos = (self:GetPos() - Vector(0, 0, size)):ToScreen()
+
+		draw.DrawText(self:GetDescription(), "ttt_traitor_button_font", scrpos.x, scrpos.y, white_text, TEXT_ALIGN_CENTER)
+	cam.End2D()
 end
 
 
