@@ -48,7 +48,7 @@ function GM:StartCommand(ply, cmd)
 end
 
 function GM:UpdateAnimation(ply, ...)
-	local v = Angle(60, 30)
+	local v = Angle(30, 30)
 	v:RotateAroundAxis(Vector(1), CurTime() % 1 * 360)
 	ply:SetPoseParameter("head_yaw", v.y)
 	ply:SetPoseParameter("head_pitch", v.p)
