@@ -48,8 +48,10 @@ function GM:StartCommand(ply, cmd)
 end
 
 function GM:UpdateAnimation(ply, ...)
-	ply:SetPoseParameter("head_yaw", 0)
-	ply:SetPoseParameter("head_pitch", 0)
+	local v = Angle(60, 30)
+	v:RotateAroundAxis(Vector(1), CurTime() % 1 * 360)
+	ply:SetPoseParameter("head_yaw", v.y)
+	ply:SetPoseParameter("head_pitch", v.p)
 	if (CLIENT) then
 		ply:InvalidateBoneCache()
 	end
