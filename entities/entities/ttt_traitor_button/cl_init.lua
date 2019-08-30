@@ -2,7 +2,7 @@ include "shared.lua"
 ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
 surface.CreateFont("ttt_traitor_button_font", {
 	font = 'Lato',
-	size = ScrH() / 65,
+	size = ScrH() / 75,
 	weight = 300,
 	shadow = true
 })
