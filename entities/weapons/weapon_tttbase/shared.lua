@@ -234,71 +234,8 @@ local vector_origin = vector_origin
 
 function SWEP:ShootBullet(bullet_info)
 	local owner = self:GetOwner()
-	if (self:GetDeveloperMode()) then
-		local owner = self:GetOwner()
-		local tick = math.floor(CurTime() / engine.TickInterval())
-		local hitboxes = {}
-		local otherstuff = {}
-
-		otherstuff.CurTime = CurTime()
-
-		owner:LagCompensation(true)
-
-
-		for _, ply in pairs(player.GetAll()) do
-			if (not ply:Alive() or ply == owner) then
-				continue
-			end
-			for group = 0, ply:GetHitBoxGroupCount() - 1 do 
-				for hitbox = 0, ply:GetHitBoxCount(group) - 1 do
-					local bone = ply:GetHitBoxBone(hitbox, group)
-					local pos, angles = ply:GetBonePosition(bone)
-					local min, max = ply:GetHitBoxBounds(hitbox, group)
-					hitboxes[#hitboxes + 1] = {
-						mins = min,
-						maxs = max,
-						pos = pos,
-						angles = angles
-					}
-				end
-			end
-			otherstuff[ply] = {
-				EyeAngles = ply:EyeAngles(),
-				Angles = ply:GetAngles(),
-				Pos = ply:GetPos(),
-				Cycle = ply:GetCycle(),
-				Sequence = ply:GetSequence(),
-				Velocity = ply:GetVelocity(),
-				m_bJumping = ply.m_bJumping,
-				m_fGroundTime = ply.m_fGroundTime,
-				m_bFirstJumpFrame = ply.m_bFirstJumpFrame,
-				m_flJumpStartTime = ply.m_flJumpStartTime,
-				OnGround = ply:OnGround(),
-			}
-		end
-		owner:LagCompensation(false)
-
-		if (SERVER) then
-			net.Start "tttrw_developer_hitboxes"
-				net.WriteUInt(tick, 32)
-				net.WriteEntity(self)
-				--net.WriteEntity(game.Get)
-				--net.WriteVector(tr.HitPos)
-				--net.WriteVector(tr.StartPos)
-				net.WriteTable(hitboxes)
-				net.WriteTable(otherstuff)
-			net.Send(self:GetOwner())
-		else
-			self.DeveloperInformations = {
-				Tick = tick,
-				--Entity = tr.Entity,
-				--HitPos = tr.HitPos,
-				--StartPos = tr.StartPos,
-				hitboxes = hitboxes,
-				otherstuff = otherstuff
-			}
-		end
-	end
+	
+	self:Hitboxes()
 
 	local bullet_ang = owner:EyeAngles() + owner:GetViewPunchAngles()
 
