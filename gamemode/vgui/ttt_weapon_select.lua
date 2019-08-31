@@ -63,8 +63,9 @@ function PANEL:PerformLayout(w, h)
 	BaseClass.PerformLayout(self, self:GetSize())
 end
 function PANEL:SetWeapon(wep)
-	self.Label:SetText(weapons.GetStored(wep:GetClass()).PrintName)
-	self.Number.Label:SetText(wep:GetSlot() + 1)
+	local swep_tbl = weapons.GetStored(wep:GetClass())
+	self.Label:SetText(swep_tbl.PrintName)
+	self.Number.Label:SetText(swep_tbl.Slot + 1)
 end
 function PANEL:SetActive(b)
 	if (IsValid(self.Active) and not b) then
