@@ -26,8 +26,8 @@ function PANEL:Init()
 	self:SetCurveTopRight(false)
 end
 function PANEL:OnPlayerRoleChange(ply, old, new)
-	if (ply == LocalPlayer() and IsValid(self.Active)) then
-		self.Active:SetImageColor(ttt.roles[new].Color)
+	if (ply == LocalPlayer()) then
+		self:SetColor(ttt.roles[new].Color)
 	end
 end
 
@@ -203,7 +203,7 @@ function PANEL:Think()
 
 	for wep in pairs(wep_lookup) do
 		local pnl = self:Add "ttt_weapon_select_weapon"
-		pnl:SetZPos(wep:GetSlot())
+		pnl:SetZPos(weapons.GetStored(wep:GetClass()).Slot)
 		pnl:SetWeapon(wep)
 		pnl:Dock(TOP)
 		table.insert(self.OrderedPanels, pnl)
