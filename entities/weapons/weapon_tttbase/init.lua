@@ -13,7 +13,7 @@ function SWEP:OnDrop()
     self.Primary.DefaultClip = 0
 end
 
-local biggify_hitbox = 0.2
+local biggify_hitbox = 0.5
 function SWEP:OverrideCommand(ply, cmd)
 	if (self:GetOwner() ~= ply or ply:GetActiveWeapon() ~= self) then
 		return
