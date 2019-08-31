@@ -188,6 +188,11 @@ if (ttt.HUDAmmoPanel) then
 	ttt.HUDAmmoPanel:Remove()
 end
 
+if (ttt.HUDWeaponSelect) then
+	ttt.HUDWeaponSelect:Remove()
+end
+
 ttt.HUDHealthPanel = vgui.Create("ttt_health", GetHUDPanel())
 ttt.HUDRolePanel = vgui.Create("ttt_time", GetHUDPanel())
 ttt.HUDAmmoPanel = vgui.Create("ttt_ammo", GetHUDPanel())
+ttt.HUDWeaponSelect = vgui.Create("ttt_weapon_select", GetHUDPanel())

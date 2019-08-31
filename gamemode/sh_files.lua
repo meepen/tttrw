@@ -25,6 +25,7 @@ AddCSLuaFile();
 		"vgui/ttt_equipment_menu.lua",
 		"vgui/ttt_body_inspect.lua",
 		"vgui/ttt_scoreboard.lua",
+		"vgui/ttt_weapon_select.lua",
 		"cl_hud.lua",
 		"cl_scoreboard.lua",
 		"cl_hitmarkers.lua",

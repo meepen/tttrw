@@ -96,6 +96,10 @@ function TEAM:SetVoiceChannel(channel)
 	return self
 end
 
+function TEAM:SetDeathIcon(icon)
+	self.DeathIcon = icon
+end
+
 setmetatable(SEEN_BY_ALL, SEEN_BY_ALL)
 
 local ROLE = {
@@ -153,7 +157,7 @@ end
 
 function GM:TTTPrepareRoles(Team, Role)
 	Team "innocent":SetColor(Color(20, 240, 20)) :SetGood()
-	Team "traitor":SeenBy {"traitor"}:SetColor(Color(240, 20, 20)):TeamChatSeenBy "traitor" :SetVoiceChannel "traitor" :SetEvil() :SetCanUseBuyMenu(true)
+	Team "traitor":SeenBy {"traitor"}:SetColor(Color(240, 20, 20)):TeamChatSeenBy "traitor" :SetVoiceChannel "traitor" :SetEvil() :SetCanUseBuyMenu(true) :SetDeathIcon "materials/tttrw/tbutton.png"
 	Team "spectator":SeenByAll():SetColor(Color(20, 120, 120))
 
 	Role("Innocent", "innocent")

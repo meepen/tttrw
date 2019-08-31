@@ -80,6 +80,7 @@ function GM:KeyPress(ply, key)
 	end
 
 	if (key == IN_WEAPON1) then
+		hook.Run("PreDropWeapon", ply)
 		self:DropCurrentWeapon(ply)
 	elseif (SERVER) then
 		self:SpectatorKey(ply, key)
