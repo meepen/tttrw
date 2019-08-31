@@ -180,11 +180,12 @@ function SWEP:FireBulletsCallback(tr, dmginfo)
 		if (CLIENT) then
 			self.HitboxHit = tr.HitGroup
 			self.EntityHit = tr.Entity
+		else
+			dmginfo:SetDamageCustom(tr.Entity:LastHitGroup())
 		end
 		if (self.Bullets.Num == 1) then
 			dmginfo:SetDamage(0)
 		end
-		dmginfo:SetDamageCustom(tr.Entity:LastHitGroup())
 	end
 	
 	if (SERVER) then
