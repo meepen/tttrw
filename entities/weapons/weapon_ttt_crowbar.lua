@@ -50,63 +50,57 @@ end
 local function OpenableEnt(ent)
 	local cls = ent:GetClass()
 	if ent:GetName() == "" then
-		return OPEN_NO
+		return false
 	elseif cls == "prop_door_rotating" then
-		return OPEN_ROT
+		return "rot"
 	elseif cls == "func_door" or cls == "func_door_rotating" then
-		return OPEN_DOOR
+		return "door"
 	elseif cls == "func_button" then
-		return OPEN_BUT
+		return "button"
 	elseif cls == "func_movelinear" then
-		return OPEN_NOTOGGLE
+		return "notoggle"
 	else
-		return OPEN_NO
+		return false
 	end
 end
 
+local lookups = { [0] = "no", "door", "rot", "button", "notoggle" }
+local rev_lookups = {}
+for k,v in pairs(lookups) do
+	rev_lookups[v] = k
+end
 
 local function CrowbarCanUnlock(t)
-	return not GAMEMODE.crowbar_unlocks or GAMEMODE.crowbar_unlocks[t]
+	return not GAMEMODE.crowbar_unlocks or GAMEMODE.crowbar_unlocks[rev_lookups[t]]
 end
 
 -- will open door AND return what it did
-function SWEP:OpenEnt(hitEnt)
+function SWEP:TryOpen(hitEnt)
 	-- Get ready for some prototype-quality code, all ye who read this
-	if SERVER and GetConVar("ttt_crowbar_unlocks"):GetBool() then
-		local openable = OpenableEnt(hitEnt)
-
-		if openable == OPEN_DOOR or openable == OPEN_ROT then
-			local unlock = CrowbarCanUnlock(openable)
-			if unlock then
-				hitEnt:Fire("Unlock", nil, 0)
-			end
-
-			if unlock or hitEnt:HasSpawnFlags(256) then
-				if openable == OPEN_ROT then
-					hitEnt:Fire("OpenAwayFrom", self:GetOwner(), 0)
-				end
-				hitEnt:Fire("Toggle", nil, 0)
-			else
-				return OPEN_NO
-			end
-		elseif openable == OPEN_BUT then
-			if CrowbarCanUnlock(openable) then
-				hitEnt:Fire("Unlock", nil, 0)
-				hitEnt:Fire("Press", nil, 0)
-			else
-				return OPEN_NO
-			end
-		elseif openable == OPEN_NOTOGGLE then
-			if CrowbarCanUnlock(openable) then
-				hitEnt:Fire("Open", nil, 0)
-			else
-				return OPEN_NO
-			end
-		end
-		return openable
-	else
-		return OPEN_NO
+	if (not SERVER or not GetConVar("ttt_crowbar_unlocks"):GetBool()) then
+		return false
 	end
+	local openable = OpenableEnt(hitEnt)
+
+	if (not openable or not CrowbarCanUnlock(openable)) then
+		return false
+	end
+
+	if (openable == "door" or openable == "rot") then
+		hitEnt:Fire("Unlock", nil, 0)
+
+		if (openable == "rot") then
+			hitEnt:Fire("OpenAwayFrom", self:GetOwner(), 0)
+		end
+		hitEnt:Fire("Toggle", nil, 0)
+	elseif (openable == "button") then
+		hitEnt:Fire("Unlock", nil, 0)
+		hitEnt:Fire("Press", nil, 0)
+	elseif (openable == "notoggle") then
+		hitEnt:Fire("Open", nil, 0)
+	end
+
+	return true
 end
 
 function SWEP:PrimaryAttack()
@@ -128,7 +122,7 @@ function SWEP:PrimaryAttack()
 
 	self:EmitSound(sound_single)
 
-	if IsValid(hitEnt) or tr_main.HitWorld then
+	if (IsValid(hitEnt) or tr_main.HitWorld) then
 		self:SendWeaponAnim(ACT_VM_HITCENTER)
 
 		if (not CLIENT or IsFirstTimePredicted()) then
@@ -163,10 +157,9 @@ function SWEP:PrimaryAttack()
 		
 		owner:SetAnimation(PLAYER_ATTACK1)
 
-		if (hitEnt and hitEnt:IsValid()) then
-			if self:OpenEnt(hitEnt) == OPEN_NO and tr_all.Entity and tr_all.Entity:IsValid() then
-				-- See if there's a nodraw thing we should open
-				self:OpenEnt(tr_all.Entity)
+		if (IsValid(hitEnt)) then
+			if (not self:TryOpen(hitEnt)) then
+				self:TryOpen(tr_all.Entity)
 			end
 
 			local dmg = DamageInfo()
