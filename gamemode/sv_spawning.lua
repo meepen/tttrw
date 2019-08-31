@@ -18,7 +18,7 @@ function GM:PlayerLoadout(ply)
 end
 
 function GM:PlayerDeathThink(ply)
-	if (IsValid(ply:GetObserverTarget())) then
+	if (IsValid(ply:GetObserverTarget()) and ply:GetObserverMode() == OBS_MODE_IN_EYE) then
 		ply:SetPos(ply:GetObserverTarget():GetPos())
 	end
 	return false
