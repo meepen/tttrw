@@ -121,6 +121,23 @@ function round.Prepare()
 	end)
 end
 
+local function GetRandomPlayer(plys)
+	local totalTickets = 0
+	for k, ply in pairs(plys) do
+		total = total + ply.Tickets
+	end
+	
+	local roll = math.random(1, total)
+	local current = 1
+	for k, ply in pairs(plys) do
+		local prev = current
+		current = current + ply.Tickets
+		if (roll >= prev and roll <= (current - 1)) then
+			return ply
+		end
+	end
+end
+
 
 function round.TryStart()
 	local plys = ttt.GetEligiblePlayers()
@@ -141,7 +158,9 @@ function round.TryStart()
 	end
 
 	round.Players = {}
-	for i, ply in RandomPairs(plys) do
+	local randPlayers = table.Copy(plys)
+	for i = 1, #randPlayers do
+		local ply = GetRandomPlayer(randPlayers)
 		local role, amt = next(roles_needed)
 		if (role) then
 			if (amt == 1) then
@@ -207,6 +226,14 @@ function GM:OnPlayerRoleChange(ply, old, new)
 			info.Role = ttt.roles[new]
 		end
 	end
+	
+	if (new.Name == "traitor") then
+		ply.Tickets = 1
+	elseif (new.Name == "Detective") then
+		ply.Tickets = math.max(ply.Tickets - 1, 0)
+	else
+		ply.Tickets = ply.Tickets + 1
+	end
 
 	ttt.CheckTeamWin()
 end
@@ -232,8 +259,10 @@ function GM:TTTBeginRound()
 		if (not IsValid(info.Player)) then
 			continue
 		end
+		
 		info.Player:SetHealth(info.Player:GetMaxHealth())
 		info.Player:Extinguish()
+		info.Player.Tickets = info.Player.Tickets + 1
 	end
 end
 
@@ -257,8 +286,10 @@ function GM:PlayerInitialSpawn(ply)
 	local state = ents.Create("ttt_hidden_info")
 	state:SetParent(ply)
 	state:Spawn()
+	
 	ply:AllowFlashlight(true)
 	ply:SetTeam(TEAM_SPECTATOR)
+	ply.Tickets = 1
 end
 
 function GM:SV_PlayerSpawn(ply)
