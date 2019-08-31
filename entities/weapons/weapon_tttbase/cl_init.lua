@@ -174,7 +174,7 @@ function SWEP:GetViewModelPosition(pos, ang)
 		self.BobScale = 1
 	end
 
-	return pos, ang + self:GetCurrentUnpredictedViewPunch()
+	return pos, ang + self:GetCurrentUnpredictedViewPunch() - self:GetOwner():GetViewPunchAngles()
 end
 
 function SWEP:GetCurrentUnpredictedFOVMultiplier()
@@ -216,7 +216,7 @@ end
 function SWEP:CalcView(ply, pos, ang, fov)
 	local delay = self.Primary.Delay * 2
 
-	return pos, ang + self:GetCurrentUnpredictedViewPunch(), fov
+	return pos, ang + self:GetCurrentUnpredictedViewPunch() - ply:GetViewPunchAngles(), fov
 end
 
 function SWEP:CalcViewPunch()

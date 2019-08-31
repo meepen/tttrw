@@ -268,7 +268,7 @@ function SWEP:ShootBullet(bullet_info)
 			end
 		end,
 		Src = owner:GetShootPos(),
-		Dir = bullet_ang:Forward()
+		Dir = bullet_ang:Forward(),
 	}
 
 	self:SetRealLastShootTime(CurTime())
