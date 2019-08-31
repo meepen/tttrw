@@ -6,10 +6,37 @@ surface.CreateFont("ttt_weapon_select_font", {
 	weight = 100,
 	shadow = true
 })
+surface.CreateFont("ttt_weapon_select_font_outline", {
+	font = 'Lato',
+	size = font_tall,
+	weight = 100,
+	outline = true
+})
+local PANEL = {}
+
+function PANEL:Init()
+	hook.Add("OnPlayerRoleChange", self, self.OnPlayerRoleChange)
+	self.Label = self:Add "DLabel"
+	self.Label:Dock(FILL)
+	self.Label:SetContentAlignment(5)
+	self.Label:SetFont "ttt_weapon_select_font_outline"
+	self:SetColor(LocalPlayer():GetRoleData().Color)
+	self:SetCurve(4)
+	self:SetCurveBottomRight(false)
+	self:SetCurveTopRight(false)
+end
+function PANEL:OnPlayerRoleChange(ply, old, new)
+	if (ply == LocalPlayer() and IsValid(self.Active)) then
+		self.Active:SetImageColor(ttt.roles[new].Color)
+	end
+end
+
+vgui.Register("ttt_weapon_select_number", PANEL, "ttt_curved_panel")
 
 local PANEL = {}
 DEFINE_BASECLASS "ttt_curved_panel"
 function PANEL:Init()
+	hook.Add("OnPlayerRoleChange", self, self.OnPlayerRoleChange)
 	self:SetCurve(4)
 	self:SetColor(Color(0xb, 0xc, 0xb, 200))
 
@@ -19,14 +46,25 @@ function PANEL:Init()
 	self.Label:Dock(FILL)
 	self.Label:SetContentAlignment(5)
 	self.Label:SetFont "ttt_weapon_select_font"
+
+	self.Number = self:Add "ttt_weapon_select_number"
+	self.Number:Dock(LEFT)
+	self.Number:SetZPos(0)
+end
+function PANEL:OnPlayerRoleChange(ply, old, new)
+	if (ply == LocalPlayer() and IsValid(self.Active)) then
+		self.Active:SetImageColor(ttt.roles[new].Color)
+	end
 end
 function PANEL:PerformLayout(w, h)
 	self:SetTall(font_tall + 6)
 	self:GetParent():SizeToChildren(false, true)
+	self.Number:SetWide(h + self.Number:GetCurve())
 	BaseClass.PerformLayout(self, self:GetSize())
 end
 function PANEL:SetWeapon(wep)
 	self.Label:SetText(weapons.GetStored(wep:GetClass()).PrintName)
+	self.Number.Label:SetText(wep:GetSlot() + 1)
 end
 function PANEL:SetActive(b)
 	if (IsValid(self.Active) and not b) then
@@ -35,9 +73,10 @@ function PANEL:SetActive(b)
 		self.Active = self:Add "DImage"
 		self.Active:SetSize(self:GetTall() - 4, self:GetTall() - 4)
 		self.Active:Dock(LEFT)
-		self.Active:DockMargin(2, 2, 2, 2)
+		self.Active:DockMargin(6, 2, 2, 2)
 		self.Active:SetImage "materials/tttrw/heart.png"
 		self.Active:SetImageColor(LocalPlayer():GetRoleData().Color)
+		self.Active:SetZPos(1)
 	end
 end
 

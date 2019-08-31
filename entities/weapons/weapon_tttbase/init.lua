@@ -42,10 +42,21 @@ function SWEP:OverrideCommand(ply, cmd)
 
 		local pos = util.IntersectRayWithOBB(tr.StartPos, tr.Normal * (bullet.Distance or 56756), collisions.Pos - Vector(0, 0, (collisions.Maxs.z - collisions.Mins.z) * 0.5), angle_zero, collisions.Mins * 2, collisions.Maxs * 2)
 		if (not pos) then
-			print(tr.StartPos + tr.Normal * tr.StartPos:Distance(collisions.Pos), collisions.Pos)
 			printf("%s tried to hit someone they didn't HIt omfajnsuijk", self:GetOwner():Nick())
 			return
-		end
+        end
+        
+        local tr0 = util.TraceLine {
+            start = tr.StartPos,
+            endpos = pos,
+            filter = ents.GetAll(),
+            mask = MASK_SHOT_HULL
+        }
+
+        if (tr0.Fraction ~= 1) then
+			printf("%s tried to hit someone they didn't HIt omfajnsuijk", self:GetOwner():Nick())
+            return
+        end
 
 		tr.HitPos = pos
 		
