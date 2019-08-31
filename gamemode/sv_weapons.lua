@@ -15,7 +15,7 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 		filter = ply
 	}
 
-	if (tr.Fraction ~= 1 and tr.Entity ~= wep) then
+	if (tr.Fraction < 0.95 and tr.Entity ~= wep) then
 		return false
 	end
 
