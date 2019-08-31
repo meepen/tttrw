@@ -54,24 +54,18 @@ local function OpenableEnt(ent)
 	elseif cls == "prop_door_rotating" then
 		return "rot"
 	elseif cls == "func_door" or cls == "func_door_rotating" then
-		return "door"
+		return "doors"
 	elseif cls == "func_button" then
-		return "button"
+		return "buttons"
 	elseif cls == "func_movelinear" then
-		return "notoggle"
+		return "other"
 	else
 		return false
 	end
 end
 
-local lookups = { [0] = "no", "door", "rot", "button", "notoggle" }
-local rev_lookups = {}
-for k,v in pairs(lookups) do
-	rev_lookups[v] = k
-end
-
 local function CrowbarCanUnlock(t)
-	return not GAMEMODE.crowbar_unlocks or GAMEMODE.crowbar_unlocks[rev_lookups[t]]
+	return not GAMEMODE.crowbar_unlocks or GAMEMODE.crowbar_unlocks[t == "rot" and "doors" or t]
 end
 
 -- will open door AND return what it did
@@ -81,22 +75,21 @@ function SWEP:TryOpen(hitEnt)
 		return false
 	end
 	local openable = OpenableEnt(hitEnt)
-
 	if (not openable or not CrowbarCanUnlock(openable)) then
 		return false
 	end
 
-	if (openable == "door" or openable == "rot") then
+	if (openable == "doors" or openable == "rot") then
 		hitEnt:Fire("Unlock", nil, 0)
 
 		if (openable == "rot") then
 			hitEnt:Fire("OpenAwayFrom", self:GetOwner(), 0)
 		end
 		hitEnt:Fire("Toggle", nil, 0)
-	elseif (openable == "button") then
+	elseif (openable == "buttons") then
 		hitEnt:Fire("Unlock", nil, 0)
 		hitEnt:Fire("Press", nil, 0)
-	elseif (openable == "notoggle") then
+	elseif (openable == "other") then
 		hitEnt:Fire("Open", nil, 0)
 	end
 

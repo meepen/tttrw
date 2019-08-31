@@ -16,6 +16,12 @@ function ENT:KeyValue(key, value)
 	if (key == "MapSettingsSpawned" or key == "RoundEnd" or key == "RoundPreparation" or key == "RoundStart") then
 		self:StoreOutput(key, value)
 	end
+	local cbar_open = key:match"^cbar_(.+)$"
+
+	if (cbar_open) then
+		gmod.GetGamemode().crowbar_unlocks = gmod.GetGamemode().crowbar_unlocks or {}
+		gmod.GetGamemode().crowbar_unlocks[cbar_open] = tonumber(value) ~= 0
+	end
 end
 
 function ENT:Initialize()
