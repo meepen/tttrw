@@ -30,6 +30,8 @@ SWEP.Ironsights = {
 	Editing
 }
 
+SWEP.AllowDrop = true
+
 SWEP.PredictableSpread = true
 
 function SWEP:NetworkVarNotifyCallback(name, old, new)
