@@ -34,6 +34,7 @@ AddCSLuaFile();
 		"cl_dev_stats.lua",
 		"cl_weapons.lua",
 		"cl_player_outlines.lua",
+		"cl_damage_positions.lua",
 	},
 	Shared = {
 		"sh_init.lua",

@@ -127,9 +127,12 @@ function GM:HUDDrawTargetID()
 	end
 end
 
+function GM:HUDPaintBackground()
+	hook.Run "TTTDrawDamagePosition"
+end
+
 function GM:HUDPaint()
 	hook.Run "HUDDrawTargetID"
-
 	hook.Run "TTTDrawHitmarkers"
 
 	local targ = ttt.GetHUDTarget()
