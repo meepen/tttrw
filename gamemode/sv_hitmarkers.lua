@@ -4,7 +4,7 @@ resource.AddFile "sound/tttrw/hitmarker_hs_.mp3"
 function GM:CreateHitmarkers(vic, dmg)
     local atk = dmg:GetAttacker()
 
-    if (not IsValid(atk) or not vic:IsPlayer() or dmg:GetDamage() < 1) then
+    if (not IsValid(atk) or not vic:IsPlayer()) then
         return
     end
 
