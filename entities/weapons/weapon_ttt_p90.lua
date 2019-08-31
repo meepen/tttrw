@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-SWEP.HoldType              = "ar2"
+SWEP.HoldType              = "smg"
 
 SWEP.PrintName          = "P90"
 SWEP.Slot               = 2
