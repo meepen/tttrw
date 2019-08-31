@@ -174,7 +174,11 @@ function SWEP:GetViewModelPosition(pos, ang)
 		self.BobScale = 1
 	end
 
-	return pos, ang + self:GetCurrentUnpredictedViewPunch() - self:GetOwner():GetViewPunchAngles()
+	if (IsValid(self:GetOwner()) and self:GetOwner():Alive()) then
+		ang = ang - self:GetOwner():GetViewPunchAngles()
+	end
+
+	return pos, ang + self:GetCurrentUnpredictedViewPunch()
 end
 
 function SWEP:GetCurrentUnpredictedFOVMultiplier()
