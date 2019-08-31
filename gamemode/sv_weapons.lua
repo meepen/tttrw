@@ -41,6 +41,10 @@ function GM:DropCurrentWeapon(ply)
 	end
 
 	ply:DropWeapon(wep)
+	local ang = wep:GetAngles()
+	ang:RotateAroundAxis(Vector(0, 0, 1), 90)
+
+	wep:SetAngles(ang)
 
 	local pri = wep:GetPrimaryAmmoType()
 

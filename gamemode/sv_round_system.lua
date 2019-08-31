@@ -379,6 +379,7 @@ function GM:DoPlayerDeath(ply, atk, dmg)
 
 	for _, wep in pairs(ply:GetWeapons()) do
 		ply:DropWeapon(wep, nil, VectorRand() * 10)
+		print (wep:GetOwner())
 	end
 end
 
