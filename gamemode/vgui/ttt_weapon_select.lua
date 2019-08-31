@@ -139,6 +139,7 @@ function PANEL:Think()
 		for ind, wep in pairs(self.CachedWeapons) do
 			self.OrderedPanels[ind]:Remove()
 			table.remove(self.CachedWeapons, ind)
+			table.remove(self.OrderedPanels, ind)
 		end
 		return
 	end
