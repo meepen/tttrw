@@ -87,6 +87,7 @@ function SWEP:SetupDataTables()
 end
 
 function SWEP:Initialize()
+	hook.Add("StartCommand", self, self.StartCommand)
 	if (self.Primary and self.Primary.Ammo == "Buckshot" and not self.PredictableSpread) then
 		printf("Warning: %s weapon type has shotgun ammo and no predictable spread", self:GetClass())
 	end
@@ -167,6 +168,83 @@ function SWEP:FireBulletsCallback(tr, dmginfo)
 	if (distance > bullet.DamageDropoffRange) then
 		local pct = math.min(1, (distance - bullet.DamageDropoffRange) / (bullet.DamageDropoffRangeMax - bullet.DamageDropoffRange))
 		dmginfo:ScaleDamage(1 - pct * (1 - bullet.DamageMinimumPercent))
+	end
+
+	if (tr.IsFake) then
+		return
+	end
+
+	if (CLIENT and IsValid(tr.Entity) and tr.Entity:IsPlayer()) then
+		self.HitboxHit = tr.HitGroup
+		self.EntityHit = tr.Entity
+	elseif (SERVER) then
+		self.HitEntity = IsValid(tr.Entity) and tr.Entity:IsPlayer()
+		self.TickCount = self:GetOwner():GetCurrentCommand():TickCount()
+		self.LastShootTrace = tr
+	end
+end
+
+function SWEP:StartCommand(ply, cmd)
+	if (self:GetOwner() ~= ply or ply:GetActiveWeapon() ~= self) then
+		return
+	end
+	if (CLIENT) then
+		cmd:SetMouseX(-1)
+		cmd:SetMouseY(-1)
+		if (self.HitboxHit and cmd:TickCount() ~= 0) then
+			cmd:SetMouseX(self.HitboxHit)
+			cmd:SetMouseY(self.EntityHit:EntIndex())
+			self.HitboxHit = nil
+			self.EntityHit = nil
+		end
+	elseif (SERVER and self.TickCount and cmd:GetMouseX() ~= -1 and cmd:TickCount() - self.TickCount < self.Primary.Delay / engine.TickInterval() + 2 and not self.HitEntity) then
+		local hitbox = cmd:GetMouseX()
+		local entity = Entity(cmd:GetMouseY())
+
+		if (not IsValid(entity) or not entity:IsPlayer()) then
+			return
+		end
+
+		local collisions = self.LastHitboxes[entity]
+		local tr = self.LastShootTrace
+		tr.HitGroup = hitbox
+		tr.Entity = entity
+		local bullet = table.Copy(self.LastBullets)
+
+		local pos = util.IntersectRayWithOBB(tr.StartPos, tr.Normal * (bullet.Distance or 56756), collisions.Pos, angle_zero, collisions.Mins * 1.05, collisions.Maxs * 1.05)
+		if (not pos) then
+			printf("%s tried to hit someone they didn't HIt omfajnsuijk", self:GetOwner():Nick())
+			return
+		end
+
+		tr.HitPos = pos
+		
+		local res = hook.Run("EntityFireBullets", entity, bullet)
+		if (res == false) then
+			return
+		elseif (res ~= true) then
+			bullet = self.LastBullets
+		end
+
+		tr.IsFake = true
+
+		local dmg = DamageInfo()
+		dmg:SetDamage(bullet.Damage)
+		dmg:SetAttacker(bullet.Attacker)
+		dmg:SetInflictor(self)
+		dmg:SetDamageForce(tr.Normal * (bullet.Force or 1))
+		dmg:SetDamagePosition(tr.HitPos)
+		dmg:SetAmmoType(self:GetPrimaryAmmoType())
+		dmg:SetDamageType(DMG_BULLET)
+
+		if (bullet.Callback) then
+			bullet.Callback(entity, tr, dmg)
+		end
+
+		if (not hook.Run("ScalePlayerDamage", entity, hitbox, dmg)) then
+			entity:TakeDamageInfo(dmg)
+			print "OMEGA FIX HITREG"
+		end
 	end
 end
 
@@ -259,6 +337,40 @@ function SWEP:ShootBullet(bullet_info)
 
 	self:SetRealLastShootTime(CurTime())
 	owner:LagCompensation(true)
+
+
+	if (SERVER) then
+		self.LastHitboxes = {}
+		for _, ply in pairs(player.GetAll()) do
+			if (not ply:Alive() or ply == owner) then
+				continue
+			end
+
+			--[[
+			local hitboxes = {}
+
+			local group = ply:GetHitboxSet()
+			for hitbox = 0, ply:GetHitBoxCount(group) - 1 do
+				local bone = ply:GetHitBoxBone(hitbox, group)
+				local pos, angles = ply:GetBonePosition(bone)
+				local min, max = ply:GetHitBoxBounds(hitbox, group)
+				hitboxes[hitbox] = {pos, min, max, angles}
+			end
+
+			self.LastHitboxes[ply:EntIndex()] = hitboxes
+			]]
+
+			local mn, mx = ply:GetCollisionBounds()
+			self.LastHitboxes[ply] = {
+				Mins = mn,
+				Maxs = mx,
+				Pos = ply:GetPos()
+			}
+		end
+	end
+
+
+	self.LastBullets = table.Copy(bullet)
 	self:FireBullets(bullet)
 	owner:LagCompensation(false)
 
@@ -291,7 +403,7 @@ function SWEP:PrimaryAttack()
 	self:ShootBullet()
 
 	if (not self:GetDeveloperMode()) then
-		self:TakePrimaryAmmo(1)
+		self:TakePrimaryAmmo(0)
 	end
 
 	self:ViewPunch()
