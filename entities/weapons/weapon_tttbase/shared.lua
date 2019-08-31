@@ -307,7 +307,7 @@ function SWEP:ShootBullet(bullet_info)
 			self.LastHitboxes[ply:EntIndex()] = hitboxes
 			]]
 
-			local mn, mx = ply:GetCollisionBounds()
+			local mn, mx = ply:OBBMins(), ply:OBBMaxs()
 			self.LastHitboxes[ply] = {
 				Mins = mn,
 				Maxs = mx,
