@@ -173,7 +173,7 @@ function SWEP:FireBulletsCallback(tr, dmginfo)
 
 	if (tr.IsFake) then
 		return
-	else
+	elseif (self.Bullets.Num ~= 1) then
 		dmginfo:SetDamage(0)
 	end
 
