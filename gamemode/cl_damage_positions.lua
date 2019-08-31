@@ -6,17 +6,17 @@ GM.Damages = GM.Damages or {}
 local LIFETIME = 1.5
 
 function GM:player_hurt(info)
-	local inf = Player(info.userid)
+	local vic = Player(info.userid)
 	local att = Player(info.attacker)
 
-	if (inf ~= LocalPlayer()) then
+	if (vic ~= LocalPlayer() or not att:IsPlayer() or att == vic) then
 		return
 	end
 
 	table.insert(self.Damages, {
 		Position = att:GetShootPos(),
 		Time = CurTime(),
-		Damage = inf:Health() - info.health
+		Damage = vic:Health() - info.health
 	})
 end
 
