@@ -2,22 +2,20 @@ AddCSLuaFile()
 
 SWEP.HoldType               = "knife"
 
-if CLIENT then
-	SWEP.PrintName           = "Knife"
-	SWEP.Slot                = 6
+SWEP.PrintName           = "Knife"
+SWEP.Slot                = 6
 
-	SWEP.ViewModelFlip       = false
-	SWEP.ViewModelFOV        = 54
-	SWEP.DrawCrosshair       = false
+SWEP.ViewModelFlip       = false
+SWEP.ViewModelFOV        = 54
+SWEP.DrawCrosshair       = false
 
-	SWEP.EquipMenuData = {
-		type = "item_weapon",
-		desc = "knife_desc"
-	};
+SWEP.EquipMenuData = {
+	type = "item_weapon",
+	desc = "knife_desc"
+};
 
-	SWEP.Icon                = "vgui/ttt/icon_knife"
-	SWEP.IconLetter          = "j"
-end
+SWEP.Icon                = "vgui/ttt/icon_knife"
+SWEP.IconLetter          = "j"
 
 SWEP.Base                   = "weapon_tttbase"
 

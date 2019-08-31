@@ -2,15 +2,13 @@ AddCSLuaFile()
 
 SWEP.HoldType               = "normal"
 
-if CLIENT then
-   SWEP.PrintName           = "Ammo Bin"
-   SWEP.Slot                = 6
+SWEP.PrintName           = "Ammo Bin"
+SWEP.Slot                = 6
 
-   SWEP.ViewModelFOV        = 10
-   SWEP.DrawCrosshair       = false
+SWEP.ViewModelFOV        = 10
+SWEP.DrawCrosshair       = false
 
-   SWEP.Icon                = "vgui/ttt/icon_health"
-end
+SWEP.Icon                = "vgui/ttt/icon_health"
 
 SWEP.Base                   = "weapon_tttbase"
 

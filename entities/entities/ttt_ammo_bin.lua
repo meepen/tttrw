@@ -1,9 +1,7 @@
 AddCSLuaFile()
 
-if CLIENT then
-	ENT.PrintName = "Ammo Bin"
-	ENT.Icon = "vgui/ttt/icon_knife"
-end
+ENT.PrintName = "Ammo Bin"
+ENT.Icon = "vgui/ttt/icon_knife"
 
 ENT.Base = "ttt_point_info"
 ENT.Type = "anim"
