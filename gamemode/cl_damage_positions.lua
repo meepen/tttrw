@@ -35,7 +35,7 @@ function GM:TTTDrawDamagePosition()
 			table.remove(self.Damages, i)
 			continue
 		end
-		surface.SetDrawColor(200, 20, 20, (1 - (Time - Damage.Time) / LIFETIME) * (50 + (math.Clamp(Damage.Damage / LocalPlayer():GetMaxHealth(), 0, 1) * 150)))
+		surface.SetDrawColor(200, 20, 20, (1 - (Time - Damage.Time) / LIFETIME) * (150 + (math.Clamp(Damage.Damage / LocalPlayer():GetMaxHealth(), 0, 1) * 100)))
 
 		local ang = (Damage.Position - EyePos()):Angle().y
 
