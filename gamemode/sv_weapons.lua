@@ -7,6 +7,19 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 		end
 	end
 
+	local tr = util.TraceLine {
+		start = ply:EyePos(),
+		endpos = wep:GetPos(),
+		mask = MASK_PLAYERSOLID,
+		collisiongroup = COLLISION_GROUP_PLAYER,
+		filter = ply
+	}
+
+	if (tr.Fraction ~= 1 and tr.Entity ~= wep) then
+		return false
+	end
+
+
 	wep:SetPos(ply:GetShootPos())
 
 	return true
