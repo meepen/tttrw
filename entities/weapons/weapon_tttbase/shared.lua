@@ -213,6 +213,7 @@ function SWEP:StartCommand(ply, cmd)
 
 		local pos = util.IntersectRayWithOBB(tr.StartPos, tr.Normal * (bullet.Distance or 56756), collisions.Pos, angle_zero, collisions.Mins * 1.05, collisions.Maxs * 1.05)
 		if (not pos) then
+			ply:ChatPrint("Hey we noticed a noreg! If you have video please send to Meepen on discord")
 			printf("%s tried to hit someone they didn't HIt omfajnsuijk", self:GetOwner():Nick())
 			return
 		end
@@ -243,7 +244,6 @@ function SWEP:StartCommand(ply, cmd)
 
 		if (not hook.Run("ScalePlayerDamage", entity, hitbox, dmg)) then
 			entity:TakeDamageInfo(dmg)
-			print "OMEGA FIX HITREG"
 		end
 	end
 end
