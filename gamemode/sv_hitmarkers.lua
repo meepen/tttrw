@@ -17,6 +17,6 @@ function GM:CreateHitmarkers(vic, dmg)
     hitmarker:SetDamage(dmg:GetDamage())
     hitmarker:SetDamageType(dmg:GetDamageType())
     hitmarker:SetPos(dmg:GetDamagePosition())
-    hitmarker:SetHitGroup(vic:LastHitGroup())
+    hitmarker:SetHitGroup(dmg:GetDamageCustom())
     hitmarker:Spawn()
 end

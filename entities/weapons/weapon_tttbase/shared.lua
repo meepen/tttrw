@@ -177,10 +177,16 @@ function SWEP:FireBulletsCallback(tr, dmginfo)
 		dmginfo:SetDamage(0)
 	end
 
-	if (CLIENT and IsValid(tr.Entity) and tr.Entity:IsPlayer()) then
-		self.HitboxHit = tr.HitGroup
-		self.EntityHit = tr.Entity
-	elseif (SERVER) then
+
+	if (IsValid(tr.Entity) and tr.Entity:IsPlayer()) then
+		if (CLIENT) then
+			self.HitboxHit = tr.HitGroup
+			self.EntityHit = tr.Entity
+		end
+		dmginfo:SetDamageCustom(tr.Entity:LastHitGroup())
+	end
+	
+	if (SERVER) then
 		self.HitEntity = false and IsValid(tr.Entity) and tr.Entity:IsPlayer()
 		self.TickCount = self:GetOwner():GetCurrentCommand():TickCount()
 		self.LastShootTrace = tr

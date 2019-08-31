@@ -84,6 +84,7 @@ function SWEP:OverrideCommand(ply, cmd)
 		dmg:SetDamagePosition(tr.HitPos)
 		dmg:SetAmmoType(self:GetPrimaryAmmoType())
 		dmg:SetDamageType(DMG_BULLET)
+		dmg:SetDamageCustom(hitbox)
 
 		if (bullet.Callback) then
 			bullet.Callback(entity, tr, dmg)
