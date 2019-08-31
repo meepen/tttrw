@@ -121,24 +121,6 @@ function round.Prepare()
 	end)
 end
 
-local function GetRandomPlayer(plys)
-	local totalTickets = 0
-	for k, ply in pairs(plys) do
-		total = total + ply.Tickets
-	end
-	
-	local roll = math.random(1, total)
-	local current = 1
-	for k, ply in pairs(plys) do
-		local prev = current
-		current = current + ply.Tickets
-		if (roll >= prev and roll <= (current - 1)) then
-			return ply
-		end
-	end
-end
-
-
 function round.TryStart()
 	local plys = ttt.GetEligiblePlayers()
 	if (#plys < ttt_minimum_players:GetInt()) then
@@ -159,8 +141,17 @@ function round.TryStart()
 
 	round.Players = {}
 	local randPlayers = table.Copy(plys)
-	for i = 1, #randPlayers do
-		local ply = GetRandomPlayer(randPlayers)
+	for i, ply in pairs(randPlayers) do
+		randPlayers[i] = {
+			Player = ply,
+			Tickets = math.random() * ply.Tickets
+		}
+	end
+	table.sort(randPlayers, function(a, b)
+		return a.Tickets > b.Tickets
+	end)
+	for i, info in ipairs(randPlayers) do
+		local ply = info.Player
 		local role, amt = next(roles_needed)
 		if (role) then
 			if (amt == 1) then
@@ -215,24 +206,18 @@ function round.End(winning_team, winners)
 end
 
 function GM:OnPlayerRoleChange(ply, old, new)
+	local role = ttt.roles[new]
+
 	for _, info in pairs(round.GetActivePlayers()) do
 		if (info.Player == ply) then
-			info.Role = ttt.roles[new]
+			info.Role = role
 		end
 	end
 
 	for _, info in pairs(round.GetStartingPlayers()) do
 		if (info.Player == ply) then
-			info.Role = ttt.roles[new]
+			info.Role = role
 		end
-	end
-	
-	if (new.Name == "traitor") then
-		ply.Tickets = 1
-	elseif (new.Name == "Detective") then
-		ply.Tickets = math.max(ply.Tickets - 1, 0)
-	else
-		ply.Tickets = ply.Tickets + 1
 	end
 
 	ttt.CheckTeamWin()
@@ -244,6 +229,12 @@ function GM:TTTRoundStart()
 			info.Player:ChatPrint("Your role is "..info.Role.Name.." on team "..info.Role.Team.Name)
 			info.Player:SetRole(info.Role.Name)
 			info.Player:SetTeam(TEAM_TERROR)
+
+			if (info.Role.ModifyTickets) then
+				info.Player.Tickets = info.Role.ModifyTickets(info.Player.Tickets)
+			else
+				info.Player.Tickets = info.Player.Tickets + 1
+			end
 		end
 		if (not info.Player:Alive()) then
 			info.Player:Spawn()
@@ -259,10 +250,9 @@ function GM:TTTBeginRound()
 		if (not IsValid(info.Player)) then
 			continue
 		end
-		
+
 		info.Player:SetHealth(info.Player:GetMaxHealth())
 		info.Player:Extinguish()
-		info.Player.Tickets = info.Player.Tickets + 1
 	end
 end
 

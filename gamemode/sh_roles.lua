@@ -33,6 +33,10 @@ function TEAM:SetColor(col, g, b, a)
 	return self
 end
 
+function TEAM:SetModifyTicketsFunc(fn)
+	self.ModifyTickets = fn
+end
+
 local SEEN_BY_ALL = {
 	__index = function() return true end,
 	__newindex = function() end,
@@ -98,6 +102,7 @@ end
 
 function TEAM:SetDeathIcon(icon)
 	self.DeathIcon = icon
+	return self
 end
 
 setmetatable(SEEN_BY_ALL, SEEN_BY_ALL)
@@ -157,17 +162,25 @@ end
 
 function GM:TTTPrepareRoles(Team, Role)
 	Team "innocent":SetColor(Color(20, 240, 20)) :SetGood()
-	Team "traitor":SeenBy {"traitor"}:SetColor(Color(240, 20, 20)):TeamChatSeenBy "traitor" :SetVoiceChannel "traitor" :SetEvil() :SetCanUseBuyMenu(true) :SetDeathIcon "materials/tttrw/tbutton.png"
+	Team "traitor":SeenBy {"traitor"}:SetColor(Color(240, 20, 20)):TeamChatSeenBy "traitor"
+		:SetVoiceChannel "traitor" :SetEvil() :SetCanUseBuyMenu(true) :SetDeathIcon "materials/tttrw/tbutton.png"
+		:SetModifyTicketsFunc(function(tickets)
+			return 1
+		end)
 	Team "spectator":SeenByAll():SetColor(Color(20, 120, 120))
 
 	Role("Innocent", "innocent")
 	Role("Spectator", "spectator")
-	Role("Detective", "innocent"):SeenByAll():SetCalculateAmountFunction(function(total_players)
-		if (ttt_detective_min_players:GetFloat() > total_players) then
-			return 0
-		end
-		return math.min(ttt_detective_max:GetInt(), math.ceil(total_players * ttt_detective_pct:GetFloat()))
-	end):SetColor(20, 20, 240):TeamChatSeenBy "Detective" :SetVoiceChannel "Detective" :SetCanUseBuyMenu(true)
+	Role("Detective", "innocent"):SeenByAll()
+		:SetCalculateAmountFunction(function(total_players)
+			if (ttt_detective_min_players:GetFloat() > total_players) then
+				return 0
+			end
+			return math.min(ttt_detective_max:GetInt(), math.ceil(total_players * ttt_detective_pct:GetFloat()))
+		end):SetColor(20, 20, 240):TeamChatSeenBy "Detective" :SetVoiceChannel "Detective" :SetCanUseBuyMenu(true)
+		:SetModifyTicketsFunc(function(tickets)
+			return tickets - 1
+		end)
 	Role("Traitor", "traitor"):SetCalculateAmountFunction(function(total_players)
 		return math.min(ttt_traitor_max:GetInt(), math.ceil(total_players * ttt_traitor_pct:GetFloat()))
 	end)
