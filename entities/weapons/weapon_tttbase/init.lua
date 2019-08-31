@@ -13,7 +13,7 @@ function SWEP:OnDrop()
     self.Primary.DefaultClip = 0
 end
 
-local biggify_hitbox = 0.5
+local biggify_hitbox = 0.1
 function SWEP:OverrideCommand(ply, cmd)
 	if (self:GetOwner() ~= ply or ply:GetActiveWeapon() ~= self) then
 		return
@@ -41,10 +41,15 @@ function SWEP:OverrideCommand(ply, cmd)
 		tr.Entity = entity
 		local bullet = table.Copy(self.LastBullets)
 
+		local mins, maxs = collisions.Mins * (1 + biggify_hitbox), collisions.Maxs * (1 + biggify_hitbox)
 
-		local pos = util.IntersectRayWithOBB(tr.StartPos, tr.Normal * (bullet.Distance or 56756), collisions.Pos - Vector(0, 0, (collisions.Maxs.z - collisions.Mins.z) * biggify_hitbox), angle_zero, collisions.Mins * (1 + biggify_hitbox), collisions.Maxs * (1 + biggify_hitbox))
+		local origin = collisions.Pos - Vector(0, 0, (collisions.Maxs.z - collisions.Mins.z) * biggify_hitbox / 2)
+
+		-- 0.055180 0.998022 -0.030119     243.887894 -283.003296 64.031250        309.110535 212.761826 0.031250
+		local pos = util.IntersectRayWithOBB(tr.StartPos, tr.Normal * (bullet.Distance or 56756), origin, angle_zero, mins, maxs)
 		if (not pos) then
-			printf("%s tried to hit someone they didn't HIt omfajnsuijk", self:GetOwner():Nick())
+			printf("%s tried to hit someone they didn't hit", self:GetOwner():Nick())
+			print(origin, mins, maxs, tr.StartPos + tr.Normal * origin:Distance(tr.StartPos))
 			return
         end
         
