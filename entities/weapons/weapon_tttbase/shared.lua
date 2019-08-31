@@ -173,8 +173,6 @@ function SWEP:FireBulletsCallback(tr, dmginfo)
 
 	if (tr.IsFake) then
 		return
-	elseif (self.Bullets.Num == 1) then
-		dmginfo:SetDamage(0)
 	end
 
 
@@ -182,6 +180,9 @@ function SWEP:FireBulletsCallback(tr, dmginfo)
 		if (CLIENT) then
 			self.HitboxHit = tr.HitGroup
 			self.EntityHit = tr.Entity
+		end
+		if (self.Bullets.Num == 1) then
+			dmginfo:SetDamage(0)
 		end
 		dmginfo:SetDamageCustom(tr.Entity:LastHitGroup())
 	end
