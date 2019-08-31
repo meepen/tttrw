@@ -34,8 +34,10 @@ function PANEL:SetActive(b)
 	elseif (not IsValid(self.Active) and b) then
 		self.Active = self:Add "DImage"
 		self.Active:SetSize(self:GetTall() - 4, self:GetTall() - 4)
-		self.Active:SetPos(2, 2)
+		self.Active:Dock(LEFT)
+		self.Active:DockMargin(2, 2, 2, 2)
 		self.Active:SetImage "materials/tttrw/heart.png"
+		self.Active:SetImageColor(LocalPlayer():GetRoleData().Color)
 	end
 end
 
@@ -69,14 +71,42 @@ function PANEL:PlayerSwitchWeapon(ply, old, new)
 end
 
 function PANEL:PlayerBindPress(ply, bind, pressed)
-	if (bind == "invprev" or bind == "invnext") then
+	if (bind:match"^slot%d+$") then
+		local num = tonumber(bind:match"^slot(%d+)$") - 1
+		local ordered_weps = {}
+		for _, wep in pairs(LocalPlayer():GetWeapons()) do
+			if (wep:GetSlot() == num) then
+				table.insert(ordered_weps, wep)
+			end
+		end
+
+		if (#ordered_weps == 0) then
+			return true
+		end
+
+		table.sort(ordered_weps, function(a, b)
+			return a:GetSlotPos() < b:GetSlotPos()
+		end)
+
+		local index = 1
+		for ind, wep in pairs(ordered_weps) do
+			if (wep == LocalPlayer():GetActiveWeapon()) then
+				index = ind
+			end
+		end
+
+
+		input.SelectWeapon(ordered_weps[index % #ordered_weps + 1])
+		
+		return true
+	elseif (bind == "invprev" or bind == "invnext") then
 		local ordered_weps = LocalPlayer():GetWeapons()
 		table.sort(ordered_weps, function(a, b)
 			return a:GetSlot() < b:GetSlot()
 		end)
 
 		if (#ordered_weps == 0) then
-			return
+			return true
 		end
 
 		local index = 1
@@ -90,7 +120,7 @@ function PANEL:PlayerBindPress(ply, bind, pressed)
 
 		if (bind == "invnext") then
 			index = index + 1
-		else
+		elseif (bind == "invprev") then
 			index = index - 1
 		end
 
