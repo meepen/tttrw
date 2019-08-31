@@ -342,6 +342,10 @@ function SWEP:PrimaryAttack()
 
 	self:EmitSound(self.Primary.Sound, self.Primary.SoundLevel)
 
+	if (self:Clip1() <= math.max(self:GetMaxClip1() * 0.15, 3)) then
+		self:EmitSound("weapons/pistol/pistol_empty.wav", self.Primary.SoundLevel, 255, 2, CHAN_USER_BASE + 1)
+	end
+
 	self:ShootBullet()
 
 	if (not self:GetDeveloperMode()) then
