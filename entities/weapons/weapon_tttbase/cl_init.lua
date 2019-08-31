@@ -56,6 +56,22 @@ function SWEP:DoDrawCrosshair(x, y)
 	return true
 end
 
+function SWEP:OverrideCommand(ply, cmd)
+	if (self:GetOwner() ~= ply or ply:GetActiveWeapon() ~= self) then
+		return
+	end
+	local ang = cmd:GetViewAngles()
+	ang.r = 0
+
+	if (self.HitboxHit and cmd:CommandNumber() ~= 0) then
+		ang.r = math.Clamp(math.Round(self.HitboxHit), 0, 10) + self.EntityHit:EntIndex() * 11
+		self.HitboxHit = nil
+		self.EntityHit = nil
+	end
+
+	cmd:SetViewAngles(ang)
+end
+
 local server, client = Color(20,20,255,0), Color(255,20,20,0)
 local lifetime = 0.5
 

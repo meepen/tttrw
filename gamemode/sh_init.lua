@@ -44,6 +44,12 @@ function GM:StartCommand(ply, cmd)
 	end
 	-- fixes some hitreg issues
 	ply:SetAngles(Angle(0, cmd:GetViewAngles().y))
+
+	local wep = ply:GetActiveWeapon()
+	if (IsValid(wep) and wep.OverrideCommand) then
+		wep:OverrideCommand(ply, cmd)
+	end
+
 	player_manager.RunClass(ply, "StartCommand", cmd)
 end
 

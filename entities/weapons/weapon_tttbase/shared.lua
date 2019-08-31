@@ -87,7 +87,6 @@ function SWEP:SetupDataTables()
 end
 
 function SWEP:Initialize()
-	hook.Add("StartCommand", self, self.StartCommand)
 	if (self.Primary and self.Primary.Ammo == "Buckshot" and not self.PredictableSpread) then
 		printf("Warning: %s weapon type has shotgun ammo and no predictable spread", self:GetClass())
 	end
@@ -184,69 +183,6 @@ function SWEP:FireBulletsCallback(tr, dmginfo)
 	end
 end
 
-function SWEP:StartCommand(ply, cmd)
-	if (self:GetOwner() ~= ply or ply:GetActiveWeapon() ~= self) then
-		return
-	end
-	if (CLIENT) then
-		cmd:SetMouseX(-1)
-		cmd:SetMouseY(-1)
-		if (self.HitboxHit and cmd:TickCount() ~= 0) then
-			cmd:SetMouseX(self.HitboxHit)
-			cmd:SetMouseY(self.EntityHit:EntIndex())
-			self.HitboxHit = nil
-			self.EntityHit = nil
-		end
-	elseif (SERVER and self.TickCount and cmd:GetMouseX() ~= -1 and cmd:TickCount() - self.TickCount < self.Primary.Delay / engine.TickInterval() + 2 and not self.HitEntity) then
-		local hitbox = cmd:GetMouseX()
-		local entity = Entity(cmd:GetMouseY())
-
-		if (not IsValid(entity) or not entity:IsPlayer()) then
-			return
-		end
-
-		local collisions = self.LastHitboxes[entity]
-		local tr = self.LastShootTrace
-		tr.HitGroup = hitbox
-		tr.Entity = entity
-		local bullet = table.Copy(self.LastBullets)
-
-		local pos = util.IntersectRayWithOBB(tr.StartPos, tr.Normal * (bullet.Distance or 56756), collisions.Pos, angle_zero, collisions.Mins * 1.05, collisions.Maxs * 1.05)
-		if (not pos) then
-			ply:ChatPrint("Hey we noticed a noreg! If you have video please send to Meepen on discord")
-			printf("%s tried to hit someone they didn't HIt omfajnsuijk", self:GetOwner():Nick())
-			return
-		end
-
-		tr.HitPos = pos
-		
-		local res = hook.Run("EntityFireBullets", entity, bullet)
-		if (res == false) then
-			return
-		elseif (res ~= true) then
-			bullet = self.LastBullets
-		end
-
-		tr.IsFake = true
-
-		local dmg = DamageInfo()
-		dmg:SetDamage(bullet.Damage)
-		dmg:SetAttacker(bullet.Attacker)
-		dmg:SetInflictor(self)
-		dmg:SetDamageForce(tr.Normal * (bullet.Force or 1))
-		dmg:SetDamagePosition(tr.HitPos)
-		dmg:SetAmmoType(self:GetPrimaryAmmoType())
-		dmg:SetDamageType(DMG_BULLET)
-
-		if (bullet.Callback) then
-			bullet.Callback(entity, tr, dmg)
-		end
-
-		if (not hook.Run("ScalePlayerDamage", entity, hitbox, dmg)) then
-			entity:TakeDamageInfo(dmg)
-		end
-	end
-end
 
 function SWEP:Hitboxes()
 	if (self:GetDeveloperMode()) then
@@ -403,7 +339,7 @@ function SWEP:PrimaryAttack()
 	self:ShootBullet()
 
 	if (not self:GetDeveloperMode()) then
-		self:TakePrimaryAmmo(0)
+		self:TakePrimaryAmmo(1)
 	end
 
 	self:ViewPunch()
