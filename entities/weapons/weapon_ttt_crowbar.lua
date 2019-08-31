@@ -4,7 +4,7 @@ SWEP.HoldType                = "melee"
 SWEP.PrintName            = "Crowbar"
 SWEP.Slot                 = 0
 
-SWEP.DrawCrosshair        = false
+SWEP.DrawCrosshair        = true
 SWEP.ViewModelFlip        = false
 SWEP.ViewModelFOV         = 54
 
