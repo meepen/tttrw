@@ -173,6 +173,8 @@ function SWEP:FireBulletsCallback(tr, dmginfo)
 
 	if (tr.IsFake) then
 		return
+	else
+		dmginfo:SetDamage(0)
 	end
 
 	if (CLIENT and IsValid(tr.Entity) and tr.Entity:IsPlayer()) then
