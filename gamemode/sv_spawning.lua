@@ -28,6 +28,9 @@ function GM:PlayerLoadout(ply)
 end
 
 function GM:PlayerDeathThink(ply)
+	if (IsValid(ply:GetObserverTarget())) then
+		ply:SetPos(ply:GetObserverTarget():GetPos())
+	end
 	return false
 end
 
