@@ -276,7 +276,6 @@ function SWEP:ShootBullet(bullet_info)
 	self:SetRealLastShootTime(CurTime())
 	owner:LagCompensation(true)
 
-
 	if (SERVER) then
 		self.LastHitboxes = {}
 		for _, ply in pairs(player.GetAll()) do
@@ -306,7 +305,6 @@ function SWEP:ShootBullet(bullet_info)
 			}
 		end
 	end
-
 
 	self.LastBullets = table.Copy(bullet)
 	self:DoFireBullets(bullet)

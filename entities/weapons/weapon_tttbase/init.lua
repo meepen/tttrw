@@ -90,6 +90,9 @@ function SWEP:OverrideCommand(ply, cmd)
 		end
 
 		if (not hook.Run("ScalePlayerDamage", entity, hitbox, dmg)) then
+			if (dmg:GetDamage() > entity:Health()) then
+				entity:SetPos(collisions.Pos)
+			end
 			entity:TakeDamageInfo(dmg)
 		end
 	end
