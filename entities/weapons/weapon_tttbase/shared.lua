@@ -307,10 +307,14 @@ function SWEP:ShootBullet(bullet_info)
 
 
 	self.LastBullets = table.Copy(bullet)
-	self:FireBullets(bullet)
+	self:DoFireBullets(bullet)
 	owner:LagCompensation(false)
 
 	self:ShootEffects()
+end
+
+function SWEP:DoFireBullets(bullet)
+	self:FireBullets(bullet)
 end
 
 function SWEP:GetSpread()

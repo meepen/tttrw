@@ -17,7 +17,7 @@ function GM:DropCurrentWeapon(ply)
     local nextwep
 
     local wep = ply:GetActiveWeapon()
-    if (not IsValid(wep)) then
+    if (not IsValid(wep) or not wep.AllowDrop) then
         return
     end
 

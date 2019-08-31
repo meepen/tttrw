@@ -12,19 +12,9 @@ function GM:PlayerLoadout(ply)
 	-- can provide weapons here
 	BaseClass.PlayerLoadout(self, ply)
 
-	-- check if they need any spawning weapons that weren't provided
-	local wpns = ply:GetWeapons()
-
-	local slots = {}
-
-	for _, wep in pairs(wpns) do
-		slots[wep.Slot] = true
-	end
-
-	if (not slots[1]) then
-		ply:Give "weapon_ttt_p90"
-		ply:Give "weapon_ttt_deagle"
-	end
+	ply:Give "weapon_ttt_crowbar"
+	ply:Give "weapon_ttt_p90"
+	ply:Give "weapon_ttt_deagle"
 end
 
 function GM:PlayerDeathThink(ply)
