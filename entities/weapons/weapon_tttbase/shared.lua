@@ -181,7 +181,7 @@ function SWEP:FireBulletsCallback(tr, dmginfo)
 		self.HitboxHit = tr.HitGroup
 		self.EntityHit = tr.Entity
 	elseif (SERVER) then
-		self.HitEntity = IsValid(tr.Entity) and tr.Entity:IsPlayer()
+		self.HitEntity = false and IsValid(tr.Entity) and tr.Entity:IsPlayer()
 		self.TickCount = self:GetOwner():GetCurrentCommand():TickCount()
 		self.LastShootTrace = tr
 	end
