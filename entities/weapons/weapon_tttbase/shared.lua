@@ -260,7 +260,7 @@ function SWEP:ShootBullet(bullet_info)
 	local bullet = {
 		Num = bullet_info.Num,
 		Attacker = owner,
-		Damage = self.Primary.Damage,
+		Damage = 0, -- self.Primary.Damage,
 		Tracer = bullet_info.Tracer or 1,
 		TracerName = bullet_info.TracerName,
 		Spread = self:GetSpread(),
