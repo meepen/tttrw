@@ -1,4 +1,5 @@
 gameevent.Listen "player_hurt"
+gameevent.Listen "entity_killed"
 
 GM.Damages = GM.Damages or {}
 
@@ -64,5 +65,11 @@ function GM:TTTDrawDamagePosition()
 				y = h / 2 - v0.y * h / 2.6,
 			},
 		}
+	end
+end
+
+function GM:entity_killed(info)
+	if (LocalPlayer():UserID() == info.entindex_inflictor) then
+		self.Damages = {}
 	end
 end
