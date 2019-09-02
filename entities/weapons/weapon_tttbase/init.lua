@@ -14,7 +14,7 @@ function SWEP:OnDrop()
 end
 
 local biggify_hitbox = 1.5
-local velocity_max = 1500
+local velocity_max = 750
 function SWEP:OverrideCommand(ply, cmd)
 	if (self:GetOwner() ~= ply or ply:GetActiveWeapon() ~= self) then
 		return
