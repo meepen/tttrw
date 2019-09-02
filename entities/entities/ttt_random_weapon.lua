@@ -16,8 +16,8 @@ function ENT:UpdateTransmitState()
     return TRANSMIT_NEVER
 end
 
-function ENT:SpawnAmmo()
-    if (not Ammos) then
+function ENT:SpawnWeapons()
+    if (not Weapons) then
         Regenerate()
     end
     self.OverrideClass = table.Random(Weapons)
@@ -38,9 +38,13 @@ function ENT:SpawnAmmo()
 end
 
 function ENT:Initialize()
-    if (not Ammos) then
-        hook.Add("InitPostEntity", self, self.SpawnAmmo)
+    if (not Weapons) then
+        hook.Add("InitPostEntity", self, self.SpawnWeapons)
     else
-        self:SpawnAmmo()
+        self:SpawnWeapons()
     end
+end
+
+function ENT:OnReloaded()
+    Regenerate()
 end
