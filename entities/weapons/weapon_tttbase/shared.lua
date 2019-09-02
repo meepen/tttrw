@@ -263,8 +263,6 @@ function SWEP:ShootBullet()
 	
 	self:Hitboxes()
 
-	local bullet_ang = owner:EyeAngles() + owner:GetViewPunchAngles()
-
 	self:SetRealLastShootTime(CurTime())
 	owner:LagCompensation(true)
 
@@ -322,7 +320,7 @@ function SWEP:DoFireBullets()
 			end
 		end,
 		Src = owner:GetShootPos(),
-		Dir = bullet_ang:Forward(),
+		Dir = owner:EyeAngles():Forward(),
 	}
 end
 
