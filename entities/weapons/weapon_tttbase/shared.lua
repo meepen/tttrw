@@ -258,30 +258,12 @@ end
 
 local vector_origin = vector_origin
 
-function SWEP:ShootBullet(bullet_info)
+function SWEP:ShootBullet()
 	local owner = self:GetOwner()
 	
 	self:Hitboxes()
 
 	local bullet_ang = owner:EyeAngles() + owner:GetViewPunchAngles()
-
-	local bullet_info = self.Bullets
-
-	local bullet = {
-		Num = bullet_info.Num,
-		Attacker = owner,
-		Damage = self.Primary.Damage,
-		Tracer = bullet_info.Tracer or 1,
-		TracerName = bullet_info.TracerName,
-		Spread = self:GetSpread(),
-		Callback = function(_, ...)
-			if (IsValid(self)) then
-				self:FireBulletsCallback(...)
-			end
-		end,
-		Src = owner:GetShootPos(),
-		Dir = bullet_ang:Forward(),
-	}
 
 	self:SetRealLastShootTime(CurTime())
 	owner:LagCompensation(true)
@@ -323,8 +305,24 @@ function SWEP:ShootBullet(bullet_info)
 	self:ShootEffects()
 end
 
-function SWEP:DoFireBullets(bullet)
-	self:FireBullets(bullet)
+function SWEP:DoFireBullets()
+	local bullet_info = self.Bullets
+
+	self:FireBullets {
+		Num = bullet_info.Num,
+		Attacker = owner,
+		Damage = self.Primary.Damage,
+		Tracer = bullet_info.Tracer or 1,
+		TracerName = bullet_info.TracerName,
+		Spread = self:GetSpread(),
+		Callback = function(_, ...)
+			if (IsValid(self)) then
+				self:FireBulletsCallback(...)
+			end
+		end,
+		Src = owner:GetShootPos(),
+		Dir = bullet_ang:Forward(),
+	}
 end
 
 function SWEP:GetSpread()
