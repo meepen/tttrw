@@ -12,7 +12,6 @@ SWEP.Icon                 = "vgui/ttt/icon_cbar"
 
 SWEP.Base                    = "weapon_tttbase"
 
-SWEP.UseHands                = true
 SWEP.ViewModel               = "models/weapons/c_crowbar.mdl"
 SWEP.WorldModel              = "models/weapons/w_crowbar.mdl"
 

@@ -19,7 +19,6 @@ SWEP.IconLetter          = "j"
 
 SWEP.Base                   = "weapon_tttbase"
 
-SWEP.UseHands               = true
 SWEP.ViewModel              = "models/weapons/cstrike/c_knife_t.mdl"
 SWEP.WorldModel             = "models/weapons/w_knife_t.mdl"
 

@@ -42,7 +42,6 @@ SWEP.HeadshotMultiplier    = 1.2
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
 
-SWEP.UseHands              = true
 SWEP.ViewModel             = "models/weapons/cstrike/c_mach_m249para.mdl"
 SWEP.WorldModel            = "models/weapons/w_mach_m249para.mdl"
 

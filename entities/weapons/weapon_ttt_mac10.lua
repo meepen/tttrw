@@ -43,7 +43,6 @@ SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
 SWEP.AmmoEnt               = "item_ammo_smg1_ttt"
 
-SWEP.UseHands              = true
 SWEP.ViewModel             = "models/weapons/cstrike/c_smg_mac10.mdl"
 SWEP.WorldModel            = "models/weapons/w_smg_mac10.mdl"
 

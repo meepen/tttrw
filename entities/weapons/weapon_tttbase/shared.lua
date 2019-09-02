@@ -3,6 +3,8 @@ SWEP.Instructions = "Use this as a base weapon."
 SWEP.Slot = 1
 SWEP.SlotPos = 0
 
+SWEP.UseHands = true
+
 DEFINE_BASECLASS "weapon_base"
 
 SWEP.Primary.Automatic   = true

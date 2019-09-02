@@ -38,7 +38,6 @@ SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
 SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
 
-SWEP.UseHands              = true
 SWEP.ViewModel             = "models/weapons/cstrike/c_rif_ak47.mdl"
 SWEP.WorldModel            = "models/weapons/w_rif_ak47.mdl"
 

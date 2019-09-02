@@ -44,7 +44,6 @@ SWEP.Equipment = {
 
 SWEP.Tracer                = "AR2Tracer"
 
-SWEP.UseHands              = true
 SWEP.ViewModel             = Model("models/weapons/c_357.mdl")
 SWEP.WorldModel            = Model("models/weapons/w_357.mdl")
 

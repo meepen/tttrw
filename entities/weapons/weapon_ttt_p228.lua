@@ -42,7 +42,6 @@ SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
 SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
 
-SWEP.UseHands              = true
 SWEP.ViewModel             = "models/weapons/cstrike/c_pist_p228.mdl"
 SWEP.WorldModel            = "models/weapons/w_pist_p228.mdl"
 
