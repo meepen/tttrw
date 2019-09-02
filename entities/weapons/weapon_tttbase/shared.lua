@@ -296,8 +296,7 @@ function SWEP:ShootBullet()
 		end
 	end
 
-	self.LastBullets = table.Copy(bullet)
-	self:DoFireBullets(bullet)
+	self:DoFireBullets()
 	owner:LagCompensation(false)
 
 	self:ShootEffects()
@@ -307,7 +306,7 @@ function SWEP:DoFireBullets()
 	local bullet_info = self.Bullets
 	local owner = self:GetOwner()
 
-	self:FireBullets {
+	local bullets = {
 		Num = bullet_info.Num,
 		Attacker = owner,
 		Damage = self.Primary.Damage,
@@ -322,6 +321,10 @@ function SWEP:DoFireBullets()
 		Src = owner:GetShootPos(),
 		Dir = owner:EyeAngles():Forward(),
 	}
+
+	self.LastBullets = table.Copy(bullets)
+
+	self:FireBullets(bullets)
 end
 
 function SWEP:GetSpread()

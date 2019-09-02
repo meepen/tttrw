@@ -45,14 +45,13 @@ function SWEP:OverrideCommand(ply, cmd)
 
 		local origin = collisions.Pos - Vector(0, 0, (collisions.Maxs.z - collisions.Mins.z) * biggify_hitbox / 2)
 
-		-- 0.055180 0.998022 -0.030119     243.887894 -283.003296 64.031250        309.110535 212.761826 0.031250
 		local pos = util.IntersectRayWithOBB(tr.StartPos, tr.Normal * (bullet.Distance or 56756), origin, angle_zero, mins, maxs)
 		if (not pos) then
 			printf("%s tried to hit someone they didn't hit", self:GetOwner():Nick())
 			print(origin, mins, maxs, tr.StartPos + tr.Normal * origin:Distance(tr.StartPos))
 			return
         end
-        
+
         local tr0 = util.TraceLine {
             start = tr.StartPos,
             endpos = pos,
