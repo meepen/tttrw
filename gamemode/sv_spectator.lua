@@ -33,6 +33,7 @@ local function UpdatePlayerSpectating(ply, new_mode, dir)
 			ply:Spectate(OBS_MODE_IN_EYE)
 		end
 		ply:SpectateEntity(target)
+		ply:SetupHands(target)
 	else
 		ply:Spectate(OBS_MODE_ROAMING)
 		ply:SetMoveType(MOVETYPE_NOCLIP)
