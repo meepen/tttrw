@@ -307,6 +307,7 @@ end
 
 function SWEP:DoFireBullets()
 	local bullet_info = self.Bullets
+	local owner = self:GetOwner()
 
 	self:FireBullets {
 		Num = bullet_info.Num,
