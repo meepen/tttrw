@@ -25,7 +25,7 @@ function GM:PlayerSay(ply, text, team)
 end
 
 function GM:PlayerCanSeePlayersChat(text, team, listener, speaker)
-    if (listener:Alive() and not speaker:Alive()) then
+    if (listener:Alive() and not speaker:Alive() and ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE) then
         return false
     end
 
