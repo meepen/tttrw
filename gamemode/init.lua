@@ -11,7 +11,7 @@ function PLAYER:ConsolePrint(text)
 	net.Send(self)
 end
 
-function GM:PlayerUse(ply)
+function GM:PlayerUse(ply, ent)
 	return ply:Alive()
 end
 

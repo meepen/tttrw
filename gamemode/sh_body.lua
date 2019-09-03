@@ -33,9 +33,9 @@ function GM:PlayerInspectBody(ply, ent, pos)
 		ttt.InspectMenu.Position = pos
 		ttt.InspectMenu.MaxDistance = MAX_DISTANCE
 	else
-		if (ply:KeyDown(IN_WALK) or not ply:Alive()) then
-			ent.HiddenState:SetVisibleTo(ply)
-		elseif (not ent.HiddenState:GetIdentified()) then
+		ent.HiddenState:SetVisibleTo(ply)
+
+		if (ply:Alive() and not ply:KeyDown(IN_WALK) and not ent.HiddenState:GetIdentified()) then
 			ent.HiddenState:SetIdentified(true)
 
 			for _, oply in pairs(player.GetAll()) do

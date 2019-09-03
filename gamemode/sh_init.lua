@@ -6,6 +6,8 @@ GM.Website = "https://github.com/meepen"
 DeriveGamemode "base"
 DEFINE_BASECLASS "gamemode_base"
 
+IN_USE_ALT = IN_CANCEL
+
 ttt = ttt or GM or {}
 
 PLAYER = FindMetaTable "Player"
@@ -50,6 +52,10 @@ function GM:StartCommand(ply, cmd)
 		wep:OverrideCommand(ply, cmd)
 	end
 
+	if (cmd:KeyDown(IN_USE)) then
+		cmd:SetButtons(bit.bor(cmd:GetButtons(), IN_USE_ALT))
+	end
+
 	player_manager.RunClass(ply, "StartCommand", cmd)
 end
 
@@ -75,7 +81,7 @@ end
 function GM:KeyPress(ply, key)
 	self:VoiceKey(ply, key)
 
-	if (key == IN_USE and self:TryInspectBody(ply)) then
+	if (key == IN_USE_ALT and self:TryInspectBody(ply)) then
 		return
 	end
 
