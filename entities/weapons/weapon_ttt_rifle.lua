@@ -28,7 +28,7 @@ SWEP.Bullets = {
 
 SWEP.TTTCompat = {"weapon_zm_rifle"}
 
-SWEP.Primary.Damage        = 40
+SWEP.Primary.Damage        = 45
 SWEP.Primary.Delay         = 1.5
 SWEP.Primary.Recoil        = 5.2
 SWEP.Primary.RecoilTiming  = 0.09
