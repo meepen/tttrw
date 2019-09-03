@@ -22,17 +22,16 @@ SWEP.Bullets = {
 	DamageDropoffRange = 500,
 	DamageDropoffRangeMax = 2800,
 	DamageMinimumPercent = 0.2,
-	Spread = Vector(0.02, 0.02, 0),
+	Spread = Vector(0.025, 0.025, 0),
 }
 
 SWEP.Primary.Damage        = 17
-SWEP.Primary.Delay         = 0.08
+SWEP.Primary.Delay         = 0.082
 SWEP.Primary.Recoil        = 1.5
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "SMG1"
 SWEP.Primary.ClipSize      = 30 --30
-SWEP.Primary.DefaultClip   = 30 --90
-SWEP.Primary.MaxClip	   = 30 --30
+SWEP.Primary.DefaultClip   = 60 --60
 SWEP.Primary.Sound         = Sound "Weapon_MP5Navy.Single"
 
 SWEP.HeadshotMultiplier    = 1.25
