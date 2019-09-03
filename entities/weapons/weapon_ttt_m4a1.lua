@@ -22,7 +22,7 @@ SWEP.TTTCompat = {
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
-	DamageDropoffRange = 400,
+	DamageDropoffRange = 650,
 	DamageDropoffRangeMax = 5500,
 	DamageMinimumPercent = 0.1,
 	Spread = Vector(0.025, 0.025, 0.0),
@@ -36,6 +36,8 @@ SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_M4A1.Single"
+
+SWEP.HeadshotMultiplier    = 2.3
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true

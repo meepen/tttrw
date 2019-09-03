@@ -19,7 +19,7 @@ SWEP.WeaponID              = AMMO_AK47
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
-	DamageDropoffRange = 300,
+	DamageDropoffRange = 650,
 	DamageDropoffRangeMax = 4200,
 	DamageMinimumPercent = 0.1,
 	Spread = Vector(.03, .035, .0)
@@ -33,6 +33,8 @@ SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_AK47.Single"
+
+SWEP.HeadshotMultiplier    = 2.3
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
