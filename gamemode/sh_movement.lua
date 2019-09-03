@@ -24,10 +24,21 @@ function GM:DoBunnyHop(ply, mv)
 	end
 end
 
+local IN_INAIR = 0x80000000
+
 function GM:PreventCrouchJump(ply, mv)
 	if (ply:GetMoveType() ~= MOVETYPE_WALK) then
 		return
 	end
+
+	if (NULL == ply:GetGroundEntity()) then
+		mv:SetButtons(bit.bor(mv:GetButtons(), IN_INAIR))
+	else
+		mv:SetButtons(bit.band(bit.bnot(IN_INAIR), mv:GetButtons()))
+	end
+
+	local offset = ply:GetViewOffset()
+	local m_flDuckTime = math.sqrt(ply:GetCurrentViewOffset():DistToSqr(offset) / ply:GetViewOffsetDucked():DistToSqr(offset))
 	if (not ply:Crouching() and mv:KeyDown(IN_DUCK) and NULL == ply:GetGroundEntity()) then
 		local velocity = mv:GetVelocity()
 
@@ -74,9 +85,15 @@ function GM:PreventCrouchJump(ply, mv)
 			if (not tr.Hit) then
 				return
 			end
-		
+			mv:SetButtons(bit.band(bit.bnot(IN_DUCK), mv:GetButtons()))
 		end
 		mv:SetButtons(bit.band(bit.bnot(IN_DUCK), mv:GetButtons()))
+	elseif (not mv:KeyWasDown(IN_INAIR) and mv:KeyDown(IN_DUCK) and mv:KeyDown(IN_JUMP) and m_flDuckTime <= 0.5) then -- on ground, jumping
+		mv:SetButtons(bit.band(bit.bnot(IN_DUCK), mv:GetButtons()))
+		if (m_flDuckTime ~= 0) then
+			mv:SetButtons(bit.band(bit.bnot(IN_JUMP), mv:GetButtons()))
+		end
+		return
 	end
 end
 
