@@ -32,7 +32,6 @@ SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.ClipSize      = 20 --20
 SWEP.Primary.DefaultClip   = 40 --40
-SWEP.Primary.MaxClip       = 40 --80
 SWEP.Primary.Sound         = Sound "Weapon_Glock.Single"
 
 SWEP.HeadshotMultiplier    = 1.60

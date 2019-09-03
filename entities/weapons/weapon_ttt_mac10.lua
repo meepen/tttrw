@@ -34,7 +34,6 @@ SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "smg1"
 SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 60
-SWEP.Primary.MaxClip       = 60
 SWEP.Primary.Sound         = Sound "Weapon_mac10.Single"
 
 SWEP.HeadshotMultiplier    = 1.13

@@ -31,8 +31,7 @@ SWEP.Primary.Recoil        = 1.0
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "SMG1"
 SWEP.Primary.ClipSize      = 50 --50
-SWEP.Primary.DefaultClip   = 50 --50
-SWEP.Primary.MaxClip	   = 50
+SWEP.Primary.DefaultClip   = 100 --50
 SWEP.Primary.Sound         = Sound "Weapon_P90.Single"
 
 SWEP.HeadshotMultiplier    = 1.30

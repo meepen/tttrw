@@ -31,8 +31,7 @@ SWEP.Primary.Recoil        = 1.35
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.ClipSize      = 25 --25
-SWEP.Primary.DefaultClip   = 25 --25
-SWEP.Primary.MaxClip	   = 75
+SWEP.Primary.DefaultClip   = 50 --25
 SWEP.Primary.Sound         = Sound "Weapon_SG552.Single"
 SWEP.Secondary.Sound       = Sound "Default.Zoom"
 
