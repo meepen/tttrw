@@ -60,24 +60,26 @@ function ENT:Use(ply)
     if not (self.Cooldown) then
         if (IsValid(ply) and ply:IsPlayer()) then
             local wep = ply:GetActiveWeapon()
-            if (wep.Primary.MaxClip == nil or wep.Primary.MaxClip == 0) then return end
-            local r = wep.Primary.MaxClip - ply:GetAmmoCount(wep:GetPrimaryAmmoType())
+            local pri = wep:GetPrimaryAmmoType()
+            local max = ttt.Ammos[game.GetAmmoName(pri)].Max
+
+            local r = max - ply:GetAmmoCount(pri)
             if (r > 0) then
-                local p = (r / wep.Primary.MaxClip)*100
+                local p = (r / max) * 100
                 local pr
                 if (p > self:GetPercentRemaining()) then
                     pr = self:GetPercentRemaining()
                 else
                     pr = p
                 end
-                local d = math.ceil(pr/100 * wep.Primary.MaxClip)
+                local d = math.ceil(pr / 100 * max)
                 if (d == 0) then
                     ply:ChatPrint("No Charge Remaining!")
                 else
                     self:EmitSound(Sound("items/ammo_pickup.wav"))
-                    ply:SetAmmo(d+ply:GetAmmoCount(wep:GetPrimaryAmmoType()),wep:GetPrimaryAmmoType())
+                    ply:SetAmmo(d + ply:GetAmmoCount(wep:GetPrimaryAmmoType()), wep:GetPrimaryAmmoType())
                     self:SetPercentRemaining(self:GetPercentRemaining() - math.ceil(pr))
-                    ply:ChatPrint("Remaining: "..self:GetPercentRemaining().."%")
+                    ply:ChatPrint("Remaining: " .. self:GetPercentRemaining() .. "%")
                 end
                 self.Cooldown = true
                 timer.Simple(1, function()
