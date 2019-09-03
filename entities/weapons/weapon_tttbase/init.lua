@@ -14,7 +14,6 @@ function SWEP:OnDrop()
 end
 
 local biggify_hitbox = 1.5
-local velocity_max = 750
 function SWEP:OverrideCommand(ply, cmd)
 	if (self:GetOwner() ~= ply or ply:GetActiveWeapon() ~= self) then
 		return
@@ -42,7 +41,7 @@ function SWEP:OverrideCommand(ply, cmd)
 		tr.Entity = entity
 		local bullet = table.Copy(self.LastBullets)
 
-		local biggify = math.min(ply:GetVelocity():Length() / velocity_max, 1) * biggify_hitbox
+		local biggify = biggify_hitbox
 
 		local mins, maxs = collisions.Mins * (1 + biggify), collisions.Maxs * (1 + biggify)
 
