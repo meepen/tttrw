@@ -19,14 +19,14 @@ SWEP.WeaponID              = AMMO_GALIL
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
-	DamageDropoffRange = 400,
+	DamageDropoffRange = 550,
 	DamageDropoffRangeMax = 3500,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(0.03, 0.03, 0),
+	Spread = Vector(0.025, 0.025, 0),
 }
 
-SWEP.Primary.Damage        = 17
-SWEP.Primary.Delay         = 0.09
+SWEP.Primary.Damage        = 15
+SWEP.Primary.Delay         = 0.1
 SWEP.Primary.Recoil        = 1.5
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "SMG1"
@@ -34,7 +34,7 @@ SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_GALIL.Single"
 
-SWEP.HeadshotMultiplier    = 1.23
+SWEP.HeadshotMultiplier    = 1.25
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
