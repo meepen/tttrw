@@ -29,17 +29,16 @@ SWEP.Primary.Damage        = 17
 SWEP.Primary.Delay         = 0.09
 SWEP.Primary.Recoil        = 1.5
 SWEP.Primary.Automatic     = true
-SWEP.Primary.Ammo          = "Pistol"
+SWEP.Primary.Ammo          = "SMG1"
 SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 60
-SWEP.Primary.MaxClip	   = 60
 SWEP.Primary.Sound         = Sound "Weapon_GALIL.Single"
 
 SWEP.HeadshotMultiplier    = 1.23
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
-SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
+SWEP.AmmoEnt               = "item_ammo_smg1_ttt"
 
 SWEP.ViewModel             = "models/weapons/cstrike/c_rif_galil.mdl"
 SWEP.WorldModel            = "models/weapons/w_rif_galil.mdl"
