@@ -48,7 +48,6 @@ end
 
 function GM:PostPlayerDeath(ply)
 	for _, spec in pairs(player.GetAll()) do
-		print(spec, spec:GetObserverMode(), spec:GetObserverTarget())
 		if ((spec:GetObserverMode() == OBS_MODE_IN_EYE or spec:GetObserverMode() == OBS_MODE_CHASE) and spec:GetObserverTarget() == ply) then
 			self:TTTPlayerRemoveSpectate(ply)
 		end

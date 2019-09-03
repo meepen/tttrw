@@ -102,7 +102,29 @@ function PANEL:Paint(w, h)
 	BaseClass.Paint(self, w, h)
 end
 
-function PANEL:SetPlayer(ply)
+function PANEL:Think()
+	local ply = self.Player
+	if (IsValid(ply)) then
+		local group = "Terrorists"
+		
+		if (ply:Team() == TEAM_CONNECTING) then
+			group = "Connecting"
+		elseif (ply:Team() == TEAM_SPECTATOR) then
+			group = "Spectators"
+		elseif (not ply:Alive() and IsValid(ply.DeadState)) then
+			group = ply.DeadState:GetIdentified() and "Dead" or "Unidentified"
+		elseif (not ply:Alive() and LocalPlayer():GetRoleData().Evil) then
+			group = "Unidentified"
+		end
+
+		if (self.Group ~= group) then
+			self:SetParent(self:GetParent():GetParent():GetParent():GetParent().Groups[group])
+			self.Group = group
+		end
+	end
+end
+
+function PANEL:SetPlayer(ply, group)
 	if (not IsValid(ply)) then
 		return
 	end
@@ -191,14 +213,21 @@ function PANEL:SetPlayers(plys)
 	for i, v in pairs(plys) do
 		local pnl = self:Add "ttt_scoreboard_player"
 		pnl:DockMargin(0, Padding / 2, 0, 0)
-		pnl:SetPlayer(v)
-		pnl:SetZPos(i)
+		pnl:SetPlayer(v, self.Header:GetText())
+		pnl:SetZPos(v:UserID())
 		self.Players[i] = pnl
 	end
 end
 
 function PANEL:SetText(text)
 	self.Header:SetText(text)
+end
+
+function PANEL:OnChildAdded()
+	self:InvalidateLayout(true)
+end
+function PANEL:OnChildRemoved()
+	self:InvalidateLayout(true)
 end
 
 function PANEL:PerformLayout()
@@ -216,6 +245,8 @@ function PANEL:Init()
 	self:SetWide(ScrW() - ScrW() / 3)
 
 	self.Contents = {}
+
+	self.Groups = {}
 
 	self.Guide = self:Add "ttt_scoreboard_player"
 	self.Guide:SetColor(ttt_scoreboard_header_color)
@@ -263,6 +294,7 @@ end
 
 function PANEL:AddGroup(name, color, plys)
 	local pnl = self.Scroller:Add "ttt_scoreboard_group"
+	self.Groups[name] = pnl
 
 	pnl:SetColor(color)
 	pnl:SetText(name)
