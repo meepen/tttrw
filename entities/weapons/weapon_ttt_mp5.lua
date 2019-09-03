@@ -19,8 +19,8 @@ SWEP.WeaponID              = AMMO_PISTOL
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
-	DamageDropoffRange = 500,
-	DamageDropoffRangeMax = 2800,
+	DamageDropoffRange = 600,
+	DamageDropoffRangeMax = 3500,
 	DamageMinimumPercent = 0.2,
 	Spread = Vector(0.025, 0.025, 0),
 }

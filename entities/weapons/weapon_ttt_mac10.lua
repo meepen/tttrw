@@ -20,23 +20,23 @@ SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
 	DamageDropoffRange = 600,
-	DamageDropoffRangeMax = 1000,
+	DamageDropoffRangeMax = 2400,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(0.040, 0.0401, 0.042)
+	Spread = Vector(0.040, 0.040, 0.00)
 }
 
 SWEP.TTTCompat = {"weapon_zm_mac10"}
 
 SWEP.Primary.Damage        = 15
-SWEP.Primary.Delay         = 0.06
-SWEP.Primary.Recoil        = 0.7
+SWEP.Primary.Delay         = 0.065
+SWEP.Primary.Recoil        = 1.2
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "smg1"
 SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_mac10.Single"
 
-SWEP.HeadshotMultiplier    = 1.13
+SWEP.HeadshotMultiplier    = 1.2
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
