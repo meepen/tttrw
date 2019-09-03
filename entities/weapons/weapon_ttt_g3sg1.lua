@@ -34,7 +34,6 @@ SWEP.Primary.Automatic     = false
 SWEP.Primary.Ammo          = "357"
 SWEP.Primary.ClipSize      = 15 --15
 SWEP.Primary.DefaultClip   = 45 --45
-SWEP.Primary.MaxClip	   = 15
 SWEP.Primary.Sound         = Sound "Weapon_G3SG1.Single"
 SWEP.Secondary.Sound       = Sound "Default.Zoom"
 SWEP.HasScope              = true

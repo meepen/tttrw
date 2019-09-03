@@ -36,7 +36,6 @@ SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "357"
 SWEP.Primary.ClipSize      = 7
 SWEP.Primary.DefaultClip   = 21
-SWEP.Primary.MaxClip       = 28
 SWEP.Primary.Sound         = Sound "Weapon_Scout.Single"
 
 SWEP.Secondary.Sound       = Sound "Default.Zoom"

@@ -33,7 +33,6 @@ SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.ClipSize      = 12
 SWEP.Primary.DefaultClip   = 24
-SWEP.Primary.MaxClip       = 12
 SWEP.Primary.Sound         = Sound "Weapon_P228.Single"
 
 SWEP.HeadshotMultiplier    = 1.43
