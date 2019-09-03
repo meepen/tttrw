@@ -26,20 +26,20 @@ SWEP.Bullets = {
 }
 
 SWEP.Primary.Damage        = 15
-SWEP.Primary.Delay         = 0.087
-SWEP.Primary.Recoil        = 1.
+SWEP.Primary.Delay         = 0.08
+SWEP.Primary.Recoil        = 1.0
 SWEP.Primary.Automatic     = true
-SWEP.Primary.Ammo          = "Pistol"
+SWEP.Primary.Ammo          = "SMG1"
 SWEP.Primary.ClipSize      = 50 --50
 SWEP.Primary.DefaultClip   = 50 --50
-SWEP.Primary.MaxClip	   = 150
+SWEP.Primary.MaxClip	   = 50
 SWEP.Primary.Sound         = Sound "Weapon_P90.Single"
 
-SWEP.HeadshotMultiplier    = 1.20
+SWEP.HeadshotMultiplier    = 1.30
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
-SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
+SWEP.AmmoEnt               = "item_ammo_smg1_ttt"
 
 SWEP.ViewModel             = "models/weapons/cstrike/c_smg_p90.mdl"
 SWEP.WorldModel            = "models/weapons/w_smg_p90.mdl"

@@ -29,17 +29,17 @@ SWEP.Primary.Damage        = 17
 SWEP.Primary.Delay         = 0.08
 SWEP.Primary.Recoil        = 1.5
 SWEP.Primary.Automatic     = true
-SWEP.Primary.Ammo          = "Pistol"
+SWEP.Primary.Ammo          = "SMG1"
 SWEP.Primary.ClipSize      = 30 --30
-SWEP.Primary.DefaultClip   = 30 --30
-SWEP.Primary.MaxClip	   = 90 --90
+SWEP.Primary.DefaultClip   = 30 --90
+SWEP.Primary.MaxClip	   = 30 --30
 SWEP.Primary.Sound         = Sound "Weapon_MP5Navy.Single"
 
 SWEP.HeadshotMultiplier    = 1.25
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
-SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
+SWEP.AmmoEnt               = "item_ammo_smg1_ttt"
 
 SWEP.ViewModel             = "models/weapons/cstrike/c_smg_mp5.mdl"
 SWEP.WorldModel            = "models/weapons/w_smg_mp5.mdl"
