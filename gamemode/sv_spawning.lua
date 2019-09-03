@@ -13,8 +13,22 @@ function GM:PlayerLoadout(ply)
 	BaseClass.PlayerLoadout(self, ply)
 
 	ply:Give "weapon_ttt_crowbar"
-	ply:Give "weapon_ttt_p90"
-	ply:Give "weapon_ttt_deagle"
+
+	local slots_needed = {
+		[1] = true,
+		[2] = true
+	}
+
+	for _, wep in RandomPairs(weapons.GetList()) do
+		if (wep.AutoSpawnable and slots_needed[wep.Slot]) then
+			ply:Give(wep.ClassName)
+			slots_needed[wep.Slot] = nil
+			continue
+		end
+		if (wep.InLoadout and (wep.InLoadout[ply:GetRole()] or wep.InLoadout[ply:GetRoleTeam()])) then
+			ply:Give(wep.ClassName)
+		end
+	end
 end
 
 function GM:PlayerDeathThink(ply)
