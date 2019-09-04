@@ -9,12 +9,12 @@ local ttt_body_normal = Color(51, 51, 52)
 surface.CreateFont("ttt_body_inspect_tab_font", {
 	font = 'Lato',
 	size = ScrH() / 80,
-	weight = 200
+	weight = 400
 })
 
 surface.CreateFont("ttt_body_inspect_header_font", {
 	font = 'Lato',
-	size = ScrH() / 90,
+	size = ScrH() / 80,
 	weight = 200
 })
 

@@ -62,6 +62,8 @@ AddCSLuaFile();
 		"materials/tttrw/transparentevil.png",
 		"materials/tttrw/agree.png",
 		"materials/tttrw/disagree.png",
+		"materials/tttrw/roles/innocent.png",
+		"materials/tttrw/roles/detective.png",
 	},
 	Load = function(self)
 		for _, file in ipairs(self.Shared) do

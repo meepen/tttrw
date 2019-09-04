@@ -89,18 +89,6 @@ function GM:StartCommand(ply, cmd)
 	player_manager.RunClass(ply, "StartCommand", cmd)
 end
 
-function GM:UpdateAnimation(ply, ...)
-	local v = Angle(30, 30)
-	v:RotateAroundAxis(Vector(1), CurTime() % 1 * 360)
-	ply:SetPoseParameter("head_yaw", v.y)
-	ply:SetPoseParameter("head_pitch", v.p)
-	if (CLIENT) then
-		ply:InvalidateBoneCache()
-	end
-
-	BaseClass.UpdateAnimation(self, ply, ...)
-end
-
 function GM:ScalePlayerDamage(ply, hitgroup, dmg)
 	local wep = dmg:GetInflictor()
 	if (IsValid(wep) and wep.ScaleDamage) then
