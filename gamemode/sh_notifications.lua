@@ -28,11 +28,12 @@ else
 
 	local lifetime = 8
 	function ttt.Notifications.Add(msg)
+		print(msg)
 		local notif = {}
 		notif.msg = msg
-		notif.birth = SysTime()
+		notif.birth = RealTime()
 		notif.lifetime = lifetime
-		notif.death = SysTime() + lifetime
+		notif.death = RealTime() + lifetime
 		
 		table.insert(ttt.Notifications.NotificationList, notif)
 	end
@@ -48,7 +49,7 @@ else
 		for i = #ttt.Notifications.NotificationList, 1, -1 do
 			local notif = ttt.Notifications.NotificationList[i]
 
-			if (notif.death <= SysTime()) then
+			if (notif.death <= RealTime()) then
 				table.insert(to_remove, i)
 			end
 		end
@@ -57,7 +58,7 @@ else
 			local y = ScrH() * 0.01 + pad * k
 
 
-			local frac = (SysTime() - notif.birth) / notif.lifetime
+			local frac = (RealTime() - notif.birth) / notif.lifetime
 			local alpha = 1
 			if (frac > 0.75) then
 				alpha = 1 - (frac - 0.75) * 4

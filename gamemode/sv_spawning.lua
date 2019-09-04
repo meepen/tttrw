@@ -25,9 +25,6 @@ function GM:PlayerLoadout(ply)
 			slots_needed[wep.Slot] = nil
 			continue
 		end
-		if (wep.InLoadout and (wep.InLoadout[ply:GetRole()] or wep.InLoadout[ply:GetRoleTeam()])) then
-			ply:Give(wep.ClassName)
-		end
 	end
 end
 

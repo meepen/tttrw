@@ -223,11 +223,20 @@ function GM:OnPlayerRoleChange(ply, old, new)
 	ttt.CheckTeamWin()
 end
 
+function GM:ProvideRoleGuns(ply)
+	for _, wep in pairs(weapons.GetList()) do
+		if (wep.InLoadout and (wep.InLoadout[ply:GetRole()] or wep.InLoadout[ply:GetRoleTeam()])) then
+			ply:Give(wep.ClassName)
+		end
+	end
+end
+
 function GM:TTTRoundStart()
 	for _, info in pairs(round.GetActivePlayers()) do
 		if (IsValid(info.Player)) then
 			info.Player:ChatPrint("Your role is "..info.Role.Name.." on team "..info.Role.Team.Name)
 			info.Player:SetRole(info.Role.Name)
+			self:ProvideRoleGuns(info.Player)
 			info.Player:SetTeam(TEAM_TERROR)
 
 			if (info.Role.ModifyTickets) then

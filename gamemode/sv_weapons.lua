@@ -40,6 +40,10 @@ function GM:DropCurrentWeapon(ply)
 		return
 	end
 
+	if (wep.PreDrop) then
+		wep:PreDrop()
+	end
+
 	ply:DropWeapon(wep)
 	local ang = wep:GetAngles()
 	ang:RotateAroundAxis(Vector(0, 0, 1), 90)

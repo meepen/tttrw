@@ -26,6 +26,7 @@ AddCSLuaFile();
 		"vgui/ttt_body_inspect.lua",
 		"vgui/ttt_scoreboard.lua",
 		"vgui/ttt_weapon_select.lua",
+		"vgui/ttt_dna_menu.lua",
 		"cl_hud.lua",
 		"cl_scoreboard.lua",
 		"cl_hitmarkers.lua",
@@ -50,6 +51,7 @@ AddCSLuaFile();
 		"sh_util.lua",
 		"sh_body.lua",
 		"sh_notifications.lua",
+		"sh_radio.lua",
 		-- "sh_dev.lua",
 	},
 	Resources = {

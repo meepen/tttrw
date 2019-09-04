@@ -64,14 +64,12 @@ function GM:HUDDrawTargetID()
 		if (not IsValid(state)) then
 			text = "Unidentified Body"
 		else
-			local own = ent.HiddenState:GetOwner()
-			if (IsValid(own)) then
-				color = own:GetRoleData().Color
-				if (ent.HiddenState:GetIdentified()) then
-					text = own:Nick() .. "'s Identified Body"
-				else
-					text = own:Nick() .. "'s Unidentified Body"
-				end
+			local own = ent.HiddenState
+			color = ttt.roles[ent.HiddenState:GetRole()].Color
+			if (ent.HiddenState:GetIdentified()) then
+				text = own:GetNick() .. "'s Identified Body"
+			else
+				text = own:GetNick() .. "'s Unidentified Body"
 			end
 		end
 	else

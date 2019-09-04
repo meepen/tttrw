@@ -106,7 +106,7 @@ function PANEL:Think()
 	local ply = self.Player
 	if (IsValid(ply)) then
 		local group = "Terrorists"
-		
+
 		if (ply:Team() == TEAM_CONNECTING) then
 			group = "Connecting"
 		elseif (ply:Team() == TEAM_SPECTATOR) then

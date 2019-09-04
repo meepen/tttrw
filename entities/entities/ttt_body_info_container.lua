@@ -6,10 +6,9 @@ DEFINE_BASECLASS(ENT.Base)
 
 function ENT:Initialize()
     BaseClass.Initialize(self)
-    self:GetParent().HiddenState = self
-    self:GetOwner().DeadState = self
     if (SERVER) then
-        self:SetOwner(self.Information.Victim)
+        self:SetNick(self.Information.Victim:Nick())
+        self:SetRole(self.Information.Victim:GetRole())
         self.VisibleList = {}
         local variables = {}
         hook.Run("InitializeBodyData", variables, self.Information)
@@ -24,6 +23,8 @@ function ENT:Initialize()
             e:Spawn()
         end
     end
+    self:GetRagdoll().HiddenState = self
+    self:GetPlayer().DeadState = self
     hook.Run("BodyDataInitialized", self)
 end
 
@@ -37,6 +38,17 @@ end
 
 function ENT:SetupDataTables()
     self:NetworkVar("Bool", 0, "Identified")
+    self:NetworkVar("Entity", 0, "Ragdoll")
+    self:NetworkVar("String", 0, "Nick")
+    self:NetworkVar("String", 1, "Role")
+end
+
+function ENT:GetPlayer()
+    return self:GetOwner()
+end
+
+function ENT:SetPlayer(e)
+    self:SetOwner(e)
 end
 
 function ENT:GetData()

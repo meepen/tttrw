@@ -65,26 +65,36 @@ function ttt.CreatePlayerRagdoll(ply, atk, dmg)
 		DamageInfo = dmg
 	}
 
-	rag.HiddenState:SetParent(rag)
-	rag.HiddenState:SetOwner(ply)
+	rag.HiddenState:SetRagdoll(rag)
+	rag.HiddenState:SetPlayer(ply)
 	rag.HiddenState:Spawn()
+
+	hook.Run("PlayerRagdollCreated", ply, rag, atk, dmg)
+end
+
+function GM:TTTActivePlayerDisconnected(ply)
+	ttt.CreatePlayerRagdoll(ply)
 end
 
 function GM:InitializeBodyData(variables, Information)
-	local wep = Information.DamageInfo:GetInflictor()
-
 	table.insert(variables, {
 		Title = Information.Victim:GetRole() .. (Information.Victim:GetRoleData().Evil and "!" or ""),
 		Icon = Information.Victim:GetRoleData().DeathIcon or "materials/tttrw/xbutton128.png",
 		Description = "This person was a " .. Information.Victim:GetRole()
 	})
 
-	table.insert(variables, {
-		Title = "Weapon",
-		Icon = "materials/tttrw/disagree.png",
-		Description = "This person appears to have died from a " .. (wep.PrintName or wep:GetClass())
-	})
+	if (not Information.DamageInfo) then
+		return
+	end
 
+	local wep = Information.DamageInfo:GetInflictor()
+	if (IsValid(wep)) then
+		table.insert(variables, {
+			Title = "Weapon",
+			Icon = "materials/tttrw/disagree.png",
+			Description = "This person appears to have died from a " .. (wep.PrintName or wep:GetClass())
+		})
+	end
 
 	local hitgroup = Information.Victim:LastHitGroup()
 

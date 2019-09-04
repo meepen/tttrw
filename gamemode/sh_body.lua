@@ -39,7 +39,7 @@ function GM:PlayerInspectBody(ply, ent, pos)
 			ent.HiddenState:SetIdentified(true)
 
 			for _, oply in pairs(player.GetAll()) do
-				oply:Notify(ply:Nick() .. " has confirmed " .. ent.HiddenState:GetOwner():Nick() .. "'s death")
+				oply:Notify(ply:Nick() .. " has confirmed " .. ent.HiddenState:GetNick() .. "'s death")
 			end
 		end
 	end

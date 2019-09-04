@@ -21,6 +21,10 @@ function GM:DropCurrentWeapon(ply)
         return
     end
 
+	if (wep.PreDrop) then
+		wep:PreDrop()
+    end
+
     local curwep = wep:GetSlot()
 
     for _, wep in pairs(ply:GetWeapons()) do

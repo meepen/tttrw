@@ -35,8 +35,13 @@ function ENT:Initialize()
     hook.Run("PlayerHit", self:GetOwner(), self:GetDamage(), self:GetDamageType(), self:GetHitGroup())
 end
 
+local good_observers = {
+    [OBS_MODE_IN_EYE] = true,
+    [OBS_MODE_CHASE] = true
+}
+
 function ENT:IsVisibleTo(ply)
-    return ply == self:GetOwner()
+    return ply == self:GetOwner() or good_observers[ply:GetObserverMode()] and ply:GetObserverTarget() == self:GetOwner()
 end
 
 if (SERVER) then

@@ -1,29 +1,28 @@
-local bg_color = CreateMaterial("ttt_body_inspect_color" .. math.random(0, 0x8000), "UnlitGeneric", {
+local bg_color = CreateMaterial("ttt_dna_menu_color" .. math.random(0, 0x8000), "UnlitGeneric", {
 	["$basetexture"] = "color/white",
 	["$color"] = "{ 13 12 13 }",
 	["$alpha"] = 0.92
 })
 
 local ttt_body_normal = Color(51, 51, 52)
-
-surface.CreateFont("ttt_body_inspect_tab_font", {
+surface.CreateFont("ttt_dna_menu_tab_font", {
 	font = 'Lato',
 	size = ScrH() / 80,
 	weight = 200
 })
 
-surface.CreateFont("ttt_body_inspect_header_font", {
+surface.CreateFont("ttt_dna_menu_header_font", {
 	font = 'Lato',
 	size = ScrH() / 90,
 	weight = 200
 })
 
-local Padding = math.Round(ScrH() * 0.015)
+local Padding = 20
 
 local PANEL = {}
 
 function PANEL:Init()
-    self.Inner = self:Add "ttt_body_inspect_body_inner"
+    self.Inner = self:Add "ttt_dna_menu_body_inner"
     self.Inner:Dock(FILL)
     self:SetCurve(5)
     self:SetColor(ttt_body_normal)
@@ -31,25 +30,11 @@ function PANEL:Init()
     self:SetCurveTopLeft(false)
 end
 
-vgui.Register("ttt_body_inspect_body", PANEL, "ttt_curved_panel")
+vgui.Register("ttt_dna_menu_body", PANEL, "ttt_curved_panel")
 
 local PANEL = {}
 
 DEFINE_BASECLASS "ttt_curved_panel"
-
-local function OnBodyInitialize(self, cb)
-    if (not IsValid(ttt.InspectBody.HiddenState)) then
-        hook.Add("BodyDataInitialized", self, function(self, e)
-            timer.Simple(0, function()
-                if (IsValid(self)) then
-                    cb(self, e)
-                end
-            end)
-        end)
-    else
-        cb(self, ttt.InspectBody.HiddenState)
-    end
-end
 
 function PANEL:Init()
     self:SetCurve(5)
@@ -59,28 +44,36 @@ function PANEL:Init()
 
     self:DockPadding(Padding, Padding, Padding, Padding)
 
-    self.Header = self:Add "ttt_body_inspect_header"
-    self.Header:SetText "LOADING!!!!"
+    self.Header = self:Add "ttt_dna_menu_header"
+    self.Header:SetText "List of DNA Samples"
     self.Header:DockPadding(0, 0, 0, Padding)
     self.Header:Dock(TOP)
     self.Header:SetZPos(0)
 
-    self.CurrentElement = self:Add "ttt_body_inspect_current"
+    self.CurrentElement = self:Add "ttt_dna_menu_current"
     self.CurrentElement:Dock(TOP)
     self.CurrentElement:SetZPos(2)
 
     self.Button = self:Add "ttt_curved_button"
-    self.Button:SetFont "ttt_body_inspect_header_font"
-    self.Button:SetText "Confirm Death"
+    self.Button:SetFont "ttt_dna_menu_header_font"
+    self.Button:SetText "Start Scan"
     self.Button:SetCurve(4)
     self.Button:Dock(LEFT)
     self.Button:SetColor(Color(87, 90, 90))
     self.Button:SetTextColor(Color(177, 177, 177))
     self.Button:SetZPos(3)
-    self.Button:DockMargin(Padding, Padding, Padding, 0)
+	self.Button:DockMargin(Padding, Padding, Padding, 0)
+	self.Button.DoClick = function()
+		if (not IsValid(self.Variable)) then
+			return
+		end
+		net.Start "weapon_ttt_dna"
+			net.WriteEntity(self.Variable)
+		net.SendToServer()
+	end
 
     -- has to be last lol
-    self.Icons = self:Add "ttt_body_inspect_icon_list"
+    self.Icons = self:Add "ttt_dna_menu_icon_list"
     self.Icons:Dock(TOP)
     self.Icons:SetZPos(1)
 
@@ -105,13 +98,12 @@ function PANEL:PerformLayout(w, h)
     self:ResizeChildrenProperly()
 end
 
-function PANEL:Select(var)
-    self.Header:SetText(var.Title)
-
-    self.CurrentElement:SetVariable(var)
+function PANEL:Select(ent)
+	self.CurrentElement:SetVariable(ent)
+	self.Variable = ent
 end
 
-vgui.Register("ttt_body_inspect_body_inner", PANEL, "ttt_curved_panel")
+vgui.Register("ttt_dna_menu_body_inner", PANEL, "ttt_curved_panel")
 
 local PANEL = {}
 
@@ -120,29 +112,34 @@ function PANEL:Init()
 
     local Padding = Padding / 2
 
-    self:DockMargin(0, Padding, Padding, Padding)
+	self:DockMargin(0, Padding, Padding, Padding)
 
-    OnBodyInitialize(self, self.BodyDataInitialized)
-end
+	local first
 
-function PANEL:BodyDataInitialized(ent)
-    if (ent:GetRagdoll() ~= ttt.InspectBody) then
-        return
-    end
+	for i, ent in ipairs(LocalPlayer():GetWeapon "weapon_ttt_dna":GetChildren()) do
+		if (ent:GetClass() ~= "ttt_dna_info") then
+			continue
+		end
 
-    for i, var in ipairs(ent:GetData()) do
+		first = ent
+
         self.Buttons[i] = self:Add "DImageButton"
-        self.Buttons[i]:SetImage(var.Icon)
+        self.Buttons[i]:SetImage(ent:GetImagePath())
         self.Buttons[i]:Dock(LEFT)
         self.Buttons[i]:SetZPos(i)
         self.Buttons[i].DoClick = function()
-            self:GetParent():Select(var)
+            self:GetParent():Select(ent)
         end
-    end
+	end
 
-    self:GetParent():Select(ent:GetData()[1])
+	local active = LocalPlayer():GetActiveWeapon():GetCurrentDNA()
+	
+	local chosen = IsValid(active) and active or first
+
+	if (IsValid(chosen)) then
+		self:GetParent():Select(chosen)
+	end
 end
-
 
 function PANEL:PerformLayout(w, h)
     for _, pnl in pairs(self:GetChildren()) do
@@ -151,7 +148,7 @@ function PANEL:PerformLayout(w, h)
     end
 end
 
-vgui.Register("ttt_body_inspect_icon_list", PANEL, "EditablePanel")
+vgui.Register("ttt_dna_menu_icon_list", PANEL, "EditablePanel")
 
 local PANEL = {}
 
@@ -172,15 +169,15 @@ function PANEL:Init()
     self.Icon:DockMargin(0, 0, Padding, 0)
 
     self.Text = self:Add "DLabel"
-    self.Text:SetFont "ttt_body_inspect_header_font"
+    self.Text:SetFont "ttt_dna_menu_header_font"
     self.Text:Dock(FILL)
     self.Text:SetZPos(1)
-    self.Text:SetText "LOADING!!"
+    self.Text:SetText "None selected"
 end
 
-function PANEL:SetVariable(var)
-    self.Icon:SetImage(var.Icon)
-    self.Text:SetText(var.Description)
+function PANEL:SetVariable(ent)
+    self.Icon:SetImage(ent:GetImagePath())
+    self.Text:SetText(ent:GetDescription())
 end
 
 function PANEL:PerformLayout(w, h)
@@ -189,7 +186,7 @@ function PANEL:PerformLayout(w, h)
     self.Icon:SetSize(h - Padding, h - Padding)
 end
 
-vgui.Register("ttt_body_inspect_current", PANEL, "ttt_curved_panel")
+vgui.Register("ttt_dna_menu_current", PANEL, "ttt_curved_panel")
 
 local PANEL = {}
 
@@ -198,7 +195,7 @@ function PANEL:Init()
 end
 
 function PANEL:AddTab(text)
-    local pnl = self:Add "ttt_body_inspect_tab"
+    local pnl = self:Add "ttt_dna_menu_tab"
     pnl:SetZPos(0x7fff - #self.Tabs)
     pnl:Dock(LEFT)
     pnl:SetText(text)
@@ -208,7 +205,7 @@ function PANEL:AddTab(text)
     return pnl
 end
 
-vgui.Register("ttt_body_inspect_tab_holder", PANEL, "EditablePanel")
+vgui.Register("ttt_dna_menu_tab_holder", PANEL, "EditablePanel")
 
 local PANEL = {}
 
@@ -217,7 +214,7 @@ DEFINE_BASECLASS "ttt_curved_panel"
 function PANEL:Init()
     self.Text = self:Add "DLabel"
     self:SetText "a"
-    self:SetFont "ttt_body_inspect_header_font"
+    self:SetFont "ttt_dna_menu_header_font"
     self:SetCurve(3)
     self:SetColor(ttt_body_normal)
 end
@@ -239,7 +236,7 @@ function PANEL:SetText(t)
     self.Text:SetPos(Padding / 2, self:GetTall() / 2 - self.Text:GetTall() / 2)
 end
 
-vgui.Register("ttt_body_inspect_header", PANEL, "ttt_curved_panel")
+vgui.Register("ttt_dna_menu_header", PANEL, "ttt_curved_panel")
 
 
 local PANEL = {}
@@ -248,7 +245,7 @@ DEFINE_BASECLASS "ttt_curved_panel"
 
 function PANEL:Init()
     self.Text = self:Add "DLabel"
-    self.Text:SetFont "ttt_body_inspect_tab_font"
+    self.Text:SetFont "ttt_dna_menu_tab_font"
     self:SetText "a"
     self:SetCurve(5)
     self:SetColor(ttt_body_normal)
@@ -270,7 +267,7 @@ function PANEL:SetText(t)
     self.Text:SetPos(self:GetWide() / 2 - self.Text:GetWide() / 2, self:GetTall() - self.Text:GetTall())
 end
 
-vgui.Register("ttt_body_inspect_tab", PANEL, "ttt_curved_panel")
+vgui.Register("ttt_dna_menu_tab", PANEL, "ttt_curved_panel")
 
 local PANEL = {}
 
@@ -280,26 +277,19 @@ function PANEL:Init()
     self.Close:SetZPos(1)
     self.Close:SetColor(Color(37, 173, 125))
 
-    self.Inner = self:Add "ttt_body_inspect_body"
+    self.Inner = self:Add "ttt_dna_menu_body"
     self.Inner:Dock(FILL)
-    self.Tabs = self:Add "ttt_body_inspect_tab_holder"
+    self.Tabs = self:Add "ttt_dna_menu_tab_holder"
     self.Tabs:SetHeight(Padding)
     self.Tabs:Dock(TOP)
     self.Tabs:SetTall(ScrH() * 0.02)
-    self.MainTab = self.Tabs:AddTab "Body Search Results"
+    self.MainTab = self.Tabs:AddTab "DNA List"
     self:DockPadding(Padding, Padding, Padding, Padding)
 
     self:SetColor(Color(13, 12, 13, 240))
-    self:SetCurve(3)
+    self:SetCurve(10)
 
     hook.Add("KeyPress", self, self.KeyPress)
-
-    
-    OnBodyInitialize(self, self.BodyDataInitialized)
-end
-
-function PANEL:BodyDataInitialized(ent)
-    self.MainTab:SetText(ent:GetNick() .. "'s body")
 end
 
 local Free = {
@@ -312,12 +302,6 @@ function PANEL:KeyPress(ply, key)
                 self:Remove()
             end
         end)
-    end
-end
-
-function PANEL:Think()
-    if (not IsValid(self.Body) or LocalPlayer():GetPos():Distance(self.Position) > self.MaxDistance) then
-        self:Remove()
     end
 end
 
@@ -334,4 +318,4 @@ function PANEL:SetBody(body)
     self.Body = body
 end
 
-vgui.Register("ttt_body_inspect", PANEL, "ttt_curved_panel")
+vgui.Register("ttt_dna_menu", PANEL, "ttt_curved_panel")

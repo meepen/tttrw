@@ -37,3 +37,24 @@ function GM:EntityKeyValue(ent, key, value)
 		return value / 66 / engine.TickInterval() * tttrw_door_speedup:GetFloat()
 	end
 end
+
+function GM:CreateDNAData(owner)
+	local e = ents.Create "ttt_dna_info"
+	e:SetDNAOwner(owner)
+
+	return e
+end
+
+local ttt_dna_max_time = CreateConVar("ttt_dna_max_time", "120", FCVAR_REPLICATED)
+local ttt_dna_max_distance = CreateConVar("ttt_dna_max_distance", "830", FCVAR_REPLICATED)
+
+function GM:PlayerRagdollCreated(ply, rag, atk)
+	if (not IsValid(atk) or atk == ply) then
+		return
+	end
+
+	local e = self:CreateDNAData(atk)
+	e:SetExpireTime(CurTime() + Lerp(math.Clamp(atk:GetPos():Distance(ply:GetPos()) / ttt_dna_max_distance:GetFloat(), 0, 1), ttt_dna_max_time:GetFloat(), 0))
+	e:SetParent(rag)
+	e:Spawn()
+end

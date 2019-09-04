@@ -182,7 +182,7 @@ function GM:TTTPrepareRoles(Team, Role)
 			return tickets - 1
 		end)
 	Role("Traitor", "traitor"):SetCalculateAmountFunction(function(total_players)
-		return math.min(ttt_traitor_max:GetInt(), math.ceil(total_players * ttt_traitor_pct:GetFloat()))
+		return math.floor(math.Clamp(total_players * ttt_traitor_pct:GetFloat(), 1, ttt_traitor_max:GetInt()))
 	end)
 end
 

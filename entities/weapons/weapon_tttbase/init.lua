@@ -10,7 +10,19 @@ function SWEP:Equip()
 end
 
 function SWEP:OnDrop()
-    self.Primary.DefaultClip = 0
+	self.Primary.DefaultClip = 0
+end
+
+function SWEP:PreDrop()
+	for _, ent in pairs(self:GetChildren()) do
+		if (ent:GetClass() == "ttt_dna_info" and ent:GetDNAOwner() == self:GetOwner()) then
+			return
+		end
+	end
+
+	local dna = gmod.GetGamemode():CreateDNAData(self:GetOwner())
+	dna:SetParent(self)
+	dna:Spawn()
 end
 
 local biggify_hitbox = 1.5

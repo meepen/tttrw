@@ -196,7 +196,6 @@ function PANEL:Init()
 
 	function self.Button:DoClick()
 		RunConsoleCommand("ttt_buy_equipment", self.Equipment.ClassName)
-		print("ttt_buy_equipment", self.Equipment.ClassName)
 	end
 
 	self:SetMouseInputEnabled(true)

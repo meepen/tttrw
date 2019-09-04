@@ -8,7 +8,6 @@ ENT.Contact = "meepdarknessmeep@gmail.com"
 
 function ENT:NetworkVarNotifyCallback(name, old, new)
 	if (not IsValid(self)) then
-		-- ???
 		return
 	end
 	local parent = self:GetParent()
@@ -85,7 +84,6 @@ function ENT:Initialize()
 		hook.Add("OnRoundStateChange", self, self.OnRoundStateChange)
 		self:AddEFlags(EFL_FORCE_CHECK_TRANSMIT)
 	end
-
 
 	self:GetParent().HiddenState = self
 end
