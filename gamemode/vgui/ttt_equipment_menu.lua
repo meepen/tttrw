@@ -96,6 +96,8 @@ function PANEL:OnPlayerRoleChange(ply, old, new)
 		child:Remove()
 	end
 
+	local first = true
+
 	for classname, ent in pairs(ttt.Equipment.List) do
 		if (not LocalPlayer():CanReceiveEquipment(ent.ClassName)) then
 			continue
@@ -104,7 +106,18 @@ function PANEL:OnPlayerRoleChange(ply, old, new)
 		btn:SetImage "tttrw/disagree.png"
 		btn:SetSize(64, 64)
 		btn:SetEquipment(ent)
+		if (first) then
+			timer.Simple(0, function()
+				if (not IsValid(ttt.equipment_menu)) then
+					return
+				end
+				ttt.equipment_menu:SetEquipment(ent)
+			end)
+			first = false
+		end
 	end
+
+	self:InvalidateLayout()
 end
 
 vgui.Register("ttt_equipment_list_scroll", PANEL, "DScrollPanel")
