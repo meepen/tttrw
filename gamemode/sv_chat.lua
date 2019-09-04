@@ -1,27 +1,19 @@
 util.AddNetworkString "ttt_player_target"
 
 net.Receive("ttt_player_target", function(len, cl)
-    cl.Target = net.ReadEntity()
+    cl:SetTarget(net.ReadEntity())
     if (not IsValid(cl.Target) or not cl.Target:IsPlayer()) then
-        cl.Target = nil
+        cl:SetTarget(nil)
     end
     timer.Create("EliminateTargetFor" .. cl:UserID(), 3, 1, function()
         if (IsValid(cl)) then
-            cl.Target = nil
+            cl:SetTarget(nil)
         end
     end)
 end)
 
 function GM:PlayerSay(ply, text, team)
-    local replacements = {}
-
-    if (IsValid(ply.Target)) then
-        replacements["{target}"] = ply.Target:Nick()
-    else
-        replacements["{target}"] = "nobody"
-    end
-
-    return text:gsub("{.+}", replacements)
+    return hook.Run("FormatPlayerText", ply, text)
 end
 
 function GM:PlayerCanSeePlayersChat(text, team, listener, speaker)

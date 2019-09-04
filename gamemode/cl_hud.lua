@@ -56,6 +56,10 @@ function GM:HUDDrawTargetID()
 			net.Start "ttt_player_target"
 				net.WriteEntity(ent)
 			net.SendToServer()
+			LocalPlayer():SetTarget(ent)
+			timer.Create("EliminateTarget", 3, 1, function()
+				LocalPlayer():SetTarget(nil)
+			end)
 		end
 
 		text = ent:Nick()

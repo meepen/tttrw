@@ -161,7 +161,7 @@ local function Role(name, team)
 end
 
 function GM:TTTPrepareRoles(Team, Role)
-	Team "innocent":SetColor(Color(20, 240, 20)) :SetGood()
+	Team "innocent":SetColor(20, 240, 20) :SetGood()
 	Team "traitor":SeenBy {"traitor"}:SetColor(Color(240, 20, 20)):TeamChatSeenBy "traitor"
 		:SetVoiceChannel "traitor" :SetEvil() :SetCanUseBuyMenu(true) :SetDeathIcon "materials/tttrw/tbutton.png"
 		:SetModifyTicketsFunc(function(tickets)

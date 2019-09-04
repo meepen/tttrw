@@ -39,6 +39,8 @@ function PANEL:Init()
 	hook.Add("OnPlayerRoleChange", self, self.OnPlayerRoleChange)
 	self:SetCurve(4)
 	self:SetColor(Color(0xb, 0xc, 0xb, 200))
+	self:SetCurveTopRight(false)
+	self:SetCurveBottomRight(false)
 
 	self:DockMargin(0, 0, 0, 4)
 
@@ -87,7 +89,6 @@ local PANEL = {}
 gameevent.Listen "player_spawn"
 gameevent.Listen "entity_killed"
 function PANEL:Init()
-	hook.Add("PlayerBindPress", self, self.PlayerBindPress)
 	hook.Add("PlayerSwitchWeapon", self, self.PlayerSwitchWeapon)
 
 	self:SetWide(ScrW() / 6)
@@ -107,66 +108,6 @@ function PANEL:PlayerSwitchWeapon(ply, old, new)
 			self.OrderedPanels[k]:SetActive(true)
 			self.Active = self.OrderedPanels[k]
 		end
-	end
-end
-
-function PANEL:PlayerBindPress(ply, bind, pressed)
-	if (bind:match"^slot%d+$") then
-		local num = tonumber(bind:match"^slot(%d+)$") - 1
-		local ordered_weps = {}
-		for _, wep in pairs(LocalPlayer():GetWeapons()) do
-			if (wep:GetSlot() == num) then
-				table.insert(ordered_weps, wep)
-			end
-		end
-
-		if (#ordered_weps == 0) then
-			return true
-		end
-
-		table.sort(ordered_weps, function(a, b)
-			return a:GetSlotPos() < b:GetSlotPos()
-		end)
-
-		local index = 1
-		for ind, wep in pairs(ordered_weps) do
-			if (wep == LocalPlayer():GetActiveWeapon()) then
-				index = ind
-			end
-		end
-
-
-		input.SelectWeapon(ordered_weps[index % #ordered_weps + 1])
-		
-		return true
-	elseif (bind == "invprev" or bind == "invnext") then
-		local ordered_weps = LocalPlayer():GetWeapons()
-		table.sort(ordered_weps, function(a, b)
-			return a:GetSlot() < b:GetSlot()
-		end)
-
-		if (#ordered_weps == 0) then
-			return true
-		end
-
-		local index = 1
-
-		for ind, wep in pairs(ordered_weps) do
-			if (wep == LocalPlayer():GetActiveWeapon()) then
-				index = ind
-				break
-			end
-		end
-
-		if (bind == "invnext") then
-			index = index + 1
-		elseif (bind == "invprev") then
-			index = index - 1
-		end
-
-		input.SelectWeapon(ordered_weps[(index - 1) % #ordered_weps + 1])
-
-		return true
 	end
 end
 

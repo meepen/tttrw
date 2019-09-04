@@ -30,8 +30,6 @@ SWEP.WorldModel            = "models/props_lab/huladoll.mdl"
 SWEP.Base                  = "weapon_tttbase"
 DEFINE_BASECLASS "weapon_tttbase"
 
-local success = Sound "buttons/blip2.wav"
-
 function SWEP:CanPrimaryAttack()
 	if (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
 		return false
@@ -142,7 +140,9 @@ function SWEP:OnRemove()
 end
 
 function SWEP:Reload()
-	-- stop scan
+	if (SERVER) then
+		self:SetCurrentDNA(NULL)
+	end
 end
 
 function SWEP:OwnerChanged()

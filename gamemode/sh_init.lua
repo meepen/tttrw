@@ -11,7 +11,13 @@ IN_USE_ALT = IN_CANCEL
 ttt = ttt or GM or {}
 
 PLAYER = FindMetaTable "Player"
+AccessorFunc(PLAYER, "Target", "Target")
 ENTITY = FindMetaTable "Entity"
+
+function PLAYER:SetTarget(target)
+	self.Target = target
+	hook.Run("PlayerTargetChanged", self, target)
+end
 
 function printf(...)
 	print(string.format(...))
@@ -76,6 +82,10 @@ function GM:StartCommand(ply, cmd)
 		cmd:SetButtons(bit.bor(cmd:GetButtons(), IN_USE_ALT))
 	end
 
+	if (cmd:KeyDown(IN_ZOOM)) then
+		cmd:SetButtons(bit.bor(bit.band(bit.bnot(IN_ZOOM), cmd:GetButtons()), IN_GRENADE2))
+	end
+
 	player_manager.RunClass(ply, "StartCommand", cmd)
 end
 
@@ -99,6 +109,10 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmg)
 end
 
 function GM:KeyPress(ply, key)
+	if (key == IN_GRENADE2 and CLIENT) then
+		RunConsoleCommand "ttt_radio"
+	end
+
 	self:VoiceKey(ply, key)
 
 	if (key == IN_USE_ALT and self:TryInspectBody(ply)) then
@@ -115,4 +129,19 @@ end
 TEAM_TERROR = 1
 function GM:CreateTeams()
 	team.SetUp(TEAM_TERROR, "Terrorist", Color(46, 192, 94), false)
+end
+
+-- do this here so we can format stuff clientside to predict it ourselves
+function GM:FormatPlayerText(ply, text, team)
+    local replacements = {}
+
+    if (IsValid(ply.Target)) then
+        replacements["{target}"] = ply.Target:Nick()
+	else
+		-- https://steamcommunity.com/profiles/76561198015341647/
+		-- blame him
+        replacements["{target}"] = ("nobody"):gsub(".", function(a) return (math.random(1, 2) == 1 and string.lower or string.upper)(a) end)
+    end
+
+    return text:gsub("{.+}", replacements)
 end
