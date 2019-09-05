@@ -15,10 +15,11 @@ if (SERVER) then
 			return false
 		end
 
-		printf("[Equipment] giving %s %s.", self:Nick(), class)
 
-		self:SetCredits(self:GetCredits() - eq.Cost)
-		ttt.Equipment.List[class]:OnBuy(self)
+		if (ttt.Equipment.List[class]:OnBuy(self)) then
+			printf("[Equipment] gave %s %s.", self:Nick(), class)
+			self:SetCredits(self:GetCredits() - eq.Cost)
+		end
 	end
 
 	concommand.Add("weps", function(ply,cmd,arg)
@@ -77,7 +78,7 @@ function ttt.Equipment.Add(id, w)
 	if (w) then
 		e = weapons.Get(id)
 		function e.Equipment:OnBuy(ply)
-			ply:Give(self.ClassName)
+			return IsValid(ply:Give(self.ClassName))
 		end
 	else
 		e = scripted_ents.Get(id)
@@ -85,6 +86,8 @@ function ttt.Equipment.Add(id, w)
 			local eq = ents.Create(self.ClassName)
 			eq:SetParent(ply)
 			eq:Spawn()
+
+			return true
 		end
 	end
 	local t = e.Equipment
