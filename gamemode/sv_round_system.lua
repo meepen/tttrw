@@ -118,7 +118,7 @@ function round.RemovePlayer(ply)
 		if (ply == active.Player) then
 			table.remove(plys, i)
 			hook.Run("TTTPlayerRemoved", ply)
-			if (ttt_haste:GetBool()) then
+			if (ttt_haste:GetBool() and ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE) then
 				round.SetRoundEndTime(ttt.GetRealRoundEndTime() + ttt_haste_minutes_per_death:GetFloat() * 60)
 			end
 			return true
