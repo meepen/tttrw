@@ -18,7 +18,7 @@ SWEP.Bullets = {
 	DamageDropoffRange = 550,
 	DamageDropoffRangeMax = 3500,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(0.025, 0.025, 0),
+	Spread = Vector(0.025, 0.025),
 }
 
 SWEP.Primary.Damage        = 15
@@ -30,7 +30,7 @@ SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_GALIL.Single"
 
-SWEP.HeadshotMultiplier    = 1.25
+SWEP.HeadshotMultiplier    = 1.4
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
@@ -45,5 +45,5 @@ SWEP.Ironsights = {
 	TimeTo = 0.25,
 	TimeFrom = 0.15,
 	SlowDown = 0.3,
-	Zoom = .8,
+	Zoom = 0.8,
 }
