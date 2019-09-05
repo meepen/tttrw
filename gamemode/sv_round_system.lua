@@ -264,6 +264,7 @@ function GM:TTTRoundStart()
 			info.Player:SetRole(info.Role.Name)
 			self:ProvideRoleGuns(info.Player)
 			info.Player:SetTeam(TEAM_TERROR)
+			info.Player:SetConfirmed(false)
 
 			if (info.Role.ModifyTickets) then
 				info.Player.Tickets = info.Role.ModifyTickets(info.Player.Tickets)

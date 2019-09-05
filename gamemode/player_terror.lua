@@ -22,6 +22,8 @@ end
 function PLAYER:SetupDataTables()
 	local ply = self.Player
 
+	self.Player:NetworkVar("Bool", 0, "Confirmed")
+
 	-- TODO(meep): make hook here
 end
 

@@ -111,9 +111,9 @@ function PANEL:Think()
 			group = "Connecting"
 		elseif (ply:Team() == TEAM_SPECTATOR) then
 			group = "Spectators"
-		elseif (not ply:Alive() and IsValid(ply.DeadState)) then
-			group = ply.DeadState:GetIdentified() and "Dead" or "Unidentified"
-		elseif (not ply:Alive() and LocalPlayer():GetRoleData().Evil) then
+		elseif (not ply:Alive() and IsValid(ply.DeadState) and ply.DeadState:GetIdentified()) then
+			group = "Dead"
+		elseif (not ply:Alive() and (LocalPlayer():GetRoleData().Evil or ply:GetConfirmed())) then
 			group = "Unidentified"
 		end
 
