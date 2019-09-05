@@ -37,7 +37,7 @@ function GM:DropCurrentWeapon(ply)
 	local wep = ply:GetActiveWeapon()
 
 	if (not IsValid(wep) or not wep.AllowDrop) then
-		return
+		return false
 	end
 
 	if (wep.PreDrop) then
@@ -61,4 +61,6 @@ function GM:DropCurrentWeapon(ply)
 	wep.StoredAmmo = ply:GetAmmoCount(pri)
 
 	ply:SetAmmo(0, pri)
+
+	return true
 end

@@ -412,8 +412,11 @@ end
 function GM:DoPlayerDeath(ply, atk, dmg)
 	ttt.CreatePlayerRagdoll(ply, atk, dmg)
 
+	print(ply:Alive())
+
 	for _, wep in pairs(ply:GetWeapons()) do
-		ply:DropWeapon(wep, nil, VectorRand() * 10)
+		ply:SetActiveWeapon(wep)
+		self:DropCurrentWeapon(ply)
 	end
 end
 
