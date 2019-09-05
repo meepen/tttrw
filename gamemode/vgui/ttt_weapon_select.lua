@@ -26,7 +26,7 @@ function PANEL:Init()
 	self.Label:Dock(FILL)
 	self.Label:SetContentAlignment(5)
 	self.Label:SetFont "ttt_weapon_select_font_outline"
-	self:SetColor(Player():GetRoleData().Color)
+	self:SetColor(LocalPlayer():GetRoleData().Color)
 	self:SetCurve(4)
 	self:SetCurveBottomRight(false)
 	self:SetCurveTopRight(false)
