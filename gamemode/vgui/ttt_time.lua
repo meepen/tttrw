@@ -9,7 +9,6 @@ function PANEL:Init()
 	end)
 	
 	self:SetHTML [[
-<!-- TIME -->
 <head>
 	<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
 	<style>
@@ -125,7 +124,6 @@ function PANEL:UpdateState()
 		text = ttt.Enums.RoundState[state]
 	end
 
-	self.StartTime = CurTime()
 	self:CallSafe([[setState("%s", "rgb(%d, %d, %d)");]], text, color.r, color.g, color.b)
 end
 
@@ -152,11 +150,14 @@ end
 
 function PANEL:Tick()
 	if (not self.Ready) then return end
+
+	local ends = ttt.GetVisibleRoundEndTime()
+	local starts = ttt.GetRoundStateChangeTime()
 	
 	local pct = 1
-	local other_text = string.FormattedTime(math.max(0, ttt.GetRoundTime() - CurTime()), "%02i:%02i")
+	local other_text = string.FormattedTime(math.max(0, ends - CurTime()), "%i:%02i")
 	if (ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE) then
-		pct = math.Clamp(1 - ((CurTime() - self.StartTime) / (ttt.GetRoundTime() - self.StartTime)), 0, 1)
+		pct = math.Clamp(1 - ((CurTime() - starts) / (ends - starts)), 0, 1)
 	end
 
 	self:CallSafe([[setTime("%s", %f);]], other_text, pct)

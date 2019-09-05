@@ -63,7 +63,18 @@ hook.Add("TTTPrepareNetworkingVariables", "RoundState", function(vars)
 		Default = 3
 	})
 	table.insert(vars, {
-		Name = "RoundTime",
+		Name = "RoundStateChangeTime",
+		Type = "Float",
+		Default = 0
+	})
+	table.insert(vars, {
+		Name = "VisibleRoundEndTime",
+		Type = "Float",
+		Default = 0
+	})
+	-- TODO(meep): put this somewhere safer?
+	table.insert(vars, {
+		Name = "RealRoundEndTime",
 		Type = "Float",
 		Default = 0
 	})

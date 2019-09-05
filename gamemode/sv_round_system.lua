@@ -4,6 +4,10 @@ local ttt_minimum_players = CreateConVar("ttt_minimum_players", "2", FCVAR_NONE,
 local ttt_posttime_seconds = CreateConVar("ttt_posttime_seconds", "5", FCVAR_REPLICATED, "The wait time after a round has been completed.")
 local ttt_roundtime_minutes = CreateConVar("ttt_roundtime_minutes", "10", FCVAR_REPLICATED, "The maximum length of a round.")
 
+local ttt_haste = CreateConVar("ttt_haste", "1", FCVAR_REPLICATED, "Enables haste mode. Haste mode has a small initial time with additional time for each kill.")
+local ttt_haste_starting_minutes = CreateConVar("ttt_haste_starting_minutes", "5", FCVAR_REPLICATED, "The initial time limit before kill time is added.")
+local ttt_haste_minutes_per_death = CreateConVar("ttt_haste_minutes_per_death", "0.5", FCVAR_REPLICATED, "The time added in minutes per death in haste mode.")
+
 ttt.ActivePlayers = ttt.ActivePlayers or {}
 round = round or {
 	FirstRound = true,
@@ -20,9 +24,27 @@ round = round or {
 	CurrentePromise = nil
 }
 
+AccessorFunc(ttt, "RealRoundEndTime", "RoundEndTime")
+
+function round.SetRoundEndTime(time)
+	ttt.SetRealRoundEndTime(time)
+
+	if (timer.Exists "TTTRoundStatePromise") then
+		timer.Create("TTTRoundStatePromise", time - CurTime(), 1, function()
+			if (promise["then"]) then
+				promise["then"](state, time)
+			else
+				warn("no then found for roundstate %s\n", ttt.Enums.RoundState[state])
+			end
+		end)
+	end
+end
+
 function round.SetState(state, time)
 	ttt.SetRoundState(state)
-	ttt.SetRoundTime(CurTime() + time)
+	ttt.SetRoundStateChangeTime(CurTime())
+	ttt.SetVisibleRoundEndTime(CurTime() + time)
+	round.SetRoundEndTime(ttt.GetVisibleRoundEndTime())
 	local prom = round.CurrentPromise
 
 	if (prom) then
@@ -95,6 +117,9 @@ function round.RemovePlayer(ply)
 		if (ply == active.Player) then
 			table.remove(plys, i)
 			hook.Run("TTTPlayerRemoved", ply)
+			if (ttt_haste:GetBool()) then
+				round.SetRoundEndTime(ttt.GetVisibleRoundEndTime() + ttt_haste_minutes_per_death:GetFloat() * 60)
+			end
 			return true
 		end
 	end
@@ -182,7 +207,7 @@ function round.TryStart()
 	printf("Round state is %i, we have enough players at %i, starting game", ttt.GetRoundState(), #plys)
 	-- TODO(meep): setup variables
 
-	round.SetState(ttt.ROUNDSTATE_ACTIVE, ttt_roundtime_minutes:GetFloat() * 60):_then(function()
+	round.SetState(ttt.ROUNDSTATE_ACTIVE, (ttt_haste:GetBool() and ttt_haste_starting_minutes or ttt_roundtime_minutes):GetFloat() * 60):_then(function()
 		local winners = {}
 
 		for _, ply in pairs(round.GetStartingPlayers()) do
