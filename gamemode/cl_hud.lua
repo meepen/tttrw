@@ -47,20 +47,10 @@ function GM:HUDDrawTargetID()
 	local extra
 	local color = white_text
 
+	local target
+
 	if (ent:IsPlayer()) then
 		if (ent.HasDisguiser and ent:HasDisguiser()) then return end
-
-		if (LastTarget ~= ent or LastTime and LastTime < CurTime() - 1) then
-			LastTarget = ent
-			LastTime = CurTime()
-			net.Start "ttt_player_target"
-				net.WriteEntity(ent)
-			net.SendToServer()
-			LocalPlayer():SetTarget(ent)
-			timer.Create("EliminateTarget", 3, 1, function()
-				LocalPlayer():SetTarget(nil)
-			end)
-		end
 
 		text = ent:Nick()
 	elseif (ent:GetNW2Bool("IsPlayerBody", false)) then
@@ -78,6 +68,18 @@ function GM:HUDDrawTargetID()
 		end
 	else
 		return
+	end
+
+	if (LastTarget ~= ent or LastTime and LastTime < CurTime() - 1) then
+		LastTarget = ent
+		LastTime = CurTime()
+		net.Start "ttt_player_target"
+			net.WriteEntity(ent)
+		net.SendToServer()
+		LocalPlayer():SetTarget(ent)
+		timer.Create("EliminateTarget", 3, 1, function()
+			LocalPlayer():SetTarget(nil)
+		end)
 	end
 
 	surface.SetFont "TargetIDSmall"

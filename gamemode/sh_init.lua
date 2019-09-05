@@ -127,8 +127,15 @@ end
 function GM:FormatPlayerText(ply, text, team)
     local replacements = {}
 
-    if (IsValid(ply.Target)) then
-        replacements["{target}"] = ply.Target:Nick()
+	if (IsValid(ply.Target)) then
+		if (ply.Target:IsPlayer()) then
+			replacements["{target}"] = ply.Target:Nick()
+		elseif (IsValid(ply.Target.HiddenState) and ply.Target.HiddenState:GetIdentified()) then
+			replacements["{target}"] = ply.Target.HiddenState:GetNick() .. "'s body"
+		else
+			replacements["{target}"] = "an unidentified body"
+		end
+
 	else
 		-- https://steamcommunity.com/profiles/76561198015341647/
 		-- blame him
