@@ -262,6 +262,7 @@ function GM:TTTRoundStart()
 		if (IsValid(info.Player)) then
 			info.Player:ChatPrint("Your role is "..info.Role.Name.." on team "..info.Role.Team.Name)
 			info.Player:SetRole(info.Role.Name)
+			info.Player:SetCredits(info.Player:GetRoleData().DefaultCredits or 0)
 			self:ProvideRoleGuns(info.Player)
 			info.Player:SetTeam(TEAM_TERROR)
 			info.Player:SetConfirmed(false)

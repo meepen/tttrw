@@ -55,7 +55,19 @@ function PANEL:Init()
 	self.Text:SetTextColor(evil_color) -- TODO: font
 	self.Text:SetContentAlignment(5) -- Center
 	self.Text:SetFont "ttt_credit_font"
-	self.Text:SetText "You have 0 credits remaining"
+	self.Text:SetText("You have " .. LocalPlayer():GetCredits() .. " credits remaining")
+
+	hook.Add("OnPlayerCreditsChange", self, self.OnPlayerCreditsChange)
+end
+
+function PANEL:OnPlayerCreditsChange(ply, old, new)
+	if (LocalPlayer() ~= ply) then
+		return
+	end
+
+	self.Text:SetText("You have " .. new .. " credits remaining")
+	self.Text:SizeToContents()
+	self.Text:Center()
 end
 
 function PANEL:PerformLayout(w, h)
@@ -103,7 +115,6 @@ function PANEL:SetEquipment(eq)
 	s = s * (n2 * 0.1 + 0.9)
 	v = v * (n3 * 0.1 + 0.9)
 
-	print(h, s, v)
 	self:SetColor(ColorAlpha(HSVToColor(h, s, v), 100))
 end
 

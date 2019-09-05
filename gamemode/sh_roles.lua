@@ -24,6 +24,18 @@ function ttt.CanPlayerSeePlayersRole(looker, ply)
 	return false
 end
 
+local function AccessorFunc(self, name, fnname)
+	fnname = fnname or name
+	self["Get" .. fnname] = function(self)
+		return self[name]
+	end
+
+	self["Set" .. fnname] = function(self, v)
+		self[name] = v
+		return self
+	end
+end
+
 function TEAM:SetColor(col, g, b, a)
 	if (type(col) == "number") then
 		col = Color(col, g, b, a)
@@ -33,10 +45,6 @@ function TEAM:SetColor(col, g, b, a)
 	return self
 end
 
-function TEAM:SetModifyTicketsFunc(fn)
-	self.ModifyTickets = fn
-	return self
-end
 
 local SEEN_BY_ALL = {
 	__index = function() return true end,
@@ -81,30 +89,13 @@ function TEAM:TeamChatSeenBy(what)
 	return self
 end
 
-function TEAM:SetEvil()
-	self.Evil = true
-	return self
-end
-
-function TEAM:SetGood()
-	self.Good = true
-	return self
-end
-
-function TEAM:SetCanUseBuyMenu(b)
-	self.CanUseBuyMenu = b
-	return self
-end
-
-function TEAM:SetVoiceChannel(channel)
-	self.VoiceChannel = channel
-	return self
-end
-
-function TEAM:SetDeathIcon(icon)
-	self.DeathIcon = icon
-	return self
-end
+AccessorFunc(TEAM, "ModifyTickets", "ModifyTicketsFunc")
+AccessorFunc(TEAM, "Evil")
+AccessorFunc(TEAM, "CanUseBuyMenu")
+AccessorFunc(TEAM, "VoiceChannel")
+AccessorFunc(TEAM, "DeathIcon")
+AccessorFunc(TEAM, "DefaultCredits")
+AccessorFunc(TEAM, "CalculateAmount", "CalculateAmountFunc")
 
 setmetatable(SEEN_BY_ALL, SEEN_BY_ALL)
 
@@ -113,11 +104,6 @@ local ROLE = {
 	SeenBy = TEAM.CanBeSeenBy,
 	SeenByAll = TEAM.CanBeSeenByAll
 }
-
-function ROLE:SetCalculateAmountFunction(fn)
-	self.CalculateAmount = fn
-	return self
-end
 
 local TEAM_MT = {
 	__index = TEAM
@@ -162,9 +148,9 @@ local function Role(name, team)
 end
 
 function GM:TTTPrepareRoles(Team, Role)
-	Team "innocent":SetColor(56, 172, 87) :SetGood() :SetDeathIcon "materials/tttrw/roles/innocent.png"
+	Team "innocent":SetColor(56, 172, 87) :SetDeathIcon "materials/tttrw/roles/innocent.png"
 	Team "traitor":SeenBy {"traitor"}:SetColor(Color(240, 20, 20)):TeamChatSeenBy "traitor"
-		:SetVoiceChannel "traitor" :SetEvil() :SetCanUseBuyMenu(true) :SetDeathIcon "materials/tttrw/tbutton.png"
+		:SetVoiceChannel "traitor" :SetEvil(true) :SetCanUseBuyMenu(true) :SetDeathIcon "materials/tttrw/tbutton.png"
 		:SetModifyTicketsFunc(function(tickets)
 			return 1
 		end)
@@ -173,15 +159,15 @@ function GM:TTTPrepareRoles(Team, Role)
 	Role("Innocent", "innocent")
 	Role("Spectator", "spectator")
 	Role("Detective", "innocent"):SeenByAll()
-		:SetCalculateAmountFunction(function(total_players)
+		:SetCalculateAmountFunc(function(total_players)
 			return math.floor(math.Clamp(total_players * ttt_detective_pct:GetFloat(), 0, ttt_detective_max:GetInt()))
 		end):SetColor(56, 80, 210):TeamChatSeenBy "Detective" :SetVoiceChannel "Detective" :SetCanUseBuyMenu(true)
 		:SetModifyTicketsFunc(function(tickets)
 			return tickets - 1
-		end) :SetDeathIcon "materials/tttrw/roles/detective.png"
-	Role("Traitor", "traitor"):SetCalculateAmountFunction(function(total_players)
+		end) :SetDeathIcon "materials/tttrw/roles/detective.png" :SetDefaultCredits(2)
+	Role("Traitor", "traitor"):SetCalculateAmountFunc(function(total_players)
 		return math.floor(math.Clamp(total_players * ttt_traitor_pct:GetFloat(), 1, ttt_traitor_max:GetInt()))
-	end)
+	end):SetDefaultCredits(2)
 end
 
 function GM:SetupRoles()
@@ -214,6 +200,12 @@ hook.Add("TTTGetHiddenPlayerVariables", "Roles", function(vars)
 		Name = "Role",
 		Type = "String",
 		Default = "Spectator",
+		Enums = {}
+	})
+	table.insert(vars, {
+		Name = "Credits",
+		Type = "Int",
+		Default = 0,
 		Enums = {}
 	})
 end)
