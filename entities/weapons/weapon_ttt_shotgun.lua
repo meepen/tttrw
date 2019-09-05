@@ -32,7 +32,6 @@ SWEP.Primary.RecoilTiming  = 0.1
 SWEP.Primary.Recoil        = 7
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Buckshot"
-SWEP.Primary.NumShots 	   = 8
 SWEP.Primary.ClipSize      = 8 --8
 SWEP.Primary.DefaultClip   = 16 --16
 SWEP.Primary.MaxClip       = 8

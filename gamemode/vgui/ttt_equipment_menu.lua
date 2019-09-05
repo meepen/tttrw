@@ -98,7 +98,8 @@ function PANEL:SetEquipment(eq)
 	math.randomseed(sum(eq.ClassName))
 	local h, s, v = ColorToHSV(LocalPlayer():GetRoleData().Color)
 	local n1, n2, n3 = math.random(), math.random(), math.random()
-	h = h + (35 * n1) - 35 / 2
+	local degree_diff = 50
+	h = h + (degree_diff * n1) - degree_diff / 2
 	s = s * (n2 * 0.1 + 0.9)
 	v = v * (n3 * 0.1 + 0.9)
 

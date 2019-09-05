@@ -12,8 +12,6 @@ SWEP.IconLetter         = "w"
 
 SWEP.Base                  = "weapon_tttbase"
 
-SWEP.Kind                  = WEAPON_HEAVY
-SWEP.WeaponID              = AMMO_M16
 SWEP.TTTCompat = {
 	"weapon_ttt_m16"
 }

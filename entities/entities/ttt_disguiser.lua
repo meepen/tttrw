@@ -12,6 +12,7 @@ ENT.Equipment = {
 	CanBuy = { traitor = true },
 	Cost   = 1,
 	Limit  = 1,
+	Icon   = "materials/tttrw/equipment/disguiser.png",
 }
 
 function ENT:IsVisibleTo(ply)
