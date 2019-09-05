@@ -53,6 +53,7 @@ function GM:PlayerRagdollCreated(ply, rag, atk)
 		return
 	end
 
+	print(atk)
 	local e = self:CreateDNAData(atk)
 	e:SetExpireTime(CurTime() + Lerp(math.Clamp(atk:GetPos():Distance(ply:GetPos()) / ttt_dna_max_distance:GetFloat(), 0, 1), ttt_dna_max_time:GetFloat(), 0))
 	e:SetParent(rag)

@@ -20,8 +20,7 @@ SWEP.AutoSpawnable         = false
 SWEP.Spawnable             = true
 
 SWEP.InLoadout = {
-	Detective = true,
-	innocent = true
+	Detective = true
 }
 
 SWEP.ViewModel             = "models/weapons/v_crowbar.mdl"
@@ -69,6 +68,16 @@ function SWEP:PrimaryAttack()
 	local ent = tr.Entity
 
 	if (not IsValid(ent)) then
+		return
+	end
+
+	if (tr.HitPos:Distance(self:EyePos()) > 75) then
+		self:GetOwner():Notify "You are too far away from the object"
+		return
+	end
+
+	if (tr.Entity:GetNW2Bool("IsPlayerBody", false) and not tr.Entity.HiddenState:GetIdentified()) then
+		self:GetOwner():Notify "You must identify the body!"
 		return
 	end
 
