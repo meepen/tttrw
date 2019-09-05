@@ -27,7 +27,7 @@ function ttt.CreatePlayerRagdoll(ply, atk, dmg)
 	ply.Ragdoll = rag
 	if not IsValid(rag) then return nil end
 
-	hook.Add("PlayerSpawn", rag, RagdollRemove)
+	hook.Add("TTTPrepareRound", rag, RagdollRemove)
 	hook.Add("PlayerUse", rag, RagdollShow)
 	rag:SetPos(ply:GetPos())
 	rag:SetModel(ply:GetModel())

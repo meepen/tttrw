@@ -309,7 +309,7 @@ function GM:TTTRoundEnd(winning_team, winners)
 end
 
 function GM:PlayerInitialSpawn(ply)
-	local state = ents.Create("ttt_hidden_info")
+	local state = ents.Create "ttt_hidden_info"
 	state:SetParent(ply)
 	state:Spawn()
 	
@@ -321,7 +321,6 @@ end
 function GM:SV_PlayerSpawn(ply)
 	ply.Killed = {}
 	local state = ttt.GetRoundState()
-	ply:UnSpectate()
 
 	if (state == ttt.ROUNDSTATE_WAITING) then
 		round.Prepare()
@@ -331,6 +330,8 @@ function GM:SV_PlayerSpawn(ply)
 		-- TODO(meep): make spectator code
 		return
 	end
+
+	ply:UnSpectate()
 
 	hook.Run("PlayerLoadout", ply)
 	hook.Run("PlayerSetModel", ply)
