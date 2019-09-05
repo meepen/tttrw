@@ -423,12 +423,7 @@ function SWEP:Think()
 end
 
 function SWEP:GetCurrentFOVMultiplier()
-	local fov, time, duration = self:GetFOVMultiplier(), self:GetFOVMultiplierTime(), self:GetFOVMultiplierDuration()
-	local ofov = self:GetOldFOVMultiplier()
-
-	local cur = math.min(1, (CurTime() - time) / duration)
-
-	return ofov + (fov - ofov) * cur
+	return self:GetOldFOVMultiplier() + (self:GetFOVMultiplier() - self:GetOldFOVMultiplier()) * math.min(1, (CurTime() - self:GetFOVMultiplierTime()) / self:GetFOVMultiplierDuration())
 end
 
 function SWEP:ChangeFOVMultiplier(fovmult, duration)
@@ -442,12 +437,14 @@ function SWEP:GetMultiplier()
 	return 1 + math.max(0, 1 - self:GetConsecutiveShots() / 4)
 end
 
-function SWEP:GetZoomMultiplier()
-	return self:GetIronsights() and self.Ironsights.Zoom ^ 0.7 or 1
-end
-
 function SWEP:GetViewPunchAngles()
-	return Angle(-self.Primary.Recoil * self:GetMultiplier() * self:GetZoomMultiplier(), 0, 0)
+	local mult = 1
+	if (self.Ironsights) then
+		local base = self.Ironsights.Zoom
+		mult = (self:GetCurrentFOVMultiplier() - base) / (1 - base)
+	end
+
+	return Angle(-self.Primary.Recoil * self:GetMultiplier() * (0.5 + mult / 2) ^ 0.7, 0, 0)
 end
 
 function SWEP:AdjustMouseSensitivity()
