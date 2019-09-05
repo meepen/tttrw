@@ -1,12 +1,26 @@
 AddCSLuaFile()
 ENT.Type = "point"
 
+ENT.IsDNA = true
+
 AccessorFunc(ENT, "DNAOwner", "DNAOwner")
 AccessorFunc(ENT, "OldDNA", "OldDNA")
 
+function ENT:NetVar(name, type, default)
+	if (not self.NetVarTypes) then
+		self.NetVarTypes = {}
+	end
+
+	local id = self.NetVarTypes[type] or 0
+	self.NetVarTypes[type] = id + 1
+	self:NetworkVar(type, id, name)
+	if (default) then
+		self["Set"..name](self, default)
+	end
+end
+
 function ENT:SetupDataTables()
-	self:NetworkVar("Float", 0, "ExpireTime")
-	self:SetExpireTime(math.huge)
+	self:NetVar("Float", "ExpireTime", math.huge)
 end
 
 function ENT:Initialize()
@@ -23,9 +37,13 @@ function ENT:PlayerRagdollCreated(ply, rag)
 	end
 end
 
+function ENT:DoExpire()
+	self:Remove()
+end
+
 function ENT:Think()
 	if (self:GetExpireTime() < CurTime() and SERVER) then
-		self:Remove()
+		self:DoExpire()
 	end
 end
 

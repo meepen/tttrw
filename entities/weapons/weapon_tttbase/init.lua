@@ -15,7 +15,7 @@ end
 
 function SWEP:PreDrop()
 	for _, ent in pairs(self:GetChildren()) do
-		if (ent:GetClass() == "ttt_dna_info" and ent:GetDNAOwner() == self:GetOwner()) then
+		if (ent.IsDNA and ent:GetDNAOwner() == self:GetOwner()) then
 			return
 		end
 	end

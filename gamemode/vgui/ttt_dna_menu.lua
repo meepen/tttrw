@@ -117,7 +117,7 @@ function PANEL:Init()
 	local first
 
 	for i, ent in ipairs(LocalPlayer():GetWeapon "weapon_ttt_dna":GetChildren()) do
-		if (ent:GetClass() ~= "ttt_dna_info") then
+		if (ent.IsDNA) then
 			continue
 		end
 

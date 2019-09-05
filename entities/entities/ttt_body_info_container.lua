@@ -55,7 +55,7 @@ function ENT:GetData()
     local data = {}
 
     for _, ent in pairs(self:GetChildren()) do
-        if (ent:GetClass() ~= "ttt_body_info") then
+        if (not ent:GetClass().BodyInfo) then
             continue
         end
 
