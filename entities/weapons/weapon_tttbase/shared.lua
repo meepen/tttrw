@@ -34,7 +34,12 @@ SWEP.Ironsights = {
 
 SWEP.AllowDrop = true
 
-SWEP.PredictableSpread = true
+local tttrw_toggle_ads = CLIENT and CreateConVar("tttrw_toggle_ads", "0", FCVAR_USERINFO + FCVAR_ARCHIVE, "Toggle ADS on mouse2 instead of hold to ADS")
+
+function SWEP:IsToggleADS()
+	local owner = self:GetOwner()
+	return (SERVER and IsValid(owner) and owner:GetInfoNum("tttrw_toggle_ads", 0) or tttrw_toggle_ads:GetInt()) ~= 0 
+end
 
 function SWEP:NetworkVarNotifyCallback(name, old, new)
 	printf("%s::%s %s -> %s", self:GetClass(), name, old, new)
@@ -150,7 +155,11 @@ function SWEP:Reload()
 end
 
 function SWEP:SecondaryAttack()
-	self:ChangeIronsights(true)
+	if (self:IsToggleADS()) then
+		self:ChangeIronsights(not self:GetIronsights())
+	else
+		self:ChangeIronsights(true)
+	end
 end
 
 function SWEP:GetDeveloperMode()
@@ -403,7 +412,7 @@ function SWEP:ViewPunch()
 end
 
 function SWEP:Think()
-	if (self:GetIronsights() and not self:GetOwner():KeyDown(IN_ATTACK2)) then
+	if (self:GetIronsights() and not self:IsToggleADS() and not self:GetOwner():KeyDown(IN_ATTACK2)) then
 		self:ChangeIronsights(false)
 	end
 
