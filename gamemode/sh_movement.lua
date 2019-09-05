@@ -72,7 +72,7 @@ function GM:PreventCrouchJump(ply, mv)
 			local mins, maxs = ply:GetHullDuck()
 			local extravel = Vector()
 			local origin = mv:GetOrigin() + Vector(0, 0, obbmaxs.z - maxs.z)
-			local tr = util.TraceHull {
+			tr = util.TraceHull {
 				start = origin,
 				endpos = origin + velocity,
 				mins = mins,
@@ -85,6 +85,25 @@ function GM:PreventCrouchJump(ply, mv)
 			if (not tr.Hit) then
 				return
 			end
+
+			local v = tr.HitNormal
+			v:Rotate(Angle(0,90))
+			velocity  = velocity:GetNormalized():Dot(v) * v
+
+			tr = util.TraceHull {
+				start = origin,
+				endpos = origin + velocity,
+				mins = mins,
+				maxs = maxs,
+				filter = ply,
+				mask = MASK_PLAYERSOLID,
+				collisiongroup = ply:GetCollisionGroup(),
+			}
+
+			if (not tr.Hit) then
+				return
+			end
+			
 			mv:SetButtons(bit.band(bit.bnot(IN_DUCK), mv:GetButtons()))
 		end
 		mv:SetButtons(bit.band(bit.bnot(IN_DUCK), mv:GetButtons()))
