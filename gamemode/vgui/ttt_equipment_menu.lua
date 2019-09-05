@@ -132,6 +132,7 @@ function PANEL:Init()
 	self.List:SetSpaceY(GetSpacing() / 2)
 	self.List:Dock(FILL)
 	hook.Add("OnPlayerRoleChange", self, self.OnPlayerRoleChange)
+	print(LocalPlayer():GetRole())
 	self:OnPlayerRoleChange(LocalPlayer(), LocalPlayer():GetRole(), LocalPlayer():GetRole())
 end
 

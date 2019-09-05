@@ -9,9 +9,15 @@ if (SERVER) then
 			return false
 		end
 
+		local eq = ttt.Equipment.List[class]
+
+		if (eq.Limit > self:GetCredits()) then
+			return false
+		end
+
 		printf("[Equipment] giving %s %s.", self:Nick(), class)
 
-		self:SetCredits(self:GetCredits() - ttt.Equipment.List[class].Cost)
+		self:SetCredits(self:GetCredits() - eq.Cost)
 		ttt.Equipment.List[class]:OnBuy(self)
 	end
 
@@ -35,11 +41,6 @@ function PLAYER:CanReceiveEquipment(class)
 	if (not eq) then
 		return false
 	end
-
-	if (eq.Limit <= self:GetCredits()) then
-		return false
-	end
-
 	if (eq.CanBuy and not (eq.CanBuy[self:GetRole()] or eq.CanBuy[self:GetRoleTeam()])) then
 		return false
 	end
