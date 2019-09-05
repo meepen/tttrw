@@ -5,12 +5,15 @@ function ENT:UpdateTransmitState()
     return TRANSMIT_NEVER
 end
 
-function ENT:SpawnAmmo()
-    self.OverrideClass = table.Random(gmod.GetGamemode():GetActiveAmmos()).AmmoEnt
-    local e = ents.Create(self.OverrideClass)
+function ENT:Think()
+    if (not gmod.GetGamemode().Ammos) then
+        return
+    end
+    local class = table.Random(gmod.GetGamemode().Ammos).AmmoEnt
+    local e = ents.Create(class)
 
     if (not IsValid(e)) then
-        warn("Class %s does not exist! Removing replacement entity.\n", self.OverrideClass)
+        warn("Class %s does not exist! Removing replacement entity.\n", class)
         self:Remove()
         return
     end
@@ -21,12 +24,4 @@ function ENT:SpawnAmmo()
     e:Spawn()
 
     self:Remove()
-end
-
-function ENT:Initialize()
-    if (not gmod.GetGamemode() or not gmod.GetGamemode().Ammos) then
-        hook.Add("InitPostEntity", self, self.SpawnAmmo)
-    else
-        self:SpawnAmmo()
-    end
 end

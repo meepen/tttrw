@@ -29,6 +29,7 @@ end
 
 function GM:InitPostEntity()
 	self:InitPostEntity_Networking()
+	self:GetActiveAmmos()
 	if (SERVER) then
 		self:SetupTextFileEntities()
 	end
