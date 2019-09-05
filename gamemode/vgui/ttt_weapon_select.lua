@@ -12,6 +12,12 @@ surface.CreateFont("ttt_weapon_select_font_outline", {
 	weight = 100,
 	outline = true
 })
+
+local function Player()
+	return ttt.GetHUDTarget()
+end
+
+
 local PANEL = {}
 
 function PANEL:Init()
@@ -20,13 +26,13 @@ function PANEL:Init()
 	self.Label:Dock(FILL)
 	self.Label:SetContentAlignment(5)
 	self.Label:SetFont "ttt_weapon_select_font_outline"
-	self:SetColor(LocalPlayer():GetRoleData().Color)
+	self:SetColor(Player():GetRoleData().Color)
 	self:SetCurve(4)
 	self:SetCurveBottomRight(false)
 	self:SetCurveTopRight(false)
 end
 function PANEL:OnPlayerRoleChange(ply, old, new)
-	if (ply == LocalPlayer()) then
+	if (ply == Player()) then
 		self:SetColor(ttt.roles[new].Color)
 	end
 end
@@ -54,7 +60,7 @@ function PANEL:Init()
 	self.Number:SetZPos(0)
 end
 function PANEL:OnPlayerRoleChange(ply, old, new)
-	if (ply == LocalPlayer() and IsValid(self.Active)) then
+	if (ply == Player() and IsValid(self.Active)) then
 		self.Active:SetImageColor(ttt.roles[new].Color)
 	end
 end
@@ -112,11 +118,11 @@ function PANEL:PlayerSwitchWeapon(ply, old, new)
 end
 
 function PANEL:Think()
-	if (not IsValid(LocalPlayer())) then
+	if (not IsValid(Player())) then
 		return
 	end
 
-	if (not LocalPlayer():Alive()) then
+	if (not Player():Alive()) then
 		for ind, wep in pairs(self.CachedWeapons) do
 			self.OrderedPanels[ind]:Remove()
 			table.remove(self.CachedWeapons, ind)
@@ -126,7 +132,7 @@ function PANEL:Think()
 	end
 
 	local wep_lookup = {}
-	for _, wep in pairs(LocalPlayer():GetWeapons()) do
+	for _, wep in pairs(Player():GetWeapons()) do
 		wep_lookup[wep] = true
 	end
 
@@ -152,7 +158,7 @@ function PANEL:Think()
 		changed = true
 	end
 
-	self:PlayerSwitchWeapon(nil, nil, LocalPlayer():GetActiveWeapon())
+	self:PlayerSwitchWeapon(nil, nil, Player():GetActiveWeapon())
 end
 
 function PANEL:PerformLayout(w, h)
