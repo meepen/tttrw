@@ -113,7 +113,7 @@ function PANEL:Think()
 			group = "Spectators"
 		elseif (not ply:Alive() and IsValid(ply.DeadState) and ply.DeadState:GetIdentified()) then
 			group = "Dead"
-		elseif (not ply:Alive() and (LocalPlayer():GetRoleData().Evil or ply:GetConfirmed())) then
+		elseif (not ply:Alive() and (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE or not LocalPlayer():Alive() or LocalPlayer():GetRoleData().Evil or ply:GetConfirmed())) then
 			group = "Unidentified"
 		end
 

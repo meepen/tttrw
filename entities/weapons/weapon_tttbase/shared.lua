@@ -123,7 +123,6 @@ function SWEP:ChangeIronsights(on)
 	local frac = math.min(1, (CurTime() - self:GetIronsightsTime()) / old) * new
 
 	self:SetIronsightsTime(CurTime() - new + frac)
-	--self:SetNextPrimaryFire(math.max(self:GetNextPrimaryFire(), CurTime() + new))
 
 	if (CLIENT and IsFirstTimePredicted()) then
 		self:CalcViewModel()
