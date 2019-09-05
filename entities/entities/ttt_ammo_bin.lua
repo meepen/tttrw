@@ -61,7 +61,7 @@ function ENT:Use(ply)
         if (IsValid(ply) and ply:IsPlayer()) then
             local wep = ply:GetActiveWeapon()
             local pri = wep:GetPrimaryAmmoType()
-            local max = ttt.Ammos[game.GetAmmoName(pri)].Max
+            local max = ttt:GetActiveAmmos()[game.GetAmmoName(pri)].Max
 
             local r = max - ply:GetAmmoCount(pri)
             if (r > 0) then

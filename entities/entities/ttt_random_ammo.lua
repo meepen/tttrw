@@ -6,7 +6,7 @@ function ENT:UpdateTransmitState()
 end
 
 function ENT:SpawnAmmo()
-    self.OverrideClass = table.Random(gmod.GetGamemode().Ammos).AmmoEnt
+    self.OverrideClass = table.Random(gmod.GetGamemode():GetActiveAmmos()).AmmoEnt
     local e = ents.Create(self.OverrideClass)
 
     if (not IsValid(e)) then
