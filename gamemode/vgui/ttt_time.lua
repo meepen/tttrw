@@ -151,7 +151,7 @@ end
 function PANEL:Tick()
 	if (not self.Ready) then return end
 
-	local ends = ttt.GetVisibleRoundEndTime()
+	local ends = (LocalPlayer():GetRoleData().Evil and ttt.GetRealRoundEndTime or ttt.GetVisibleRoundEndTime)()
 	local starts = ttt.GetRoundStateChangeTime()
 	
 	local pct = 1

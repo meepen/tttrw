@@ -30,6 +30,7 @@ function round.SetRoundEndTime(time)
 	ttt.SetRealRoundEndTime(time)
 
 	if (timer.Exists "TTTRoundStatePromise") then
+		local promise = round.CurrentPromise
 		timer.Create("TTTRoundStatePromise", time - CurTime(), 1, function()
 			if (promise["then"]) then
 				promise["then"](state, time)
@@ -118,7 +119,7 @@ function round.RemovePlayer(ply)
 			table.remove(plys, i)
 			hook.Run("TTTPlayerRemoved", ply)
 			if (ttt_haste:GetBool()) then
-				round.SetRoundEndTime(ttt.GetVisibleRoundEndTime() + ttt_haste_minutes_per_death:GetFloat() * 60)
+				round.SetRoundEndTime(ttt.GetRealRoundEndTime() + ttt_haste_minutes_per_death:GetFloat() * 60)
 			end
 			return true
 		end
