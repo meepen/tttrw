@@ -319,6 +319,7 @@ function GM:PlayerInitialSpawn(ply)
 end
 
 function GM:SV_PlayerSpawn(ply)
+	ply.Killed = {}
 	local state = ttt.GetRoundState()
 	ply:UnSpectate()
 
@@ -412,6 +413,10 @@ end
 
 function GM:DoPlayerDeath(ply, atk, dmg)
 	ttt.CreatePlayerRagdoll(ply, atk, dmg)
+
+	if (IsValid(atk) and atk:IsPlayer()) then
+		table.insert(atk.Killed, ply)
+	end
 
 	for _, wep in pairs(ply:GetWeapons()) do
 		ply:SetActiveWeapon(wep)

@@ -38,8 +38,25 @@ function GM:PlayerInspectBody(ply, ent, pos)
 		if (ply:Alive() and not ply:KeyDown(IN_WALK) and not ent.HiddenState:GetIdentified()) then
 			ent.HiddenState:SetIdentified(true)
 
+
 			for _, oply in pairs(player.GetAll()) do
 				oply:Notify(ply:Nick() .. " has confirmed " .. ent.HiddenState:GetNick() .. "'s death")
+			end
+
+			local victim = ent.HiddenState:GetPlayer()
+
+			if (not IsValid(victim)) then
+				return
+			end
+
+			for _, oply in ipairs(victim.Killed) do
+				if (IsValid(oply) and not oply:GetConfirmed()) then
+					oply:SetConfirmed(true)
+
+					for _, a in pairs(player.GetAll()) do
+						a:Notify(ply:Nick() .. " has confirmed " .. oply:Nick() .. "'s death")
+					end
+				end
 			end
 		end
 	end
