@@ -75,7 +75,7 @@ function SWEP:PrimaryAttack()
 	local already_got = {}
 
 	for _, ent in pairs(self:GetChildren()) do
-		if (ent:GetClass() == "ttt_dna_info") then
+		if (ent:GetClass() == "ttt_dna_info" and IsValid(ent:GetOldDNA())) then
 			already_got[ent:GetOldDNA()] = true
 		end
 	end
