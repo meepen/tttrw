@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-SWEP.HoldType              = "normal"
+SWEP.HoldType           = "normal"
 
 SWEP.PrintName          = "Teleporter"
 SWEP.Slot               = 6
@@ -8,13 +8,9 @@ SWEP.Slot               = 6
 SWEP.ViewModelFlip      = false
 SWEP.ViewModelFOV       = 10
 
-SWEP.Icon               = "vgui/ttt/icon_m16"
 SWEP.IconLetter         = "w"
 
 SWEP.Base                  = "weapon_tttbase"
-
-SWEP.Kind                  = WEAPON_EQUIP2
-SWEP.WeaponID              = AMMO_TELEPORT
 
 SWEP.Primary.Automatic     = false
 SWEP.Primary.Ammo          = "none"
@@ -38,6 +34,7 @@ SWEP.Equipment = {
 	CanBuy	       = { traitor = true },
 	Cost 	   	   = 1,
 	Limit	       = 1,
+	Icon           = "materials/tttrw/equipment/teleporter.png",
 }
 
 DEFINE_BASECLASS "weapon_tttbase"

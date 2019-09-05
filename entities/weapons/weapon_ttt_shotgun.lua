@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-SWEP.HoldType              = "shotgun"
+SWEP.HoldType           = "shotgun"
 
 SWEP.PrintName          = "Shotgun"
 SWEP.Slot               = 2
@@ -8,7 +8,6 @@ SWEP.Slot               = 2
 SWEP.ViewModelFlip      = false
 SWEP.ViewModelFOV       = 54
 
-SWEP.Icon               = "vgui/ttt/icon_shotgun"
 SWEP.IconLetter         = "B"
 
 SWEP.Base                  = "weapon_tttbase"

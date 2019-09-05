@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-SWEP.HoldType              = "pistol"
+SWEP.HoldType           = "pistol"
 
 SWEP.PrintName          = "Glock"
 SWEP.Slot               = 1
@@ -13,16 +13,13 @@ SWEP.IconLetter         = "c"
 
 SWEP.Base                  = "weapon_tttbase"
 
-SWEP.Kind                  = WEAPON_PISTOL
-SWEP.WeaponID              = AMMO_GLOCK
-
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
 	DamageDropoffRange = 350,
 	DamageDropoffRangeMax = 2000,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(.018, .018, .028)
+	Spread = Vector(0.018, 0.018)
 }
 
 SWEP.Primary.Damage        = 11

@@ -83,6 +83,10 @@ function ttt.Equipment.Add(id, w)
 	local t = e.Equipment
 	t.IsWeapon = w
 	t.ClassName = id
+
+	if (SERVER and t.Icon) then
+		resource.AddFile(t.Icon)
+	end
 	ttt.Equipment.List[id] = t
 end
 

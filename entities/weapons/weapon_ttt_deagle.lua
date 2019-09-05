@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-SWEP.HoldType              = "pistol"
+SWEP.HoldType           = "pistol"
 
 SWEP.PrintName          = "Deagle"
 SWEP.Slot               = 1
@@ -11,13 +11,9 @@ SWEP.TTTCompat = {
 SWEP.ViewModelFlip      = false
 SWEP.ViewModelFOV       = 54
 
-SWEP.Icon               = "vgui/ttt/icon_deagle"
 SWEP.IconLetter         = "w"
 
 SWEP.Base                  = "weapon_tttbase"
-
-SWEP.Kind                  = WEAPON_PISTOL
-SWEP.WeaponID              = AMMO_DEAGLE
 
 SWEP.Bullets = {
 	HullSize = 0,

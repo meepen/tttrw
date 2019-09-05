@@ -15,6 +15,7 @@ ENT.Equipment = {
 	},
 	Cost 	   	   = 1,
 	Limit	       = 1,
+	Icon           = "materials/tttrw/equipment/radar.png",
 }
 
 ENT.Delay = 10

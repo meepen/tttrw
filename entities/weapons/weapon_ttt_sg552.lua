@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-SWEP.HoldType              = "ar2"
+SWEP.HoldType           = "ar2"
 
 SWEP.PrintName          = "SG552"
 SWEP.Slot               = 2
@@ -8,7 +8,6 @@ SWEP.Slot               = 2
 SWEP.ViewModelFlip      = false
 SWEP.ViewModelFOV       = 64
 
-SWEP.Icon               = "vgui/ttt/icon_sg552"
 SWEP.IconLetter         = "w"
 
 SWEP.Base                  = "weapon_tttbase"

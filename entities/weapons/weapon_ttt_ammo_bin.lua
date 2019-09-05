@@ -1,14 +1,12 @@
 AddCSLuaFile()
 
-SWEP.HoldType               = "normal"
+SWEP.HoldType            = "normal"
 
 SWEP.PrintName           = "Ammo Bin"
 SWEP.Slot                = 6
 
 SWEP.ViewModelFOV        = 10
 SWEP.DrawCrosshair       = false
-
-SWEP.Icon                = "vgui/ttt/icon_health"
 
 SWEP.Base                   = "weapon_tttbase"
 
@@ -26,15 +24,13 @@ SWEP.Secondary.Automatic    = true
 SWEP.Secondary.Ammo         = "none"
 SWEP.Secondary.Delay        = 1.0
 
-SWEP.Kind                   = WEAPON_EQUIP
-SWEP.WeaponID               = AMMO_AMMOBIN
-
 SWEP.Equipment = {
 	Name		   = "Ammo Bin",
 	Desc 		   = "Grants up to 300% ammo to your reserves.",
 	CanBuy	       = { traitor = true, Detective = true },
 	Cost 	   	   = 1,
 	Limit	       = 1,
+	Icon           = "materials/tttrw/equipment/ammobin.png",
 }
 
 SWEP.AllowDrop              = false

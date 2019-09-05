@@ -7,11 +7,12 @@ ENT.Author = "Ling"
 ENT.Contact = "lingbleed@gmail.com"
 
 ENT.Equipment = {
-	Name		   = "Bodyarmor",
-	Desc 		   = "Reduces incoming damage.",
-	CanBuy	       = { traitor = true, Detective = true },
-	Cost 	   	   = 1,
-	Limit	       = 1,
+	Name   = "Bodyarmor",
+	Desc   = "Reduces incoming damage.",
+	CanBuy = { traitor = true, Detective = true },
+	Cost   = 1,
+	Limit  = 1,
+	Icon   = "materials/tttrw/equipment/bodyarmor.png",
 }
 
 

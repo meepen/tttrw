@@ -46,7 +46,11 @@ local evil_color = Color(0x93, 0x23, 0x24, 255)
 local evil_icons_color = Color(255, 255, 255)
 local good_color = Color(0, 0, 255, 255)
 
+DEFINE_BASECLASS "ttt_curved_panel"
+
 function PANEL:Init()
+	self:SetCurve(5)
+	self:SetColor(box_background)
 	self.Text = self:Add "DLabel"
 	self.Text:SetTextColor(evil_color) -- TODO: font
 	self.Text:SetContentAlignment(5) -- Center
@@ -58,30 +62,62 @@ function PANEL:PerformLayout(w, h)
 	self:SetTall(GetHeaderSize())
 	self.Text:SizeToContents()
 	self.Text:Center()
+	BaseClass.PerformLayout(self, self:GetSize())
 end
 
-function PANEL:Paint(w, h)
-	draw.RoundedBox(5, 0, 0, w, h, box_background)
-end
-
-vgui.Register("ttt_credit_remaining", PANEL, "EditablePanel")
+vgui.Register("ttt_credit_remaining", PANEL, "ttt_curved_panel")
 
 local PANEL = {}
-
-function PANEL:SetEquipment(eq)
-	self.Equipment = eq
-end
 
 function PANEL:DoClick()
 	ttt.equipment_menu:SetEquipment(self.Equipment)
 end
 
-vgui.Register("ttt_equipment_item", PANEL, "DImageButton")
+vgui.Register("ttt_equipment_item_button", PANEL, "DImageButton")
+
+local PANEL = {}
+
+local function sum(name)
+	local s = 0
+	for i = 1, #name do
+		s = s + name:byte(i, i) * i
+	end
+	return s
+end
+
+function PANEL:Init()
+	self:SetColor(Color(0, 0, 0, 200))
+	self:SetCurve(5)
+	self.Image = self:Add "ttt_equipment_item_button"
+	self.Image:Dock(FILL)
+	self.Image:DockMargin(GetSpacing() / 2, GetSpacing() / 2, GetSpacing() / 2, GetSpacing() / 2)
+end
+
+function PANEL:SetEquipment(eq)
+	self.Image.Equipment = eq
+	math.randomseed(sum(eq.ClassName))
+	local h, s, v = ColorToHSV(LocalPlayer():GetRoleData().Color)
+	local n1, n2, n3 = math.random(), math.random(), math.random()
+	h = h + (35 * n1) - 35 / 2
+	s = s * (n2 * 0.1 + 0.9)
+	v = v * (n3 * 0.1 + 0.9)
+
+	print(h, s, v)
+	self:SetColor(ColorAlpha(HSVToColor(h, s, v), 100))
+end
+
+function PANEL:SetImage(img)
+	self.Image:SetImage(img)
+end
+
+vgui.Register("ttt_equipment_item", PANEL, "ttt_curved_panel")
 
 local PANEL = {}
 
 function PANEL:Init()
 	self.List = self:Add "DIconLayout"
+	self.List:SetSpaceX(GetSpacing() / 2)
+	self.List:SetSpaceY(GetSpacing() / 2)
 	self.List:Dock(FILL)
 	hook.Add("OnPlayerRoleChange", self, self.OnPlayerRoleChange)
 	self:OnPlayerRoleChange(LocalPlayer(), LocalPlayer():GetRole(), LocalPlayer():GetRole())
@@ -103,8 +139,8 @@ function PANEL:OnPlayerRoleChange(ply, old, new)
 			continue
 		end
 		local btn = self.List:Add "ttt_equipment_item"
-		btn:SetImage "tttrw/disagree.png"
-		btn:SetSize(64, 64)
+		btn:SetImage(ent.Icon or "tttrw/disagree.png")
+		btn:SetSize(66, 66)
 		btn:SetEquipment(ent)
 		if (first) then
 			timer.Simple(0, function()

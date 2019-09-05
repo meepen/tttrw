@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-SWEP.HoldType              = "normal"
+SWEP.HoldType           = "normal"
 
 SWEP.PrintName          = "Unarmed"
 SWEP.Slot               = 5
@@ -8,13 +8,9 @@ SWEP.Slot               = 5
 SWEP.ViewModelFlip      = false
 SWEP.ViewModelFOV       = 10
 
-SWEP.Icon               = "vgui/ttt/icon_m16"
 SWEP.IconLetter         = "w"
 
 SWEP.Base                  = "weapon_tttbase"
-
-SWEP.Kind                  = WEAPON_HEAVY
-SWEP.WeaponID              = AMMO_M16
 
 SWEP.Primary.Automatic     = false
 SWEP.Primary.Ammo          = "none"

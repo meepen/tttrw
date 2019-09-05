@@ -7,11 +7,11 @@ ENT.Author = "Ling"
 ENT.Contact = "lingbleed@gmail.com"
 
 ENT.Equipment = {
-	Name		   = "Disguiser",
-	Desc 		   = "Hide your name from other players, so you can act without being known.",
-	CanBuy	       = { traitor = true },
-	Cost 	   	   = 1,
-	Limit	       = 1,
+	Name   = "Disguiser",
+	Desc   = "Hide your name from other players, so you can act without being known.",
+	CanBuy = { traitor = true },
+	Cost   = 1,
+	Limit  = 1,
 }
 
 function ENT:IsVisibleTo(ply)

@@ -1,5 +1,5 @@
 AddCSLuaFile()
-SWEP.HoldType                = "melee"
+SWEP.HoldType             = "melee"
 
 SWEP.PrintName            = "Crowbar"
 SWEP.Slot                 = 0
@@ -7,8 +7,6 @@ SWEP.Slot                 = 0
 SWEP.DrawCrosshair        = true
 SWEP.ViewModelFlip        = false
 SWEP.ViewModelFOV         = 54
-
-SWEP.Icon                 = "vgui/ttt/icon_cbar"
 
 SWEP.Base                    = "weapon_tttbase"
 

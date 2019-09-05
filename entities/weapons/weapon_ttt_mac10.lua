@@ -8,7 +8,6 @@ SWEP.Slot               = 2
 SWEP.ViewModelFlip      = false
 SWEP.ViewModelFOV       = 54
 
-SWEP.Icon               = "vgui/ttt/icon_mac"
 SWEP.IconLetter         = "l"
 
 SWEP.Base                  = "weapon_tttbase"

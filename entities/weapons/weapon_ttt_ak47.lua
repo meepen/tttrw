@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-SWEP.HoldType              = "ar2"
+SWEP.HoldType           = "ar2"
 
 SWEP.PrintName          = "AK47"
 SWEP.Slot               = 2
@@ -13,16 +13,13 @@ SWEP.IconLetter         = "w"
 
 SWEP.Base                  = "weapon_tttbase"
 
-SWEP.Kind                  = WEAPON_HEAVY
-SWEP.WeaponID              = AMMO_AK47
-
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
 	DamageDropoffRange = 650,
 	DamageDropoffRangeMax = 4200,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(.03, .035, .0)
+	Spread = Vector(0.03, 0.035)
 }
 
 SWEP.Primary.Damage        = 22

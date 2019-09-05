@@ -2,13 +2,12 @@ AddCSLuaFile()
 
 SWEP.HoldType              = "ar2"
 
-SWEP.PrintName          = "SG550" --SG and G3SG1 are the same everything 
+SWEP.PrintName          = "SG550"
 SWEP.Slot               = 2
 
 SWEP.ViewModelFlip      = false
 SWEP.ViewModelFOV       = 64
 
-SWEP.Icon               = "vgui/ttt/icon_G3SG1"
 SWEP.IconLetter         = "w"
 
 SWEP.Base                  = "weapon_tttbase"
@@ -26,7 +25,7 @@ SWEP.Bullets = {
 	Spread = Vector(0.009, 0.009, 0),
 }
 
-SWEP.Primary.Damage        = 35 --SG and G3SG1 are the same everything 
+SWEP.Primary.Damage        = 35
 SWEP.Primary.Delay         = 0.30
 SWEP.Primary.Recoil        = 2
 SWEP.Primary.RecoilTiming  = 0.16

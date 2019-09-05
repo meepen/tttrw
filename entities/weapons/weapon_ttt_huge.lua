@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-SWEP.HoldType              = "crossbow"
+SWEP.HoldType           = "crossbow"
 
 SWEP.PrintName          = "H.U.G.E"
 SWEP.Slot               = 2
@@ -8,13 +8,9 @@ SWEP.Slot               = 2
 SWEP.ViewModelFlip      = false
 SWEP.ViewModelFOV       = 69
 
-SWEP.Icon               = "vgui/ttt/icon_m249"
 SWEP.IconLetter         = "w"
 
 SWEP.Base                  = "weapon_tttbase"
-
-SWEP.Kind                  = WEAPON_HEAVY
-SWEP.WeaponID              = AMMO_M249
 
 SWEP.Bullets = {
 	HullSize = 0,
@@ -22,7 +18,7 @@ SWEP.Bullets = {
 	DamageDropoffRange = 720,
 	DamageDropoffRangeMax = 2500,
 	DamageMinimumPercent = 0.5,
-	Spread = Vector(.057, .057, .055)
+	Spread = Vector(0.057, 0.057)
 }
 
 SWEP.TTTCompat = {"weapon_zm_sledge"}

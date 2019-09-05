@@ -8,13 +8,9 @@ SWEP.Slot               = 2
 SWEP.ViewModelFlip      = false
 SWEP.ViewModelFOV       = 64
 
-SWEP.Icon               = "vgui/ttt/icon_galil"
 SWEP.IconLetter         = "w"
 
 SWEP.Base                  = "weapon_tttbase"
-
-SWEP.Kind                  = WEAPON_HEAVY
-SWEP.WeaponID              = AMMO_GALIL
 
 SWEP.Bullets = {
 	HullSize = 0,

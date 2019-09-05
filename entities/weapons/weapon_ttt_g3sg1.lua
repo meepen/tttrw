@@ -2,19 +2,16 @@ AddCSLuaFile()
 
 SWEP.HoldType              = "ar2"
 
-SWEP.PrintName          = "G3SG1" --SG and G3SG1 are the same everything 
+SWEP.PrintName          = "G3SG1"
 SWEP.Slot               = 2
 
 SWEP.ViewModelFlip      = false
 SWEP.ViewModelFOV       = 64
 
-SWEP.Icon               = "vgui/ttt/icon_G3SG1"
 SWEP.IconLetter         = "w"
 
 SWEP.Base                  = "weapon_tttbase"
 
-SWEP.Kind                  = WEAPON_HEAVY
-SWEP.WeaponID              = AMMO_PISTOL
 SWEP.ViewModelFOV          = 70
 
 SWEP.Bullets = {
@@ -23,7 +20,7 @@ SWEP.Bullets = {
 	DamageDropoffRange = 4500,
 	DamageDropoffRangeMax = 7520,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(0.009, 0.009, 0),
+	Spread = Vector(0.009, 0.009),
 }
 
 SWEP.Primary.Damage        = 35
@@ -32,8 +29,8 @@ SWEP.Primary.Recoil        = 2
 SWEP.Primary.RecoilTiming  = 0.16
 SWEP.Primary.Automatic     = false
 SWEP.Primary.Ammo          = "357"
-SWEP.Primary.ClipSize      = 15 --15
-SWEP.Primary.DefaultClip   = 45 --45
+SWEP.Primary.ClipSize      = 15
+SWEP.Primary.DefaultClip   = 45
 SWEP.Primary.Sound         = Sound "Weapon_G3SG1.Single"
 SWEP.Secondary.Sound       = Sound "Default.Zoom"
 SWEP.HasScope              = true

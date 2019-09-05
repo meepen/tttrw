@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-SWEP.HoldType               = "knife"
+SWEP.HoldType            = "knife"
 
 SWEP.PrintName           = "Knife"
 SWEP.Slot                = 6
@@ -9,12 +9,6 @@ SWEP.ViewModelFlip       = false
 SWEP.ViewModelFOV        = 54
 SWEP.DrawCrosshair       = false
 
-SWEP.EquipMenuData = {
-	type = "item_weapon",
-	desc = "knife_desc"
-};
-
-SWEP.Icon                = "vgui/ttt/icon_knife"
 SWEP.IconLetter          = "j"
 
 SWEP.Base                   = "weapon_tttbase"
@@ -44,6 +38,7 @@ SWEP.Equipment = {
 	CanBuy	       = { traitor = true },
 	Cost 	   	   = 1,
 	Limit	       = 1,
+	Icon           = "materials/tttrw/equipment/knife.png"
 }
 
 SWEP.IsSilent               = true
