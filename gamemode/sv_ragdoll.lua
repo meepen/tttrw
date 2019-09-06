@@ -88,7 +88,6 @@ function GM:InitializeBodyData(variables, Information)
 	end
 
 	local wep = Information.DamageInfo:GetInflictor()
-	print(wep)
 	if (IsValid(wep)) then
 		table.insert(variables, {
 			Title = "Weapon",
