@@ -123,17 +123,29 @@ function PANEL:Init()
 	self.Header:DockMargin(0, Padding * 2, 0, 0)
 	self.Header:SetText "Gameplay Settings"
 	self.Header:Dock(TOP)
+	self.Header:SetZPos(0)
 
+	self.Index = 1
+
+	self:AddCheckBox("Aim Down Sights Toggle", "tttrw_toggle_ads")
+	self:AddCheckBox("Outline players roles", "tttrw_outline_roles")
+	self:AddCheckBox("Automatically Bunny hop", "ttt_bhop_cl")
+end
+
+function PANEL:AddCheckBox(desc, convar)
 	self.TestLabel = self.Left:Add "ttt_checkbox_label"
-	self.TestLabel:SetZPos(1)
+	self.TestLabel:SetZPos(self.Index)
+	self.Index = self.Index + 1
 	self.TestLabel:DockMargin(0, Padding, 0, 0)
 
-	self.TestLabel:SetConVar "tttrw_toggle_ads"
-	self.TestLabel:SetText "Aim Down Sights Toggle"
+	self.TestLabel:SetConVar(convar)
+	self.TestLabel:SetText(desc)
 	self.TestLabel:SetFont "ttt_settings_settings_text_font"
-	self.TestLabel:SetValue(GetConVar "tttrw_toggle_ads":GetBool())
+	self.TestLabel:SetValue(GetConVar(convar):GetBool())
 	self.TestLabel:Dock(TOP)
-	self.TestLabel:SetTall(32)
+	surface.SetFont(self.TestLabel.Label:GetFont())
+	local _, h = surface.GetTextSize "A"
+	self.TestLabel:SetTall(h + Padding / 2)
 end
 
 function PANEL:PerformLayout(w, h)

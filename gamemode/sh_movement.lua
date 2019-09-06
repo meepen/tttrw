@@ -12,7 +12,7 @@ function GM:DoBunnyHop(ply, mv)
 
 	local cl_enabled = ttt_bhop_cl and ttt_bhop_cl:GetBool()
 	if (SERVER) then
-		cl_enabled = ply:GetInfoNum("ttt_bhop_cl", 0)
+		cl_enabled = ply:GetInfoNum("ttt_bhop_cl", 0) ~= 0
 	end
 
 	if (cl_enabled and ttt_bhop_sv:GetBool() and bit.band(mv:GetButtons(), IN_JUMP) == IN_JUMP) then
