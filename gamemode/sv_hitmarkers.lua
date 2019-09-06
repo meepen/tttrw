@@ -1,5 +1,5 @@
 resource.AddFile "sound/tttrw/hitmarker_.mp3"
-resource.AddFile "sound/tttrw/hitmarker_hs_.mp3"
+resource.AddFile "sound/tttrw/hitmarker_hs.wav"
 
 function GM:CreateHitmarkers(vic, dmg)
     local atk = dmg:GetAttacker()

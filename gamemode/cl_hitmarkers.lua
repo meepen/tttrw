@@ -1,6 +1,6 @@
 local last_hit = -math.huge
 
-local ttt_hitmarker_sound_hs = CreateConVar("tttrw_hitmarker_sound_hs", "sound/tttrw/hitmarker_hs_.mp3", FCVAR_ARCHIVE, "Hitmarker sound")
+local ttt_hitmarker_sound_hs = CreateConVar("tttrw_hitmarker_sound_hs", "sound/tttrw/hitmarker_hs.wav", FCVAR_ARCHIVE, "Hitmarker sound")
 local ttt_hitmarker_sound = CreateConVar("tttrw_hitmarker_sound", "sound/tttrw/hitmarker_.mp3", FCVAR_ARCHIVE, "Hitmarker sound")
 
 function GM:PlayerHit(atk, dmg, dmgtype, hitgroup)

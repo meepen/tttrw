@@ -338,9 +338,7 @@ function SWEP:DoFireBullets()
 end
 
 function SWEP:GetSpread()
-	local v = self.Bullets.Spread * (0.25 + (-self:GetMultiplier() + 2) * 0.75) * (0.5 + self:GetCurrentZoom() / 2) ^ 0.7
-	print(v)
-	return v
+	return self.Bullets.Spread * (0.25 + (-self:GetMultiplier() + 2) * 0.75) * (0.5 + self:GetCurrentZoom() / 2) ^ 0.7
 end
 
 function SWEP:PrimaryAttack()
