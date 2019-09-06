@@ -164,7 +164,7 @@ function PANEL:AddTextEntry(text, convar, v)
 	else
 		text:SetText(v)
 	end
-	text:SetDisabled(not not convar)
+	text:SetDisabled(not convar)
 end
 
 vgui.Register("ttt_settings_category", PANEL, "EditablePanel")
