@@ -338,7 +338,7 @@ function SWEP:DoFireBullets()
 end
 
 function SWEP:GetSpread()
-	return self.Bullets.Spread * (0.25 + (-self:GetMultiplier() + 2) * 0.75)
+	return self.Bullets.Spread * self:GetMultiplier()
 end
 
 function SWEP:PrimaryAttack()
@@ -440,7 +440,9 @@ function SWEP:GetMultiplier()
 		mult = (self:GetCurrentFOVMultiplier() - base) / (1 - base)
 	end
 
-	return (1 + math.max(0, 1 - self:GetConsecutiveShots() / 4)) * (1 - mult / 2) ^ 0.7
+	print(mult)
+
+	return (1 + math.max(0, 1 - self:GetConsecutiveShots() / 4)) * (0.5 + 0.5 * (mult / 2) ^ 0.7)
 end
 
 function SWEP:GetViewPunchAngles()
