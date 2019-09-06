@@ -44,6 +44,9 @@ function GM:DropCurrentWeapon(ply)
 end
 
 function GM:PlayerBindPress(ply, bind, pressed)
+	if (bind == "gm_showhelp") then
+		return self:ShowHelp(ply)
+	end
 	if (bind:match"^slot%d+$") then
 		local num = tonumber(bind:match"^slot(%d+)$") - 1
 		local ordered_weps = {}
