@@ -338,7 +338,9 @@ function SWEP:DoFireBullets()
 end
 
 function SWEP:GetSpread()
-	return self.Bullets.Spread * self:GetMultiplier()
+	local v = self.Bullets.Spread * (0.25 + (-self:GetMultiplier() + 2) * 0.75) * (0.5 + self:GetCurrentZoom() / 2) ^ 0.7
+	print(v)
+	return v
 end
 
 function SWEP:PrimaryAttack()
@@ -391,6 +393,7 @@ function SWEP:GetCurrentViewPunch()
 end
 
 function SWEP:ViewPunch()
+
 	if (self:GetDeveloperMode()) then
 		return
 	end
@@ -438,16 +441,15 @@ function SWEP:GetCurrentZoom()
 		local base = self.Ironsights.Zoom
 		mult = (self:GetCurrentFOVMultiplier() - base) / (1 - base)
 	end
-	return 1 - mult
+	return mult
 end
 
 function SWEP:GetMultiplier()
-	local max_add = 0.5
-	return (0.9 + math.max(0, max_add - self:GetConsecutiveShots() / 4 * max_add)) * (1 - self:GetCurrentZoom() * (1 - self.Ironsights.Zoom) ^ 0.7)
+	return (1 + math.max(0, 1 - self:GetConsecutiveShots() / 4))
 end
 
 function SWEP:GetViewPunchAngles()
-	return Angle(-self.Primary.Recoil * self:GetMultiplier())
+	return Angle(-self.Primary.Recoil * self:GetMultiplier() * (0.5 + self:GetCurrentZoom() / 2) ^ 0.7)
 end
 
 function SWEP:AdjustMouseSensitivity()
