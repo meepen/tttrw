@@ -440,7 +440,7 @@ function SWEP:GetMultiplier()
 		mult = (self:GetCurrentFOVMultiplier() - base) / (1 - base)
 	end
 
-	return (1 + math.max(0, 1 - self:GetConsecutiveShots() / 4)) * (0.5 + mult / 2) ^ 0.7
+	return (1 + math.max(0, 1 - self:GetConsecutiveShots() / 4)) * (1 - mult / 2) ^ 0.7
 end
 
 function SWEP:GetViewPunchAngles()
