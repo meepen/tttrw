@@ -130,6 +130,7 @@ function PANEL:Init()
 	self:AddCheckBox("Aim Down Sights Toggle", "tttrw_toggle_ads")
 	self:AddCheckBox("Outline players roles", "tttrw_outline_roles")
 	self:AddCheckBox("Automatically Bunny hop", "ttt_bhop_cl")
+	self:AddCheckBox("Lowered Ironsights", "ttt_ironsights_lowered")
 end
 
 function PANEL:AddCheckBox(desc, convar)
@@ -250,7 +251,7 @@ function PANEL:Init()
     self.Tabs:Dock(TOP)
     self.Tabs:SetTall(ScrH() * 0.02)
     self.MainTab = self.Tabs:AddTab("Main Settings", "ttt_settings_tab")
-    self:DockPadding(Padding, Padding, Padding, Padding)
+    self:DockPadding(Padding * 5 / 6, Padding, Padding * 5 / 6, Padding * 5 / 6)
 
     self:SetColor(Color(13, 12, 13, 240))
 	self:SetCurve(10)
@@ -263,7 +264,7 @@ function PANEL:PerformLayout(w, h)
     local _, endy = self:ScreenToLocal(self.Tabs:LocalToScreen(0, self.Tabs:GetTall()))
     local rounded2 = math.Round(endy / 2)
     self.Close:SetSize(rounded2, rounded2)
-    self.Close:SetPos(w - self.Close:GetWide() - rounded2 / 2, rounded2 / 2)
+    self.Close:SetPos(w - self.Close:GetWide() - Padding * 5 / 6, rounded2 / 2)
     
     BaseClass.PerformLayout(self, w, h)
 end

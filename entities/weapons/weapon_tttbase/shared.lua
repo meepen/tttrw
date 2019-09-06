@@ -391,7 +391,6 @@ function SWEP:GetCurrentViewPunch()
 end
 
 function SWEP:ViewPunch()
-
 	if (self:GetDeveloperMode()) then
 		return
 	end
@@ -433,14 +432,18 @@ function SWEP:ChangeFOVMultiplier(fovmult, duration)
 	self:SetFOVMultiplierTime(CurTime())
 end
 
-function SWEP:GetMultiplier()
+function SWEP:GetCurrentZoom()
 	local mult = 1
 	if (self.Ironsights) then
 		local base = self.Ironsights.Zoom
 		mult = (self:GetCurrentFOVMultiplier() - base) / (1 - base)
 	end
+	return 1 - mult
+end
 
-	return (1 + math.max(0, 1 - self:GetConsecutiveShots() / 4)) * (0.5 + 0.5 * (mult * 0.5) ^ 0.7)
+function SWEP:GetMultiplier()
+	local max_add = 0.5
+	return (0.9 + math.max(0, max_add - self:GetConsecutiveShots() / 4 * max_add)) * (1 - self:GetCurrentZoom() * (1 - self.Ironsights.Zoom) ^ 0.7)
 end
 
 function SWEP:GetViewPunchAngles()
