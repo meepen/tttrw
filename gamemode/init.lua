@@ -57,4 +57,9 @@ function GM:PlayerRagdollCreated(ply, rag, atk)
 	e:SetExpireTime(CurTime() + Lerp(math.Clamp(atk:GetPos():Distance(ply:GetPos()) / ttt_dna_max_distance:GetFloat(), 0, 1), ttt_dna_max_time:GetFloat(), 0))
 	e:SetParent(rag)
 	e:Spawn()
+
+	local body_dna = ents.Create "ttt_body_info_dna"
+	body_dna:SetDNAEntity(e)
+	body_dna:SetParent(rag.HiddenState)
+	body_dna:Spawn()
 end

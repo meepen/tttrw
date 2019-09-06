@@ -18,12 +18,18 @@ function ENT:NetVar(name, type, default)
 end
 
 function ENT:SetupDataTables()
-    self:NetkVar("String", "Icon")
-    self:NetkVar("String", "Description")
-    self:NetkVar("String", "Title")
-    self:NetkVar("Int", "Index")
+	self:NetVar("Icon", "String")
+	self:NetVar("Description", "String")
+	self:NetVar("Title", "String")
+	self:NetVar("Index", "Int")
+end
+
+function ENT:Initialize()
+	if (SERVER) then
+		self:SetIndex(self:GetParent():GetAndIncrementIndex())
+	end
 end
 
 function ENT:IsVisibleTo(ply)
-    return self:GetParent():IsVisibleTo(ply)
+	return self:GetParent().VisibleList[ply]
 end

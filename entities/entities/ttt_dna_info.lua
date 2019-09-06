@@ -20,7 +20,7 @@ function ENT:NetVar(name, type, default)
 end
 
 function ENT:SetupDataTables()
-	self:NetVar("Float", "ExpireTime", math.huge)
+	self:NetVar("ExpireTime", "Float", math.huge)
 end
 
 function ENT:Initialize()
@@ -42,7 +42,7 @@ function ENT:DoExpire()
 end
 
 function ENT:Think()
-	if (self:GetExpireTime() < CurTime() and SERVER) then
+	if (SERVER and self:GetExpireTime() < CurTime()) then
 		self:DoExpire()
 	end
 end

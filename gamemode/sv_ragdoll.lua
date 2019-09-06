@@ -88,6 +88,7 @@ function GM:InitializeBodyData(variables, Information)
 	end
 
 	local wep = Information.DamageInfo:GetInflictor()
+	print(wep)
 	if (IsValid(wep)) then
 		table.insert(variables, {
 			Title = "Weapon",
@@ -101,7 +102,7 @@ function GM:InitializeBodyData(variables, Information)
 	if (hitgroup == HITGROUP_HEAD) then
 		table.insert(variables, {
 			Title = "Missing brain",
-			Icon = "materials/tttrw/agree.png",
+			Icon = "materials/tttrw/headshot.png",
 			Description = "This person appears to have been shot clean through the skull"
 		})
 	end

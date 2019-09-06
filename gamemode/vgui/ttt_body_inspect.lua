@@ -106,7 +106,7 @@ function PANEL:PerformLayout(w, h)
 end
 
 function PANEL:Select(var)
-    self.Header:SetText(var.Title)
+    self.Header:SetText(var:GetTitle())
 
     self.CurrentElement:SetVariable(var)
 end
@@ -132,7 +132,7 @@ function PANEL:BodyDataInitialized(ent)
 
     for i, var in ipairs(ent:GetData()) do
         self.Buttons[i] = self:Add "DImageButton"
-        self.Buttons[i]:SetImage(var.Icon)
+        self.Buttons[i]:SetImage(var:GetIcon())
         self.Buttons[i]:Dock(LEFT)
         self.Buttons[i]:SetZPos(i)
         self.Buttons[i].DoClick = function()
@@ -179,8 +179,22 @@ function PANEL:Init()
 end
 
 function PANEL:SetVariable(var)
-    self.Icon:SetImage(var.Icon)
-    self.Text:SetText(var.Description)
+    self.Variable = var
+    self:Think()
+end
+
+function PANEL:Think()
+    if (IsValid(self.Variable)) then
+        local desc, image = self.Variable:GetDescription(), self.Variable:GetIcon()
+        if (self.Description ~= desc) then
+            self.Text:SetText(desc)
+            self.Description = desc
+        end
+        if (self.Image ~= image) then
+            self.Icon:SetImage(image)
+            self.Image = image
+        end
+    end
 end
 
 function PANEL:PerformLayout(w, h)

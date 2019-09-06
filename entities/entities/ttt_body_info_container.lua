@@ -4,6 +4,11 @@ ENT.Type = "point"
 ENT.Base = "ttt_point_info"
 DEFINE_BASECLASS(ENT.Base)
 
+function ENT:GetAndIncrementIndex()
+    self.Index = (self.Index or 0) + 1
+    return self.Index - 1
+end
+
 function ENT:Initialize()
     BaseClass.Initialize(self)
     if (SERVER) then
@@ -18,7 +23,6 @@ function ENT:Initialize()
             e:SetDescription(variable.Description or "NO DESCRIPTION")
             e:SetIcon(variable.Icon or "materials/tttrw/disagree.png")
             e:SetTitle(variable.Title or "NO TITLE")
-            e:SetIndex(i)
             e:SetParent(self)
             e:Spawn()
         end
@@ -55,20 +59,15 @@ function ENT:GetData()
     local data = {}
 
     for _, ent in pairs(self:GetChildren()) do
-        if (not ent:GetClass().BodyInfo) then
+        if (not ent.IsBodyInfo) then
             continue
         end
 
-        table.insert(data, {
-            Title = ent:GetTitle(),
-            Icon = ent:GetIcon(),
-            Description = ent:GetDescription(),
-            Index = ent:GetIndex()
-        })
+        table.insert(data, ent)
     end
 
     table.sort(data, function(a, b)
-        return a.Index < b.Index
+        return a:GetIndex() < b:GetIndex()
     end)
 
     return data
