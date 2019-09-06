@@ -106,6 +106,70 @@ end
 vgui.Register("ttt_settings_header_stuff", PANEL, "ttt_curved_panel")
 
 local PANEL = {}
+
+function PANEL:Init()
+	self.Index = 1
+	self.Header = self:Add "ttt_settings_header_stuff"
+	self.Header:DockMargin(0, Padding * 2, 0, 0)
+	self.Header:Dock(TOP)
+	self.Header:SetZPos(0)
+end
+
+function PANEL:SetText(t)
+	self.Header:SetText(t)
+end
+
+function PANEL:AddCheckBox(desc, convar)
+	local lbl = self:Add "ttt_checkbox_label"
+	lbl:SetZPos(self.Index)
+	self.Index = self.Index + 1
+	lbl:DockMargin(0, Padding, 0, 0)
+
+	lbl:SetConVar(convar)
+	lbl:SetText(desc)
+	lbl:SetFont "ttt_settings_settings_text_font"
+	lbl:SetValue(GetConVar(convar):GetBool())
+	lbl:Dock(TOP)
+	surface.SetFont(lbl.Label:GetFont())
+	local _, h = surface.GetTextSize "A"
+	lbl:SetTall(h + Padding / 2)
+end
+
+function PANEL:AddTextEntry(text, convar, v)
+	surface.SetFont "ttt_settings_settings_text_font"
+	local _, h = surface.GetTextSize "A"
+
+	local lbl = self:Add "DLabel"
+	lbl:SetZPos(self.Index)
+	self.Index = self.Index + 1
+	lbl:DockMargin(0, Padding, 0, 0)
+
+	lbl:SetText(text)
+	lbl:SetFont "ttt_settings_settings_text_font"
+	lbl:Dock(TOP)
+	lbl:SetTall(h + Padding / 2)
+	lbl:SetContentAlignment(5)
+
+	local text = self:Add "DTextEntry"
+	text:SetZPos(self.Index)
+	self.Index = self.Index + 1
+	text:DockMargin(0, Padding / 5, 0, 0)
+
+	text:SetFont "ttt_settings_settings_text_font"
+	text:Dock(TOP)
+	text:SetTall(h + Padding / 2)
+	if (convar) then
+		text:SetConVar(convar)
+		text:SetText(GetConVar(convar):GetString())
+	else
+		text:SetText(v)
+	end
+	text:SetDisabled(not not convar)
+end
+
+vgui.Register("ttt_settings_category", PANEL, "EditablePanel")
+
+local PANEL = {}
 DEFINE_BASECLASS "ttt_curved_panel"
 
 function PANEL:Init()
@@ -114,45 +178,28 @@ function PANEL:Init()
     self:DockPadding(Padding, Padding, Padding, Padding)
 	self:SetCurveTopLeft(false)
 
-	self.Left = self:Add "EditablePanel"
-	self.Right = self:Add "EditablePanel"
+	self.Left = self:Add "ttt_settings_category"
+	self.Left:SetText "Gameplay Settings"
+	self.Left:DockMargin(0, 0, Padding, 0)
 	self.Left:Dock(LEFT)
+	self.Right = self:Add "ttt_settings_category"
+	self.Right:SetText "Sound Settings"
 	self.Right:Dock(FILL)
-
-	self.Header = self.Left:Add "ttt_settings_header_stuff"
-	self.Header:DockMargin(0, Padding * 2, 0, 0)
-	self.Header:SetText "Gameplay Settings"
-	self.Header:Dock(TOP)
-	self.Header:SetZPos(0)
 
 	self.Index = 1
 
-	self:AddCheckBox("Aim Down Sights Toggle", "tttrw_toggle_ads")
-	self:AddCheckBox("Outline players roles", "tttrw_outline_roles")
-	self:AddCheckBox("Automatically Bunny hop", "ttt_bhop_cl")
-	self:AddCheckBox("Lowered Ironsights", "ttt_ironsights_lowered")
-end
-
-function PANEL:AddCheckBox(desc, convar)
-	self.TestLabel = self.Left:Add "ttt_checkbox_label"
-	self.TestLabel:SetZPos(self.Index)
-	self.Index = self.Index + 1
-	self.TestLabel:DockMargin(0, Padding, 0, 0)
-
-	self.TestLabel:SetConVar(convar)
-	self.TestLabel:SetText(desc)
-	self.TestLabel:SetFont "ttt_settings_settings_text_font"
-	self.TestLabel:SetValue(GetConVar(convar):GetBool())
-	self.TestLabel:Dock(TOP)
-	surface.SetFont(self.TestLabel.Label:GetFont())
-	local _, h = surface.GetTextSize "A"
-	self.TestLabel:SetTall(h + Padding / 2)
+	self.Left:AddCheckBox("Aim Down Sights Toggle", "tttrw_toggle_ads")
+	self.Left:AddCheckBox("Outline players roles", "tttrw_outline_roles")
+	self.Left:AddCheckBox("Automatically Bunny hop", "ttt_bhop_cl")
+	self.Left:AddCheckBox("Lowered Ironsights", "ttt_ironsights_lowered")
+	self.Right:AddTextEntry("Where to put sounds (create if not exist)", nil, util.RelativePathToFull ".":sub(1, -2) .. "sound")
+	self.Right:AddTextEntry("Hitmarker", "tttrw_hitmarker_sound")
+	self.Right:AddTextEntry("Hitmarker (Headshot)", "tttrw_hitmarker_sound_hs")
+	self.Right:AddTextEntry("DNA Beep", "tttrw_dna_beep_sound")
 end
 
 function PANEL:PerformLayout(w, h)
-	self.TestLabel:SizeToContents()
-	self.TestLabel:Center()
-	self.Left:SetWide(w / 2)
+	self.Left:SetWide(w / 2 - Padding / 2)
 	BaseClass.PerformLayout(self, w, h)
 end
 
@@ -277,6 +324,6 @@ function GM:ShowHelp()
 	else
 		ttt.settings = vgui.Create "ttt_settings"
 		ttt.settings:MakePopup()
-		ttt.settings:SetKeyboardInputEnabled(false)
+		--ttt.settings:SetKeyboardInputEnabled(false)
 	end
 end

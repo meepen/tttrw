@@ -18,6 +18,21 @@ function SKIN:PaintCheckBox(panel, w, h)
 	end
 end
 
+function SKIN:PaintTextEntry( panel, w, h )
+	if (panel.m_bBackground) then
+		if (panel:HasFocus()) then
+			surface.SetDrawColor(87, 90, 90)
+		else
+			surface.SetDrawColor(41, 41, 42)
+		end
+		surface.DrawRect(1, 0, w - 2, 1)
+		surface.DrawRect(0, 1, w, h - 2)
+		surface.DrawRect(1, h - 1, w - 2, 1)
+	end
+
+	panel:DrawTextEntryText(white_text, panel:GetHighlightColor(), white_text)
+end
+
 derma.DefineSkin("tttrw", "TTTRW Customized Default", SKIN)
 
 function GM:ForceDermaSkin()
