@@ -60,6 +60,7 @@ AddCSLuaFile();
 		"materials/tttrw/tbutton.png",
 		"materials/tttrw/xbutton128.png",
 		"materials/tttrw/transparentevil.png",
+		"materials/tttrw/transparentgood.png",
 		"materials/tttrw/agree.png",
 		"materials/tttrw/disagree.png",
 		"materials/tttrw/roles/innocent.png",

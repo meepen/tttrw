@@ -9,6 +9,9 @@ local function GetHeaderSize()
 	return math.Round(ScrH() / 30)
 end
 
+local mat_evil = Material("tttrw/transparentevil.png", "noclamp smooth")
+local mat_good = Material("tttrw/transparentgood.png", "noclamp smooth")
+
 local box_background = Color(41, 41, 41, 230)
 local white_text_color = Color(0xe0, 0xe0, 0xe0)
 
@@ -44,7 +47,12 @@ surface.CreateFont("ttt_equipment_status_font", {
 
 local evil_color = Color(0x93, 0x23, 0x24, 255)
 local evil_icons_color = Color(255, 255, 255)
-local good_color = Color(0, 0, 255, 255)
+local good_icons_color = Color(255, 255, 255)
+local good_color = Color(56, 80, 210, 255)
+
+local function IsEvil()
+	return not not LocalPlayer():GetRoleData().Evil
+end
 
 DEFINE_BASECLASS "ttt_curved_panel"
 
@@ -52,7 +60,7 @@ function PANEL:Init()
 	self:SetCurve(5)
 	self:SetColor(box_background)
 	self.Text = self:Add "DLabel"
-	self.Text:SetTextColor(evil_color) -- TODO: font
+	self.Text:SetTextColor(IsEvil() and evil_color or good_color)
 	self.Text:SetContentAlignment(5) -- Center
 	self.Text:SetFont "ttt_credit_font"
 	self.Text:SetText("You have " .. LocalPlayer():GetCredits() .. " credits remaining")
@@ -218,7 +226,7 @@ vgui.Register("ttt_equipment_background", PANEL, "EditablePanel")
 local PANEL = {}
 function PANEL:Init()
 	self.Text = self:Add "DLabel"
-	self.Text:SetTextColor(evil_color)
+	self.Text:SetTextColor(IsEvil() and evil_color or good_color)
 	self.Text:SetContentAlignment(5)
 	self.Text:SetFont "ttt_equipment_header_font"
 
@@ -242,7 +250,6 @@ vgui.Register("ttt_equipment_header", PANEL, "ttt_equipment_background")
 
 local buy_button_mat = CreateMaterial("ttt_buy_material", "UnlitGeneric", {
 	["$basetexture"] = "color/white",
-	["$color"] = string.format("{ %i %i %i }", evil_color.r, evil_color.g, evil_color.b),
 	["$alpha"] = 1
 })
 local PANEL = {}
@@ -263,6 +270,8 @@ function PANEL:Init()
 	self:SetMouseInputEnabled(true)
 
 	self:PerformLayout(self:GetSize())
+
+	buy_button_mat:SetVector("$color", (IsEvil() and evil_color or good_color):ToVector())
 end
 
 function PANEL:PerformLayout(w, h)
@@ -434,15 +443,13 @@ vgui.Register("ttt_item_screen", PANEL, "EditablePanel")
 
 local PANEL = {}
 
-local mat = Material("tttrw/transparentevil.png", "noclamp smooth")
-
 function PANEL:Init()
 	self:SetMouseInputEnabled(true)
 	self.CloseButton = self:Add "ttt_close_button"
 	self.CreditScreen = self:Add "ttt_credit_screen"
 	self.ItemScreen = self:Add "ttt_item_screen"
 
-	self.CloseButton:SetColor(evil_color)
+	self.CloseButton:SetColor(IsEvil() and evil_color or good_color)
 
 	self.CloseButton:SetZPos(1)
 	self.CloseButton:Dock(TOP)
@@ -451,9 +458,19 @@ function PANEL:Init()
 
 	self:OnScreenSizeChanged(ScrW(), ScrH())
 	timer.Simple(0, function()
-		mat:SetFloat("$alpha", 0.03)
-		mat:SetVector("$color", evil_icons_color:ToVector())
+		mat_evil:SetFloat("$alpha", 0.03)
+		mat_evil:SetVector("$color", evil_icons_color:ToVector())
+		mat_good:SetFloat("$alpha", 0.03)
+		mat_good:SetVector("$color", good_icons_color:ToVector())
 	end)
+
+	hook.Add("OnPlayerRoleChange", self, self.OnPlayerRoleChange)
+end
+
+function PANEL:OnPlayerRoleChange(ply, old, new)
+	if (ply == LocalPlayer() and old ~= new) then
+		self:Remove()
+	end
 end
 
 function PANEL:OnScreenSizeChanged(w, h)
@@ -489,6 +506,8 @@ local bg_color = CreateMaterial("ttt_color_material", "UnlitGeneric", {
 
 local matrix = Matrix()
 function PANEL:Paint(w, h)
+	local mat = LocalPlayer():GetRoleData().Evil and mat_evil or mat_good
+
 	hud.StartStenciledMesh(self.Mesh, self:LocalToScreen(0, 0))
 		render.SetMaterial(bg_color)
 		render.DrawScreenQuad()
@@ -505,11 +524,6 @@ function PANEL:Paint(w, h)
 	hud.EndStenciledMesh()
 end
 vgui.Register("ttt_equipment_menu", PANEL, "EditablePanel")
-
-if (IsValid(ttt.equipment_menu)) then
-	ttt.equipment_menu:Remove()
-	ttt.equipment_menu = nil
-end
 
 function GM:OnContextMenuOpen()
 	if (not LocalPlayer():GetRoleData().CanUseBuyMenu or ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE or not LocalPlayer():Alive()) then
