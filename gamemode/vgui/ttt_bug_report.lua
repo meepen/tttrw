@@ -75,11 +75,15 @@ function PANEL:Init()
 				self:GetParent():GetParent():Remove()
 				chat.AddText("Submitted! We will get to this as soon as we can! Thanks!")
 			else
+				chat.AddText("Failed! Please let one of the Developers know this happened!")
+				
+				if (not IsValid(self) or not IsValid(self:GetParent()) then return end
+				self:SetDisabled(false)
+				
+				local p = self:GetParent()
 				p.Checkbox:SetDisabled(false)
 				p.Title:SetDisabled(false)
 				p.Contents:SetDisabled(false)
-				self:SetDisabled(false)
-				chat.AddText("Failed! Please let one of the Developers know this happened!")
 			end
 		end)
 	end
