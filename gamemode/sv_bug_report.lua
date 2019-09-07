@@ -15,14 +15,12 @@ net.Receive("BugReportSubmit", function(len, ply)
 				print("[Bug Report] Success:")
 				print(response)
 				net.Start("BugReportResponse")
-					net.WriteBool(true)
 				net.Send(ply)
 			end,
 			failed = function(response)
 				print("[Bug Report] Failed:")
 				print(response)
 				net.Start("BugReportResponse")
-					net.WriteBool(false)
 				net.Send(ply)
 			end,
 			url = webhook:GetString(),

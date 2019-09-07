@@ -56,10 +56,10 @@ function PANEL:Init()
 	self.Send:SetText("Submit")
 	function self.Send:DoClick()
 		local p = self:GetParent()
-		p.Checkbox:SetDisabled(false)
-		p.Title:SetDisabled(false)
-		p.Contents:SetDisabled(false)
-		self:SetDisabled(false)
+		p.Checkbox:SetDisabled(true)
+		p.Title:SetDisabled(true)
+		p.Contents:SetDisabled(true)
+		self:SetDisabled(true)
 		
 		net.Start("BugReportSubmit")
 			net.WriteBool(p.Checkbox:GetChecked())
@@ -71,13 +71,14 @@ function PANEL:Init()
 			net.WriteString(VERSION)
 			net.WriteString(BRANCH)
 		net.SendToServer()
+		
 		net.Receive("BugReportResponse", function()
-			if (net.ReadBool()) then
-				self:GetParent():GetParent():Remove()
-				chat.AddText("Submitted! We will get to this as soon as we can! Thanks!")
-			else
-				chat.AddText("Failed! Please let one of the Developers know this happened!")
-			end
+			chat.AddText("Submitted! We will get to this as soon as we can! Thanks!")
+			
+			if (not IsValid(self) or not IsValid(self:GetParent()) or not IsValid(self:GetParent():GetParent())) then return end
+			self:GetParent():GetParent():Remove()
+			
+			--chat.AddText("Failed! Please let one of the Developers know this happened!")
 		end)
 	end
 end
