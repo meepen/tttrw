@@ -12,7 +12,9 @@ SWEP.IconLetter         = "w"
 
 SWEP.Base                  = "weapon_tttbase"
 
-SWEP.ViewModelFOV          = 70
+SWEP.Kind                  = WEAPON_HEAVY
+SWEP.WeaponID              = AMMO_PISTOL
+SWEP.ViewModelFOV          = 63
 
 SWEP.Bullets = {
 	HullSize = 0,
@@ -20,17 +22,17 @@ SWEP.Bullets = {
 	DamageDropoffRange = 4500,
 	DamageDropoffRangeMax = 7520,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(0.009, 0.009),
+	Spread = Vector(0.009, 0.009, 0),
 }
 
 SWEP.Primary.Damage        = 35
-SWEP.Primary.Delay         = 0.30
-SWEP.Primary.Recoil        = 2
-SWEP.Primary.RecoilTiming  = 0.16
-SWEP.Primary.Automatic     = false
+SWEP.Primary.Delay         = 0.6
+SWEP.Primary.Recoil        = 3
+SWEP.Primary.RecoilTiming  = 0.085
+SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "357"
-SWEP.Primary.ClipSize      = 15
-SWEP.Primary.DefaultClip   = 45
+SWEP.Primary.ClipSize      = 15 --15
+SWEP.Primary.DefaultClip   = 30 --30
 SWEP.Primary.Sound         = Sound "Weapon_G3SG1.Single"
 SWEP.Secondary.Sound       = Sound "Default.Zoom"
 SWEP.HasScope              = true
