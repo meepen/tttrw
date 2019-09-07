@@ -11,7 +11,7 @@ function ENT:NetworkVarNotifyCallback(name, old, new)
 		return
 	end
 	local parent = self:GetParent()
-	printf("Player(%i) [%s] %s::%s: %s -> %s (seen as %s)", IsValid(parent) and parent:UserID() or -1, IsValid(parent) and parent:Nick() or "NULL", self:GetClass(), name, old, new, self["Get" .. name](self))
+	-- printf("Player(%i) [%s] %s::%s: %s -> %s (seen as %s)", IsValid(parent) and parent:UserID() or -1, IsValid(parent) and parent:Nick() or "NULL", self:GetClass(), name, old, new, self["Get" .. name](self))
 	timer.Simple(0, function()
 		-- NW2Vars are late??
 		if (not IsValid(self)) then
@@ -33,7 +33,7 @@ function ENT:SetupDataTables()
 		end
 		]]
 
-		printf("Registering variable %s (type %s)", var.Name, var.Type)
+		-- printf("Registering variable %s (type %s)", var.Name, var.Type)
 		--self:NetworkVar(var.Type, types[var.Type], var.Name)
 		if (SERVER and var.Default) then
 			--self["Set"..var.Name](self, var.Default)

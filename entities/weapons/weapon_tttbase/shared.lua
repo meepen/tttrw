@@ -42,7 +42,7 @@ function SWEP:IsToggleADS()
 end
 
 function SWEP:NetworkVarNotifyCallback(name, old, new)
-	printf("%s::%s %s -> %s", self:GetClass(), name, old, new)
+	-- printf("%s::%s %s -> %s", self:GetClass(), name, old, new)
 end
 
 function SWEP:NetVar(name, type, default, notify)

@@ -7,7 +7,7 @@ ENT.Author = "Meepen"
 ENT.Contact = "meepdarknessmeep@gmail.com"
 
 function ENT:NetworkVarNotifyCallback(name, old, new)
-	printf("%s::%s: %s -> %s", self:GetClass(), name, old, new)
+	-- printf("%s::%s: %s -> %s", self:GetClass(), name, old, new)
 	if (old == new) then
 		return
 	end
@@ -25,7 +25,7 @@ function ENT:SetupDataTables()
 		end
 		]]
 
-		printf("Registering variable %s (type %s)", var.Name, var.Type)
+		-- printf("Registering variable %s (type %s)", var.Name, var.Type)
 		--self:NetworkVar(var.Type, types[var.Type], var.Name)
 
 		local nw2getter = "GetNW2"..var.Type
