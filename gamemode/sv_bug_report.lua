@@ -49,7 +49,7 @@ net.Receive("BugReportSubmit", function(len, ply)
 								},
 								{
 									name = "Client Data",
-									value = string.format("Resolution: %ix%i, OS: %s", net.ReadUInt(32), net.ReadUInt(32), net.ReadString())
+									value = string.format("Resolution: %ix%i, OS: %s, Version: %s/%s", net.ReadUInt(32), net.ReadUInt(32), net.ReadString(), net.ReadString(), net.ReadString())
 								},
 								{
 									name = "Commit",

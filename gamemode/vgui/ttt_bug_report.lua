@@ -67,6 +67,8 @@ function PANEL:Init()
 			net.WriteUInt(ScrW(), 32)
 			net.WriteUInt(ScrH(), 32)
 			net.WriteString(jit.os)
+			net.WriteString(VERSION)
+			net.WriteString(BRANCH)
 		net.SendToServer()
 		net.Receive("BugReportResponse", function()
 			if (net.ReadBool()) then
