@@ -119,7 +119,7 @@ else
 			
 			self:SetNW2Vector("scan_pos_" .. i, pl:GetPos())
 			
-			local color = pl:GetRoleData().Color or color_black
+			local color = pl.HiddenState:IsVisibleTo(self:GetParent()) and pl:GetRoleData().Color or ttt.roles.innocent.Color
 			
 			self:SetNW2Vector("scan_color_" .. i, color:ToVector())
 		end
