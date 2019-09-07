@@ -37,37 +37,23 @@ function GM:PlayerCanSeePlayersChat(text, team, listener, speaker)
     return true
 end
 
-function GM:PlayerCanHearPlayersVoice(hear,talk)
+function GM:PlayerCanHearPlayersVoice(hear, talk)
     if (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
         return true, false
-    else
-        if (not talk:Alive() and hear:Alive()) then
-            return false, false
-        elseif not (talk:Alive() or hear:Alive()) then
-            return true, false
-        end
-        local channel = talk:GetRoleData().VoiceChannel
-        if (talk:KeyDown(IN_SHIFT) and ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE and channel) then
-            if (channel and hear:GetRoleData().VoiceChannel == channel) then
-                return true, false
-            else
-                return false, false
-            end
-        end
+    end
+
+    if (not talk:Alive() and not hear:Alive()) then
         return true, false
     end
-end
 
-function GM:VoiceKey(ply, key)
-    local channel = ply:GetRoleData().VoiceChannel
-    if (not channel or not ply:Alive()) then return end
-    if (key == IN_SPEED) then
-        ply.VoiceChannel = channel
+    if (not talk:Alive() and hear:Alive()) then
+        return false, false
     end
-end
 
-function GM:KeyRelease(ply, key)
-    if (key == IN_SPEED) then
-        ply.VoiceChannel = nil
+    local channel = talk:GetRoleData().VoiceChannel
+    if (channel and talk:KeyDown(IN_SPEED) and hear:GetRoleData().VoiceChannel ~= channel) then
+        return false, false
     end
+
+    return true, false
 end

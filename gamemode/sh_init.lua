@@ -105,7 +105,9 @@ function GM:KeyPress(ply, key)
 		RunConsoleCommand "ttt_radio"
 	end
 
-	self:VoiceKey(ply, key)
+	if (self.VoiceKey) then
+		self:VoiceKey(ply, key)
+	end
 
 	if (key == IN_USE_ALT and self:TryInspectBody(ply)) then
 		return
