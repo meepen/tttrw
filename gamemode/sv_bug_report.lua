@@ -24,10 +24,7 @@ net.Receive("BugReportSubmit", function(len, ply)
 				print("[Bug Report] Success:")
 				print(response)
 				net.Start("BugReportResponse")
-<<<<<<< HEAD
-=======
 					net.WriteString("success")
->>>>>>> limiter
 				net.Send(ply)
 			end,
 			failed = function(response)
@@ -41,10 +38,7 @@ net.Receive("BugReportSubmit", function(len, ply)
 				print("[Bug Report] Failed:")
 				print(ply, response)
 				net.Start("BugReportResponse")
-<<<<<<< HEAD
-=======
 					net.WriteString(response)
->>>>>>> limiter
 				net.Send(ply)
 			end,
 			url = webhook:GetString(),
