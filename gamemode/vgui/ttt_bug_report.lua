@@ -55,12 +55,13 @@ function PANEL:Init()
 	self.Send:Dock(BOTTOM)
 	self.Send:SetText("Submit")
 	function self.Send:DoClick()
+		local p = self:GetParent()
+		p.Checkbox:SetDisabled(false)
+		p.Title:SetDisabled(false)
+		p.Contents:SetDisabled(false)
+		self:SetDisabled(false)
+		
 		net.Start("BugReportSubmit")
-			local p = self:GetParent()
-			p.Checkbox:SetDisabled(true)
-			p.Title:SetDisabled(true)
-			p.Contents:SetDisabled(true)
-			self:SetDisabled(true)
 			net.WriteBool(p.Checkbox:GetChecked())
 			net.WriteString(p.Title:GetText())
 			net.WriteString(p.Contents:GetText())
@@ -76,14 +77,6 @@ function PANEL:Init()
 				chat.AddText("Submitted! We will get to this as soon as we can! Thanks!")
 			else
 				chat.AddText("Failed! Please let one of the Developers know this happened!")
-				
-				if (not IsValid(self) or not IsValid(self:GetParent()) then return end
-				self:SetDisabled(false)
-				
-				local p = self:GetParent()
-				p.Checkbox:SetDisabled(false)
-				p.Title:SetDisabled(false)
-				p.Contents:SetDisabled(false)
 			end
 		end)
 	end
