@@ -1,6 +1,5 @@
 AddCSLuaFile()
 
-ENT.Type = "point"
 ENT.Base = "ttt_point_info"
 DEFINE_BASECLASS(ENT.Base)
 
@@ -43,16 +42,9 @@ end
 function ENT:SetupDataTables()
     self:NetworkVar("Bool", 0, "Identified")
     self:NetworkVar("Entity", 0, "Ragdoll")
+    self:NetworkVar("Entity", 1, "Player")
     self:NetworkVar("String", 0, "Nick")
     self:NetworkVar("String", 1, "Role")
-end
-
-function ENT:GetPlayer()
-    return self:GetOwner()
-end
-
-function ENT:SetPlayer(e)
-    self:SetOwner(e)
 end
 
 function ENT:GetData()

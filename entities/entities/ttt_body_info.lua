@@ -1,7 +1,7 @@
 AddCSLuaFile()
 
-ENT.Type = "point"
 ENT.Base = "ttt_point_info"
+DEFINE_BASECLASS(ENT.Base)
 ENT.IsBodyInfo = true
 
 function ENT:NetVar(name, type, default)
@@ -25,6 +25,7 @@ function ENT:SetupDataTables()
 end
 
 function ENT:Initialize()
+	BaseClass.Initialize(self)
 	if (SERVER) then
 		self:SetIndex(self:GetParent():GetAndIncrementIndex())
 	end
