@@ -6,6 +6,15 @@ local auth = CreateConVar("tttrw_bug_report_auth", "", {FCVAR_ARCHIVE, FCVAR_UNL
 
 net.Receive("BugReportSubmit", function(len, ply)
 	if (IsValid(ply)) then
+		if ((ply.NextBugReport or math.huge) < CurTime()) then
+			net.Start("BugReportResponse")
+				net.WriteString("too fast")
+			net.Send(ply)
+			return
+		end
+
+		ply.NextBugReport = CurTime() + 30
+
 		local type = net.ReadBool()
 		local title = net.ReadString()
 		local msg = net.ReadString()
@@ -15,12 +24,27 @@ net.Receive("BugReportSubmit", function(len, ply)
 				print("[Bug Report] Success:")
 				print(response)
 				net.Start("BugReportResponse")
+<<<<<<< HEAD
+=======
+					net.WriteString("success")
+>>>>>>> limiter
 				net.Send(ply)
 			end,
 			failed = function(response)
+				if (response == "unsuccessful") then
+					net.Start("BugReportResponse")
+						net.WriteBool("success")
+					net.Send(ply)
+					return
+				end
+
 				print("[Bug Report] Failed:")
-				print(response)
+				print(ply, response)
 				net.Start("BugReportResponse")
+<<<<<<< HEAD
+=======
+					net.WriteString(response)
+>>>>>>> limiter
 				net.Send(ply)
 			end,
 			url = webhook:GetString(),

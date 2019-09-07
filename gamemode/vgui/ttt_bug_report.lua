@@ -73,12 +73,24 @@ function PANEL:Init()
 		net.SendToServer()
 		
 		net.Receive("BugReportResponse", function()
+<<<<<<< HEAD
 			chat.AddText("Submitted! We will get to this as soon as we can! Thanks!")
 			
 			if (not IsValid(self) or not IsValid(self:GetParent()) or not IsValid(self:GetParent():GetParent())) then return end
 			self:GetParent():GetParent():Remove()
 			
 			--chat.AddText("Failed! Please let one of the Developers know this happened!")
+=======
+			local response = net.ReadString()
+			if (response ~= "success") then
+				chat.AddText("Failed! Please let one of the Developers know this happened! err: " .. response)
+			else
+				if (IsValid(self)) then
+					self:GetParent():GetParent():Remove()
+				end
+				chat.AddText("Submitted! We will get to this as soon as we can! Thanks!")
+			end
+>>>>>>> limiter
 		end)
 	end
 end
