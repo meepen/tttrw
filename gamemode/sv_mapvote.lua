@@ -56,11 +56,15 @@ function GM:MapVote_TTTEndRound()
 end
 
 function GM:ShouldChangeMap()
+    if (self.InitialCommit ~= self.CurrentCommit) then
+        return not not self.CurrentCommit, "Server lua has been updated."
+    end
+
     if (ttt_round_limit:GetInt() <= ttt.GetRoundNumber()) then
         return true, "Round limit reached."
     end
     
-    if (self.InitialCommit ~= self.CurrentCommit) then
+    if (self.InitialCommit ~= self.CurrentCommit and self.CurrentCommit) then
         return true, "Server lua has been updated."
     end
 
