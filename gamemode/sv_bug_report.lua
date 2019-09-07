@@ -6,7 +6,7 @@ local auth = CreateConVar("tttrw_bug_report_auth", "", {FCVAR_ARCHIVE, FCVAR_UNL
 
 net.Receive("BugReportSubmit", function(len, ply)
 	if (IsValid(ply)) then
-		if ((ply.NextBugReport or math.huge) < CurTime()) then
+		if ((ply.NextBugReport or -math.huge) > CurTime()) then
 			net.Start("BugReportResponse")
 				net.WriteString("too fast")
 			net.Send(ply)
