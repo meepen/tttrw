@@ -13,6 +13,7 @@ AddCSLuaFile();
 		"sv_weapons.lua",
 		"sv_logging.lua",
 		"sv_mapvote.lua",
+		"sv_bug_report.lua",
 	},
 	Client = {
 		"cl_hud_helpers.lua",
@@ -30,6 +31,7 @@ AddCSLuaFile();
 		"vgui/ttt_dna_menu.lua",
 		"vgui/ttt_radio.lua",
 		"vgui/ttt_settings.lua",
+		"vgui/ttt_bug_report.lua",
 		"cl_hud.lua",
 		"cl_scoreboard.lua",
 		"cl_hitmarkers.lua",
