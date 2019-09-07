@@ -47,7 +47,7 @@ function GM:PlayerCanHearPlayersVoice(hear,talk)
             return true, false
         end
         local channel = talk:GetRoleData().VoiceChannel
-        if (ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE and channel) then
+        if (talk:KeyDown(IN_SHIFT) and ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE and channel) then
             if (channel and hear:GetRoleData().VoiceChannel == channel) then
                 return true, false
             else
