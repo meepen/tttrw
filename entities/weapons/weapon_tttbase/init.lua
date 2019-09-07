@@ -70,10 +70,10 @@ function SWEP:OverrideCommand(ply, cmd)
             start = tr.StartPos,
             endpos = pos,
             filter = ents.GetAll(),
-            mask = MASK_SHOT_HULL
+			mask = MASK_SHOT,
         }
 
-        if (tr0.Fraction ~= 1) then
+        if (tr0.Fraction ~= 1 and tr0.Entity ~= entity) then
 			printf("%s tried to hit someone they didn't HIt omfajnsuijk", self:GetOwner():Nick())
             return
         end
