@@ -140,7 +140,9 @@ function PANEL:BodyDataInitialized(ent)
         end
     end
 
-    self:GetParent():Select(ent:GetData()[1])
+    if (ent:GetData()[1]) then
+        self:GetParent():Select(ent:GetData()[1])
+    end
 end
 
 
