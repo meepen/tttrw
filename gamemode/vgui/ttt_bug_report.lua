@@ -1,9 +1,3 @@
-local bg_color = CreateMaterial("ttt_bugs_color" .. math.random(0, 0x8000), "UnlitGeneric", {
-	["$basetexture"] = "color/white",
-	["$color"] = "{ 13 12 13 }",
-	["$alpha"] = 0.92
-})
-
 local ttt_body_normal = Color(51, 51, 52)
 
 surface.CreateFont("ttt_bugs_text_font", {
@@ -70,6 +64,9 @@ function PANEL:Init()
 			net.WriteBool(p.Checkbox:GetChecked())
 			net.WriteString(p.Title:GetText())
 			net.WriteString(p.Contents:GetText())
+			net.WriteUInt(ScrW(), 32)
+			net.WriteUInt(ScrH(), 32)
+			net.WriteString(jit.os)
 		net.SendToServer()
 		net.Receive("BugReportResponse", function()
 			if (net.ReadBool()) then
@@ -116,7 +113,7 @@ end
 
 vgui.Register("ttt_bug_report", PANEL, "ttt_curved_panel")
 
-concommand.Add("tttrw_bug_report", function()
+function GM:ShowTeam()
 	local tttbugreports = vgui.Create("ttt_bug_report")
 	tttbugreports:MakePopup()
-end)
+end

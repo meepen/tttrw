@@ -9,25 +9,7 @@ net.Receive("BugReportSubmit", function(len, ply)
 		local type = net.ReadBool()
 		local title = net.ReadString()
 		local msg = net.ReadString()
-		local json = util.TableToJSON({
-			embeds = {
-				{
-					color = !type and 16711680 or 65280,
-					timestamp = os.date("!%Y-%m-%dT%H:%M:%S.000", os.time()),
-					author = {
-						name = "Submitted By: "..ply:Nick(),
-						url = "https://steamcommunity.com/profiles/"..ply:SteamID64(),
-					},
-					title = "**"..title.."**",
-					fields = {
-						{
-							name = "Details",
-							value = msg,
-						}
-					},
-				}
-			}
-		})
+
 		local request = {
 			success = function(c,response,h)
 				print("[Bug Report] Success:")
@@ -43,11 +25,44 @@ net.Receive("BugReportSubmit", function(len, ply)
 					net.WriteBool(false)
 				net.Send(ply)
 			end,
-			url = webhook,
+			url = webhook:GetString(),
 			method = "POST",
-			body = json,
+			parameters = {
+				data = util.TableToJSON {
+					embeds = {
+						{
+							color = !type and 16711680 or 65280,
+							timestamp = os.date("!%Y-%m-%dT%H:%M:%S.000", os.time()),
+							author = {
+								name = "Submitted By: "..ply:Nick(),
+								url = "https://steamcommunity.com/profiles/"..ply:SteamID64(),
+							},
+							title = "**"..title.."**",
+							fields = {
+								{
+									name = "Details",
+									value = msg,
+								},
+								{
+									name = "Server IP",
+									value = game.GetIPAddress(),
+								},
+								{
+									name = "Client Data",
+									value = string.format("Resolution: %ix%i, OS: %s", net.ReadUInt(32), net.ReadUInt(32), net.ReadString())
+								},
+								{
+									name = "Commit",
+									value = gmod.GetGamemode().InitialCommit or "n/a"
+								}
+							},
+						}
+					}
+				}
+			},
 			headers = {
-				Authentication = "Basic "..auth:GetString(),
+				["Content-Type"] = "application/json",
+				Authentication = auth:GetString(),
 			},
 		}
 		HTTP(request)

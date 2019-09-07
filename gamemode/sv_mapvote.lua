@@ -23,7 +23,7 @@ function GM:TrackCurrentCommit()
     local Commit = ReadCommitFile()
 
     if (Commit) then
-		self.CurrentCommit = Commit.commit
+        self.CurrentCommit = Commit.branch.. "#" .. Commit.commit
     else
 		self.CurrentCommit = nil
     end
@@ -32,6 +32,8 @@ function GM:TrackCurrentCommit()
 		self.InitialCommit = self.CurrentCommit
 	end
 end
+
+GM:TrackCurrentCommit()
 
 function GM:CheckPassword(sid64, ipaddr, svpassword, clpassword, name)
 	printf("%s [%s] (%s) tried joining with password = %s", name, sid64, ipaddr, clpassword)
