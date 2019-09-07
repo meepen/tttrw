@@ -148,7 +148,7 @@ function SWEP:PrimaryAttack()
 		owner:SetAnimation(PLAYER_ATTACK1)
 
 		if (IsValid(hitEnt)) then
-			if (not self:TryOpen(hitEnt)) then
+			if (not self:TryOpen(hitEnt) and IsValid(tr_all.Entity)) then
 				self:TryOpen(tr_all.Entity)
 			end
 
