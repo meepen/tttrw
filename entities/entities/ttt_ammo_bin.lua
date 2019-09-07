@@ -78,7 +78,6 @@ function ENT:Use(ply)
                     self:EmitSound(Sound("items/ammo_pickup.wav"))
                     ply:SetAmmo(d + ply:GetAmmoCount(wep:GetPrimaryAmmoType()), wep:GetPrimaryAmmoType())
                     self:SetPercentRemaining(self:GetPercentRemaining() - math.ceil(pr))
-                    ply:ChatPrint("Remaining: " .. self:GetPercentRemaining() .. "%")
                 end
                 self.Cooldown = true
                 timer.Simple(1, function()
