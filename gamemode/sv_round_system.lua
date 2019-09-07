@@ -317,6 +317,10 @@ function GM:PlayerInitialSpawn(ply)
 	ply:AllowFlashlight(true)
 	ply:SetTeam(TEAM_SPECTATOR)
 	ply.Tickets = 1
+
+	if (player.GetCount() == 1 and hook.Run "ShouldChangeMap") then
+		game.LoadNextMap()
+	end
 end
 
 function GM:SV_PlayerSpawn(ply)
