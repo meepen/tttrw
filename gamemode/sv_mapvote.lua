@@ -33,8 +33,6 @@ function GM:TrackCurrentCommit()
 	end
 end
 
-GM:TrackCurrentCommit()
-
 function GM:CheckPassword(sid64, ipaddr, svpassword, clpassword, name)
 	printf("%s [%s] (%s) tried joining with password = %s", name, sid64, ipaddr, clpassword)
 
