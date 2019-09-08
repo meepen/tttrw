@@ -58,14 +58,7 @@ local function GetHurtReward(dmg)
 end
 
 local function KarmaEnabled()
-	return ttt_karma:GetBool()
-end
-
-function GM:DecayKarma(ply, dmg)
-	if (not KarmaEnabled()) then
-		return
-	end
-
+	return ttt_karma:GetBool() and ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE
 end
 
 function GM:Karma_TTTEndRound()
@@ -116,6 +109,10 @@ function GM:Karma_PlayerDisconnected(ply)
 end
 
 function GM:Karma_DoPlayerDeath(ply, atk, dmg)
+	if (not KarmaEnabled()) then
+		return
+	end
+
 	if (not IsValid(atk) or not atk:IsPlayer()) then
 		return
 	end
@@ -132,6 +129,10 @@ function GM:Karma_DoPlayerDeath(ply, atk, dmg)
 end
 
 function GM:Karma_EntityTakeDamage(vic, dmg)
+	if (not KarmaEnabled()) then
+		return
+	end
+
 	if (not IsValid(vic) or not vic:IsPlayer()) then
 		return
 	end
@@ -159,6 +160,10 @@ function GM:Karma_EntityTakeDamage(vic, dmg)
 end
 
 function GM:ScalePlayerDamage(ply, hg, dmg)
+	if (not KarmaEnabled()) then
+		return
+	end
+
 	if (dmg:IsDamageType(DMG_SLASH)) then
 		return
 	end
