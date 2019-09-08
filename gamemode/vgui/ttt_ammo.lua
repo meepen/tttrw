@@ -113,7 +113,7 @@ function PANEL:UpdateAllAmmo(pl, wep)
 	self.ReserveAmmo = reserve
 	
 	if (cur_bullets == -1) then
-		cur_bullets = "∞"
+		cur_bullets = ""
 		max_bullets = ""
 		reserve = ""
 	end
