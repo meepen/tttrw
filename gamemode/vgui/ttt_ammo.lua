@@ -128,8 +128,8 @@ function PANEL:PlayerSwitchWeapon(pl, old, new)
 		self.Model:Remove()
 	end
 
-	if (IsValid(new)) then
-		self.Model = ClientsideModel(weapons.GetStored(new:GetClass()).WorldModel, RENDERGROUP_OTHER)
+	if (IsValid(new) and new.WorldModel) then
+		self.Model = ClientsideModel(new.WorldModel, RENDERGROUP_OTHER)
 		self.Model:SetNoDraw(true)
 	end
 
@@ -149,12 +149,7 @@ function PANEL:PlayerSpawn(pl)
 		return
 	end
 
-	if (IsValid(new)) then
-		self.Model = ClientsideModel(weapons.GetStored(new:GetClass()).WorldModel, RENDERGROUP_OTHER)
-		self.Model:SetNoDraw(true)
-	end
-
-	self:UpdateAllAmmo(pl, new)
+	self:PlayerSwitchWeapon(pl, new, new)
 end
 
 function PANEL:PerformLayout()
