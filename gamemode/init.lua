@@ -63,3 +63,7 @@ function GM:PlayerRagdollCreated(ply, rag, atk)
 	body_dna:SetParent(rag.HiddenState)
 	body_dna:Spawn()
 end
+
+function GM:PlayerDeathSound()
+	return true
+end
