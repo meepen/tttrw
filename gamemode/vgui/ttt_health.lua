@@ -129,8 +129,9 @@ function PANEL:Init()
 end
 
 function PANEL:PerformLayout()
-	self:SetPos(ScrW() * 0.04375, ScrH() * 0.8722)
-	self:SetSize(ScrW() * 0.3, ScrH() * 0.045)
+	local height = ScrH() * 0.045
+	self:SetPos(ScrW() * 0.02675, ScrH() - height * 2)
+	self:SetSize(ScrW() * 0.3, height)
 
 	local health = math.max(self:GetTarget():Health(), 0)
 	

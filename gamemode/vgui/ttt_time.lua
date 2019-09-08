@@ -5,7 +5,6 @@ local status_color = Color(154, 153, 153)
 function PANEL:Init()
 	self:AddFunction("ttt", "ready", function()
 		self.Ready = true
-		self:UpdateState()
 	end)
 	
 	self:SetHTML [[
@@ -100,7 +99,7 @@ function PANEL:Init()
 </body>
 ]]
 	
-	self.StartTime = 0
+	self.InitDone = false
 	hook.Add("OnRoundStateChange", self, self.OnRoundStateChange)
 	hook.Add("OnPlayerRoleChange", self, self.OnPlayerRoleChange)
 end
@@ -110,15 +109,14 @@ function PANEL:OnRemove()
 end
 
 function PANEL:UpdateState()
-	local color, text = status_color
+	local color, text = status_color, "Unknown"
 	local state = self.State or ttt and ttt.GetRoundState and ttt.GetRoundState()
-	if (not IsValid(LocalPlayer()) or not LocalPlayer().GetRole) then
-		return
-	end
-	if (state == ttt.ROUNDSTATE_ACTIVE and self:GetTarget() == LocalPlayer()) then
-		local data = ttt.roles[self.Role or LocalPlayer():GetRole()]
-		text = data.Name
+	local pl = LocalPlayer()
+	
+	if (state == ttt.ROUNDSTATE_ACTIVE and self:GetTarget() == pl) then
+		local data = ttt.roles[self.Role or pl:GetRole()]
 
+		text = data.Name
 		color = data.Color
 	else
 		text = ttt.Enums.RoundState[state]
@@ -133,9 +131,8 @@ function PANEL:OnRoundStateChange(old, new)
 end
 
 function PANEL:OnPlayerRoleChange(ply, old, new)
-	if (ply ~= LocalPlayer()) then
-		return
-	end
+	if (ply ~= LocalPlayer()) then return end
+	
 	self.Role = new
 	self:UpdateState()
 end
@@ -150,6 +147,15 @@ end
 
 function PANEL:Tick()
 	if (not self.Ready) then return end
+	
+	if (not self.InitDone) then
+		if (LocalPlayer().GetRole) then
+			self.InitDone = true
+			self:UpdateState()
+		else
+			return
+		end
+	end
 
 	local ends = (LocalPlayer():GetRoleData().Evil and ttt.GetRealRoundEndTime or ttt.GetVisibleRoundEndTime)()
 	local starts = ttt.GetRoundStateChangeTime()
