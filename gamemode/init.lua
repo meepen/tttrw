@@ -64,6 +64,9 @@ function GM:PlayerRagdollCreated(ply, rag, atk)
 	body_dna:SetDNAEntity(e)
 	body_dna:SetParent(rag.HiddenState)
 	body_dna:Spawn()
+
+	rag.HiddenState:SetCredits(ply:GetCredits())
+	ply:SetCredits(0)
 end
 
 function GM:PlayerDeathSound()

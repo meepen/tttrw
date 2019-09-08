@@ -13,7 +13,7 @@ function GM:TryInspectBody(ply)
 	end
 
 	hook.Run("PlayerInspectBody", ply, tr.Entity, tr.HitPos)
-	
+
 	return true
 end
 
@@ -35,12 +35,18 @@ function GM:PlayerInspectBody(ply, ent, pos)
 	else
 		ent.HiddenState:SetVisibleTo(ply)
 
+		local creds = ent.HiddenState:GetCredits()
+		if (creds > 0 and ply:GetRoleData().DefaultCredits) then
+			ply:SetCredits(ply:GetCredits() + creds)
+			ply:Notify("You've received " .. creds .. " credits from the body")
+			ent.HiddenState:SetCredits(0)
+		end
+
 		if (ply:Alive() and not ply:KeyDown(IN_WALK) and not ent.HiddenState:GetIdentified()) then
 			ent.HiddenState:SetIdentified(true)
 
-
 			for _, oply in pairs(player.GetAll()) do
-				oply:Notify(ply:Nick() .. " has confirmed " .. ent.HiddenState:GetNick() .. "'s death")
+				oply:Notify(ply:Nick() .. " has confirmed " .. ent.HiddenState:GetNick() .. "'s death, they were a " .. ent.HiddenState:GetRole())
 			end
 
 			local victim = ent.HiddenState:GetPlayer()
