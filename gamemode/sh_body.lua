@@ -9,8 +9,6 @@ if (SERVER) then
 			return
 		end
 
-		print(cl)
-
 		hook.Run("PlayerInspectBody", ply, ent, ent:GetPos())
 	end)
 end

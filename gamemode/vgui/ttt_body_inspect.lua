@@ -51,6 +51,16 @@ local function OnBodyInitialize(self, cb)
 	end
 end
 
+local function OnBodyInfoInitialized(self, cb)
+	hook.Add("OnBodyInfoInitialized", self, function(self, e)
+		timer.Simple(0, function()
+			if (IsValid(self) and IsValid(e:GetParent()) and e:GetParent():GetRagdoll() == ttt.InspectBody) then
+				cb(self, e)
+			end
+		end)
+	end)
+end
+
 function PANEL:Init()
 	self:SetCurve(5)
 	self:SetColor(Color(41, 41, 42))
@@ -106,6 +116,7 @@ function PANEL:PerformLayout(w, h)
 end
 
 function PANEL:Select(var)
+	self.Current = var
 	self.Header:SetText(var:GetTitle())
 
 	self.CurrentElement:SetVariable(var)
@@ -123,6 +134,15 @@ function PANEL:Init()
 	self:DockMargin(0, Padding, Padding, Padding)
 
 	OnBodyInitialize(self, self.BodyDataInitialized)
+	OnBodyInfoInitialized(self, self.OnBodyInfoInitialized)
+end
+
+function PANEL:OnBodyInfoInitialized(ent)
+	for _, pnl in pairs(self:GetChildren()) do
+		pnl:Remove()
+	end
+
+	self:BodyDataInitialized(ent:GetParent())
 end
 
 function PANEL:BodyDataInitialized(ent)
@@ -140,8 +160,10 @@ function PANEL:BodyDataInitialized(ent)
 		end
 	end
 
-	if (ent:GetData()[1]) then
-		self:GetParent():Select(ent:GetData()[1])
+	local current = self:GetParent().Current or ent:GetData()[1]
+
+	if (IsValid(current)) then
+		self:GetParent():Select(current)
 	end
 end
 

@@ -5,6 +5,7 @@ DEFINE_BASECLASS(ENT.Base)
 ENT.PrintName = "TTT Equipment State"
 ENT.Author = "Ling"
 ENT.Contact = "lingbleed@gmail.com"
+ENT.Cleanup = true
 
 ENT.Timers = {}
 

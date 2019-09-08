@@ -30,6 +30,7 @@ function ENT:Initialize()
 	if (SERVER) then
 		self:SetIndex(self:GetParent():GetAndIncrementIndex())
 	end
+	hook.Run("OnBodyInfoInitialized", self)
 end
 
 function ENT:IsVisibleTo(ply)
