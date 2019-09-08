@@ -121,6 +121,8 @@ function PANEL:Think()
 			self:SetParent(self:GetParent():GetParent():GetParent():GetParent().Groups[group])
 			self.Group = group
 		end
+
+		self.Karma:SetText(ply:GetKarma())
 	end
 end
 
