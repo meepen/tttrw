@@ -23,6 +23,7 @@ function PLAYER:SetupDataTables()
 	local ply = self.Player
 
 	self.Player:NetworkVar("Bool", 0, "Confirmed")
+	self.Player:NetworkVar("Int", 0, "Karma")
 
 	-- TODO(meep): make hook here
 end

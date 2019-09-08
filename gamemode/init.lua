@@ -18,6 +18,7 @@ end
 function GM:EntityTakeDamage(targ, dmg)
 	self:CreateHitmarkers(targ, dmg)
 	self:DamageLogs_EntityTakeDamage(targ, dmg)
+	self:Karma_EntityTakeDamage(targ, dmg)
 end
 
 function GM:TTTPrepareRound()
@@ -28,6 +29,7 @@ end
 function GM:TTTEndRound()
 	self:DamageLogs_TTTEndRound()
 	self:MapVote_TTTEndRound()
+	self:Karma_TTTEndRound()
 end
 
 local tttrw_door_speedup = CreateConVar("tttrw_door_speed_mult", 1, FCVAR_NONE, "How much faster doors are (2 = double, 0.5 = half)")
@@ -66,4 +68,19 @@ end
 
 function GM:PlayerDeathSound()
 	return true
+end
+
+function GM:DoPlayerDeath(ply, atk, dmg)
+	ttt.CreatePlayerRagdoll(ply, atk, dmg)
+
+	self:Karma_DoPlayerDeath(ply, atk, dmg)
+
+	if (IsValid(atk) and atk:IsPlayer()) then
+		table.insert(atk.Killed, ply)
+	end
+
+	for _, wep in pairs(ply:GetWeapons()) do
+		ply:SetActiveWeapon(wep)
+		self:DropCurrentWeapon(ply)
+	end
 end

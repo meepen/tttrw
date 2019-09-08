@@ -310,6 +310,9 @@ function GM:TTTRoundEnd(winning_team, winners)
 end
 
 function GM:PlayerInitialSpawn(ply)
+	player_manager.SetPlayerClass(ply, "player_terror")
+	self:Karma_PlayerInitialSpawn(ply)
+
 	local state = ents.Create "ttt_hidden_info"
 	state:SetParent(ply)
 	state:Spawn()
@@ -359,6 +362,8 @@ function GM:PlayerDisconnected(ply)
 	else
 		printf("Player %s <%s> has disconnected", ply:Nick(), ply:SteamID())
 	end
+
+	self:Karma_PlayerDisconnected(ply)
 end
 
 function GM:TTTHasRoundBeenWon(plys, roles)
@@ -415,21 +420,6 @@ function GM:TTTPlayerRemoved(removed)
 		ttt.CheckTeamWin()
 	end)
 end
-
-
-function GM:DoPlayerDeath(ply, atk, dmg)
-	ttt.CreatePlayerRagdoll(ply, atk, dmg)
-
-	if (IsValid(atk) and atk:IsPlayer()) then
-		table.insert(atk.Killed, ply)
-	end
-
-	for _, wep in pairs(ply:GetWeapons()) do
-		ply:SetActiveWeapon(wep)
-		self:DropCurrentWeapon(ply)
-	end
-end
-
 
 function GM:PlayerDeath(ply)
 	round.RemovePlayer(ply)
