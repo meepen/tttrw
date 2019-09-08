@@ -182,9 +182,19 @@ function PANEL:Init()
 	self.Left:SetText "Gameplay Settings"
 	self.Left:DockMargin(0, 0, Padding, 0)
 	self.Left:Dock(LEFT)
+	self.Left:SetZPos(1)
 	self.Right = self:Add "ttt_settings_category"
 	self.Right:SetText "Sound Settings"
 	self.Right:Dock(FILL)
+
+	self.CrosshairSettings = self:Add "DButton"
+	self.CrosshairSettings:Dock(BOTTOM)
+	self.CrosshairSettings:SetFont "ttt_settings_settings_text_font"
+	self.CrosshairSettings:SetText "Crosshair Settings Menu"
+	self.CrosshairSettings:SetZPos(0)
+	function self.CrosshairSettings:DoClick()
+		RunConsoleCommand "tttrw_crosshair_menu"
+	end
 
 	self.Index = 1
 
@@ -192,6 +202,8 @@ function PANEL:Init()
 	self.Left:AddCheckBox("Outline players roles", "tttrw_outline_roles")
 	self.Left:AddCheckBox("Automatically Bunny hop", "ttt_bhop_cl")
 	self.Left:AddCheckBox("Lowered Ironsights", "ttt_ironsights_lowered")
+	self.Left:AddCheckBox("Enable Crosshair", "crosshair")
+	self.Left:AddCheckBox("Enable annoying HL2 crosshair", "hud_quickinfo")
 	self.Right:AddTextEntry("Where to put sounds (create if not exist)", nil, util.RelativePathToFull ".":sub(1, -2) .. "sound")
 	self.Right:AddTextEntry("Hitmarker", "tttrw_hitmarker_sound")
 	self.Right:AddTextEntry("Hitmarker (Headshot)", "tttrw_hitmarker_sound_hs")
