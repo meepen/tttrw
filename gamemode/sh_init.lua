@@ -98,6 +98,9 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmg)
 	if (IsValid(wep) and wep.ScaleDamage) then
 		wep:ScaleDamage(hitgroup, dmg)
 	end
+	if (SERVER) then
+		self:Karma_ScalePlayerDamage(ply, hitgroup, dmg)
+	end
 end
 
 function GM:KeyPress(ply, key)

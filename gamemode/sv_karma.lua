@@ -159,7 +159,7 @@ function GM:Karma_EntityTakeDamage(vic, dmg)
 	end
 end
 
-function GM:ScalePlayerDamage(ply, hg, dmg)
+function GM:Karma_ScalePlayerDamage(ply, hg, dmg)
 	if (not KarmaEnabled()) then
 		return
 	end
