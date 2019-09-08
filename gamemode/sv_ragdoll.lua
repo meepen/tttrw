@@ -15,6 +15,7 @@ function ttt.CreatePlayerRagdoll(ply, atk, dmg)
 	end
 
 	local rag = ents.Create("prop_ragdoll")
+	rag.Cleanup = true
 
 	local info
 	for _, _info in pairs(round.GetStartingPlayers()) do

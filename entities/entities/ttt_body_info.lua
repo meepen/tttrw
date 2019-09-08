@@ -2,6 +2,7 @@ AddCSLuaFile()
 
 ENT.Base = "ttt_point_info"
 DEFINE_BASECLASS(ENT.Base)
+ENT.Cleanup = true
 ENT.IsBodyInfo = true
 
 function ENT:NetVar(name, type, default)

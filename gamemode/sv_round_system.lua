@@ -291,6 +291,12 @@ function GM:TTTBeginRound()
 		info.Player:SetHealth(info.Player:GetMaxHealth())
 		info.Player:Extinguish()
 	end
+
+	for _, ent in pairs(ents.GetAll()) do
+		if (ent.Cleanup) then
+			ent:Remove()
+		end
+	end
 end
 
 function GM:TTTRoundEnd(winning_team, winners)

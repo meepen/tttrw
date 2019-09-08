@@ -1,6 +1,7 @@
 AddCSLuaFile()
 
 ENT.Base = "ttt_point_info"
+ENT.Cleanup = true
 DEFINE_BASECLASS(ENT.Base)
 
 function ENT:GetAndIncrementIndex()
