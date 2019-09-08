@@ -19,12 +19,12 @@ SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
 	DamageDropoffRange = 200,
-	DamageDropoffRangeMax = 1000,
+	DamageDropoffRangeMax = 3500,
 	DamageMinimumPercent = 0.1,
 	Spread = Vector(0.050, 0.050)
 }
 
-SWEP.Primary.Damage        = 6
+SWEP.Primary.Damage        = 8
 SWEP.Primary.Delay         = 0.05
 SWEP.Primary.Recoil        = 1.2
 SWEP.Primary.Automatic     = true
