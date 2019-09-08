@@ -145,7 +145,9 @@ function GM:FormatPlayerText(ply, text, team)
 		-- https://steamcommunity.com/profiles/76561198015341647/
 		-- blame him
         replacements["{target}"] = ("nobody"):gsub(".", function(a) return (math.random(1, 2) == 1 and string.lower or string.upper)(a) end)
-    end
+	end
+	
+	replacements["{lookingat}"] = replacements["{target}"]
 
     return text:gsub("{.+}", replacements)
 end
