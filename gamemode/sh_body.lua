@@ -1,5 +1,19 @@
 local MAX_DISTANCE = 90
 
+if (SERVER) then
+	util.AddNetworkString "ttt_inspect_body"
+	net.Receive("ttt_inspect_body", function(len, ply)
+		local ent = net.ReadEntity()
+		
+		if (not IsValid(ent) or ent:GetPos():Distance(ply:GetShootPos()) > MAX_DISTANCE * 1.2) then
+			return
+		end
+
+		print(cl)
+
+		hook.Run("PlayerInspectBody", ply, ent, ent:GetPos())
+	end)
+end
 
 function GM:TryInspectBody(ply)
 	local tr = ply:GetEyeTrace()
@@ -10,6 +24,12 @@ function GM:TryInspectBody(ply)
 
 	if (not tr.Entity:GetNW2Bool("IsPlayerBody", false)) then
 		return false
+	end
+
+	if (CLIENT) then
+		net.Start "ttt_inspect_body"
+			net.WriteEntity(tr.Entity)
+		net.SendToServer()
 	end
 
 	hook.Run("PlayerInspectBody", ply, tr.Entity, tr.HitPos)
