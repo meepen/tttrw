@@ -45,10 +45,12 @@ else
 			RunConsoleCommand("_ttt_radio_send", str)
 			ply.NextRadioCommand = CurTime() + 1
 		elseif ((ply.NextRadioCommand or -math.huge) <= CurTime()) then
-			if (not IsValid(ttt.radio_menu)) then
-				ttt.radio_menu = vgui.Create "ttt_radio_menu"
+			if (IsValid(ttt.radio_menu)) then
+				ttt.radio_menu:Remove()
+				return
 			end
 
+			ttt.radio_menu = vgui.Create "ttt_radio_menu"
 			ttt.radio_menu:SetActiveTime(CurTime())
 		end
 	end)

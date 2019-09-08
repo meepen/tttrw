@@ -104,7 +104,7 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmg)
 end
 
 function GM:KeyPress(ply, key)
-	if (key == IN_GRENADE2 and CLIENT) then
+	if (key == IN_GRENADE2 and CLIENT and IsFirstTimePredicted()) then
 		RunConsoleCommand "ttt_radio"
 	end
 
