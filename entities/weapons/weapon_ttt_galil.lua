@@ -31,6 +31,7 @@ SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_GALIL.Single"
 
 SWEP.HeadshotMultiplier    = 1.4
+SWEP.DeploySpeed = 1.69
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true

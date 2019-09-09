@@ -32,6 +32,7 @@ SWEP.Primary.DefaultClip   = 40 --40
 SWEP.Primary.Sound         = Sound "Weapon_Glock.Single"
 
 SWEP.HeadshotMultiplier    = 1.60
+SWEP.DeploySpeed = 1.5
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true

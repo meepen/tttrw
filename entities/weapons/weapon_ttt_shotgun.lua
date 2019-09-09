@@ -37,6 +37,8 @@ SWEP.Primary.DefaultClip   = 16 --16
 SWEP.Primary.MaxClip       = 8
 SWEP.Primary.Sound         = Sound "Weapon_XM1014.Single"
 
+SWEP.DeploySpeed = 1.2
+
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
 SWEP.AmmoEnt               = "item_box_buckshot_ttt"

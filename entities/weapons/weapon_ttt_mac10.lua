@@ -26,7 +26,7 @@ SWEP.Bullets = {
 
 SWEP.TTTCompat = {"weapon_zm_mac10"}
 
-SWEP.Primary.Damage        = 15
+SWEP.Primary.Damage        = 12
 SWEP.Primary.Delay         = 0.065
 SWEP.Primary.Recoil        = 1.2
 SWEP.Primary.Automatic     = true

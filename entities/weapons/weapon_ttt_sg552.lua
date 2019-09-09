@@ -35,6 +35,8 @@ SWEP.Primary.Sound         = Sound "Weapon_SG552.Single"
 SWEP.Secondary.Sound       = Sound "Default.Zoom"
 
 SWEP.HeadshotMultiplier    = 1.45
+SWEP.DeploySpeed = 1.8
+
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true

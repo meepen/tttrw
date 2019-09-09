@@ -40,6 +40,7 @@ SWEP.Primary.Sound         = Sound "Weapon_Scout.Single"
 SWEP.Secondary.Sound       = Sound "Default.Zoom"
 
 SWEP.HeadshotMultiplier    = 4
+SWEP.DeploySpeed = 2.7
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true

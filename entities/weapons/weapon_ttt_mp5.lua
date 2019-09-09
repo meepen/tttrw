@@ -34,6 +34,7 @@ SWEP.Primary.DefaultClip   = 60 --60
 SWEP.Primary.Sound         = Sound "Weapon_MP5Navy.Single"
 
 SWEP.HeadshotMultiplier    = 1.25
+SWEP.DeploySpeed = 1.5
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true

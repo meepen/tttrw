@@ -37,7 +37,9 @@ SWEP.Primary.Sound         = Sound "Weapon_G3SG1.Single"
 SWEP.Secondary.Sound       = Sound "Default.Zoom"
 SWEP.HasScope              = true
 
-SWEP.HeadshotMultiplier    = 2.1
+SWEP.HeadshotMultiplier    = 1
+SWEP.DeploySpeed = 2.3
+
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true

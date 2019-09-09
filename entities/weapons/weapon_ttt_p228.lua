@@ -35,6 +35,8 @@ SWEP.Primary.DefaultClip   = 24
 SWEP.Primary.Sound         = Sound "Weapon_P228.Single"
 
 SWEP.HeadshotMultiplier    = 1.43
+SWEP.DeploySpeed = 1.66
+
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
