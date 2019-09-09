@@ -25,7 +25,7 @@ SWEP.Bullets = {
 	Spread = Vector(0.009, 0.009, 0),
 }
 
-SWEP.Primary.Damage        = 35
+SWEP.Primary.Damage        = 33
 SWEP.Primary.Delay         = 0.56
 SWEP.Primary.Recoil        = 3
 SWEP.Primary.RecoilTiming  = 0.085
