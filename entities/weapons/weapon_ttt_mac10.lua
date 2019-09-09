@@ -36,8 +36,9 @@ SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_mac10.Single"
 
 SWEP.HeadshotMultiplier    = 1.2
+SWEP.DeploySpeed = 2.5
 
-SWEP.AutoSpawnable         = true
+SWEP.AutoSpawnable         = true	
 SWEP.Spawnable             = true
 SWEP.AmmoEnt               = "item_ammo_smg1_ttt"
 

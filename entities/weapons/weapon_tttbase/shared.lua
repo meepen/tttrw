@@ -14,6 +14,7 @@ SWEP.Primary.ClipSize    = 32
 SWEP.Primary.Damage      = 20
 
 SWEP.HeadshotMultiplier  = 2
+SWEP.DeploySpeed = 1
 
 SWEP.Bullets = {
 	HullSize = 0,
@@ -96,6 +97,7 @@ function SWEP:SetupDataTables()
 end
 
 function SWEP:Initialize()
+	self:SetDeploySpeed(self.DeploySpeed)
 	if (self.Primary and self.Primary.Ammo == "Buckshot" and not self.PredictableSpread) then
 		printf("Warning: %s weapon type has shotgun ammo and no predictable spread", self:GetClass())
 	end
@@ -143,6 +145,10 @@ function SWEP:DoZoom(state)
 	else
 		self:ChangeFOVMultiplier(1, self.Ironsights.TimeFrom)
 	end
+end
+
+function SWEP:OnReloaded()
+	self:SetDeploySpeed(self.DeploySpeed)
 end
 
 function SWEP:Reload()

@@ -31,6 +31,7 @@ SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_AK47.Single"
 
 SWEP.HeadshotMultiplier    = 2
+SWEP.DeploySpeed = 1.3
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true

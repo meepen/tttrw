@@ -28,16 +28,17 @@ SWEP.Primary.Damage        = 8
 SWEP.Primary.Delay         = 0.05
 SWEP.Primary.Recoil        = 1.2
 SWEP.Primary.Automatic     = true
-SWEP.Primary.Ammo          = "smg1"
+SWEP.Primary.Ammo          = "pistol"
 SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_TMP.Single"
 
 SWEP.HeadshotMultiplier    = 1.2
+SWEP.DeploySpeed = 1.95 
 
 SWEP.AutoSpawnable         = true	
 SWEP.Spawnable             = true
-SWEP.AmmoEnt               = "item_ammo_smg1_ttt"
+SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
 
 SWEP.ViewModel             = "models/weapons/cstrike/c_smg_tmp.mdl"
 SWEP.WorldModel            = "models/weapons/w_smg_tmp.mdl"

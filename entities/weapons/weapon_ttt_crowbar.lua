@@ -25,6 +25,7 @@ SWEP.Secondary.DefaultClip   = -1
 SWEP.Secondary.Automatic     = true
 SWEP.Secondary.Ammo          = "none"
 SWEP.Secondary.Delay         = 5
+SWEP.DeploySpeed = 1.3
 
 SWEP.NoSights                = true
 SWEP.IsSilent                = true

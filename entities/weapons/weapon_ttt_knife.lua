@@ -23,6 +23,8 @@ SWEP.Primary.Automatic      = true
 SWEP.Primary.Delay          = 1.1
 SWEP.Primary.Ammo           = "none"
 
+SWEP.DeploySpeed = 2.3
+
 SWEP.Secondary.ClipSize     = -1
 SWEP.Secondary.DefaultClip  = -1
 SWEP.Secondary.Automatic    = true
