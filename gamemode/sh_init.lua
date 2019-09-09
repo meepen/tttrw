@@ -104,7 +104,7 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmg)
 end
 
 function GM:KeyPress(ply, key)
-	if (key == IN_GRENADE2 and CLIENT) then
+	if (key == IN_GRENADE2 and CLIENT and IsFirstTimePredicted()) then
 		RunConsoleCommand "ttt_radio"
 	end
 
@@ -112,7 +112,7 @@ function GM:KeyPress(ply, key)
 		self:VoiceKey(ply, key)
 	end
 
-	if (key == IN_USE_ALT and self:TryInspectBody(ply)) then
+	if (CLIENT and key == IN_USE_ALT and self:TryInspectBody(ply)) then
 		return
 	end
 
@@ -145,7 +145,9 @@ function GM:FormatPlayerText(ply, text, team)
 		-- https://steamcommunity.com/profiles/76561198015341647/
 		-- blame him
         replacements["{target}"] = ("nobody"):gsub(".", function(a) return (math.random(1, 2) == 1 and string.lower or string.upper)(a) end)
-    end
+	end
+	
+	replacements["{lookingat}"] = replacements["{target}"]
 
     return text:gsub("{.+}", replacements)
 end

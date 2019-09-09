@@ -315,7 +315,10 @@ function SWEP:ShootBullet()
 	self:DoFireBullets()
 	owner:LagCompensation(false)
 
-	self:ShootEffects()
+	-- how this happen?
+	if (IsValid(self.Owner)) then
+		self:ShootEffects()
+	end
 end
 
 function SWEP:DoFireBullets()

@@ -1,13 +1,6 @@
 local function RagdollRemove(ent)
 	ent:Remove()
 end
-local function RagdollShow(self, ply, ent)
-	if (ent ~= self) then
-		return
-	end
-
-	hook.Run("PlayerInspectRagdoll", ply, ent, self.Info)
-end
 
 function ttt.CreatePlayerRagdoll(ply, atk, dmg)
 	if (IsValid(ply.Ragdoll)) then
@@ -15,6 +8,7 @@ function ttt.CreatePlayerRagdoll(ply, atk, dmg)
 	end
 
 	local rag = ents.Create("prop_ragdoll")
+	rag.Cleanup = true
 
 	local info
 	for _, _info in pairs(round.GetStartingPlayers()) do
@@ -28,7 +22,6 @@ function ttt.CreatePlayerRagdoll(ply, atk, dmg)
 	if not IsValid(rag) then return nil end
 
 	hook.Add("TTTPrepareRound", rag, RagdollRemove)
-	hook.Add("PlayerUse", rag, RagdollShow)
 	rag:SetPos(ply:GetPos())
 	rag:SetModel(ply:GetModel())
 	rag:SetSkin(ply:GetSkin())

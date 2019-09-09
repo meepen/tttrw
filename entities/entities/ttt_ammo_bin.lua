@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 ENT.PrintName = "Ammo Bin"
 
-ENT.Base = "ttt_point_info"
+ENT.Base = "base_anim"
 ENT.Type = "anim"
 
 ENT.Cooldown = false

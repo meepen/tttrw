@@ -71,7 +71,13 @@ function PANEL:Init()
 			ammo = _ammo
 			maxAmmo = _maxAmmo
 			
-			ammoCounter.innerHTML = _ammo + "/" + _maxAmmo
+			ammoStr = _ammo + "/" + _maxAmmo
+			if (_maxAmmo === "")
+			{
+				ammoStr = _ammo
+			}
+			
+			ammoCounter.innerHTML = ammoStr
 			reserveAmmo.innerHTML = _reserve
 		}
 		
@@ -106,6 +112,12 @@ function PANEL:UpdateAllAmmo(pl, wep)
 	self.OldAmmo = cur_bullets
 	self.ReserveAmmo = reserve
 	
+	if (cur_bullets == -1) then
+		cur_bullets = ""
+		max_bullets = ""
+		reserve = ""
+	end
+	
 	self:CallSafe([[setAllAmmo("%s", "%s", "%s")]], cur_bullets, max_bullets, reserve)
 end
 
@@ -116,7 +128,7 @@ function PANEL:PlayerSwitchWeapon(pl, old, new)
 		self.Model:Remove()
 	end
 
-	if (IsValid(new)) then
+	if (IsValid(new) and new.WorldModel) then
 		self.Model = ClientsideModel(new.WorldModel, RENDERGROUP_OTHER)
 		self.Model:SetNoDraw(true)
 	end
@@ -137,12 +149,7 @@ function PANEL:PlayerSpawn(pl)
 		return
 	end
 
-	if (IsValid(new)) then
-		self.Model = ClientsideModel(new.WorldModel, RENDERGROUP_OTHER)
-		self.Model:SetNoDraw(true)
-	end
-
-	self:UpdateAllAmmo(pl, new)
+	self:PlayerSwitchWeapon(pl, new, new)
 end
 
 function PANEL:PerformLayout()

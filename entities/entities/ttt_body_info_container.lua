@@ -1,6 +1,7 @@
 AddCSLuaFile()
 
 ENT.Base = "ttt_point_info"
+ENT.Cleanup = true
 DEFINE_BASECLASS(ENT.Base)
 
 function ENT:GetAndIncrementIndex()
@@ -45,6 +46,7 @@ function ENT:SetupDataTables()
     self:NetworkVar("Entity", 1, "Player")
     self:NetworkVar("String", 0, "Nick")
     self:NetworkVar("String", 1, "Role")
+    self:NetworkVar("Int", 0, "Credits")
 end
 
 function ENT:GetData()

@@ -95,7 +95,6 @@ function PANEL:Paint(w, h)
 	if (IsValid(self.Player)) then
 		if (ttt.GetRoundState() ~= ttt.ROUNDSTATE_PREPARING and IsValid(self.Player.HiddenState) and not self.Player.HiddenState:IsDormant()) then
 			self:SetColor(ColorAlpha(self.Player:GetRoleData().Color, 100))
-			-- TODO(meep): event based hook
 		end
 	end
 

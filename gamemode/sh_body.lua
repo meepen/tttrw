@@ -1,5 +1,17 @@
 local MAX_DISTANCE = 90
 
+if (SERVER) then
+	util.AddNetworkString "ttt_inspect_body"
+	net.Receive("ttt_inspect_body", function(len, ply)
+		local ent = net.ReadEntity()
+		
+		if (not IsValid(ent) or ent:GetPos():Distance(ply:GetShootPos()) > MAX_DISTANCE * 1.2) then
+			return
+		end
+
+		hook.Run("PlayerInspectBody", ply, ent, ent:GetPos())
+	end)
+end
 
 function GM:TryInspectBody(ply)
 	local tr = ply:GetEyeTrace()
@@ -12,8 +24,14 @@ function GM:TryInspectBody(ply)
 		return false
 	end
 
+	if (CLIENT) then
+		net.Start "ttt_inspect_body"
+			net.WriteEntity(tr.Entity)
+		net.SendToServer()
+	end
+
 	hook.Run("PlayerInspectBody", ply, tr.Entity, tr.HitPos)
-	
+
 	return true
 end
 
@@ -35,12 +53,18 @@ function GM:PlayerInspectBody(ply, ent, pos)
 	else
 		ent.HiddenState:SetVisibleTo(ply)
 
+		local creds = ent.HiddenState:GetCredits()
+		if (creds > 0 and ply:GetRoleData().DefaultCredits) then
+			ply:SetCredits(ply:GetCredits() + creds)
+			ply:Notify("You've received " .. creds .. " credits from the body")
+			ent.HiddenState:SetCredits(0)
+		end
+
 		if (ply:Alive() and not ply:KeyDown(IN_WALK) and not ent.HiddenState:GetIdentified()) then
 			ent.HiddenState:SetIdentified(true)
 
-
 			for _, oply in pairs(player.GetAll()) do
-				oply:Notify(ply:Nick() .. " has confirmed " .. ent.HiddenState:GetNick() .. "'s death")
+				oply:Notify(ply:Nick() .. " has confirmed " .. ent.HiddenState:GetNick() .. "'s death, they were a " .. ent.HiddenState:GetRole())
 			end
 
 			local victim = ent.HiddenState:GetPlayer()

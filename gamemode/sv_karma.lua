@@ -58,7 +58,7 @@ local function GetHurtReward(dmg)
 end
 
 local function KarmaEnabled()
-	return ttt_karma:GetBool() and ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE
+	return ttt_karma:GetBool() and ttt.GetRoundState and ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE
 end
 
 function GM:Karma_TTTEndRound()

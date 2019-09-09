@@ -2,6 +2,7 @@ AddCSLuaFile()
 
 ENT.Base = "ttt_point_info"
 DEFINE_BASECLASS(ENT.Base)
+ENT.Cleanup = true
 ENT.IsBodyInfo = true
 
 function ENT:NetVar(name, type, default)
@@ -29,6 +30,7 @@ function ENT:Initialize()
 	if (SERVER) then
 		self:SetIndex(self:GetParent():GetAndIncrementIndex())
 	end
+	hook.Run("OnBodyInfoInitialized", self)
 end
 
 function ENT:IsVisibleTo(ply)
