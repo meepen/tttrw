@@ -38,7 +38,7 @@ SWEP.Secondary.Sound       = Sound "Default.Zoom"
 SWEP.HasScope              = true
 
 SWEP.HeadshotMultiplier    = 2.1
-SWEP.DeploySpeed = 2.3
+SWEP.DeploySpeed = 1.6
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
