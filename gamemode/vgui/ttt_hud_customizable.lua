@@ -80,10 +80,10 @@ function PANEL:GetCustomizedColor(value)
 			col = color_functions[value.func](self, value)
 		else
 			col = Color(
-				self:GetCustomizedNumber(value[1]),
-				self:GetCustomizedNumber(value[2]),
-				self:GetCustomizedNumber(value[3]),
-				self:GetCustomizedNumber(value[4] or 255)
+				self:GetCustomizedNumber(value[1]) or value[1],
+				self:GetCustomizedNumber(value[2]) or value[2],
+				self:GetCustomizedNumber(value[3]) or value[3],
+				self:GetCustomizedNumber(value[4]) or value[4] or 255
 			)
 		end
 	elseif (value == "role") then
@@ -125,19 +125,18 @@ local number_functions = {
 		end
 		return targ:GetMaxHealth()
 	end
-
 }
 
 function PANEL:GetCustomizedNumber(value)
-	if (not value) then
-		value = 1
-	elseif (type(value) == "table" and value.func) then
-		value = number_functions[value.func](self, value)
+	local ret
+
+	if (type(value) == "table" and value.func) then
+		ret = number_functions[value.func](self, value)
 	elseif (type(value) == "string" and number_functions[value]) then
-		value = number_functions[value](self)
+		ret = number_functions[value](self)
 	end
 
-	return value
+	return ret
 end
 
 function PANEL:OnScreenSizeChanged()
@@ -268,7 +267,7 @@ function PANEL:Recenter()
 		pos = {
 			math.Round(self.inputs.pos[1] * ScrW()),
 			math.Round(self.inputs.pos[2] * ScrH()),
-			self.inputs.pos[3]
+			self.inputs.pos[3] or 0
 		}
 	else
 		pos = {self:GetPos()}
@@ -287,6 +286,10 @@ function PANEL:Recenter()
 	self:SetPos(pos[1] - size[1] / 2, pos[2] - size[2] / 2)
 	self:SetSize(size[1], size[2])
 	self:SetZPos(pos[3])
+end
+
+function PANEL:OnScreenSizeChanged()
+	self:Recenter()
 end
 
 function PANEL:AcceptInput(key, value)
