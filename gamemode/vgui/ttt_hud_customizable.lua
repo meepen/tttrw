@@ -101,12 +101,17 @@ function PANEL:GetCustomizedColor(value)
 			)
 		end
 	elseif (value == "role") then
-		local targ = ttt.GetHUDTarget()
-	
-		if (IsValid(targ) and targ:Alive() and IsValid(targ.HiddenState) and not targ.HiddenState:IsDormant()) then
-			col = ttt.roles[targ:GetRole()].Color
-		else
+		if (ttt.GetRoundState and ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
 			col = Color(154, 153, 153)
+		else
+
+			local targ = ttt.GetHUDTarget()
+		
+			if (IsValid(targ) and targ:Alive() and IsValid(targ.HiddenState) and not targ.HiddenState:IsDormant()) then
+				col = ttt.roles[targ:GetRole()].Color
+			else
+				col = Color(154, 153, 153)
+			end
 		end
 	end
 
@@ -155,6 +160,10 @@ local text_functions = {
 		end
 	end,
 	role_name = function(self)
+		if (ttt.GetRoundState and ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
+			return ttt.Enums.RoundState[ttt.GetRoundState()]
+		end
+		
 		local targ = ttt.GetHUDTarget()
 
 		if (IsValid(targ) and targ:Alive() and IsValid(targ.HiddenState) and not targ.HiddenState:IsDormant()) then
