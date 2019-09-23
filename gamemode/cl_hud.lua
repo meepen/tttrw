@@ -190,6 +190,7 @@ end
 local default = [[
 [
 	{
+		"name": "SpectatingOverlay",
 		"type": "ttt_spectator",
 		"pos": [0.5, 0.1, 0],
 		"size": [0.22, 0.04],
@@ -199,25 +200,42 @@ local default = [[
 		"color": [154, 153, 153]
 	},
 	{
-		"name": "health",
+		"name": "HealthText",
+		"type": "ttt_text",
+		"color": "white",
+		"text": [
+			"%i / %i",
+			"health",
+			"health_max"
+		],
+		"font": {
+			"size": 0.024,
+			"font": "Lato",
+			"weight": 1000
+		},
+		"pos": [0.12, 0.9, 2],
+		"size": [0.22, 0.04]
+	},
+	{
+		"name": "HealthBar",
 		"type": "ttt_curve_outline",
 		"bg_color": {
 			"func": "lerp",
-			"frac": "health",
+			"frac": "health_frac",
 			"points": [
 				[200, 49, 59],
-				[255, 0, 0],
+				[153, 129, 6],
 				[59, 171, 91]
 			]
 		},
 		"outline_color": "white",
 		"pos": [0.12, 0.9, 1],
 		"size": [0.22, 0.04],
-		"frac": "health",
+		"frac": "health_frac",
 		"curve": 0.005
 	},
 	{
-		"name": "health_bg",
+		"name": "HealthBackground",
 		"type": "ttt_curve",
 		"bg_color": "black_bg",
 		"pos": [0.12, 0.9, 1],
@@ -225,6 +243,7 @@ local default = [[
 		"curve": 0.005
 	},
 	{
+		"name": "RoleAndTime",
 		"type": "ttt_time",
 		"pos": [0.12, 0.95, 1],
 		"size": [0.22, 0.04],
@@ -233,6 +252,7 @@ local default = [[
 		"outline_color": [230, 230, 230]
 	},
 	{
+		"name": "Ammo",
 		"type": "ttt_ammo",
 		"size": [0.15, 0.25],
 		"pos": [0.9, 0.9],
@@ -240,6 +260,7 @@ local default = [[
 		"bg_color": [0, 0, 0, 0]
 	},
 	{
+		"name": "Agree",
 		"type": "ttt_image",
 		"path": "materials/tttrw/agree.png",
 		"color": [255, 0, 0, 200],
@@ -268,32 +289,35 @@ for item, ele in pairs(ttt.HUDElements) do
 end
 
 local function IsCustomizable(ele)
-	local base = baseclass.Get(ele)
-	local good = false
+	local s, base = pcall(baseclass.Get, ele)
+
+	if (not s) then
+		return false
+	end
+	
 	while (base) do
 		if (base.AcceptInput) then
-			good = true
-			break
+			return true
+		end
+		if (not base.Base) then
+			return false
 		end
 		base = baseclass.Get(base.Base)
-		if (not base or not base.Base) then
-			break
+		if (not base) then
+			return false
 		end
 	end
-
-	return good
 end
 
 for id, data in ipairs(json) do
 	if (not data.type or not IsCustomizable(data.type)) then
+		warn("Couldn't create %s", data.name or data.type)
 		continue
 	end
 
 	local p = GetHUDPanel():Add(data.type)
 
 	p:SetName(data.name or "hud_" .. tostring(id))
-
-	print(p)
 
 	ttt.HUDElements[id] = p
 

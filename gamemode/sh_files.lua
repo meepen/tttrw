@@ -25,7 +25,6 @@ AddCSLuaFile();
 		"vgui/ttt_hud_base_elements.lua",
 		"vgui/ttt_ammo.lua",
 		"vgui/ttt_spectator.lua",
-		"vgui/ttt_health.lua",
 		"vgui/ttt_time.lua",
 		"vgui/ttt_equipment_menu.lua",
 		"vgui/ttt_body_inspect.lua",

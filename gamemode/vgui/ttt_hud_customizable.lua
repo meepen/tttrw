@@ -45,12 +45,13 @@ local color_functions = {
 
 		local count = #data.points
 
-		for ind = count, 2, -1 do
+		for ind = count - 1, 1, -1 do
 			local col = data.points[ind]
 			local base = (ind - 1) / (count - 1)
-			if (base >= frac) then
-				from, to = self:GetCustomizedColor(data.points[ind - 1]), self:GetCustomizedColor(data.points[ind])
-				frac = (frac - (ind - 2) / (count - 1)) * count
+
+			if (base <= frac) then
+				from, to = self:GetCustomizedColor(data.points[ind]), self:GetCustomizedColor(data.points[ind + 1])
+				frac = (frac - base) * count
 				break
 			end
 		end
@@ -102,14 +103,29 @@ local number_functions = {
 	lerp = function(self, data)
 		return Lerp(data.frac, self:GetCustomizedNumber(data.from), self:GetCustomizedNumber(data.to))
 	end,
-	health = function(self)
+	health_frac = function(self)
 		local targ = ttt.GetHUDTarget()
 		if (not IsValid(targ) or not targ:Alive()) then
 			return 0
 		end
 
 		return targ:Health() / targ:GetMaxHealth()
+	end,
+	health = function()
+		local targ = ttt.GetHUDTarget()
+		if (not IsValid(targ) or not targ:Alive()) then
+			return 0
+		end
+		return targ:Health()
+	end,
+	health_max = function()
+		local targ = ttt.GetHUDTarget()
+		if (not IsValid(targ) or not targ:Alive()) then
+			return 0
+		end
+		return targ:GetMaxHealth()
 	end
+
 }
 
 function PANEL:GetCustomizedNumber(value)
@@ -117,7 +133,7 @@ function PANEL:GetCustomizedNumber(value)
 		value = 1
 	elseif (type(value) == "table" and value.func) then
 		value = number_functions[value.func](self, value)
-	elseif (type(value) == "string") then
+	elseif (type(value) == "string" and number_functions[value]) then
 		value = number_functions[value](self)
 	end
 
@@ -290,3 +306,94 @@ function PANEL:AcceptInput(key, value)
 	end
 end
 vgui.Register("ttt_curve_outline", PANEL, "EditablePanel")
+
+
+local PANEL = {}
+DEFINE_BASECLASS "ttt_hud_customizable"
+PANEL.GetInputColor = BaseClass.GetInputColor
+PANEL.GetCustomizedNumber = BaseClass.GetCustomizedNumber
+PANEL.GetCustomizedColor = BaseClass.GetCustomizedColor
+PANEL.AnimationThink = BaseClass.AnimationThink
+
+local alignments = {
+	topleft = 7,
+	top = 8,
+	topright = 9,
+	left = 4,
+	middle = 5,
+	right = 6,
+	bottomleft = 1,
+	bottom = 2,
+	bottomright = 3
+}
+
+function PANEL:AcceptInput(key, value)
+	self.inputs = self.inputs or {}
+	self.inputs[key] = value
+
+	if (key == "font") then
+		self:RecreateFont()
+	elseif (key == "align") then
+		self:SetContentAlignment(alignments[value])
+	else
+		BaseClass.AcceptInput(self, key, value)
+	end
+end
+
+function PANEL:Recenter()
+	self.inputs = self.inputs or {}
+	local pos, size
+	if (self.inputs.pos) then
+		pos = {
+			math.Round(self.inputs.pos[1] * ScrW()),
+			math.Round(self.inputs.pos[2] * ScrH()),
+			self.inputs.pos[3]
+		}
+	else
+		pos = {self:GetPos()}
+		pos[3] = self:GetZPos()
+	end
+
+	if (self.inputs.size) then
+		size = {
+			math.Round(self.inputs.size[1] * ScrW()),
+			math.Round(self.inputs.size[2] * ScrH())
+		}
+	else
+		size = {self:GetSize()}
+	end
+
+	self:SetPos(pos[1] - size[1] / 2, pos[2] - size[2] / 2)
+	self:SetSize(size[1], size[2])
+	self:SetZPos(pos[3])
+end
+
+function PANEL:Init()
+	self:SetContentAlignment(5)
+end
+
+function PANEL:Think()
+	local data = {}
+	for i, inp in ipairs(self.inputs.text) do
+		data[i] = self:GetCustomizedNumber(inp)
+	end
+
+	data[1] = self.inputs.text[1]
+
+	self:SetText(string.format(unpack(data)))
+end
+
+function PANEL:RecreateFont()
+	local data = table.Copy(self.inputs.font)
+	data.size = data.size * ScrH()
+	surface.CreateFont(self:GetName() .. "_font", data)
+	self:SetFont(self:GetName() .. "_font")
+end
+
+function PANEL:OnScreenSizeChanged()
+	self:RecreateFont()
+	self:Recenter()
+end
+	
+
+vgui.Register("ttt_text", PANEL, "DLabel")
