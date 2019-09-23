@@ -1,5 +1,8 @@
 local function RagdollRemove(ent)
 	ent:Remove()
+	if (IsValid(ent.HiddenState)) then
+		ent.HiddenState:Remove()
+	end
 end
 
 function ttt.CreatePlayerRagdoll(ply, atk, dmg)
@@ -22,6 +25,7 @@ function ttt.CreatePlayerRagdoll(ply, atk, dmg)
 	if not IsValid(rag) then return nil end
 
 	hook.Add("TTTPrepareRound", rag, RagdollRemove)
+	hook.Add("TTTBeginRound", rag, RagdollRemove)
 	rag:SetPos(ply:GetPos())
 	rag:SetModel(ply:GetModel())
 	rag:SetSkin(ply:GetSkin())
