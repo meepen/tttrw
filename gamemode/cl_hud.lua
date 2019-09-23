@@ -293,13 +293,6 @@ local default = [[
 		"pos": [0.9, 0.9],
 		"curve": 0.005,
 		"bg_color": [0, 0, 0, 0]
-	},
-	{
-		"name": "Agree",
-		"type": "ttt_image",
-		"path": "materials/tttrw/agree.png",
-		"color": [255, 0, 0, 200],
-		"pos": [0.1, 0.1, 1]
 	}
 ]
 ]]
