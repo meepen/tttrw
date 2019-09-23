@@ -1,5 +1,13 @@
 local PANEL = {}
 
+local docks = {
+	fill = FILL,
+	right = RIGHT,
+	left = LEFT,
+	top = TOP,
+	bottom = BOTTOM
+}
+
 function PANEL:AcceptInput(key, value)
 	self.inputs = self.inputs or {}
 	self.inputs[key] = value
@@ -8,6 +16,8 @@ function PANEL:AcceptInput(key, value)
 	elseif (key == "pos" or key == "size" or key == "padding") then
 		self:Recenter()
 		return true
+	elseif (key == "dock") then
+		self:Dock(docks[value])
 	elseif (key == "curve") then
 		self:SetCurve(math.Round(ScrH() * value / 2) * 2)
 	end
@@ -21,6 +31,10 @@ function PANEL:AnimationThink()
 			self:AcceptInput(key, new)
 		end
 	end
+end
+
+function PANEL:GetCustomizeParent()
+	return self
 end
 
 function PANEL:GetInputColor(key)
@@ -127,6 +141,32 @@ local number_functions = {
 	end
 }
 
+local text_functions = {
+	time_remaining_pretty = function(self)
+		if (ttt.GetRealRoundEndTime) then
+			local ends = ((not LocalPlayer():Alive() or LocalPlayer():GetRoleData().Evil) and ttt.GetRealRoundEndTime or ttt.GetVisibleRoundEndTime)()
+			local starts = ttt.GetRoundStateChangeTime()
+
+			if (ends < CurTime()) then
+				return "Overtime"
+			else
+				return string.FormattedTime(math.max(0, ends - CurTime()), "%i:%02i")
+			end
+		end
+	end,
+	role_name = function(self)
+		local targ = ttt.GetHUDTarget()
+
+		if (IsValid(targ) and targ:Alive() and IsValid(targ.HiddenState) and not targ.HiddenState:IsDormant()) then
+			return targ:GetRole()
+		elseif (ttt.GetRoundState) then
+			return ttt.Enums.RoundState[ttt.GetRoundState()]
+		else
+			return "DUNNO"
+		end
+	end
+}
+
 function PANEL:GetCustomizedNumber(value)
 	local ret
 
@@ -170,16 +210,19 @@ function PANEL:Recenter()
 	self:SetSize(size[1], size[2])
 	self:SetZPos(pos[3])
 
-	local padding = table.Copy(self.inputs.padding or {0,0,0,0})
-	padding[1] = padding[1] * self:GetParent():GetWide()
-	padding[2] = padding[2] * self:GetParent():GetTall()
-	padding[3] = padding[3] * self:GetParent():GetWide()
-	padding[4] = padding[4] * self:GetParent():GetTall()
-	self:DockPadding(unpack(padding))
+	if (self.DoPadding and self.inputs.padding) then
+		self:DoPadding(unpack(self.inputs.padding, 1, 4))
+	end
 
 	if (self.SetCurve) then
 		self:SetCurve(math.Round(ScrH() * (self.inputs.curve or 0.005) / 2) * 2)
 	end
+end
+
+function PANEL:DoPadding(left, top, right, bottom)
+	local p = self:GetCustomizeParent()
+	local c = (p.GetCurve and p:GetCurve() or 0) / 2
+	p:DockPadding(c + left * p:GetWide(), c + top * p:GetTall(), c + right * p:GetWide(), c + bottom * p:GetTall())
 end
 
 vgui.Register("ttt_hud_customizable", PANEL, "ttt_curved_panel")
@@ -208,7 +251,8 @@ vgui.Register("ttt_image", PANEL, "DImage")
 local PANEL = {}
 
 function PANEL:PerformLayout()
-	self:DockPadding(self:GetCurve() / 2, self:GetCurve() / 2, self:GetCurve() / 2, self:GetCurve() / 2)
+	local p = self:GetParent():GetParent()
+	p:DoPadding(unpack(p.inputs.padding or {0, 0, 0, 0}, 1, 4))
 end
 
 function PANEL:GetFraction()
@@ -257,6 +301,11 @@ function PANEL:AcceptInput(key, value)
 		BaseClass.AcceptInput(self, key, value)
 	end
 end
+
+function PANEL:GetCustomizeParent()
+	return self.Inner
+end
+
 vgui.Register("ttt_curve_outline", PANEL, "EditablePanel")
 
 
@@ -290,12 +339,13 @@ end
 
 function PANEL:Init()
 	self:SetContentAlignment(5)
+	print(self:GetParent())
 end
 
 function PANEL:Think()
 	local data = {}
 	for i, inp in ipairs(self.inputs.text) do
-		data[i] = self:GetCustomizedNumber(inp)
+		data[i] = self:GetCustomizedNumber(inp) or text_functions[inp] and text_functions[inp](self) or inp
 	end
 
 	data[1] = self.inputs.text[1]

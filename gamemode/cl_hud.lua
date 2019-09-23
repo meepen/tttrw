@@ -221,8 +221,7 @@ local default = [[
 			]
 		},
 		"outline_color": "white",
-		"pos": [0.5, 0.5, 2],
-		"size": [0.22, 0.04],
+		"dock": "fill",
 		"frac": "health_frac",
 		"curve": 0.005
 	},
@@ -241,26 +240,51 @@ local default = [[
 			"font": "Lato",
 			"weight": 1000
 		},
-		"pos": [0.5, 0.5, 2],
-		"size": [0.22, 0.04]
+		"dock": "fill"
 	},
 	{
 		"name": "RoleAndTimeBar",
 		"type": "ttt_curve_outline",
-		"pos": [0.12, 0.85, 1],
-		"size": [0.22, 0.04],
-		"curve": 0.005,
-		"bg_color": "role",
-		"outline_color": [230, 230, 230]
-	},
-	{
-		"name": "RoleAndTime",
-		"type": "ttt_time",
 		"pos": [0.12, 0.95, 0],
 		"size": [0.22, 0.04],
 		"curve": 0.005,
-		"bg_color": [11, 12, 11, 200],
-		"outline_color": [230, 230, 230]
+		"bg_color": "role",
+		"outline_color": [230, 230, 230],
+		"padding": [0.15, 0, 0.15, 0]
+	},
+	{
+		"name": "TimeText",
+		"type": "ttt_text",
+		"parent": "RoleAndTimeBar",
+		"color": "white",
+		"text": [
+			"%s",
+			"time_remaining_pretty"
+		],
+		"font": {
+			"size": 0.024,
+			"font": "Lato",
+			"weight": 1000
+		},
+		"dock": "fill",
+		"align": "right"
+	},
+	{
+		"name": "RoleText",
+		"type": "ttt_text",
+		"parent": "RoleAndTimeBar",
+		"color": "white",
+		"text": [
+			"%s",
+			"role_name"
+		],
+		"font": {
+			"size": 0.024,
+			"font": "Lato",
+			"weight": 1000
+		},
+		"dock": "fill",
+		"align": "left"
 	},
 	{
 		"name": "Ammo",
@@ -327,6 +351,10 @@ for id, data in ipairs(json) do
 	end
 
 	local parent = data.parent and ttt.HUDElements[data.parent] or not data.parent and GetHUDPanel()
+
+	if (parent.GetCustomizeParent) then
+		parent = parent:GetCustomizeParent()
+	end
 
 	if (not IsValid(parent)) then
 		warn("Couldn't create %s: no parent", data.name or data.type)
