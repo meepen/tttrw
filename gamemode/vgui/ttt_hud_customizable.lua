@@ -143,6 +143,42 @@ local number_functions = {
 			return 0
 		end
 		return targ:GetMaxHealth()
+	end,
+	clip = function()
+		local targ = ttt.GetHUDTarget()
+		if (not IsValid(targ)) then
+			return -1
+		end
+		local wep = targ:GetActiveWeapon()
+
+		if (not IsValid(wep)) then
+			return -1
+		end
+		return wep:Clip1()
+	end,
+	clip_max = function()
+		local targ = ttt.GetHUDTarget()
+		if (not IsValid(targ)) then
+			return -1
+		end
+		local wep = targ:GetActiveWeapon()
+
+		if (not IsValid(wep)) then
+			return -1
+		end
+		return wep:GetMaxClip1()
+	end,
+	ammo_reserve = function()
+		local targ = ttt.GetHUDTarget()
+		if (not IsValid(targ)) then
+			return 0
+		end
+		local wep = targ:GetActiveWeapon()
+
+		if (not IsValid(wep)) then
+			return 0
+		end
+		return targ:GetAmmoCount(wep:GetPrimaryAmmoType())
 	end
 }
 
@@ -158,6 +194,37 @@ local text_functions = {
 				return string.FormattedTime(math.max(0, ends - CurTime()), "%i:%02i")
 			end
 		end
+	end,
+	clip_pretty = function(self)
+		local targ = ttt.GetHUDTarget()
+		if (not IsValid(targ)) then
+			return ""
+		end
+		local wep = targ:GetActiveWeapon()
+
+		if (not IsValid(wep)) then
+			return ""
+		end
+		local clip, max = wep:Clip1(), wep:GetMaxClip1()
+
+		if (clip == -1) then
+			return ""
+		end
+
+		return string.format("%i / %i", clip, max)
+	end,
+	reserve_pretty = function()
+		local targ = ttt.GetHUDTarget()
+		if (not IsValid(targ)) then
+			return ""
+		end
+		local wep = targ:GetActiveWeapon()
+
+		if (not IsValid(wep) or wep:Clip1() == -1) then
+			return ""
+		end
+
+		return targ:GetAmmoCount(wep:GetPrimaryAmmoType())
 	end,
 	role_name = function(self)
 		if (ttt.GetRoundState and ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then

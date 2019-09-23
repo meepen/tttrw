@@ -1,6 +1,6 @@
 local PANEL = {}
 
-local colour = Material "pp/colour"
+local colour = Material "models/debug/debugwhite"
 
 function PANEL:Paint(w, h)
 	local targ = ttt.GetHUDTarget()
@@ -29,36 +29,23 @@ function PANEL:Paint(w, h)
 	end
 
 	local x, y = self:LocalToScreen(0, 0)
-	cam.Start3D(vector_origin, angle_zero, 90, x, y, w, h)
+	local mins, maxs = err:GetModelBounds()
+	local offset = -Vector(0, 0, (maxs.z - mins.z) / 2)
+	local angle = Angle(0, -90)
+	cam.Start3D(angle:Forward() * -25, angle, 90, x, y, w, h)
 		render.SuppressEngineLighting(true)
 			local renderpos, renderang = wep:GetRenderOrigin(), wep:GetRenderAngles()
-			err:SetRenderOrigin(Vector(25, 0, 0))
-			err:SetRenderAngles(Angle(0, 90, 0))
-
-				render.SetStencilWriteMask(1)
-				render.SetStencilTestMask(1)
-				render.SetStencilReferenceValue(1)
-				render.SetStencilCompareFunction(STENCIL_ALWAYS)
-				render.SetStencilPassOperation(STENCIL_REPLACE)
-				render.SetStencilFailOperation(STENCIL_KEEP)
-				render.SetStencilZFailOperation(STENCIL_KEEP)
-				render.ClearStencil()
-
-				render.SetStencilEnable(true)
-				render.SetMaterial(colour)
-					render.OverrideColorWriteEnable(true, false)
+			err:SetAngles(angle_zero)
+			err:SetPos(offset)
+			render.MaterialOverride(colour)
+				local col = self:GetCurrentColor()
+				local r, g, b = render.GetColorModulation()
+				render.SetColorModulation(col.r / 255, col.g / 255, col.b / 255)
+					render.SetBlend(col.a / 255)
 						err:DrawModel()
-					render.OverrideColorWriteEnable(false, false)
-
-					render.SetStencilPassOperation(STENCIL_KEEP)
-					render.SetStencilCompareFunction(STENCIL_EQUAL)
-
-					render.SetColorMaterial()
-					render.DrawScreenQuad()
-				render.SetStencilEnable(false)
-
-			err:SetRenderOrigin(renderpos)
-			err:SetRenderAngles(renderang)
+					render.SetBlend(1)
+				render.SetColorModulation(r, g, b)
+			render.MaterialOverride()
 		render.SuppressEngineLighting(false)
 	cam.End3D()
 end
@@ -69,64 +56,8 @@ function PANEL:OnRemove()
 	end
 end
 
-vgui.Register("ttt_ammo_weapon", PANEL, "EditablePanel")
-
-local PANEL = {}
-
-function PANEL:Init()
-
-	self.Model = self:Add "ttt_ammo_weapon"
-	self.Model:Dock(FILL)
-
-	self.Big = self:Add "DLabel"
-	self.Smol = self:Add "DLabel"
-	self:InvalidateLayout(true)
-
-	self.Big:SetFont "ttt_ammo_font_large"
-	self.Big:SetContentAlignment(5)
-	self.Big:SetText ""
-	self.Big:Dock(TOP)
-
-	self.Smol:SetFont "ttt_ammo_font_smol"
-	self.Smol:SetContentAlignment(5)
-	self.Smol:Dock(TOP)
-	self.Smol:SetText ""
+function PANEL:GetCurrentColor()
+	return self:GetCustomizedColor(self.inputs.color) or color_white
 end
 
-function PANEL:Think()
-	local targ = ttt.GetHUDTarget()
-	if (not IsValid(targ)) then
-		return
-	end
-
-	local wep = targ:GetActiveWeapon()
-
-	if (not IsValid(wep) or not wep.Primary) then
-		return
-	end
-
-	if (wep.Primary.ClipSize == -1) then
-		self.Big:SetText ""
-		self.Smol:SetText ""
-	else
-		self.Big:SetText(string.format("%i / %i", wep:Clip1(), wep:GetMaxClip1()))
-		self.Smol:SetText(targ:GetAmmoCount(wep:GetPrimaryAmmoType()))
-	end
-end
-
-function PANEL:PerformLayout(w, h)
-	surface.CreateFont("ttt_ammo_font_large", {
-        font = "Lato",
-        size = self:GetTall() * 0.2,
-		weight = 1000
-	})
-	self.Big:SetTall(self:GetTall() * 0.2)
-	surface.CreateFont("ttt_ammo_font_smol", {
-        font = "Lato",
-        size = self:GetTall() * 0.12,
-		weight = 1000
-    })
-	self.Smol:SetTall(self:GetTall() * 0.12)
-end
-
-vgui.Register("ttt_ammo", PANEL, "ttt_hud_customizable")
+vgui.Register("ttt_weapon", PANEL, "ttt_hud_customizable")

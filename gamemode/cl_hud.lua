@@ -257,7 +257,6 @@ local default = [[
 			{
 				"name": "TimeText",
 				"type": "ttt_text",
-				"parent": "RoleAndTimeBar",
 				"color": "white",
 				"text": [
 					"%s",
@@ -274,7 +273,6 @@ local default = [[
 			{
 				"name": "RoleText",
 				"type": "ttt_text",
-				"parent": "RoleAndTimeBar",
 				"color": "white",
 				"text": [
 					"%s",
@@ -291,12 +289,55 @@ local default = [[
 		]
 	},
 	{
-		"name": "Ammo",
-		"type": "ttt_ammo",
-		"size": [0.15, 0.25],
-		"pos": [0.9, 0.9],
+		"name": "AmmoBackground",
+		"type": "ttt_curve",
+		"bg_color": [0, 0, 0, 0],
+		"pos": [0.915, 0.875],
+		"size": [0.15, 0.2],
 		"curve": 0.005,
-		"bg_color": [0, 0, 0, 0]
+		"children": [
+			{
+				"name": "AmmoClip",
+				"type": "ttt_text",
+				"color": "white",
+				"text": [
+					"%s",
+					"clip_pretty"
+				],
+				"font": {
+					"size": 0.05,
+					"font": "Lato",
+					"weight": 1000
+				},
+				"dock": "top",
+				"size": [0.15, 0.05],
+				"pos": [0, 0, 0]
+			},
+			{
+				"name": "AmmoReserves",
+				"type": "ttt_text",
+				"color": "white",
+				"text": [
+					"%s",
+					"reserve_pretty"
+				],
+				"font": {
+					"size": 0.03,
+					"font": "Lato",
+					"weight": 1000
+				},
+				"dock": "top",
+				"size": [0.15, 0.03],
+				"pos": [0, 0, 1]
+			},
+			{
+				"name": "WeaponShadow",
+				"type": "ttt_weapon",
+				"color": [0, 0, 0, 0],
+				"dock": "fill",
+				"color": "white"
+			}
+		]
 	}
 ]
 ]]
