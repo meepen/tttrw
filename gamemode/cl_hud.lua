@@ -191,13 +191,30 @@ local default = [[
 [
 	{
 		"name": "SpectatingOverlay",
-		"type": "ttt_spectator",
+		"type": "ttt_curve_outline",
 		"pos": [0.5, 0.1, 0],
 		"size": [0.22, 0.04],
 		"curve": 0.005,
-		"bg_color": [11, 12, 11, 200],
+		"bg_color": [154, 153, 153],
 		"outline_color": [230, 230, 230],
-		"color": [154, 153, 153]
+		"disappear_no_target": true,
+		"children": [
+			{
+				"name": "SpectatorText",
+				"type": "ttt_text",
+				"color": "white",
+				"text": [
+					"Spectating %s",
+					"target_name"
+				],
+				"font": {
+					"size": 0.024,
+					"font": "Lato",
+					"weight": 1000
+				},
+				"dock": "fill"
+			}
+		]
 	},
 	{
 		"name": "HealthBackground",
@@ -338,6 +355,10 @@ local default = [[
 				"color": "white"
 			}
 		]
+	},
+	{
+		"name": "WeaponSelect",
+		"type": "ttt_weapon_select"
 	}
 ]
 ]]

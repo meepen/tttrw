@@ -20,7 +20,13 @@ function PANEL:AcceptInput(key, value)
 		self:Dock(docks[value])
 	elseif (key == "curve") then
 		self:SetCurve(math.Round(ScrH() * value / 2) * 2)
+	elseif (key == "disappear_no_target" and value) then
+		hook.Add("Think", self, self.Tick)
 	end
+end
+
+function PANEL:Tick()
+	self:SetVisible(IsValid(LocalPlayer():GetObserverTarget()))
 end
 
 function PANEL:AnimationThink()
@@ -240,6 +246,14 @@ local text_functions = {
 		else
 			return "DUNNO"
 		end
+	end,
+	target_name = function(self)
+		local targ = LocalPlayer():GetObserverTarget()
+		if (not IsValid(targ)) then
+			return ""
+		end
+
+		return targ:Nick()
 	end
 }
 

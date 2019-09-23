@@ -165,4 +165,6 @@ function PANEL:PerformLayout(w, h)
 	self:SizeToContents()
 end
 
+function PANEL:AcceptInput() end
+
 vgui.Register("ttt_weapon_select", PANEL, "Panel")
