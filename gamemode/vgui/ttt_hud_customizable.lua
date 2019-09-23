@@ -41,7 +41,7 @@ end
 
 local color_functions = {
 	lerp = function(self, data)
-		local frac, from, to = self:GetCustomizedNumber(data.frac)
+		local frac, from, to = math.Clamp(self:GetCustomizedNumber(data.frac), 0, 1)
 
 		local count = #data.points
 
@@ -113,14 +113,14 @@ local number_functions = {
 	end,
 	health = function()
 		local targ = ttt.GetHUDTarget()
-		if (not IsValid(targ) or not targ:Alive()) then
+		if (not IsValid(targ)) then
 			return 0
 		end
-		return targ:Health()
+		return math.max(0, targ:Health())
 	end,
 	health_max = function()
 		local targ = ttt.GetHUDTarget()
-		if (not IsValid(targ) or not targ:Alive()) then
+		if (not IsValid(targ)) then
 			return 0
 		end
 		return targ:GetMaxHealth()

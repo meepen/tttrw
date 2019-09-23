@@ -243,9 +243,18 @@ local default = [[
 		"curve": 0.005
 	},
 	{
+		"name": "RoleAndTimeBar",
+		"type": "ttt_curve_outline",
+		"pos": [0.12, 0.95, 1],
+		"size": [0.22, 0.04],
+		"curve": 0.005,
+		"bg_color": "role",
+		"outline_color": [230, 230, 230]
+	},
+	{
 		"name": "RoleAndTime",
 		"type": "ttt_time",
-		"pos": [0.12, 0.95, 1],
+		"pos": [0.12, 0.95, 0],
 		"size": [0.22, 0.04],
 		"curve": 0.005,
 		"bg_color": [11, 12, 11, 200],
