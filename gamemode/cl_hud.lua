@@ -200,8 +200,36 @@ local default = [[
 		"color": [154, 153, 153]
 	},
 	{
+		"name": "HealthBackground",
+		"type": "ttt_curve",
+		"bg_color": "black_bg",
+		"pos": [0.12, 0.9, 1],
+		"size": [0.22, 0.04],
+		"curve": 0.005
+	},
+	{
+		"name": "HealthBar",
+		"type": "ttt_curve_outline",
+		"parent": "HealthBackground",
+		"bg_color": {
+			"func": "lerp",
+			"frac": "health_frac",
+			"points": [
+				[200, 49, 59],
+				[153, 129, 6],
+				[59, 171, 91]
+			]
+		},
+		"outline_color": "white",
+		"pos": [0.5, 0.5, 2],
+		"size": [0.22, 0.04],
+		"frac": "health_frac",
+		"curve": 0.005
+	},
+	{
 		"name": "HealthText",
 		"type": "ttt_text",
+		"parent": "HealthBar",
 		"color": "white",
 		"text": [
 			"%i / %i",
@@ -213,39 +241,13 @@ local default = [[
 			"font": "Lato",
 			"weight": 1000
 		},
-		"pos": [0.12, 0.9, 2],
+		"pos": [0.5, 0.5, 2],
 		"size": [0.22, 0.04]
-	},
-	{
-		"name": "HealthBar",
-		"type": "ttt_curve_outline",
-		"bg_color": {
-			"func": "lerp",
-			"frac": "health_frac",
-			"points": [
-				[200, 49, 59],
-				[153, 129, 6],
-				[59, 171, 91]
-			]
-		},
-		"outline_color": "white",
-		"pos": [0.12, 0.9, 1],
-		"size": [0.22, 0.04],
-		"frac": "health_frac",
-		"curve": 0.005
-	},
-	{
-		"name": "HealthBackground",
-		"type": "ttt_curve",
-		"bg_color": "black_bg",
-		"pos": [0.12, 0.9, 1],
-		"size": [0.22, 0.04],
-		"curve": 0.005
 	},
 	{
 		"name": "RoleAndTimeBar",
 		"type": "ttt_curve_outline",
-		"pos": [0.12, 0.95, 1],
+		"pos": [0.12, 0.85, 1],
 		"size": [0.22, 0.04],
 		"curve": 0.005,
 		"bg_color": "role",
@@ -319,16 +321,23 @@ local function IsCustomizable(ele)
 end
 
 for id, data in ipairs(json) do
-	if (not data.type or not IsCustomizable(data.type)) then
+	if (not data.type or not IsCustomizable(data.type) or not data.name) then
 		warn("Couldn't create %s", data.name or data.type)
 		continue
 	end
 
-	local p = GetHUDPanel():Add(data.type)
+	local parent = data.parent and ttt.HUDElements[data.parent] or not data.parent and GetHUDPanel()
 
-	p:SetName(data.name or "hud_" .. tostring(id))
+	if (not IsValid(parent)) then
+		warn("Couldn't create %s: no parent", data.name or data.type)
+		continue
+	end
 
-	ttt.HUDElements[id] = p
+	local p = parent:Add(data.type)
+
+	p:SetName(data.name)
+
+	ttt.HUDElements[data.name] = p
 
 	for key, value in pairs(data) do
 		p:AcceptInput(key, value)

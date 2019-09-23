@@ -5,7 +5,7 @@ function PANEL:AcceptInput(key, value)
 	self.inputs[key] = value
 	if (key == "bg_color") then
 		self:SetColor(self:GetInputColor(key))
-	elseif (key == "pos" or key == "size") then
+	elseif (key == "pos" or key == "size" or key == "padding") then
 		self:Recenter()
 		return true
 	elseif (key == "curve") then
@@ -148,8 +148,8 @@ function PANEL:Recenter()
 	local pos, size
 	if (self.inputs.pos) then
 		pos = {
-			math.Round(self.inputs.pos[1] * ScrW()),
-			math.Round(self.inputs.pos[2] * ScrH()),
+			math.Round(self.inputs.pos[1] * self:GetParent():GetWide()),
+			math.Round(self.inputs.pos[2] * self:GetParent():GetTall()),
 			self.inputs.pos[3]
 		}
 	else
@@ -170,7 +170,16 @@ function PANEL:Recenter()
 	self:SetSize(size[1], size[2])
 	self:SetZPos(pos[3])
 
-	self:SetCurve(math.Round(ScrH() * (self.inputs.curve or 0.005) / 2) * 2)
+	local padding = table.Copy(self.inputs.padding or {0,0,0,0})
+	padding[1] = padding[1] * self:GetParent():GetWide()
+	padding[2] = padding[2] * self:GetParent():GetTall()
+	padding[3] = padding[3] * self:GetParent():GetWide()
+	padding[4] = padding[4] * self:GetParent():GetTall()
+	self:DockPadding(unpack(padding))
+
+	if (self.SetCurve) then
+		self:SetCurve(math.Round(ScrH() * (self.inputs.curve or 0.005) / 2) * 2)
+	end
 end
 
 vgui.Register("ttt_hud_customizable", PANEL, "ttt_curved_panel")
@@ -192,33 +201,6 @@ function PANEL:AcceptInput(key, value)
 	elseif (key == "color") then
 		self:SetImageColor(Color(unpack(value)))
 	end
-end
-function PANEL:Recenter()
-	self.inputs = self.inputs or {}
-	local pos, size
-	if (self.inputs.pos) then
-		pos = {
-			math.Round(self.inputs.pos[1] * ScrW()),
-			math.Round(self.inputs.pos[2] * ScrH()),
-			self.inputs.pos[3]
-		}
-	else
-		pos = {self:GetPos()}
-		pos[3] = self:GetZPos()
-	end
-
-	if (self.inputs.size) then
-		size = {
-			math.Round(self.inputs.size[1] * ScrW()),
-			math.Round(self.inputs.size[2] * ScrH())
-		}
-	else
-		size = {self:GetSize()}
-	end
-
-	self:SetPos(pos[1] - size[1] / 2, pos[2] - size[2] / 2)
-	self:SetSize(size[1], size[2])
-	self:SetZPos(pos[3])
 end
 
 vgui.Register("ttt_image", PANEL, "DImage")
@@ -242,7 +224,8 @@ end
 
 vgui.Register("ttt_curve_outline_inner", PANEL, "ttt_curved_panel")
 
-local PANEL = {}
+DEFINE_BASECLASS "ttt_hud_customizable"
+local PANEL = table.Copy(BaseClass)
 
 function PANEL:Init()
 	self.Outer = self:Add "ttt_curved_panel_outline"
@@ -252,40 +235,6 @@ function PANEL:Init()
 	self.Inner = self.Outer:Add "ttt_curve_outline_inner"
 	self.Inner:Dock(FILL)
 	self.Inner:SetZPos(0)
-end
-
-DEFINE_BASECLASS "ttt_hud_customizable"
-PANEL.GetInputColor = BaseClass.GetInputColor
-PANEL.GetCustomizedNumber = BaseClass.GetCustomizedNumber
-PANEL.GetCustomizedColor = BaseClass.GetCustomizedColor
-PANEL.AnimationThink = BaseClass.AnimationThink
-
-function PANEL:Recenter()
-	self.inputs = self.inputs or {}
-	local pos, size
-	if (self.inputs.pos) then
-		pos = {
-			math.Round(self.inputs.pos[1] * ScrW()),
-			math.Round(self.inputs.pos[2] * ScrH()),
-			self.inputs.pos[3] or 0
-		}
-	else
-		pos = {self:GetPos()}
-		pos[3] = self:GetZPos()
-	end
-
-	if (self.inputs.size) then
-		size = {
-			math.Round(self.inputs.size[1] * ScrW()),
-			math.Round(self.inputs.size[2] * ScrH())
-		}
-	else
-		size = {self:GetSize()}
-	end
-
-	self:SetPos(pos[1] - size[1] / 2, pos[2] - size[2] / 2)
-	self:SetSize(size[1], size[2])
-	self:SetZPos(pos[3])
 end
 
 function PANEL:OnScreenSizeChanged()
@@ -311,12 +260,8 @@ end
 vgui.Register("ttt_curve_outline", PANEL, "EditablePanel")
 
 
-local PANEL = {}
 DEFINE_BASECLASS "ttt_hud_customizable"
-PANEL.GetInputColor = BaseClass.GetInputColor
-PANEL.GetCustomizedNumber = BaseClass.GetCustomizedNumber
-PANEL.GetCustomizedColor = BaseClass.GetCustomizedColor
-PANEL.AnimationThink = BaseClass.AnimationThink
+local PANEL = table.Copy(BaseClass)
 
 local alignments = {
 	topleft = 7,
@@ -341,34 +286,6 @@ function PANEL:AcceptInput(key, value)
 	else
 		BaseClass.AcceptInput(self, key, value)
 	end
-end
-
-function PANEL:Recenter()
-	self.inputs = self.inputs or {}
-	local pos, size
-	if (self.inputs.pos) then
-		pos = {
-			math.Round(self.inputs.pos[1] * ScrW()),
-			math.Round(self.inputs.pos[2] * ScrH()),
-			self.inputs.pos[3]
-		}
-	else
-		pos = {self:GetPos()}
-		pos[3] = self:GetZPos()
-	end
-
-	if (self.inputs.size) then
-		size = {
-			math.Round(self.inputs.size[1] * ScrW()),
-			math.Round(self.inputs.size[2] * ScrH())
-		}
-	else
-		size = {self:GetSize()}
-	end
-
-	self:SetPos(pos[1] - size[1] / 2, pos[2] - size[2] / 2)
-	self:SetSize(size[1], size[2])
-	self:SetZPos(pos[3])
 end
 
 function PANEL:Init()
