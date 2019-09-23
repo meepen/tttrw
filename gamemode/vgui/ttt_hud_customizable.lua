@@ -25,21 +25,66 @@ end
 
 function PANEL:GetInputColor(key)
 	self.color_inputs = self.color_inputs or {}
-	
-	local col
 
 	local value = self.color_inputs[key]
 	if (not value) then
 		value = self.inputs[key]
 		self.color_inputs[key] = value
 	end
+	
+	local col = self:GetCustomizedColor(value)
 
+	self.inputs[key] = col
+
+	return col
+end
+
+local color_functions = {
+	lerp = function(self, data)
+		local frac, from, to = self:GetCustomizedNumber(data.frac)
+
+		local count = #data.points
+
+		for ind = count, 2, -1 do
+			local col = data.points[ind]
+			local base = (ind - 1) / (count - 1)
+			if (base >= frac) then
+				from, to = self:GetCustomizedColor(data.points[ind - 1]), self:GetCustomizedColor(data.points[ind])
+				frac = (frac - (ind - 2) / (count - 1)) * count
+				break
+			end
+		end
+
+		return Color(Lerp(frac, from.r, to.r), Lerp(frac, from.g, to.g), Lerp(frac, from.b, to.b), Lerp(frac, from.a, to.a))
+	end
+}
+
+local static_colors = {
+	white = white_text,
+	black = Color(11, 12, 11),
+	black_bg = Color(11, 12, 11, 200)
+}
+
+function PANEL:GetCustomizedColor(value)
+	local col
+	
 	if (not value) then
 		col = white_text
+	elseif (static_colors[value]) then
+		col = static_colors[value]
 	elseif (IsColor(value)) then
 		col = value
 	elseif (type(value) == "table") then
-		col = Color(value[1], value[2], value[3], value[4])
+		if (value.func and color_functions[value.func]) then
+			col = color_functions[value.func](self, value)
+		else
+			col = Color(
+				self:GetCustomizedNumber(value[1]),
+				self:GetCustomizedNumber(value[2]),
+				self:GetCustomizedNumber(value[3]),
+				self:GetCustomizedNumber(value[4] or 255)
+			)
+		end
 	elseif (value == "role") then
 		local targ = ttt.GetHUDTarget()
 	
@@ -50,9 +95,33 @@ function PANEL:GetInputColor(key)
 		end
 	end
 
-	self.inputs[key] = col
-
 	return col
+end
+
+local number_functions = {
+	lerp = function(self, data)
+		return Lerp(data.frac, self:GetCustomizedNumber(data.from), self:GetCustomizedNumber(data.to))
+	end,
+	health = function(self)
+		local targ = ttt.GetHUDTarget()
+		if (not IsValid(targ) or not targ:Alive()) then
+			return 0
+		end
+
+		return targ:Health() / targ:GetMaxHealth()
+	end
+}
+
+function PANEL:GetCustomizedNumber(value)
+	if (not value) then
+		value = 1
+	elseif (type(value) == "table" and value.func) then
+		value = number_functions[value.func](self, value)
+	elseif (type(value) == "string") then
+		value = number_functions[value](self)
+	end
+
+	return value
 end
 
 function PANEL:OnScreenSizeChanged()
@@ -142,23 +211,82 @@ vgui.Register("ttt_image", PANEL, "DImage")
 local PANEL = {}
 
 function PANEL:PerformLayout()
-	self:SetCurve(self:GetParent():GetCurve())
 	self:DockPadding(self:GetCurve() / 2, self:GetCurve() / 2, self:GetCurve() / 2, self:GetCurve() / 2)
 end
-vgui.Register("ttt_curve_outline_inner", PANEL, "ttt_curved_panel_outline")
+
+function PANEL:GetFraction()
+	local frac = self:GetParent():GetParent().inputs.frac
+	return frac and self:GetParent():GetParent():GetCustomizedNumber(frac) or 1
+end
+
+function PANEL:Scissor()
+	local x0, y0, x1, y1 = self:GetRenderBounds()
+	local w = math.min(x1 - x0, self:GetWide() * self:GetFraction())
+	render.SetScissorRect(x0, y0, x0 + w, y1, true)
+end
+
+vgui.Register("ttt_curve_outline_inner", PANEL, "ttt_curved_panel")
 
 local PANEL = {}
 
 function PANEL:Init()
-	self.Inner = self:Add "ttt_curve_outline_inner"
+	self.Outer = self:Add "ttt_curved_panel_outline"
+	self.Outer:Dock(FILL)
+	self.Outer:SetZPos(0)
+
+	self.Inner = self.Outer:Add "ttt_curve_outline_inner"
 	self.Inner:Dock(FILL)
 	self.Inner:SetZPos(0)
 end
 
+DEFINE_BASECLASS "ttt_hud_customizable"
+PANEL.GetInputColor = BaseClass.GetInputColor
+PANEL.GetCustomizedNumber = BaseClass.GetCustomizedNumber
+PANEL.GetCustomizedColor = BaseClass.GetCustomizedColor
+PANEL.AnimationThink = BaseClass.AnimationThink
+
+function PANEL:Recenter()
+	self.inputs = self.inputs or {}
+	local pos, size
+	if (self.inputs.pos) then
+		pos = {
+			math.Round(self.inputs.pos[1] * ScrW()),
+			math.Round(self.inputs.pos[2] * ScrH()),
+			self.inputs.pos[3]
+		}
+	else
+		pos = {self:GetPos()}
+		pos[3] = self:GetZPos()
+	end
+
+	if (self.inputs.size) then
+		size = {
+			math.Round(self.inputs.size[1] * ScrW()),
+			math.Round(self.inputs.size[2] * ScrH())
+		}
+	else
+		size = {self:GetSize()}
+	end
+
+	self:SetPos(pos[1] - size[1] / 2, pos[2] - size[2] / 2)
+	self:SetSize(size[1], size[2])
+	self:SetZPos(pos[3])
+end
+
 function PANEL:AcceptInput(key, value)
-	self.BaseClass.AcceptInput(self, key, value)
+	self.inputs = self.inputs or {}
+	self.inputs[key] = value
 	if (key == "outline_color") then
+		self.Outer:SetColor(self:GetInputColor(key))
+	elseif (key == "bg_color") then
 		self.Inner:SetColor(self:GetInputColor(key))
+	elseif (key == "curve") then
+		value = math.Round(ScrH() * (self.inputs.curve or 0.005) / 2) * 2
+		self.Outer:SetCurve(value)
+		self.Inner:SetCurve(value / 2)
+		self.Outer:DockPadding(value / 2, value / 2, value / 2, value / 2)
+	else
+		BaseClass.AcceptInput(self, key, value)
 	end
 end
-vgui.Register("ttt_curve_outline", PANEL, "ttt_hud_customizable")
+vgui.Register("ttt_curve_outline", PANEL, "EditablePanel")

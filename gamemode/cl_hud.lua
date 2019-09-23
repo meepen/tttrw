@@ -199,13 +199,30 @@ local default = [[
 		"color": [154, 153, 153]
 	},
 	{
-		"type": "ttt_health",
+		"name": "health",
+		"type": "ttt_curve_outline",
+		"bg_color": {
+			"func": "lerp",
+			"frac": "health",
+			"points": [
+				[200, 49, 59],
+				[255, 0, 0],
+				[59, 171, 91]
+			]
+		},
+		"outline_color": "white",
 		"pos": [0.12, 0.9, 1],
 		"size": [0.22, 0.04],
-		"curve": 0.005,
-		"bg_color": [11, 12, 11, 200],
-		"color": [59, 171, 91],
-		"outline_color": [230, 230, 230]
+		"frac": "health",
+		"curve": 0.005
+	},
+	{
+		"name": "health_bg",
+		"type": "ttt_curve",
+		"bg_color": "black_bg",
+		"pos": [0.12, 0.9, 1],
+		"size": [0.22, 0.04],
+		"curve": 0.005
 	},
 	{
 		"type": "ttt_time",
@@ -227,14 +244,6 @@ local default = [[
 		"path": "materials/tttrw/agree.png",
 		"color": [255, 0, 0, 200],
 		"pos": [0.1, 0.1, 1]
-	},
-	{
-		"type": "ttt_curve_outline",
-		"bg_color": "role",
-		"outline_color": [11, 12, 11],
-		"pos": [0.12, 0.925, 0],
-		"size": [0.225, 0.1],
-		"curve": 0.005
 	}
 ]
 ]]
@@ -281,6 +290,10 @@ for id, data in ipairs(json) do
 	end
 
 	local p = GetHUDPanel():Add(data.type)
+
+	p:SetName(data.name or "hud_" .. tostring(id))
+
+	print(p)
 
 	ttt.HUDElements[id] = p
 
