@@ -68,7 +68,6 @@ function PANEL:PerformLayout(w, h)
 	self:SetTall(font_tall + 6)
 	self:GetParent():SizeToChildren(false, true)
 	self.Number:SetWide(h + self.Number:GetCurve())
-	BaseClass.PerformLayout(self, self:GetSize())
 end
 function PANEL:SetWeapon(wep)
 	local swep_tbl = weapons.GetStored(wep:GetClass())

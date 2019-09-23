@@ -82,7 +82,6 @@ function PANEL:PerformLayout(w, h)
 	self:SetTall(GetHeaderSize())
 	self.Text:SizeToContents()
 	self.Text:Center()
-	BaseClass.PerformLayout(self, self:GetSize())
 end
 
 vgui.Register("ttt_credit_remaining", PANEL, "ttt_curved_panel")

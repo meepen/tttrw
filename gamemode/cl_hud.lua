@@ -180,23 +180,121 @@ function GM:HUDShouldDraw(name)
 	return true
 end
 
-if (ttt.HUDHealthPanel) then
-	ttt.HUDHealthPanel:Remove()
+--[[
+	
+	self:SetSize(ScrW() * 0.22, ScrH() * 0.04)
+	self:SetCurve(math.Round(ScrH() * 0.0025) * 2)
+	self:SetPos(ScrW() * 0.05, ScrH() - ScrH() * 0.1)
+]]
+
+local default = [[
+{
+	"main": {
+		"ttt_spectator": {
+			"pos": [0.5, 0.1, 0],
+			"size": [0.22, 0.04],
+			"curve": 0.005,
+			"visible": true,
+			"bg_color": [11, 12, 11, 200],
+			"outline_color": [230, 230, 230],
+			"color": [154, 153, 153]
+		},
+		"ttt_health": {
+			"pos": [0.12, 0.9, 1],
+			"size": [0.22, 0.04],
+			"visible": true,
+			"curve": 0.005,
+			"bg_color": [11, 12, 11, 200],
+			"color": [59, 171, 91],
+			"outline_color": [230, 230, 230]
+		},
+		"ttt_time": {
+			"pos": [0.12, 0.95, 1],
+			"size": [0.22, 0.04],
+			"visible": true,
+			"curve": 0.005,
+			"bg_color": [11, 12, 11, 200],
+			"outline_color": [230, 230, 230]
+		},
+		"ttt_ammo": {
+			"size": [0.15, 0.25],
+			"pos": [0.9, 0.9],
+			"visible": true,
+			"curve": 0.005,
+			"bg_color": [0, 0, 0, 0]
+		}
+	},
+	"extra": [
+	]
+}
+]]
+
+local json
+
+local s, e = pcall(function()
+	json = util.JSONToTable(file.Read("tttrw_hud.json", "DATA") or default)
+end)
+
+if (not s or not json or not json.main) then
+	warn("%s", not json and "json ded" or not json.main and "no main" or e)
+	return
 end
 
-if (ttt.HUDRolePanel) then
-	ttt.HUDRolePanel:Remove()
+ttt.HUDElements = ttt.HUDElements or {}
+
+for item, ele in pairs(ttt.HUDElements) do
+	if (IsValid(ele)) then
+		ele:Remove()
+	end
 end
 
-if (ttt.HUDAmmoPanel) then
-	ttt.HUDAmmoPanel:Remove()
+local function IsCustomizable(ele)
+	local base = baseclass.Get(ele)
+	local good = false
+	while (base) do
+		if (base.AcceptInput) then
+			good = true
+			break
+		end
+		base = baseclass.Get(base.Base)
+		if (not base or not base.Base) then
+			break
+		end
+	end
+
+	return good
 end
 
-if (ttt.HUDWeaponSelect) then
-	ttt.HUDWeaponSelect:Remove()
+for ele, data in pairs(json.main) do
+	if (not data.visible) then
+		continue
+	end
+
+	if (not IsCustomizable(ele)) then
+		continue
+	end
+
+	ttt.HUDElements[ele] = GetHUDPanel():Add(ele)
+
+	for key, value in pairs(data) do
+		ttt.HUDElements[ele]:AcceptInput(key, value)
+	end
 end
 
-ttt.HUDHealthPanel = vgui.Create("ttt_health", GetHUDPanel())
-ttt.HUDRolePanel = vgui.Create("ttt_time", GetHUDPanel())
-ttt.HUDAmmoPanel = vgui.Create("ttt_ammo", GetHUDPanel())
-ttt.HUDWeaponSelect = vgui.Create("ttt_weapon_select", GetHUDPanel())
+if (not json.extra) then
+	return
+end
+
+for id, data in ipairs(json.extra) do
+	if (not data.type or not IsCustomizable(data.type)) then
+		continue
+	end
+
+	local p = GetHUDPanel():Add(data.type)
+
+	ttt.HUDElements[id] = p
+
+	for key, value in pairs(data) do
+		p:AcceptInput(key, value)
+	end
+end

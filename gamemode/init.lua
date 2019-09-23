@@ -34,8 +34,12 @@ end
 
 local tttrw_door_speedup = CreateConVar("tttrw_door_speed_mult", 1, FCVAR_NONE, "How much faster doors are (2 = double, 0.5 = half)")
 
+local block = {
+	func_button = true,
+	trigger_push = true
+}
 function GM:EntityKeyValue(ent, key, value)
-	if (key:lower() == "speed") then
+	if (not block[ent:GetClass()] and key:lower() == "speed") then
 		return value / 66 / engine.TickInterval() * tttrw_door_speedup:GetFloat()
 	end
 end

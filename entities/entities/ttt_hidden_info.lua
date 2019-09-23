@@ -49,6 +49,10 @@ function ENT:SetupDataTables()
 			self[nw2setter](self, var.Name, value)
 		end
 
+		if (CLIENT and var.Default) then
+			self:NetworkVarNotifyCallback(var.Name, nil, var.Default)
+		end
+
 		self:SetNWVarProxy(var.Name, self.NetworkVarNotifyCallback)
 
 		--types[var.Type] = types[var.Type] + 1

@@ -98,7 +98,7 @@ end
 
 function SWEP:Initialize()
 	self:SetDeploySpeed(self.DeploySpeed)
-	if (self.Primary and self.Primary.Ammo == "Buckshot" and not self.PredictableSpread) then
+	if (SERVER and self.Primary and self.Primary.Ammo == "Buckshot" and not self.PredictableSpread) then
 		printf("Warning: %s weapon type has shotgun ammo and no predictable spread", self:GetClass())
 	end
 	self:SetHoldType(self.HoldType)
@@ -145,6 +145,17 @@ function SWEP:DoZoom(state)
 	else
 		self:ChangeFOVMultiplier(1, self.Ironsights.TimeFrom)
 	end
+end
+
+function SWEP:Deploy()
+	self:ChangeIronsights(false)
+	self:SetIronsightsTime(0)
+	self:SetOldFOVMultiplier(1)
+	self:SetFOVMultiplier(1)
+	if (CLIENT) then
+		self:CalcFOV()
+	end
+	self:SetDeploySpeed(self.DeploySpeed)
 end
 
 function SWEP:OnReloaded()
@@ -350,6 +361,12 @@ function SWEP:GetSpread()
 	return self.Bullets.Spread * (0.25 + (-self:GetMultiplier() + 2) * 0.75) * (0.5 + self:GetCurrentZoom() / 2) ^ 0.7
 end
 
+function SWEP:CanPrimaryAttack()
+	self:EmitSound "Weapon_Pistol.Empty"
+	self:SetNextPrimaryFire(CurTime() + 0.2)
+	return self:Clip1() > 0
+end
+
 function SWEP:PrimaryAttack()
 	if (not self:CanPrimaryAttack()) then
 		return
@@ -420,8 +437,12 @@ function SWEP:ViewPunch()
 end
 
 function SWEP:Think()
-	if (self:GetIronsights() and not self:IsToggleADS() and not self:GetOwner():KeyDown(IN_ATTACK2)) then
-		self:ChangeIronsights(false)
+	if (not self:IsToggleADS()) then
+		if (not self:GetIronsights() and self:GetOwner():KeyDown(IN_ATTACK2)) then
+			self:SecondaryAttack()
+		elseif (self:GetIronsights() and not self:GetOwner():KeyDown(IN_ATTACK2)) then
+			self:ChangeIronsights(false)
+		end
 	end
 
 	if (CLIENT) then
@@ -456,7 +477,7 @@ function SWEP:GetMultiplier()
 end
 
 function SWEP:GetViewPunchAngles()
-	return Angle(-self.Primary.Recoil * self:GetMultiplier() * (0.5 + self:GetCurrentZoom() / 2) ^ 0.7)
+	return Angle((-self.Primary.Recoil * self:GetMultiplier() * (0.5 + self:GetCurrentZoom() / 2) ^ 0.7))
 end
 
 function SWEP:AdjustMouseSensitivity()

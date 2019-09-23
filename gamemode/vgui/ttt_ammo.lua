@@ -1,204 +1,26 @@
 local PANEL = {}
 
-function PANEL:Init()
-	self:AddFunction("ttt", "ready", function()
-		self.Ready = true
-		local targ = self:GetTarget()
-		if (not IsValid(targ)) then
-			return
-		end
-
-		self:PlayerSwitchWeapon(targ, targ:GetActiveWeapon(), targ:GetActiveWeapon())
-	end)
-	
-	self:SetHTML [[
-<head>
-	<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
-	<style>
-		* {
-			-webkit-font-smoothing: antialiased;
-			-moz-osx-font-smoothing: grayscale;
-			line-height: 15px;
-		}
-		h1 {
-			font-size: 30px;
-			font-family: 'Lato', sans-serif;
-			text-align: center;
-			text-shadow: 2px 1px 1px rgba(0, 0, 0, .4);
-			color: #F7F7F7;
-		}
-		h2 {
-			font-size: 23px;
-			font-family: 'Lato', sans-serif;
-			text-align: center;
-			text-shadow: 2px 1px 1px rgba(0, 0, 0, .4);
-			color: #F7F7F7;
-		}
-		.shadow {
-		  -webkit-filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
-		  filter: drop-shadow( 1px 1px 1px rgba(0, 0, 0, .7));
-		}
-	</style>
-</head>
-<body onload="ttt.ready()">
-	<h1 id="ammoCounter" class="shadow" />
-	<h2 id="reserveAmmo" class="shadow" />
-	<script>
-		var ammoCounter = document.getElementById("ammoCounter");
-		var reserveAmmo = document.getElementById("reserveAmmo");
-		
-		
-		var ammo = 0;
-		var maxAmmo = 0;
-		
-		
-		function setAmmo(_ammo)
-		{
-			ammo = _ammo
-			
-			ammoCounter.innerHTML = _ammo + "/" + maxAmmo
-		}
-		
-		function setMaxAmmo(_maxAmmo)
-		{
-			maxAmmo = _maxAmmo
-			
-			ammoCounter.innerHTML = ammo + "/" + _maxAmmo
-		}
-		
-		function setAllAmmo(_ammo, _maxAmmo, _reserve)
-		{
-			ammo = _ammo
-			maxAmmo = _maxAmmo
-			
-			ammoStr = _ammo + "/" + _maxAmmo
-			if (_maxAmmo === "")
-			{
-				ammoStr = _ammo
-			}
-			
-			ammoCounter.innerHTML = ammoStr
-			reserveAmmo.innerHTML = _reserve
-		}
-		
-		function setReserveAmmo(_reserve)
-		{
-			reserveAmmo.innerHTML = _reserve
-		}
-	</script>
-</body>
-	]]
-	
-	self.OldAmmo = 0
-	self.ReserveAmmo = 0
-
-	hook.Add("PlayerSpawn", self, self.PlayerSpawn)
-end
-
-function PANEL:OnRemove()
-	timer.Destroy("ttt_ammo_timer")
-	if (IsValid(self.Model)) then
-		self.Model:Remove()
-	end
-end
-
-function PANEL:UpdateAllAmmo(pl, wep)
-	if (not IsValid(wep)) then return end
-	
-	local max_bullets = wep.Primary and wep.Primary.ClipSize or wep:Clip1()
-	local cur_bullets = wep:Clip1()
-	local reserve = pl:GetAmmoCount(wep:GetPrimaryAmmoType())
-	
-	self.OldAmmo = cur_bullets
-	self.ReserveAmmo = reserve
-	
-	if (cur_bullets == -1) then
-		cur_bullets = ""
-		max_bullets = ""
-		reserve = ""
-	end
-	
-	self:CallSafe([[setAllAmmo("%s", "%s", "%s")]], cur_bullets, max_bullets, reserve)
-end
-
-function PANEL:PlayerSwitchWeapon(pl, old, new)
-	if (pl ~= self:GetTarget()) then return end
-
-	if (IsValid(self.Model)) then
-		self.Model:Remove()
-	end
-
-	if (IsValid(new) and new.WorldModel) then
-		self.Model = ClientsideModel(new.WorldModel, RENDERGROUP_OTHER)
-		self.Model:SetNoDraw(true)
-	end
-
-	self:UpdateAllAmmo(pl, new)
-end
-
-function PANEL:PlayerSpawn(pl)
-	if (not IsValid(pl) or pl ~= self:GetTarget()) then return end
-
-	if (IsValid(self.Model)) then
-		self.Model:Remove()
-	end
-
-	local new = pl:GetActiveWeapon()
-
-	if (not IsValid(new)) then
-		return
-	end
-
-	self:PlayerSwitchWeapon(pl, new, new)
-end
-
-function PANEL:PerformLayout()
-	self:SetPos(ScrW() * 0.85625, ScrH() * 0.777)
-	self:SetSize(ScrW() * 0.125, ScrH() * 0.2)
-
-	local pl = self:GetTarget()
-	self:UpdateAllAmmo(pl, pl:GetActiveWeapon())
-	
-	timer.Create("ttt_ammo_timer", 0.1, 0, function() self:Tick() end)
-end
-
-function PANEL:Tick()
-	if (not self.Ready) then return end
-	
-	local pl = self:GetTarget()
-	local wep = pl:GetActiveWeapon()
-	if (not IsValid(wep)) then return end
-
-	if (wep ~= self.OldWeapon) then
-		self:PlayerSwitchWeapon(pl, self.OldWeapon, wep)
-		self.OldWeapon = wep
-	end
-
-	local cur_bullets = wep:Clip1()
-	if (self.OldAmmo ~= cur_bullets) then
-		self.OldAmmo = cur_bullets
-		self:CallSafe([[setAmmo("%s")]], cur_bullets)
-	end
-	
-	local reserve = pl:GetAmmoCount(wep:GetPrimaryAmmoType())
-	if (self.ReserveAmmo ~= reserve) then
-		self.ReserveAmmo = reserve
-		self:CallSafe([[setReserveAmmo("%s")]], reserve)
-	end
-end
-
 local colour = Material "pp/colour"
 
 function PANEL:Paint(w, h)
-	local targ = self:GetTarget()
+	local targ = ttt.GetHUDTarget()
 	if (not IsValid(targ)) then
 		return
 	end
 
 	local wep = targ:GetActiveWeapon()
 
-	if (not IsValid(wep)) then
+	if (not IsValid(wep) or not wep.WorldModel) then
 		return
+	end
+
+	if (wep ~= self.LastWeapon) then
+		if (IsValid(self.Model)) then
+			self.Model:Remove()
+		end
+		self.Model = ClientsideModel(wep.WorldModel, RENDERGROUP_OTHER)
+		self.Model:SetNoDraw(true)
+		self.LastWeapon = wep
 	end
 
 	local err = self.Model
@@ -206,8 +28,8 @@ function PANEL:Paint(w, h)
 		return
 	end
 
-	local x, y = self:LocalToScreen(0, 30)
-	cam.Start3D(vector_origin, angle_zero, 90, x, y, w, h - 30)
+	local x, y = self:LocalToScreen(0, 0)
+	cam.Start3D(vector_origin, angle_zero, 90, x, y, w, h)
 		render.SuppressEngineLighting(true)
 			local renderpos, renderang = wep:GetRenderOrigin(), wep:GetRenderAngles()
 			err:SetRenderOrigin(Vector(25, 0, 0))
@@ -241,4 +63,70 @@ function PANEL:Paint(w, h)
 	cam.End3D()
 end
 
-vgui.Register("ttt_ammo", PANEL, "ttt_html_base")
+function PANEL:OnRemove()
+	if (IsValid(self.Model)) then
+		self.Model:Remove()
+	end
+end
+
+vgui.Register("ttt_ammo_weapon", PANEL, "EditablePanel")
+
+local PANEL = {}
+
+function PANEL:Init()
+
+	self.Model = self:Add "ttt_ammo_weapon"
+	self.Model:Dock(FILL)
+
+	self.Big = self:Add "DLabel"
+	self.Smol = self:Add "DLabel"
+	self:InvalidateLayout(true)
+
+	self.Big:SetFont "ttt_ammo_font_large"
+	self.Big:SetContentAlignment(5)
+	self.Big:SetText ""
+	self.Big:Dock(TOP)
+
+	self.Smol:SetFont "ttt_ammo_font_smol"
+	self.Smol:SetContentAlignment(5)
+	self.Smol:Dock(TOP)
+	self.Smol:SetText ""
+end
+
+function PANEL:Think()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return
+	end
+
+	local wep = targ:GetActiveWeapon()
+
+	if (not IsValid(wep) or not wep.Primary) then
+		return
+	end
+
+	if (wep.Primary.ClipSize == -1) then
+		self.Big:SetText ""
+		self.Smol:SetText ""
+	else
+		self.Big:SetText(string.format("%i / %i", wep:Clip1(), wep:GetMaxClip1()))
+		self.Smol:SetText(targ:GetAmmoCount(wep:GetPrimaryAmmoType()))
+	end
+end
+
+function PANEL:PerformLayout(w, h)
+	surface.CreateFont("ttt_ammo_font_large", {
+        font = "Lato",
+        size = self:GetTall() * 0.2,
+		weight = 1000
+	})
+	self.Big:SetTall(self:GetTall() * 0.2)
+	surface.CreateFont("ttt_ammo_font_smol", {
+        font = "Lato",
+        size = self:GetTall() * 0.12,
+		weight = 1000
+    })
+	self.Smol:SetTall(self:GetTall() * 0.12)
+end
+
+vgui.Register("ttt_ammo", PANEL, "ttt_hud_customizable")

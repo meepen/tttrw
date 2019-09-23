@@ -1,158 +1,101 @@
 
 local PANEL = {}
 
+function PANEL:GetHealthFraction()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return 1
+	end
+
+	return targ:Health() / targ:GetMaxHealth()
+end
+
+
+function PANEL:PerformLayout()
+	self:SetCurve(self:GetParent():GetCurve() / 2)
+end
+
+function PANEL:Scissor()
+	local x0, y0, x1, y1 = self:GetRenderBounds()
+	local w = math.min(x1 - x0, self:GetWide() * self:GetHealthFraction())
+	render.SetScissorRect(x0, y0, x0 + w, y1, true)
+end
+
+vgui.Register("ttt_health_bar_inner", PANEL, "ttt_curved_panel")
+
+local PANEL = {}
+
 function PANEL:Init()
-	self:SetHTML [[
-<!-- HEALTH -->
-<head>
-	<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
-	<style>
-		* {
-			margin: 0;
-			padding: 0;
-			-webkit-font-smoothing: antialiased;
-			-moz-osx-font-smoothing: grayscale;
-		}
-		body {
-			overflow:hidden;
-		}
-		svg {
-			position: absolute;
-		}
-		img {
-			padding: 0 13;
-		}
-		div {
-			display: inline;
-		}
-		.tttrw_text {
-			font-size: 145%;
-			font-family: 'Lato', sans-serif;
-			font-weight: bold;
-			text-align: center;
-			text-shadow: 2px 1px 1px rgba(0, 0, 0, .4);
-			filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, .7));
-			letter-spacing: 0.085em;
-		}
-		.barRect {
-			stroke-width: 2px;
-			stroke-opacity: 1;
-		}
-		.shadow {
-			-webkit-filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, .7));
-			filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, .7));
-		}
-	</style>
-</head>
-<body>
-	<img src="asset://garrysmod/materials/tttrw/heart.png" height="100%">
-	<div>
-		<svg class="shadow" id="resizeSVG" viewBox="0 0 100 100" preserveAspectRatio="none">
-			<rect id="outlineRect" class="barRect" x="1" y="1" rx="3" ry="3" width="98" height="98"
-				style="fill:black; stroke:#F7F7F7; fill-opacity:0.4" />
-			<rect id="fillRect" class="barRect" x="3" y="3" rx="1" ry="1" width="94" height="94"
-				style="fill:#39ac56; stroke:#39ac56; fill-opacity:1"/> 
-			<text class="tttrw_text" id="healthText" x="50%" y="26" dominant-baseline="middle" fill="#F7F7F7" text-anchor="middle"></text>
-		</svg>
-	</div>
-
-	<script>
-		var text = document.querySelector("#healthText");
-		
-		var svg = document.querySelector("#resizeSVG");
-		var outlineRect = svg.querySelector("#outlineRect");
-		var fillRect = svg.querySelector("#fillRect");
-		var div = document.querySelector("div");
-		var img = document.querySelector("img");
-
-		var hp = 100;
-		var maxhp = 100;
-		var pct = hp / maxhp;
-		
-		var width = fillRect.getAttributeNS(null, "width");
-		
-		function resize() {
-			var w = window.innerWidth - img.clientWidth, h = window.innerHeight;
-			if (w <= 0 || h <= 0) {	// Hacky fix
-				return;
-			}
-
-			svg.setAttributeNS(null, "viewBox", "0 0 " + w + " " + h);
-			svg.style.width = w - 2;
-			svg.style.height = h - 2;
-			outlineRect.setAttributeNS(null, "width", w - 2);
-			outlineRect.setAttributeNS(null, "height", h - 2);
-			width = w - 6;
-			fillRect.setAttributeNS(null, "width", width);
-			fillRect.setAttributeNS(null, "height", h - 6);
-			text.setAttributeNS(null, "y", h / 2 + 1);
-		}
-
-		img.onload = resize;
-		resize();
-		window.onresize = resize;
-		
-		
-		function changeBar()
-		{
-			pct = hp / maxhp;
-			fillRect.setAttributeNS(null, "width", width * pct)
-		}
-		
-		function setHealth(_hp)
-		{
-			hp = _hp;
-			text.textContent = _hp + "/" + maxhp;
-			changeBar();
-		}
-		
-		function setMaxHealth(_maxhp)
-		{
-			maxhp = _maxhp;
-			text.textContent = hp + "/" + _maxhp;
-			changeBar();
-		}
-		
-		function setText(_hp, _maxhp)
-		{
-			hp = _hp;
-			maxhp = _maxhp;
-			text.textContent = _hp + "/" + _maxhp;
-			changeBar();
-		}
-	</script>
-</body>
-]]
-	
-	self.OldHealth = 0
-	self.OldMaxHealth = 0
+	self.Inner = self:Add "ttt_health_bar_inner"
+	self.Inner:Dock(FILL)
+	self.Inner:SetColor(Color(59, 170, 91))
 end
 
 function PANEL:PerformLayout()
-	local height = ScrH() * 0.045
-	self:SetPos(ScrW() * 0.02675, ScrH() - height * 2)
-	self:SetSize(ScrW() * 0.3, height)
-
-	local health = math.max(self:GetTarget():Health(), 0)
-	
-	self.OldHealth = health
-	self.OldMaxHealth = self:GetTarget():GetMaxHealth()
-	
-	self:CallSafe([[setText(%d, %d);]], health, self.OldMaxHealth)
+	self:SetCurve(self:GetParent():GetCurve())
+	self:DockPadding(self:GetCurve() / 2, self:GetCurve() / 2, self:GetCurve() / 2, self:GetCurve() / 2)
 end
 
-function PANEL:Paint()
-	local hp = math.max(self:GetTarget():Health(), 0)
-	if (self.OldHealth ~= hp) then
-		self:CallSafe([[setHealth(%d);]], hp)
-		self.OldHealth = hp
-	end
-	
-	local maxhp = math.max(self:GetTarget():GetMaxHealth(), 1)
-	if (self.OldMaxHealth ~= maxhp) then
-		self:CallSafe([[setMaxHealth(%d);]], maxhp)
-		self.OldMaxHealth = maxhp
+vgui.Register("ttt_health_bar", PANEL, "ttt_curved_panel_outline")
+
+local PANEL = {}
+
+function PANEL:Init()
+	self:OnScreenSizeChanged()
+	self:InvalidateLayout(true)
+
+	self.Inner = self:Add "ttt_health_bar"
+	self.Inner:SetColor(white_text)
+	self.Inner:SetCurve(self:GetCurve())
+	self.Inner:Dock(FILL)
+	self.Inner:SetZPos(0)
+
+	self.Text = self:Add "DLabel"
+	self.Text:SetFont "ttt_health_font"
+	self.Text:SetTextColor(white_text)
+	self.Text:Dock(FILL)
+	self.Text:SetText "1/1"
+	self.Text:SetContentAlignment(5)
+	self.Text:SetZPos(1)
+
+	self:SetSkin "tttrw"
+	self:InvalidateLayout(true)
+	hook.Add("PlayerTick", self, self.Tick)
+end
+
+function PANEL:Think()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		self.Text:SetText "AJSDUASJDA"
+	else
+		self.Text:SetText(string.format("%i / %i", targ:Health(), targ:GetMaxHealth()))
 	end
 end
 
-vgui.Register("ttt_health", PANEL, "ttt_html_base")
+function PANEL:Tick()
+	local targ = ttt.GetHUDTarget()
+	if (IsValid(targ) and targ:Alive()) then
+		self:SetVisible(true)
+	else
+		self:SetVisible(false)
+	end
+end
+
+function PANEL:AcceptInput(key, value)
+	self.BaseClass.AcceptInput(self, key, value)
+	if (key == "color") then
+		self.Inner.Inner:SetColor(Color(unpack(value)))
+	elseif (key == "outline_color") then
+		self.Inner:SetColor(Color(unpack(value)))
+	end
+end
+
+function PANEL:PerformLayout(w, h)
+	surface.CreateFont("ttt_health_font", {
+        font = "Lato",
+        size = h * 0.6,
+		weight = 1000
+    })
+end
+
+vgui.Register("ttt_health", PANEL, "ttt_hud_customizable")

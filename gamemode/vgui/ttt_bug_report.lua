@@ -110,8 +110,6 @@ end
 function PANEL:PerformLayout(w, h)
     self.Close:SetSize(Padding, Padding)
     self.Close:SetPos(w - self.Close:GetWide() - Padding / 2, Padding / 2)
-    
-    BaseClass.PerformLayout(self, w, h)
 end
 
 vgui.Register("ttt_bug_report", PANEL, "ttt_curved_panel")

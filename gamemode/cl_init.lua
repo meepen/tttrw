@@ -72,3 +72,19 @@ function GM:GetTeamColor(ent)
 
 	return BaseClass.GetTeamColor(self, ent)
 end
+
+
+local tttrw_mcore = CreateConVar("tttrw_mcore", system.IsWindows() and "1" or "0", FCVAR_ARCHIVE, "Enables gmod_mcore_test and such")
+local function Callback()
+	if (tttrw_mcore:GetBool()) then
+		RunConsoleCommand("gmod_mcore_test", "1")
+		RunConsoleCommand("mat_queue_mode", "-1")
+		RunConsoleCommand("cl_threaded_bone_setup", "1")
+	else
+		RunConsoleCommand("gmod_mcore_test", "0")
+		RunConsoleCommand("mat_queue_mode", "0")
+		RunConsoleCommand("cl_threaded_bone_setup", "0")
+	end
+end
+Callback()
+cvars.AddChangeCallback(tttrw_mcore:GetName(), Callback)
