@@ -348,7 +348,6 @@ end
 
 function PANEL:Init()
 	self:SetContentAlignment(5)
-	print(self:GetParent())
 end
 
 function PANEL:Think()

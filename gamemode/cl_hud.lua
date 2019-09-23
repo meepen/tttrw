@@ -205,42 +205,44 @@ local default = [[
 		"bg_color": "black_bg",
 		"pos": [0.12, 0.9, 1],
 		"size": [0.22, 0.04],
-		"curve": 0.005
-	},
-	{
-		"name": "HealthBar",
-		"type": "ttt_curve_outline",
-		"parent": "HealthBackground",
-		"bg_color": {
-			"func": "lerp",
-			"frac": "health_frac",
-			"points": [
-				[200, 49, 59],
-				[153, 129, 6],
-				[59, 171, 91]
-			]
-		},
-		"outline_color": "white",
-		"dock": "fill",
-		"frac": "health_frac",
-		"curve": 0.005
-	},
-	{
-		"name": "HealthText",
-		"type": "ttt_text",
-		"parent": "HealthBar",
-		"color": "white",
-		"text": [
-			"%i / %i",
-			"health",
-			"health_max"
-		],
-		"font": {
-			"size": 0.024,
-			"font": "Lato",
-			"weight": 1000
-		},
-		"dock": "fill"
+		"curve": 0.005,
+		"children": [
+			{
+				"name": "HealthBar",
+				"type": "ttt_curve_outline",
+				"bg_color": {
+					"func": "lerp",
+					"frac": "health_frac",
+					"points": [
+						[200, 49, 59],
+						[153, 129, 6],
+						[59, 171, 91]
+					]
+				},
+				"outline_color": "white",
+				"dock": "fill",
+				"frac": "health_frac",
+				"curve": 0.005,
+				"children": [
+					{
+						"name": "HealthText",
+						"type": "ttt_text",
+						"color": "white",
+						"text": [
+							"%i / %i",
+							"health",
+							"health_max"
+						],
+						"font": {
+							"size": 0.024,
+							"font": "Lato",
+							"weight": 1000
+						},
+						"dock": "fill"
+					}
+				]
+			}
+		]
 	},
 	{
 		"name": "RoleAndTimeBar",
@@ -250,41 +252,43 @@ local default = [[
 		"curve": 0.005,
 		"bg_color": "role",
 		"outline_color": [230, 230, 230],
-		"padding": [0.15, 0, 0.15, 0]
-	},
-	{
-		"name": "TimeText",
-		"type": "ttt_text",
-		"parent": "RoleAndTimeBar",
-		"color": "white",
-		"text": [
-			"%s",
-			"time_remaining_pretty"
-		],
-		"font": {
-			"size": 0.024,
-			"font": "Lato",
-			"weight": 1000
-		},
-		"dock": "fill",
-		"align": "right"
-	},
-	{
-		"name": "RoleText",
-		"type": "ttt_text",
-		"parent": "RoleAndTimeBar",
-		"color": "white",
-		"text": [
-			"%s",
-			"role_name"
-		],
-		"font": {
-			"size": 0.024,
-			"font": "Lato",
-			"weight": 1000
-		},
-		"dock": "fill",
-		"align": "left"
+		"padding": [0.15, 0, 0.15, 0],
+		"children": [
+			{
+				"name": "TimeText",
+				"type": "ttt_text",
+				"parent": "RoleAndTimeBar",
+				"color": "white",
+				"text": [
+					"%s",
+					"time_remaining_pretty"
+				],
+				"font": {
+					"size": 0.024,
+					"font": "Lato",
+					"weight": 1000
+				},
+				"dock": "fill",
+				"align": "right"
+			},
+			{
+				"name": "RoleText",
+				"type": "ttt_text",
+				"parent": "RoleAndTimeBar",
+				"color": "white",
+				"text": [
+					"%s",
+					"role_name"
+				],
+				"font": {
+					"size": 0.024,
+					"font": "Lato",
+					"weight": 1000
+				},
+				"dock": "fill",
+				"align": "left"
+			}
+		]
 	},
 	{
 		"name": "Ammo",
@@ -337,13 +341,11 @@ local function IsCustomizable(ele)
 	end
 end
 
-for id, data in ipairs(json) do
+local function CreateItem(data, parent)
 	if (not data.type or not IsCustomizable(data.type) or not data.name) then
 		warn("Couldn't create %s", data.name or data.type)
-		continue
+		return
 	end
-
-	local parent = data.parent and ttt.HUDElements[data.parent] or not data.parent and GetHUDPanel()
 
 	if (parent.GetCustomizeParent) then
 		parent = parent:GetCustomizeParent()
@@ -351,7 +353,7 @@ for id, data in ipairs(json) do
 
 	if (not IsValid(parent)) then
 		warn("Couldn't create %s: no parent", data.name or data.type)
-		continue
+		return
 	end
 
 	local p = parent:Add(data.type)
@@ -363,4 +365,18 @@ for id, data in ipairs(json) do
 	for key, value in pairs(data) do
 		p:AcceptInput(key, value)
 	end
+
+	if (data.children) then
+		if (p.GetCustomizeParent) then
+			p = p:GetCustomizeParent()
+		end
+
+		for _, child in ipairs(data.children) do
+			CreateItem(child, p)
+		end
+	end
+end
+
+for id, data in ipairs(json) do
+	CreateItem(data, GetHUDPanel())
 end
