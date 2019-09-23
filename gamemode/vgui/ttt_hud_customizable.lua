@@ -4,13 +4,55 @@ function PANEL:AcceptInput(key, value)
 	self.inputs = self.inputs or {}
 	self.inputs[key] = value
 	if (key == "bg_color") then
-		self:SetColor(Color(value[1], value[2], value[3], value[4] or 255))
+		self:SetColor(self:GetInputColor(key))
 	elseif (key == "pos" or key == "size") then
 		self:Recenter()
 		return true
 	elseif (key == "curve") then
 		self:SetCurve(math.Round(ScrH() * value / 2) * 2)
 	end
+end
+
+function PANEL:AnimationThink()
+	self.color_inputs = self.color_inputs or {}
+	for key, value in pairs(self.color_inputs) do
+		local new = self:GetInputColor(key)
+		if (new ~= value) then
+			self:AcceptInput(key, new)
+		end
+	end
+end
+
+function PANEL:GetInputColor(key)
+	self.color_inputs = self.color_inputs or {}
+	
+	local col
+
+	local value = self.color_inputs[key]
+	if (not value) then
+		value = self.inputs[key]
+		self.color_inputs[key] = value
+	end
+
+	if (not value) then
+		col = white_text
+	elseif (IsColor(value)) then
+		col = value
+	elseif (type(value) == "table") then
+		col = Color(value[1], value[2], value[3], value[4])
+	elseif (value == "role") then
+		local targ = ttt.GetHUDTarget()
+	
+		if (IsValid(targ) and targ:Alive() and IsValid(targ.HiddenState) and not targ.HiddenState:IsDormant()) then
+			col = ttt.roles[targ:GetRole()].Color
+		else
+			col = Color(154, 153, 153)
+		end
+	end
+
+	self.inputs[key] = col
+
+	return col
 end
 
 function PANEL:OnScreenSizeChanged()
@@ -115,10 +157,8 @@ end
 
 function PANEL:AcceptInput(key, value)
 	self.BaseClass.AcceptInput(self, key, value)
-	if (key == "color") then
-		self:SetColor(Color(unpack(value)))
-	elseif (key == "outline_color") then
-		self.Inner:SetColor(Color(unpack(value)))
+	if (key == "outline_color") then
+		self.Inner:SetColor(self:GetInputColor(key))
 	end
 end
 vgui.Register("ttt_curve_outline", PANEL, "ttt_hud_customizable")

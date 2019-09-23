@@ -188,45 +188,55 @@ end
 ]]
 
 local default = [[
-{
-	"main": {
-		"ttt_spectator": {
-			"pos": [0.5, 0.1, 0],
-			"size": [0.22, 0.04],
-			"curve": 0.005,
-			"visible": true,
-			"bg_color": [11, 12, 11, 200],
-			"outline_color": [230, 230, 230],
-			"color": [154, 153, 153]
-		},
-		"ttt_health": {
-			"pos": [0.12, 0.9, 1],
-			"size": [0.22, 0.04],
-			"visible": true,
-			"curve": 0.005,
-			"bg_color": [11, 12, 11, 200],
-			"color": [59, 171, 91],
-			"outline_color": [230, 230, 230]
-		},
-		"ttt_time": {
-			"pos": [0.12, 0.95, 1],
-			"size": [0.22, 0.04],
-			"visible": true,
-			"curve": 0.005,
-			"bg_color": [11, 12, 11, 200],
-			"outline_color": [230, 230, 230]
-		},
-		"ttt_ammo": {
-			"size": [0.15, 0.25],
-			"pos": [0.9, 0.9],
-			"visible": true,
-			"curve": 0.005,
-			"bg_color": [0, 0, 0, 0]
-		}
+[
+	{
+		"type": "ttt_spectator",
+		"pos": [0.5, 0.1, 0],
+		"size": [0.22, 0.04],
+		"curve": 0.005,
+		"bg_color": [11, 12, 11, 200],
+		"outline_color": [230, 230, 230],
+		"color": [154, 153, 153]
 	},
-	"extra": [
-	]
-}
+	{
+		"type": "ttt_health",
+		"pos": [0.12, 0.9, 1],
+		"size": [0.22, 0.04],
+		"curve": 0.005,
+		"bg_color": [11, 12, 11, 200],
+		"color": [59, 171, 91],
+		"outline_color": [230, 230, 230]
+	},
+	{
+		"type": "ttt_time",
+		"pos": [0.12, 0.95, 1],
+		"size": [0.22, 0.04],
+		"curve": 0.005,
+		"bg_color": [11, 12, 11, 200],
+		"outline_color": [230, 230, 230]
+	},
+	{
+		"type": "ttt_ammo",
+		"size": [0.15, 0.25],
+		"pos": [0.9, 0.9],
+		"curve": 0.005,
+		"bg_color": [0, 0, 0, 0]
+	},
+	{
+		"type": "ttt_image",
+		"path": "materials/tttrw/agree.png",
+		"color": [255, 0, 0, 200],
+		"pos": [0.1, 0.1, 1]
+	},
+	{
+		"type": "ttt_curve_outline",
+		"bg_color": "role",
+		"outline_color": [11, 12, 11],
+		"pos": [0.12, 0.925, 0],
+		"size": [0.225, 0.1],
+		"curve": 0.005
+	}
+]
 ]]
 
 local json
@@ -235,8 +245,8 @@ local s, e = pcall(function()
 	json = util.JSONToTable(file.Read("tttrw_hud.json", "DATA") or default)
 end)
 
-if (not s or not json or not json.main) then
-	warn("%s", not json and "json ded" or not json.main and "no main" or e)
+if (not s or not json) then
+	warn("%s", not json and "json ded" or e)
 	return
 end
 
@@ -265,27 +275,7 @@ local function IsCustomizable(ele)
 	return good
 end
 
-for ele, data in pairs(json.main) do
-	if (not data.visible) then
-		continue
-	end
-
-	if (not IsCustomizable(ele)) then
-		continue
-	end
-
-	ttt.HUDElements[ele] = GetHUDPanel():Add(ele)
-
-	for key, value in pairs(data) do
-		ttt.HUDElements[ele]:AcceptInput(key, value)
-	end
-end
-
-if (not json.extra) then
-	return
-end
-
-for id, data in ipairs(json.extra) do
+for id, data in ipairs(json) do
 	if (not data.type or not IsCustomizable(data.type)) then
 		continue
 	end
