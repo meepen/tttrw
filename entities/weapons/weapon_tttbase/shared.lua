@@ -539,3 +539,8 @@ function SWEP:CancelReload()
 	self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
 	self:SetReloadEndTime(math.huge)
 end
+
+function SWEP:Holster()
+	self:CancelReload()
+	return true
+end
