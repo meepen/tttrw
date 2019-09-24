@@ -43,7 +43,7 @@ function SWEP:IsToggleADS()
 end
 
 function SWEP:NetworkVarNotifyCallback(name, old, new)
-	-- printf("%s::%s %s -> %s", self:GetClass(), name, old, new)
+	printf("%s::%s %s -> %s", self:GetClass(), name, old, new)
 end
 
 function SWEP:NetVar(name, type, default, notify)
@@ -58,9 +58,7 @@ function SWEP:NetVar(name, type, default, notify)
 		self["Set"..name](self, default)
 	end
 
-	if (notify) then
-		self:NetworkVarNotify(name, self.NetworkVarNotifyCallback)
-	end
+	self:NetworkVarNotify(name, self.NetworkVarNotifyCallback)
 end
 
 local scales = {

@@ -11,32 +11,28 @@ function ENT:NetworkVarNotifyCallback(name, old, new)
 		return
 	end
 	local parent = self:GetParent()
-	-- printf("Player(%i) [%s] %s::%s: %s -> %s (seen as %s)", IsValid(parent) and parent:UserID() or -1, IsValid(parent) and parent:Nick() or "NULL", self:GetClass(), name, old, new, self["Get" .. name](self))
-	timer.Simple(0, function()
-		-- NW2Vars are late??
-		if (not IsValid(self)) then
-			return
-		end
-		hook.Run("OnPlayer"..name.."Change", self:GetParent(), old, new)
-	end)
+	printf("Player(%i) [%s] %s::%s: %s -> %s (seen as %s)", IsValid(parent) and parent:UserID() or -1, IsValid(parent) and parent:Nick() or "NULL", self:GetClass(), name, old, new, self["Get" .. name](self))
+	hook.Run("OnPlayer"..name.."Change", self:GetParent(), old, new)
 end
 
 function ENT:SetupDataTables()
-	local vars = {}
+	local vars, types = {}, {}
 	hook.Run("TTTGetHiddenPlayerVariables", vars)
 
 	for _, var in ipairs(vars) do
 		-- blocked by issue https://github.com/Facepunch/garrysmod-requests/issues/324
-		--[[
+
 		if (not types[var.Type]) then
 			types[var.Type] = 0
 		end
-		]]
 
-		-- printf("Registering variable %s (type %s)", var.Name, var.Type)
-		--self:NetworkVar(var.Type, types[var.Type], var.Name)
+		self:NetworkVar(var.Type, types[var.Type], var.Name)
+		self:NetworkVarNotify(var.Name, self.NetworkVarNotifyCallback)
 		if (SERVER and var.Default) then
-			--self["Set"..var.Name](self, var.Default)
+			self["Set"..var.Name](self, var.Default)
+		end
+--[[
+		if (SERVER and var.Default) then
 			self["SetNW"..var.Type](self, var.Default)
 		end
 
@@ -48,10 +44,9 @@ function ENT:SetupDataTables()
 		self["Set"..var.Name] = function(_, value)
 			self[nw2setter](self, var.Name, value)
 		end
+]]
 
-		self:SetNWVarProxy(var.Name, self.NetworkVarNotifyCallback)
-
-		--types[var.Type] = types[var.Type] + 1
+		types[var.Type] = types[var.Type] + 1
 	end
 end
 
