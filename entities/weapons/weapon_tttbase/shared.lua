@@ -5,6 +5,8 @@ SWEP.SlotPos = 0
 
 SWEP.UseHands = true
 
+SWEP.ReloadAnimation = ACT_VM_RELOAD
+
 DEFINE_BASECLASS "weapon_base"
 
 SWEP.Primary.Automatic   = true
@@ -12,6 +14,9 @@ SWEP.Primary.Delay       = 0.1
 SWEP.Primary.DefaultClip = 100000
 SWEP.Primary.ClipSize    = 32
 SWEP.Primary.Damage      = 20
+
+SWEP.Secondary.Delay     = 0.1
+SWEP.ReloadSpeed         = 1
 
 SWEP.HeadshotMultiplier  = 2
 SWEP.DeploySpeed = 1
@@ -93,6 +98,7 @@ function SWEP:SetupDataTables()
 	self:NetVar("ViewPunchTime", "Float", -math.huge)
 	self:NetVar("RealLastShootTime", "Float", -math.huge)
 	self:NetVar("ConsecutiveShots", "Int", 0)
+	self:NetVar("ReloadEndTime", "Float", math.huge)
 	hook.Run("TTTInitWeaponNetVars", self)
 end
 
@@ -163,11 +169,14 @@ function SWEP:OnReloaded()
 end
 
 function SWEP:Reload()
+	if (self:GetReloadEndTime() ~= math.huge or self:Clip1() == self:GetMaxClip1()) then
+		return
+	end
 	self:ChangeIronsights(false)
 	if (CLIENT) then
 		self:CalcFOV()
 	end
-	BaseClass.Reload(self)
+	self:DoReload(self.ReloadAnimation)
 end
 
 function SWEP:SecondaryAttack()
@@ -437,6 +446,24 @@ function SWEP:ViewPunch()
 end
 
 function SWEP:Think()
+	local reloadtime = self:GetReloadEndTime()
+	if (reloadtime ~= math.huge) then
+		if (reloadtime > CurTime()) then
+			return
+		end
+
+		local ammocount = self:GetOwner():GetAmmoCount(self:GetPrimaryAmmoType())
+		local needed = self:GetMaxClip1() - self:Clip1()
+
+		local added = math.min(needed, ammocount)
+
+		self:GetOwner():SetAmmo(ammocount - added, self:GetPrimaryAmmoType())
+
+		self:SetClip1(self:Clip1() + added)
+		self:SetReloadEndTime(math.huge)
+		self:SendWeaponAnim(ACT_VM_IDLE)
+	end
+
 	if (not self:IsToggleADS()) then
 		if (not self:GetIronsights() and self:GetOwner():KeyDown(IN_ATTACK2)) then
 			self:SecondaryAttack()
@@ -484,4 +511,31 @@ function SWEP:AdjustMouseSensitivity()
 	if (self:GetIronsights()) then
 		return self.Ironsights.Zoom
 	end
+end
+
+function SWEP:GetReloadAnimationSpeed()
+	return self.ReloadSpeed * util.SharedRandom(self:GetClass(), 0.5, 2)
+end
+
+function SWEP:DoReload(act)
+	local speed = self:GetReloadAnimationSpeed()
+
+	self:SendWeaponAnim(act)
+	self:SetPlaybackRate(speed)
+	if (IsValid(self:GetOwner())) then
+		self:GetOwner():GetViewModel():SetPlaybackRate(speed)
+		self:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_RELOAD, 0)
+	end
+
+	local endtime = CurTime() + self:SequenceDuration() / speed + 0.1
+
+	self:SetReloadEndTime(endtime)
+	self:SetNextPrimaryFire(endtime)
+	self:SetNextSecondaryFire(endtime)
+end
+
+function SWEP:CancelReload()
+	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+	self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
+	self:SetReloadEndTime(math.huge)
 end

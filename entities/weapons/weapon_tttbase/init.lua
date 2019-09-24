@@ -11,6 +11,7 @@ end
 
 function SWEP:OnDrop()
 	self.Primary.DefaultClip = 0
+	self:CancelReload()
 end
 
 function SWEP:PreDrop()

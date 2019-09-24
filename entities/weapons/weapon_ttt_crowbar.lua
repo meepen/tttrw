@@ -172,10 +172,17 @@ function SWEP:PrimaryAttack()
 	owner:LagCompensation(false)
 end
 
+function SWEP:CanSecondaryAttack()
+	return CurTime() >= self:GetNextSecondaryFire()
+end
+
 function SWEP:SecondaryAttack()
+	if (not self:CanSecondaryAttack()) then
+		return
+	end
+
 	local owner = self:GetOwner()
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
-	self:SetNextSecondaryFire(CurTime() + 0.1)
 
 	owner:LagCompensation(true)
 
