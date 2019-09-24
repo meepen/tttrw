@@ -15,7 +15,7 @@ end
 
 function PLAYER:Spawn()
 	if (SERVER) then
-		self.Player:SetupHands()
+		self.Player:SetupHands(self.Player)
 	end
 end
 
