@@ -32,41 +32,41 @@ DEFINE_BASECLASS "weapon_tttbase"
 
 function SWEP:GetClass()
 	return "weapon_ttt_unarmed"
- end
- 
- function SWEP:OnDrop()
+end
+
+function SWEP:OnDrop()
 	self:Remove()
- end
- 
- function SWEP:ShouldDropOnDie()
+end
+
+function SWEP:ShouldDropOnDie()
 	return false
- end
- 
- function SWEP:PrimaryAttack()
- end
- 
- function SWEP:SecondaryAttack()
- end
- 
- function SWEP:Reload()
- end
- 
- function SWEP:Deploy()
+end
+
+function SWEP:PrimaryAttack()
+end
+
+function SWEP:SecondaryAttack()
+end
+
+function SWEP:Reload()
+end
+
+function SWEP:Deploy()
 	if SERVER and IsValid(self:GetOwner()) then
-	   self:GetOwner():DrawViewModel(false)
+	self:GetOwner():DrawViewModel(false)
 	end
- 
+
 	self:DrawShadow(false)
- 
+
 	return true
- end
- 
- function SWEP:Holster()
+end
+
+function SWEP:Holster()
 	return true
- end
- 
- function SWEP:DrawWorldModel()
- end
- 
- function SWEP:DrawWorldModelTranslucent()
- end
+end
+
+function SWEP:DrawWorldModel()
+end
+
+function SWEP:DrawWorldModelTranslucent()
+end
