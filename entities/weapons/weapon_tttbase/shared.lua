@@ -514,7 +514,7 @@ function SWEP:AdjustMouseSensitivity()
 end
 
 function SWEP:GetReloadAnimationSpeed()
-	return self.ReloadSpeed * util.SharedRandom(self:GetClass(), 0.5, 2)
+	return self.ReloadSpeed
 end
 
 function SWEP:DoReload(act)
