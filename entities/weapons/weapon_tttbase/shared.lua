@@ -103,6 +103,7 @@ function SWEP:SetupDataTables()
 end
 
 function SWEP:Initialize()
+	hook.Run("TTTWeaponInitialize", self)
 	self:SetDeploySpeed(self.DeploySpeed)
 	if (SERVER and self.Primary and self.Primary.Ammo == "Buckshot" and not self.PredictableSpread) then
 		printf("Warning: %s weapon type has shotgun ammo and no predictable spread", self:GetClass())
