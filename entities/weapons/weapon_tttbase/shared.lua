@@ -124,9 +124,9 @@ function SWEP:ChangeIronsights(on)
 
 	local old, new
 	if (self:GetIronsights()) then
-		old, new = self.Ironsights.TimeFrom, self.Ironsights.TimeTo
+		old, new = self:GetIronsightsTimeFrom(), self:GetIronsightsTimeTo()
 	else
-		new, old = self.Ironsights.TimeFrom, self.Ironsights.TimeTo
+		new, old = self:GetIronsightsTimeFrom(), self:GetIronsightsTimeTo()
 	end
 
 	local frac = math.min(1, (CurTime() - self:GetIronsightsTime()) / old) * new
@@ -146,11 +146,11 @@ function SWEP:DoZoom(state)
 	end
 
 	if (state) then
-		self:ChangeFOVMultiplier(self.Ironsights.Zoom, self.Ironsights.TimeTo)
+		self:ChangeFOVMultiplier(self.Ironsights.Zoom, self:GetIronsightsTimeTo())
 	elseif (self.HasScope) then
 		self:ChangeFOVMultiplier(1, 0)
 	else
-		self:ChangeFOVMultiplier(1, self.Ironsights.TimeFrom)
+		self:ChangeFOVMultiplier(1, self:GetIronsightsTimeFrom())
 	end
 end
 
@@ -197,7 +197,7 @@ end
 local informations = {}
 
 function SWEP:OnDrop()
-	self:SetIronsightsTime(CurTime() - self.Ironsights.TimeFrom)
+	self:SetIronsightsTime(CurTime() - self:GetIronsightsTimeFrom())
 	self:SetIronsights(false)
 	self:DoZoom(false)
 end
@@ -581,4 +581,12 @@ end
 
 function SWEP:GetDamageMinimumPercent()
 	return self.Bullets.DamageMinimumPercent
+end
+
+function SWEP:GetIronsightsTimeFrom()
+	return self.Ironsights.TimeFrom
+end
+
+function SWEP:GetIronsightsTimeTo()
+	return self.Ironsights.TimeTo
 end
