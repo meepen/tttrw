@@ -202,18 +202,22 @@ function SWEP:OnDrop()
 	self:DoZoom(false)
 end
 
-function SWEP:FireBulletsCallback(tr, dmginfo)
-	local bullet = dmginfo:GetInflictor().Bullets
+function SWEP:DoDamageDropoff(tr, dmginfo)
 	local distance = tr.HitPos:Distance(tr.StartPos)
 	if (distance > bullet.DamageDropoffRange) then
 		local pct = math.min(1, (distance - bullet.DamageDropoffRange) / (bullet.DamageDropoffRangeMax - bullet.DamageDropoffRange))
 		dmginfo:ScaleDamage(1 - pct * (1 - bullet.DamageMinimumPercent))
 	end
+end
+
+function SWEP:FireBulletsCallback(tr, dmginfo)
+	local bullet = dmginfo:GetInflictor().Bullets
+
+	self:DoDamageDropoff(tr, dmginfo)
 
 	if (tr.IsFake) then
 		return
 	end
-
 
 	if (IsValid(tr.Entity) and tr.Entity:IsPlayer()) then
 		if (CLIENT) then
@@ -351,9 +355,9 @@ function SWEP:DoFireBullets()
 	local bullets = {
 		Num = bullet_info.Num,
 		Attacker = owner,
-		Damage = self.Primary.Damage,
-		Tracer = bullet_info.Tracer or 1,
-		TracerName = bullet_info.TracerName,
+		Damage = self:GetDamage(),
+		Tracer = self:GetTracers(),
+		TracerName = self:GetTracerName(),
 		Spread = self:GetSpread(),
 		Callback = function(_, ...)
 			if (IsValid(self)) then
@@ -429,7 +433,6 @@ function SWEP:GetCurrentViewPunch()
 end
 
 function SWEP:ViewPunch()
-
 	if (self:GetDeveloperMode()) then
 		return
 	end
@@ -546,4 +549,19 @@ end
 function SWEP:Holster()
 	self:CancelReload()
 	return true
+end
+
+
+-- accessors for stuff so you can override easier
+
+function SWEP:GetDamage()
+	return self.Primary.Damage
+end
+
+function SWEP:GetTracers()
+	return self.Bullets.Tracer or 1
+end
+
+function SWEP:GetTracerName()
+	return bullet_info.TracerName
 end
