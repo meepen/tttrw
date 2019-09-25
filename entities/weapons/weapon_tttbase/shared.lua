@@ -171,7 +171,7 @@ function SWEP:OnReloaded()
 end
 
 function SWEP:Reload()
-	if (self:GetReloadEndTime() ~= math.huge or self:Clip1() == self:GetMaxClip1()) then
+	if (self:GetReloadEndTime() ~= math.huge or self:Clip1() == self:GetMaxClip1() or self:GetOwner():GetAmmoCount(self:GetPrimaryAmmoType()) <= 0) then
 		return
 	end
 	self:ChangeIronsights(false)
