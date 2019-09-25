@@ -161,7 +161,9 @@ function SWEP:Deploy()
 	if (CLIENT) then
 		self:CalcFOV()
 	end
-	self:GetOwner():GetHands():SetNoDraw(not self.UseHands)
+	if (IsValid(self:GetOwner()) and IsValid(self:GetOwner():GetHands())) then
+		self:GetOwner():GetHands():SetNoDraw(not self.UseHands)
+	end
 end
 
 function SWEP:OnReloaded()
