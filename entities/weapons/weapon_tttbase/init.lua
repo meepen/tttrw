@@ -116,13 +116,7 @@ end
 -- TODO(meep): hidden weapons so people can't cheat to see weapons
 
 function SWEP:SetupPlayerVisibility(ply)
-	local owner = self:GetOwner()
-	if (not IsValid(owner) or not ply:Alive()) then
-		self:SetPreventTransmit(ply, false)
-		return
-	end
-
-	self:SetPreventTransmit(ply, true)
+	self:SetPreventTransmit(ply, IsValid(self:GetOwner()) and ply:Alive())
 end
 
 function SWEP:SV_Initialize()
