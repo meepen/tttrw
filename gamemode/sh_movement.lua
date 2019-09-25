@@ -31,6 +31,8 @@ function GM:PreventCrouchJump(ply, mv)
 		return
 	end
 
+	local jumping = NULL == ply:GetGroundEntity() or mv:KeyDown(IN_JUMP)
+
 	if (NULL == ply:GetGroundEntity()) then
 		mv:SetButtons(bit.bor(mv:GetButtons(), IN_INAIR))
 	else
@@ -39,7 +41,7 @@ function GM:PreventCrouchJump(ply, mv)
 
 	local offset = ply:GetViewOffset()
 	local m_flDuckTime = math.sqrt(ply:GetCurrentViewOffset():DistToSqr(offset) / ply:GetViewOffsetDucked():DistToSqr(offset))
-	if (not ply:Crouching() and mv:KeyDown(IN_DUCK) and NULL == ply:GetGroundEntity()) then
+	if (not ply:Crouching() and mv:KeyDown(IN_DUCK) and jumping) then
 		local velocity = mv:GetVelocity()
 
 		local extravel = vector_origin
@@ -55,7 +57,7 @@ function GM:PreventCrouchJump(ply, mv)
 			extravel = extravel + ang:Forward() * (forward / math.abs(forward)) * 5
 		end
 
-		velocity = (velocity + extravel) * engine.TickInterval()
+		velocity = (velocity + extravel) * engine.TickInterval() * 2
 
 		local obbmins, obbmaxs = ply:GetHull()
 		local tr = util.TraceHull {
@@ -123,7 +125,6 @@ function GM:Move(ply, mv)
 	mv:SetMaxClientSpeed(mv:GetMaxClientSpeed() * data.Multiplier * data.FinalMultiplier)
 
 	self:DoBunnyHop(ply, mv)
-
 	self:PreventCrouchJump(ply, mv)
 end
 

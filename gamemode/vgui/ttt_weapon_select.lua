@@ -68,7 +68,6 @@ function PANEL:PerformLayout(w, h)
 	self:SetTall(font_tall + 6)
 	self:GetParent():SizeToChildren(false, true)
 	self.Number:SetWide(h + self.Number:GetCurve())
-	BaseClass.PerformLayout(self, self:GetSize())
 end
 function PANEL:SetWeapon(wep)
 	local swep_tbl = weapons.GetStored(wep:GetClass())
@@ -165,5 +164,7 @@ function PANEL:PerformLayout(w, h)
 	self:SetPos(ScrW() - w, ScrH() / 2 - h / 2)
 	self:SizeToContents()
 end
+
+function PANEL:AcceptInput() end
 
 vgui.Register("ttt_weapon_select", PANEL, "Panel")

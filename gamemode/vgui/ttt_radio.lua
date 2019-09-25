@@ -88,7 +88,6 @@ end
 
 function PANEL:PerformLayout()
 	self:SetPos(0, ScrH() / 2 - self:GetTall() / 2)
-	BaseClass.PerformLayout(self, self:GetSize())
 end
 
 function PANEL:Paint(w, h)

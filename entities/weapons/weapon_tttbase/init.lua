@@ -11,6 +11,7 @@ end
 
 function SWEP:OnDrop()
 	self.Primary.DefaultClip = 0
+	self:CancelReload()
 end
 
 function SWEP:PreDrop()
@@ -61,8 +62,8 @@ function SWEP:OverrideCommand(ply, cmd)
 
 		local pos = util.IntersectRayWithOBB(tr.StartPos, tr.Normal * (bullet.Distance or 56756), origin, angle_zero, mins, maxs)
 		if (not pos) then
-			printf("%s tried to hit someone they didn't hit", self:GetOwner():Nick())
-			print(origin, mins, maxs, tr.StartPos + tr.Normal * origin:Distance(tr.StartPos))
+			-- printf("%s tried to hit someone they didn't hit", self:GetOwner():Nick())
+			-- print(origin, mins, maxs, tr.StartPos + tr.Normal * origin:Distance(tr.StartPos))
 			return
         end
 
@@ -113,3 +114,11 @@ function SWEP:OverrideCommand(ply, cmd)
 end
 
 -- TODO(meep): hidden weapons so people can't cheat to see weapons
+
+function SWEP:SetupPlayerVisibility(ply)
+	self:SetPreventTransmit(ply, IsValid(self:GetOwner()) and ply:Alive())
+end
+
+function SWEP:SV_Initialize()
+	hook.Add("SetupPlayerVisibility", self, self.SetupPlayerVisibility)
+end

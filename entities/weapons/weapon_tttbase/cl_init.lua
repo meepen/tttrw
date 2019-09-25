@@ -245,8 +245,8 @@ function SWEP:CalcViewModel()
 	self.IronTime = self:GetIronsightsTime()
 end
 
-function SWEP:CalcAllUnpredicted()
-	if (not IsFirstTimePredicted()) then
+function SWEP:CalcAllUnpredicted(force)
+	if (not IsFirstTimePredicted() or force) then
 		return
 	end
 

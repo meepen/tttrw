@@ -25,6 +25,7 @@ end
 
 function warn(...)
 	MsgC(Color(240,20,20), string.format(...))
+	MsgN ""
 end
 
 function GM:InitPostEntity()

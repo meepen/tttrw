@@ -42,8 +42,6 @@ function PANEL:PerformLayout(w, h)
 	self.Logo:SetPos(self:GetWide() / 2 - self.Logo:GetWide() / 2, (self:GetTall() - self.Logo:GetTall())/2)
 	self:SetTall(self.Logo:GetTall() + Padding * 2)
 	self.Logo:Center()
-
-	BaseClass.PerformLayout(self, self:GetSize())
 end
 
 vgui.Register("ttt_scoreboard_header", PANEL, "ttt_curved_panel")
@@ -187,7 +185,6 @@ function PANEL:PerformLayout(w, h)
 	self:SetWide(self:GetParent():GetWide() / 9)
 
 	self.Text:Center()
-	BaseClass.PerformLayout(self, self:GetSize())
 end
 
 vgui.Register("ttt_scoreboard_group_header_render", PANEL, "ttt_curved_panel")

@@ -5,6 +5,8 @@ SWEP.SlotPos = 0
 
 SWEP.UseHands = true
 
+SWEP.ReloadAnimation = ACT_VM_RELOAD
+
 DEFINE_BASECLASS "weapon_base"
 
 SWEP.Primary.Automatic   = true
@@ -12,6 +14,9 @@ SWEP.Primary.Delay       = 0.1
 SWEP.Primary.DefaultClip = 100000
 SWEP.Primary.ClipSize    = 32
 SWEP.Primary.Damage      = 20
+
+SWEP.Secondary.Delay     = 0.1
+SWEP.ReloadSpeed         = 1
 
 SWEP.HeadshotMultiplier  = 2
 SWEP.DeploySpeed = 1
@@ -54,7 +59,8 @@ function SWEP:NetVar(name, type, default, notify)
 	local id = self.NetVarTypes[type] or 0
 	self.NetVarTypes[type] = id + 1
 	self:NetworkVar(type, id, name)
-	if (default) then
+
+	if (default ~= nil) then
 		self["Set"..name](self, default)
 	end
 
@@ -93,13 +99,18 @@ function SWEP:SetupDataTables()
 	self:NetVar("ViewPunchTime", "Float", -math.huge)
 	self:NetVar("RealLastShootTime", "Float", -math.huge)
 	self:NetVar("ConsecutiveShots", "Int", 0)
+	self:NetVar("ReloadEndTime", "Float", math.huge)
 	hook.Run("TTTInitWeaponNetVars", self)
 end
 
 function SWEP:Initialize()
+	hook.Run("TTTWeaponInitialize", self)
 	self:SetDeploySpeed(self.DeploySpeed)
-	if (self.Primary and self.Primary.Ammo == "Buckshot" and not self.PredictableSpread) then
+	if (SERVER and self.Primary and self.Primary.Ammo == "Buckshot" and not self.PredictableSpread) then
 		printf("Warning: %s weapon type has shotgun ammo and no predictable spread", self:GetClass())
+	end
+	if (SERVER) then
+		self:SV_Initialize()
 	end
 	self:SetHoldType(self.HoldType)
 end
@@ -117,9 +128,9 @@ function SWEP:ChangeIronsights(on)
 
 	local old, new
 	if (self:GetIronsights()) then
-		old, new = self.Ironsights.TimeFrom, self.Ironsights.TimeTo
+		old, new = self:GetIronsightsTimeFrom(), self:GetIronsightsTimeTo()
 	else
-		new, old = self.Ironsights.TimeFrom, self.Ironsights.TimeTo
+		new, old = self:GetIronsightsTimeFrom(), self:GetIronsightsTimeTo()
 	end
 
 	local frac = math.min(1, (CurTime() - self:GetIronsightsTime()) / old) * new
@@ -139,11 +150,24 @@ function SWEP:DoZoom(state)
 	end
 
 	if (state) then
-		self:ChangeFOVMultiplier(self.Ironsights.Zoom, self.Ironsights.TimeTo)
+		self:ChangeFOVMultiplier(self.Ironsights.Zoom, self:GetIronsightsTimeTo())
 	elseif (self.HasScope) then
 		self:ChangeFOVMultiplier(1, 0)
 	else
-		self:ChangeFOVMultiplier(1, self.Ironsights.TimeFrom)
+		self:ChangeFOVMultiplier(1, self:GetIronsightsTimeFrom())
+	end
+end
+
+function SWEP:Deploy()
+	self:ChangeIronsights(false)
+	self:SetIronsightsTime(0)
+	self:SetOldFOVMultiplier(1)
+	self:SetFOVMultiplier(1)
+	if (CLIENT) then
+		self:CalcFOV()
+	end
+	if (IsValid(self:GetOwner()) and IsValid(self:GetOwner():GetHands())) then
+		self:GetOwner():GetHands():SetNoDraw(not self.UseHands)
 	end
 end
 
@@ -152,11 +176,14 @@ function SWEP:OnReloaded()
 end
 
 function SWEP:Reload()
+	if (self:GetReloadEndTime() ~= math.huge or self:Clip1() == self:GetMaxClip1() or self:GetOwner():GetAmmoCount(self:GetPrimaryAmmoType()) <= 0) then
+		return
+	end
 	self:ChangeIronsights(false)
 	if (CLIENT) then
 		self:CalcFOV()
 	end
-	BaseClass.Reload(self)
+	self:DoReload(self.ReloadAnimation)
 end
 
 function SWEP:SecondaryAttack()
@@ -174,23 +201,32 @@ end
 local informations = {}
 
 function SWEP:OnDrop()
-	self:SetIronsightsTime(CurTime() - self.Ironsights.TimeFrom)
+	self:SetIronsightsTime(CurTime() - self:GetIronsightsTimeFrom())
 	self:SetIronsights(false)
 	self:DoZoom(false)
 end
 
+function SWEP:DoDamageDropoff(tr, dmginfo)
+	local distance = tr.HitPos:Distance(tr.StartPos)
+	local dropoff = self:GetBulletDropoffRange()
+	local max = self:GetDamageDropoffRangeMax()
+	local min = self:GetDamageMinimumPercent()
+
+
+	if (distance > dropoff) then
+		local pct = math.min(1, (distance - dropoff) / (max - dropoff))
+		dmginfo:ScaleDamage(1 - pct * (1 - min))
+	end
+end
+
 function SWEP:FireBulletsCallback(tr, dmginfo)
 	local bullet = dmginfo:GetInflictor().Bullets
-	local distance = tr.HitPos:Distance(tr.StartPos)
-	if (distance > bullet.DamageDropoffRange) then
-		local pct = math.min(1, (distance - bullet.DamageDropoffRange) / (bullet.DamageDropoffRangeMax - bullet.DamageDropoffRange))
-		dmginfo:ScaleDamage(1 - pct * (1 - bullet.DamageMinimumPercent))
-	end
+
+	self:DoDamageDropoff(tr, dmginfo)
 
 	if (tr.IsFake) then
 		return
 	end
-
 
 	if (IsValid(tr.Entity) and tr.Entity:IsPlayer()) then
 		if (CLIENT) then
@@ -328,9 +364,9 @@ function SWEP:DoFireBullets()
 	local bullets = {
 		Num = bullet_info.Num,
 		Attacker = owner,
-		Damage = self.Primary.Damage,
-		Tracer = bullet_info.Tracer or 1,
-		TracerName = bullet_info.TracerName,
+		Damage = self:GetDamage(),
+		Tracer = self:GetTracers(),
+		TracerName = self:GetTracerName(),
 		Spread = self:GetSpread(),
 		Callback = function(_, ...)
 			if (IsValid(self)) then
@@ -348,6 +384,12 @@ end
 
 function SWEP:GetSpread()
 	return self.Bullets.Spread * (0.25 + (-self:GetMultiplier() + 2) * 0.75) * (0.5 + self:GetCurrentZoom() / 2) ^ 0.7
+end
+
+function SWEP:CanPrimaryAttack()
+	self:EmitSound "Weapon_Pistol.Empty"
+	self:SetNextPrimaryFire(CurTime() + 0.2)
+	return self:Clip1() > 0
 end
 
 function SWEP:PrimaryAttack()
@@ -400,7 +442,6 @@ function SWEP:GetCurrentViewPunch()
 end
 
 function SWEP:ViewPunch()
-
 	if (self:GetDeveloperMode()) then
 		return
 	end
@@ -420,8 +461,30 @@ function SWEP:ViewPunch()
 end
 
 function SWEP:Think()
-	if (self:GetIronsights() and not self:IsToggleADS() and not self:GetOwner():KeyDown(IN_ATTACK2)) then
-		self:ChangeIronsights(false)
+	local reloadtime = self:GetReloadEndTime()
+	if (reloadtime ~= math.huge) then
+		if (reloadtime > CurTime()) then
+			return
+		end
+
+		local ammocount = self:GetOwner():GetAmmoCount(self:GetPrimaryAmmoType())
+		local needed = self:GetMaxClip1() - self:Clip1()
+
+		local added = math.min(needed, ammocount)
+
+		self:GetOwner():SetAmmo(ammocount - added, self:GetPrimaryAmmoType())
+
+		self:SetClip1(self:Clip1() + added)
+		self:SetReloadEndTime(math.huge)
+		self:SendWeaponAnim(ACT_VM_IDLE)
+	end
+
+	if (not self:IsToggleADS()) then
+		if (not self:GetIronsights() and self:GetOwner():KeyDown(IN_ATTACK2)) then
+			self:SecondaryAttack()
+		elseif (self:GetIronsights() and not self:GetOwner():KeyDown(IN_ATTACK2)) then
+			self:ChangeIronsights(false)
+		end
 	end
 
 	if (CLIENT) then
@@ -456,11 +519,78 @@ function SWEP:GetMultiplier()
 end
 
 function SWEP:GetViewPunchAngles()
-	return Angle(-self.Primary.Recoil * self:GetMultiplier() * (0.5 + self:GetCurrentZoom() / 2) ^ 0.7)
+	return Angle((-self.Primary.Recoil * self:GetMultiplier() * (0.5 + self:GetCurrentZoom() / 2) ^ 0.7))
 end
 
 function SWEP:AdjustMouseSensitivity()
 	if (self:GetIronsights()) then
 		return self.Ironsights.Zoom
 	end
+end
+
+function SWEP:GetReloadAnimationSpeed()
+	return self.ReloadSpeed
+end
+
+function SWEP:DoReload(act)
+	local speed = self:GetReloadAnimationSpeed()
+
+	self:SendWeaponAnim(act)
+	self:SetPlaybackRate(speed)
+	if (IsValid(self:GetOwner())) then
+		self:GetOwner():GetViewModel():SetPlaybackRate(speed)
+		self:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_RELOAD, 0)
+	end
+
+	local endtime = CurTime() + self:SequenceDuration() / speed + 0.1
+
+	self:SetReloadEndTime(endtime)
+	self:SetNextPrimaryFire(endtime)
+	self:SetNextSecondaryFire(endtime)
+end
+
+function SWEP:CancelReload()
+	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+	self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
+	self:SetReloadEndTime(math.huge)
+end
+
+function SWEP:Holster()
+	self:CancelReload()
+	return true
+end
+
+
+-- accessors for stuff so you can override easier
+
+function SWEP:GetDamage()
+	return self.Primary.Damage
+end
+
+function SWEP:GetTracers()
+	return self.Bullets.Tracer or 1
+end
+
+function SWEP:GetTracerName()
+	return self.Bullets.TracerName
+end
+
+function SWEP:GetBulletDropoffRange()
+	return self.Bullets.DamageDropoffRange
+end
+
+function SWEP:GetDamageDropoffRangeMax()
+	return self.Bullets.DamageDropoffRangeMax
+end
+
+function SWEP:GetDamageMinimumPercent()
+	return self.Bullets.DamageMinimumPercent
+end
+
+function SWEP:GetIronsightsTimeFrom()
+	return self.Ironsights.TimeFrom
+end
+
+function SWEP:GetIronsightsTimeTo()
+	return self.Ironsights.TimeTo
 end

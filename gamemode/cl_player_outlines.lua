@@ -27,7 +27,7 @@ function GM:PreDrawOpaqueRenderables()
 	for _, ply in pairs(player.GetAll()) do
 		local mn, mx 
 		if (ply:GetRoleTeam() ~= "traitor" or not ply:Alive()) then
-			goto endarea
+			continue
 		end
 
 		mn, mx = ply:GetCollisionBounds()
@@ -39,9 +39,8 @@ function GM:PreDrawOpaqueRenderables()
 
 			ply:DrawModel()
 
-		::endarea::
-		ply:EnableMatrix("RenderMultiply", matr_zero)
-		ply:SetupBones()
+		ply:DisableMatrix("RenderMultiply")
+		ply:InvalidateBoneCache()
 	end
 
 	render.MaterialOverride()

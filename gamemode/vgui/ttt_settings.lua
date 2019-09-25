@@ -203,6 +203,7 @@ function PANEL:Init()
 	self.Left:AddCheckBox("Automatically Bunny hop", "ttt_bhop_cl")
 	self.Left:AddCheckBox("Lowered Ironsights", "ttt_ironsights_lowered")
 	self.Left:AddCheckBox("Enable annoying HL2 crosshair", "hud_quickinfo")
+	self.Left:AddCheckBox("Enable Multicore Rendering (gives fps)", "tttrw_mcore")
 	self.Right:AddTextEntry("Where to put sounds (create if not exist)", nil, util.RelativePathToFull ".":sub(1, -2) .. "sound")
 	self.Right:AddTextEntry("Hitmarker", "tttrw_hitmarker_sound")
 	self.Right:AddTextEntry("Hitmarker (Headshot)", "tttrw_hitmarker_sound_hs")
@@ -211,7 +212,6 @@ end
 
 function PANEL:PerformLayout(w, h)
 	self.Left:SetWide(w / 2 - Padding / 2)
-	BaseClass.PerformLayout(self, w, h)
 end
 
 vgui.Register("ttt_settings_body", PANEL, "ttt_curved_panel")
@@ -249,8 +249,6 @@ end
 function PANEL:PerformLayout(w, h)
     self.Text:SizeToContents()
     self.Text:SetPos(Padding / 2, h / 2 - self.Text:GetTall() / 2)
-
-    BaseClass.PerformLayout(self, w, h)
 end
 
 function PANEL:SetFont(font)
@@ -282,8 +280,6 @@ end
 function PANEL:PerformLayout(w, h)
     self.Text:SizeToContents()
     self.Text:SetPos(self:GetWide() / 2 - self.Text:GetWide() / 2, self:GetTall() - self.Text:GetTall())
-
-    BaseClass.PerformLayout(self, w, h)
 end
 
 function PANEL:SetText(t)
@@ -323,8 +319,6 @@ function PANEL:PerformLayout(w, h)
     local rounded2 = math.Round(endy / 2)
     self.Close:SetSize(rounded2, rounded2)
     self.Close:SetPos(w - self.Close:GetWide() - Padding * 5 / 6, rounded2 / 2)
-    
-    BaseClass.PerformLayout(self, w, h)
 end
 
 vgui.Register("ttt_settings", PANEL, "ttt_curved_panel")

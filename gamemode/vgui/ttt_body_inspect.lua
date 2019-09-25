@@ -110,8 +110,6 @@ function PANEL:ResizeChildrenProperly()
 end
 
 function PANEL:PerformLayout(w, h)
-	BaseClass.PerformLayout(self, w, h)
-
 	self:ResizeChildrenProperly()
 end
 
@@ -222,8 +220,6 @@ function PANEL:Think()
 end
 
 function PANEL:PerformLayout(w, h)
-	BaseClass.PerformLayout(self, w, h)
-
 	self.Icon:SetSize(h - Padding, h - Padding)
 end
 
@@ -263,8 +259,6 @@ end
 function PANEL:PerformLayout(w, h)
 	self.Text:SizeToContents()
 	self.Text:SetPos(Padding / 2, h / 2 - self.Text:GetTall() / 2)
-
-	BaseClass.PerformLayout(self, w, h)
 end
 
 function PANEL:SetFont(font)
@@ -297,8 +291,6 @@ end
 function PANEL:PerformLayout(w, h)
 	self.Text:SizeToContents()
 	self.Text:SetPos(self:GetWide() / 2 - self.Text:GetWide() / 2, self:GetTall() - self.Text:GetTall())
-
-	BaseClass.PerformLayout(self, w, h)
 end
 
 function PANEL:SetText(t)
@@ -364,8 +356,6 @@ function PANEL:PerformLayout(w, h)
 	local rounded2 = math.Round(endy / 2)
 	self.Close:SetSize(rounded2, rounded2)
 	self.Close:SetPos(w - self.Close:GetWide() - rounded2 / 2, rounded2 / 2)
-	
-	BaseClass.PerformLayout(self, w, h)
 end
 
 function PANEL:SetBody(body)

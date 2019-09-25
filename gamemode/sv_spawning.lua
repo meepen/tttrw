@@ -13,6 +13,7 @@ function GM:PlayerLoadout(ply)
 	BaseClass.PlayerLoadout(self, ply)
 
 	ply:Give "weapon_ttt_crowbar"
+	ply:Give "weapon_ttt_unarmed"
 
 	local slots_needed = {
 		[1] = true,

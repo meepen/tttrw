@@ -25,31 +25,35 @@ function GM:DropCurrentWeapon(ply)
 		wep:PreDrop()
     end
 
-    local curwep = wep:GetSlot()
-
-    for _, wep in pairs(ply:GetWeapons()) do
-        if (not IsValid(nextwep)) then
-            nextwep = wep
-        else
-            if (wep:GetSlot() > curwep and wep:GetSlot() < nextwep:GetSlot() or
-                curwep >= nextwep:GetSlot() and wep:GetSlot() < nextwep:GetSlot()) then
-                nextwep = wep
-            end
-        end
+    for _, _wep in pairs(ply:GetWeapons()) do
+        if (not IsValid(nextwep) and _wep ~= wep or _wep:GetSlot() == 0) then
+            nextwep = _wep
+		end
     end
 
-    if (IsValid(nextwep)) then
+	if (IsValid(nextwep)) then
         input.SelectWeapon(nextwep)
     end
 end
 
+local hooks = {
+	gm_showhelp = "ShowHelp",
+	gm_showteam = "ShowTeam",
+	gm_showspare2 = "ShowSpare2",
+	gm_showspare1 = "ShowSpare1"
+}
+
 function GM:PlayerBindPress(ply, bind, pressed)
-	if (bind == "gm_showhelp") then
-		return hook.Run("ShowHelp", ply)
-	elseif (bind == "gm_showteam") then
-		return hook.Run("ShowTeam", ply)
+	bind = bind:lower()
+
+	if (hooks[bind]) then
+		return hook.Run(hooks[bind], ply)
 	end
+
 	if (bind:match"^slot%d+$") then
+		if (not pressed) then
+			return true
+		end
 		local num = tonumber(bind:match"^slot(%d+)$") - 1
 		local ordered_weps = {}
 		for _, wep in pairs(LocalPlayer():GetWeapons()) do
@@ -78,6 +82,9 @@ function GM:PlayerBindPress(ply, bind, pressed)
 		
 		return true
 	elseif (bind == "invprev" or bind == "invnext") then
+		if (not pressed) then
+			return true
+		end
 		local ordered_weps = LocalPlayer():GetWeapons()
 		table.sort(ordered_weps, function(a, b)
 			return a:GetSlot() < b:GetSlot()
@@ -105,5 +112,15 @@ function GM:PlayerBindPress(ply, bind, pressed)
 		input.SelectWeapon(ordered_weps[(index - 1) % #ordered_weps + 1])
 
 		return true
+	end
+end
+
+function GM:PostDrawViewModel(vm, ply, weapon)
+	if (weapon.UseHands or not weapon:IsScripted()) then
+
+		local hands = LocalPlayer():GetHands()
+		if (IsValid(hands)) then
+			hands:DrawModel()
+		end
 	end
 end
