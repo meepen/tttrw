@@ -210,7 +210,7 @@ function SWEP:DoDamageDropoff(tr, dmginfo)
 
 
 	if (distance > dropoff) then
-		local pct = math.min(1, (distance - dropoff) / (max - range))
+		local pct = math.min(1, (distance - dropoff) / (max - dropoff))
 		dmginfo:ScaleDamage(1 - pct * (1 - min))
 	end
 end
