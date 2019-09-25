@@ -109,6 +109,9 @@ function SWEP:Initialize()
 	if (SERVER and self.Primary and self.Primary.Ammo == "Buckshot" and not self.PredictableSpread) then
 		printf("Warning: %s weapon type has shotgun ammo and no predictable spread", self:GetClass())
 	end
+	if (SERVER) then
+		self:SV_Initialize()
+	end
 	self:SetHoldType(self.HoldType)
 end
 
