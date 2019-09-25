@@ -204,9 +204,14 @@ end
 
 function SWEP:DoDamageDropoff(tr, dmginfo)
 	local distance = tr.HitPos:Distance(tr.StartPos)
-	if (distance > bullet.DamageDropoffRange) then
-		local pct = math.min(1, (distance - bullet.DamageDropoffRange) / (bullet.DamageDropoffRangeMax - bullet.DamageDropoffRange))
-		dmginfo:ScaleDamage(1 - pct * (1 - bullet.DamageMinimumPercent))
+	local dropoff = self:GetBulletDropoffRange()
+	local max = self:GetDamageDropoffRangeMax()
+	local min = self:GetDamageMinimumPercent()
+
+
+	if (distance > dropoff) then
+		local pct = math.min(1, (distance - dropoff) / (max - range))
+		dmginfo:ScaleDamage(1 - pct * (1 - min))
 	end
 end
 
@@ -563,5 +568,17 @@ function SWEP:GetTracers()
 end
 
 function SWEP:GetTracerName()
-	return bullet_info.TracerName
+	return self.Bullets.TracerName
+end
+
+function SWEP:GetBulletDropoffRange()
+	return self.Bullets.DamageDropoffRange
+end
+
+function SWEP:GetDamageDropoffRangeMax()
+	return self.Bullets.DamageDropoffRangeMax
+end
+
+function SWEP:GetDamageMinimumPercent()
+	return self.Bullets.DamageMinimumPercent
 end
