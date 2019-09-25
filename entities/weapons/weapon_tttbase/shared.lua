@@ -59,7 +59,8 @@ function SWEP:NetVar(name, type, default, notify)
 	local id = self.NetVarTypes[type] or 0
 	self.NetVarTypes[type] = id + 1
 	self:NetworkVar(type, id, name)
-	if (default) then
+
+	if (default ~= nil) then
 		self["Set"..name](self, default)
 	end
 
