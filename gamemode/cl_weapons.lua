@@ -26,7 +26,7 @@ function GM:DropCurrentWeapon(ply)
     end
 
     for _, _wep in pairs(ply:GetWeapons()) do
-        if (not IsValid(nextwep) and _wep ~= wep or _wep:GetSlot() == 0) then
+        if (not IsValid(nextwep) and _wep ~= wep or _wep:GetSlot() == 5) then
             nextwep = _wep
 		end
     end
