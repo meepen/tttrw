@@ -157,6 +157,7 @@ function PANEL:SetColor(col)
 end
 function PANEL:SetText(text)
 	self.Render:SetText(text)
+	self:SetTall(self.Render:GetTall() * 1.5)
 end
 function PANEL:Paint() end
 vgui.Register("ttt_scoreboard_group_header", PANEL, "EditablePanel")
@@ -219,6 +220,7 @@ end
 
 function PANEL:SetText(text)
 	self.Header:SetText(text)
+	self:SetTall(self.Header:GetTall())
 end
 
 function PANEL:OnChildAdded()

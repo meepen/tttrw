@@ -74,12 +74,36 @@ end
 
 PANEL.GetRenderBounds = GetRenderBounds
 
+function PANEL:SetScissor(b)
+	self.DontScissor = not b
+end
+
+function PANEL:GetScissor()
+	return not self.DontScissor
+end
+
 function PANEL:Scissor()
+	if (not self:GetScissor()) then
+		return
+	end
 	local x0, y0, x1, y1 = self:GetRenderBounds()
 	render.SetScissorRect(x0, y0, x1, y1, true)
 end
 
+function PANEL:MeshRemove()
+	if (IsValid(self.Mesh)) then
+		self.Mesh:Remove()
+	end
+
+	if (self.OldRemove) then
+		self:OldRemove()
+	end
+end
+
 function PANEL:Paint(w, h)
+	self.OldRemove = self.OldRemove or self.OnRemove or function() end
+	self.OnRemove = self.MeshRemove
+
 	local x, y = self:LocalToScreen(0, 0)
 	if (self._OLDW ~= w or self._OLDH ~= h or self._OLDX ~= x or self._OLDY ~= y) then
 		self:RebuildMesh()

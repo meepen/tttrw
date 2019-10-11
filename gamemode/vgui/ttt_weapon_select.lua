@@ -1,5 +1,5 @@
 
-local font_tall = math.Round(ScrH() / 70)
+local font_tall = math.max(16, math.Round(ScrH() / 70))
 surface.CreateFont("ttt_weapon_select_font", {
 	font = 'Lato',
 	size = font_tall,

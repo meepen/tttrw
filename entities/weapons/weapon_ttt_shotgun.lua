@@ -65,7 +65,7 @@ function SWEP:Reload()
 	--if self:GetNWBool( "reloading", false ) then return end
 	if self.Reloading then return end
  
-	if self:Clip1() < self.Primary.ClipSize and self:GetOwner():GetAmmoCount( self.Primary.Ammo ) > 0 then
+	if self:Clip1() < self:GetMaxClip1() and self:GetOwner():GetAmmoCount( self.Primary.Ammo ) > 0 then
  
 	   	if self:StartReload() then
 		  	return

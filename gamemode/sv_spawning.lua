@@ -8,13 +8,7 @@ function GM:PlayerSetModel(ply)
 	hook.Run("TTTPlayerSetColor", ply)
 end
 
-function GM:PlayerLoadout(ply)
-	-- can provide weapons here
-	BaseClass.PlayerLoadout(self, ply)
-
-	ply:Give "weapon_ttt_crowbar"
-	ply:Give "weapon_ttt_unarmed"
-
+function GM:TTTPlayerGiveWeapons(ply)
 	local slots_needed = {
 		[1] = true,
 		[2] = true

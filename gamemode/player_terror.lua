@@ -9,8 +9,11 @@ function PLAYER:Loadout()
 	local ply = self.Player
 	ply:StripAmmo()
 	ply:StripWeapons()
-	
-	-- TODO(meep): should we do something else here???
+
+	ply:Give "weapon_ttt_crowbar"
+	ply:Give "weapon_ttt_unarmed"
+
+	hook.Run("TTTPlayerGiveWeapons", ply)
 end
 
 function PLAYER:Spawn()

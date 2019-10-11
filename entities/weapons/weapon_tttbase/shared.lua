@@ -208,7 +208,7 @@ end
 
 function SWEP:DoDamageDropoff(tr, dmginfo)
 	local distance = tr.HitPos:Distance(tr.StartPos)
-	local dropoff = self:GetBulletDropoffRange()
+	local dropoff = self:GetDamageDropoffRange()
 	local max = self:GetDamageDropoffRangeMax()
 	local min = self:GetDamageMinimumPercent()
 
@@ -387,9 +387,13 @@ function SWEP:GetSpread()
 end
 
 function SWEP:CanPrimaryAttack()
+	if (self:Clip1() > 0) then
+		return true
+	end
 	self:EmitSound "Weapon_Pistol.Empty"
 	self:SetNextPrimaryFire(CurTime() + 0.2)
-	return self:Clip1() > 0
+	self:Reload()
+	return false
 end
 
 function SWEP:PrimaryAttack()
@@ -398,16 +402,17 @@ function SWEP:PrimaryAttack()
 	end
 
 	local interval = engine.TickInterval()
-	local delay = math.ceil(self.Primary.Delay / interval) * interval
+	local delay = math.ceil(self:GetDelay() / interval) * interval
 	local diff = (CurTime() - self:GetRealLastShootTime()) / delay
+
+	-- do this before consecutive
+	self:SetNextPrimaryFire(CurTime() + self:GetDelay())
 
 	if (diff <= 1.25) then
 		self:SetConsecutiveShots(self:GetConsecutiveShots() + 1)
 	else
 		self:SetConsecutiveShots(0)
 	end
-
-	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 
 	if (self:Clip1() <= math.max(self:GetMaxClip1() * 0.15, 3)) then
 		self:EmitSound("weapons/pistol/pistol_empty.wav", self.Primary.SoundLevel, 255, 2, CHAN_USER_BASE + 1)
@@ -427,7 +432,7 @@ end
 local quat_zero = Quaternion()
 
 function SWEP:GetCurrentViewPunch()
-	local delay = self.Primary.RecoilTiming or self.Primary.Delay
+	local delay = self.Primary.RecoilTiming or self:GetDelay()
 	local time = self:GetViewPunchTime()
 	local frac = (CurTime() - time) / delay
 	
@@ -550,8 +555,8 @@ function SWEP:DoReload(act)
 end
 
 function SWEP:CancelReload()
-	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
-	self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
+	self:SetNextPrimaryFire(CurTime() + self:GetDelay())
+	self:SetNextSecondaryFire(CurTime() + self:GetDelay())
 	self:SetReloadEndTime(math.huge)
 end
 
@@ -575,7 +580,7 @@ function SWEP:GetTracerName()
 	return self.Bullets.TracerName
 end
 
-function SWEP:GetBulletDropoffRange()
+function SWEP:GetDamageDropoffRange()
 	return self.Bullets.DamageDropoffRange
 end
 
@@ -593,4 +598,8 @@ end
 
 function SWEP:GetIronsightsTimeTo()
 	return self.Ironsights.TimeTo
+end
+
+function SWEP:GetDelay()
+	return self.Primary.Delay
 end
