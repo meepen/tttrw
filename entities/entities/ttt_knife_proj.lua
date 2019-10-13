@@ -37,6 +37,7 @@ function ENT:Initialize()
 		self.StartPos = self:GetPos()
 
 		self:NextThink(CurTime())
+		self:SetTrigger(true)
 	end
 
 	self.Weaponised = false
@@ -178,8 +179,7 @@ if SERVER then
 		-- delay the weapon-replacement a tick because Source gets very angry
 		-- if you do fancy stuff in a physics callback
 		local knife = self
-		timer.Simple(0,
-		function()
+		timer.Simple(0, function()
 			if IsValid(knife) and not knife.Weaponised then
 				knife:BecomeWeapon()
 			end
@@ -201,8 +201,6 @@ if SERVER then
 			return true
 		end
 
-		if not self.Weaponised then
-			self:BecomeWeaponDelayed()
-		end
+		self:BecomeWeaponDelayed()
 	end
 end

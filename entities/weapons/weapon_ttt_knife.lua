@@ -197,6 +197,10 @@ function SWEP:StabKill(tr, spos, sdest)
 	self:Remove()
 end
 
+function SWEP:IsToggleADS()
+	return true
+end
+
 function SWEP:SecondaryAttack()
 	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 	self.Weapon:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
@@ -251,6 +255,7 @@ function SWEP:SecondaryAttack()
 		end
 
 		self:Remove()
+		debug.Trace()
 	end
 end
 
