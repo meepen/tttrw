@@ -41,19 +41,19 @@ local ttt_body_normal = Color(51, 51, 52)
 
 surface.CreateFont("ttt_settings_tab_font", {
 	font = 'Lato',
-	size = ScrH() / 70,
+	size = math.max(24, ScrH() / 80),
 	weight = 400
 })
 
 surface.CreateFont("ttt_settings_settings_text_font", {
 	font = 'Roboto',
-	size = ScrH() / 80,
+	size = math.max(16, ScrH() / 80),
 	weight = 0
 })
 
 surface.CreateFont("ttt_settings_header_font", {
 	font = 'Lato',
-	size = ScrH() / 80,
+	size = math.max(24, ScrH() / 80),
 	weight = 200
 })
 
@@ -301,9 +301,9 @@ function PANEL:Init()
     self.Inner = self:Add "ttt_settings_body"
     self.Inner:Dock(FILL)
     self.Tabs = self:Add "ttt_settings_tab_holder"
-    self.Tabs:SetHeight(Padding)
+	surface.SetFont "ttt_settings_tab_font"
+	self.Tabs:SetTall(select(2, surface.GetTextSize "a") + 4)
     self.Tabs:Dock(TOP)
-    self.Tabs:SetTall(ScrH() * 0.02)
     self.MainTab = self.Tabs:AddTab("Main Settings", "ttt_settings_tab")
     self:DockPadding(Padding * 5 / 6, Padding, Padding * 5 / 6, Padding * 5 / 6)
 
