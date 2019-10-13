@@ -154,7 +154,7 @@ function GM:TTTPrepareRoles(Team, Role)
 		:SetModifyTicketsFunc(function(tickets)
 			return 1
 		end)
-	Team "spectator":SeenByAll():SetColor(Color(20, 120, 120))
+	Team "spectator":SeenByAll():SetColor(Color(0x4a, 0xc3, 0xff))
 
 	Role("Innocent", "innocent")
 	Role("Spectator", "spectator")
