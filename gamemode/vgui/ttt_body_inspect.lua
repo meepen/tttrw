@@ -8,13 +8,13 @@ local ttt_body_normal = Color(51, 51, 52)
 
 surface.CreateFont("ttt_body_inspect_tab_font", {
 	font = 'Lato',
-	size = ScrH() / 80,
+	size = math.max(12, ScrH() / 80),
 	weight = 400
 })
 
 surface.CreateFont("ttt_body_inspect_header_font", {
 	font = 'Lato',
-	size = ScrH() / 80,
+	size = math.max(12, ScrH() / 80),
 	weight = 200
 })
 
@@ -79,16 +79,6 @@ function PANEL:Init()
 	self.CurrentElement:Dock(TOP)
 	self.CurrentElement:SetZPos(2)
 
-	self.Button = self:Add "ttt_curved_button"
-	self.Button:SetFont "ttt_body_inspect_header_font"
-	self.Button:SetText "Confirm Death"
-	self.Button:SetCurve(4)
-	self.Button:Dock(LEFT)
-	self.Button:SetColor(Color(87, 90, 90))
-	self.Button:SetTextColor(Color(177, 177, 177))
-	self.Button:SetZPos(3)
-	self.Button:DockMargin(Padding, Padding, Padding, 0)
-
 	-- has to be last lol
 	self.Icons = self:Add "ttt_body_inspect_icon_list"
 	self.Icons:Dock(TOP)
@@ -100,13 +90,10 @@ end
 function PANEL:ResizeChildrenProperly()
 	local header = self.Header:GetTall()
 
-	surface.SetFont(self.Button:GetFont())
-	local _, h = surface.GetTextSize "A"
-	local tall = self:GetTall() - Padding * 3.5 - h
+	local tall = self:GetTall() - Padding * 3.5
 
 	self.Icons:SetTall(tall / 5 * 2)
 	self.CurrentElement:SetTall(tall / 5 * 2 + Padding)
-	self.Button:SetTall(Padding + h)
 end
 
 function PANEL:PerformLayout(w, h)
