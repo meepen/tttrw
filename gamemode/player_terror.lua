@@ -40,7 +40,7 @@ function PLAYER:GetSpeedData()
 		FinalMultiplier = IsValid(wep) and wep.GetIronsights and wep:GetIronsights() and wep.Ironsights and wep.Ironsights.SlowDown or 1
 	}
 
-	hook.Run("TTTUpdatePlayerSpeed", data)
+	hook.Run("TTTUpdatePlayerSpeed", ply, data)
 
 	return data
 end
