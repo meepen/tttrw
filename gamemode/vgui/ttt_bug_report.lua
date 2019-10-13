@@ -2,7 +2,7 @@ local ttt_body_normal = Color(51, 51, 52)
 
 surface.CreateFont("ttt_bugs_text_font", {
 	font = 'Roboto',
-	size = ScrH() / 80,
+	size = math.max(16, ScrH() / 80),
 	weight = 0
 })
 

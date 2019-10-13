@@ -5,10 +5,6 @@ local function GetSpacing()
 	return math.Round(ScrH() / 100)
 end
 
-local function GetHeaderSize()
-	return math.Round(ScrH() / 30)
-end
-
 local mat_evil = Material("tttrw/transparentevil.png", "noclamp smooth")
 local mat_good = Material("tttrw/transparentgood.png", "noclamp smooth")
 
@@ -17,33 +13,37 @@ local white_text_color = Color(0xe0, 0xe0, 0xe0)
 
 surface.CreateFont("ttt_credit_font", {
 	font = 'Lato',
-	size = ScrH() / 70,
+	size = math.max(24, ScrH() / 90),
 	weight = 200
 })
 
 surface.CreateFont("ttt_equipment_header_font", {
 	font = 'Lato',
-	size = ScrH() / 47,
+	size = math.max(28, ScrH() / 47),
 	weight = 200
 })
 
 surface.CreateFont("ttt_equipment_button_font", {
 	font = 'Lato',
-	size = ScrH() / 47,
+	size = math.max(28, ScrH() / 47),
 	weight = 1000
 })
 
 surface.CreateFont("ttt_equipment_description_font", {
 	font = 'Lato',
-	size = ScrH() / 80,
+	size = math.max(20, ScrH() / 90),
 	weight = 200
 })
 
 surface.CreateFont("ttt_equipment_status_font", {
 	font = 'Lato',
-	size = ScrH() / 90,
+	size = math.max(16, ScrH() / 90),
 	weight = 200
 })
+
+local function GetHeaderSize()
+	return math.max(32, math.Round(ScrH() / 30))
+end
 
 local evil_color = Color(0x93, 0x23, 0x24, 255)
 local evil_icons_color = Color(255, 255, 255)
@@ -63,7 +63,7 @@ function PANEL:Init()
 	self.Text:SetTextColor(IsEvil() and evil_color or good_color)
 	self.Text:SetContentAlignment(5) -- Center
 	self.Text:SetFont "ttt_credit_font"
-	self.Text:SetText("You have " .. LocalPlayer():GetCredits() .. " credits remaining")
+	self.Text:SetText(LocalPlayer():GetCredits() .. " credits")
 
 	hook.Add("OnPlayerCreditsChange", self, self.OnPlayerCreditsChange)
 end
