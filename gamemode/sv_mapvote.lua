@@ -56,6 +56,10 @@ function GM:MapVote_TTTEndRound()
 end
 
 function GM:ShouldChangeMap()
+    if (CurTime() > 60 * 60) then
+        return true, "Time limit reached"
+    end
+
     if (self.InitialCommit ~= self.CurrentCommit) then
         return not not self.CurrentCommit, "Server lua has been updated."
     end

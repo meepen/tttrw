@@ -12,9 +12,6 @@ SWEP.IconLetter         = "w"
 
 SWEP.Base                  = "weapon_tttbase"
 
-SWEP.Kind                  = WEAPON_HEAVY
-SWEP.WeaponID              = AMMO_PISTOL
-
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,

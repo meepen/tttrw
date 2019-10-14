@@ -327,8 +327,10 @@ function GM:PlayerInitialSpawn(ply)
 	ply:SetTeam(TEAM_SPECTATOR)
 	ply.Tickets = 1
 
-	if (player.GetCount() == 1 and hook.Run "ShouldChangeMap") then
-		game.LoadNextMap()
+	local should, reason = hook.Run "ShouldChangeMap"
+
+	if (player.GetCount() == 1 and should) then
+		game.LoadNextMap(reason)
 	end
 end
 
