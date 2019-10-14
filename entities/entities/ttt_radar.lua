@@ -18,7 +18,7 @@ ENT.Equipment = {
 	Icon           = "materials/tttrw/equipment/radar.png",
 }
 
-ENT.Delay = 10
+ENT.Delay = 18
 
 if (CLIENT) then
 	ENT.Targets = {}
