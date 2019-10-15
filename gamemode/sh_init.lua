@@ -11,6 +11,15 @@ IN_USE_ALT = IN_CANCEL
 ttt = ttt or GM or {}
 
 PLAYER = FindMetaTable "Player"
+
+function PLAYER:IsActive()
+	return self:Alive()
+end
+
+function PLAYER:IsSpec()
+	return not self:IsActive()
+end
+
 AccessorFunc(PLAYER, "Target", "Target")
 ENTITY = FindMetaTable "Entity"
 

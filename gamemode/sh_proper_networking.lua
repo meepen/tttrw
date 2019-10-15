@@ -34,6 +34,15 @@ function GM:InitializeNetworking()
 			end
 		end
 	end
+	
+	-- backwards compat
+
+	function GetRoundState()
+		return ttt.GetRoundState()
+	end
+
+	ROUND_ACTIVE = ttt.ROUNDSTATE_ACTIVE
+	
 
 	return vars
 end

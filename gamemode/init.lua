@@ -19,6 +19,13 @@ function GM:EntityTakeDamage(targ, dmg)
 	self:CreateHitmarkers(targ, dmg)
 	self:DamageLogs_EntityTakeDamage(targ, dmg)
 	self:Karma_EntityTakeDamage(targ, dmg)
+	
+	if (targ:IsPlayer() and hook.Run("PlayerShouldTakeDamage", targ, dmg:GetAttacker())) then
+		GAMEMODE:PlayerTakeDamage(targ, dmg:GetInflictor(), dmg:GetAttacker(), dmg:GetDamage(), dmg)
+	end
+end
+
+function GM:PlayerTakeDamage()
 end
 
 function GM:TTTPrepareRound()
