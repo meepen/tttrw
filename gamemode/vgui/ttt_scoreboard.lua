@@ -5,19 +5,19 @@ local white_text = Color(209, 209, 209)
 
 surface.CreateFont("ttt_scoreboard_player", {
 	font = 'Lato',
-	size = ScrH() / 65,
+	size = math.max(22, ScrH() / 65),
 	weight = 300,
 })
 
 surface.CreateFont("ttt_scoreboard_header", {
 	font = 'Lato',
-	size = ScrH() / 20,
+	size = math.max(40, ScrH() / 20),
 	weight = 200,
 })
 
 surface.CreateFont("ttt_scoreboard_group", {
 	font = 'Lato',
-	size = ScrH() / 80,
+	size = math.max(16, ScrH() / 80),
 	weight = 200,
 })
 
