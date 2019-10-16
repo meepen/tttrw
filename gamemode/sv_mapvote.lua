@@ -33,15 +33,6 @@ function GM:TrackCurrentCommit()
 	end
 end
 
-function GM:CheckPassword(sid64, ipaddr, svpassword, clpassword, name)
-	-- printf("%s [%s] (%s) tried joining with password = %s", name, sid64, ipaddr, clpassword)
-
-	self:TrackCurrentCommit()
-	if (self.InitialCommit and not self.CurrentCommit) then -- updating
-		return false, "Server is updating, please try reconnecting in a few seconds."
-	end
-end
-
 function GM:MapVote_TTTBeginRound()
     ttt.SetRoundNumber(ttt.GetRoundNumber() + 1)
 end
