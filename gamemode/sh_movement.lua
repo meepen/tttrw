@@ -105,7 +105,7 @@ function GM:PreventCrouchJump(ply, mv)
 			if (not tr.Hit) then
 				return
 			end
-			
+
 			mv:SetButtons(bit.band(bit.bnot(IN_DUCK), mv:GetButtons()))
 		end
 		mv:SetButtons(bit.band(bit.bnot(IN_DUCK), mv:GetButtons()))

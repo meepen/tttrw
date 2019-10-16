@@ -1,6 +1,7 @@
-local bg_color = Color(13, 12, 13, 0.92 * 255)
+local bg_color = Color(17, 15, 13, 0.75 * 255)
 
 local ttt_scoreboard_header_color = Color(20, 19, 20, 0.92 * 255)
+local white_text = Color(209, 209, 209)
 
 surface.CreateFont("ttt_scoreboard_player", {
 	font = 'Lato',
@@ -11,13 +12,13 @@ surface.CreateFont("ttt_scoreboard_player", {
 surface.CreateFont("ttt_scoreboard_header", {
 	font = 'Lato',
 	size = ScrH() / 20,
-	weight = 200
+	weight = 200,
 })
 
 surface.CreateFont("ttt_scoreboard_group", {
 	font = 'Lato',
 	size = ScrH() / 80,
-	weight = 0
+	weight = 200,
 })
 
 local Padding = math.Round(ScrH() * 0.0075)
@@ -48,6 +49,29 @@ vgui.Register("ttt_scoreboard_header", PANEL, "ttt_curved_panel")
 
 local PANEL = {}
 
+function PANEL:Init()
+	self:SetCurve(4)
+
+	self.Text = self:Add "DLabel"
+	self.Text:Dock(FILL)
+	self.Text:SetContentAlignment(5)
+end
+
+function PANEL:SetText(t)
+	self.Text:SetText(t)
+end
+
+function PANEL:SetTextColor(col)
+	self.Text:SetTextColor(col)
+end
+
+function PANEL:SetFont(f)
+	self.Text:SetFont(f)
+end
+
+vgui.Register("ttt_scoreboard_rank", PANEL, "ttt_curved_panel_outline")
+
+local PANEL = {}
 DEFINE_BASECLASS "ttt_curved_panel"
 
 function PANEL:Init()
@@ -73,6 +97,7 @@ function PANEL:Init()
 	self.Name:SetText("Name")
 	self.Name:SizeToContents()
 	self.Name:Dock(LEFT)
+	self.Name:SetTextColor(white_text)
 
 	self.Ping = self:Add "DLabel"
 	self.Ping:SetFont "ttt_scoreboard_player"
@@ -80,6 +105,7 @@ function PANEL:Init()
 	self.Ping:SetText "Ping"
 	self.Ping:SizeToContents()
 	self.Ping:Dock(RIGHT)
+	self.Ping:SetTextColor(white_text)
 
 	self.Karma = self:Add "DLabel"
 	self.Karma:SetFont "ttt_scoreboard_player"
@@ -87,12 +113,25 @@ function PANEL:Init()
 	self.Karma:SetText "Karma"
 	self.Karma:SizeToContents()
 	self.Karma:Dock(RIGHT)
+	self.Karma:SetTextColor(white_text)
+
+	self.Rank = self:Add "ttt_scoreboard_rank"
+	self.Rank:SetWide(self.Rank:GetWide() * 2)
+	self.Rank:SetColor(Color(0, 0, 0, 0))
+	self.Rank:SetFont "ttt_scoreboard_player"
+	self.Rank:DockMargin(0, 0, 10, 0)
+	self.Rank:SetText "Rank"
+	self.Rank:SizeToContents()
+	self.Rank:Dock(RIGHT)
+	self.Rank:SetTextColor(white_text)
 end
 
 function PANEL:Paint(w, h)
 	if (IsValid(self.Player)) then
 		if (ttt.GetRoundState() ~= ttt.ROUNDSTATE_PREPARING and IsValid(self.Player.HiddenState) and not self.Player.HiddenState:IsDormant()) then
 			self:SetColor(ColorAlpha(self.Player:GetRoleData().Color, 100))
+		else
+			self:SetColor(Color(17, 15, 13, 0.75 * 255))
 		end
 	end
 
@@ -142,6 +181,9 @@ function PANEL:SetPlayer(ply, group)
 	self.Ping:SetText(self.Player:Ping() .. "ms")
 	self.Ping:SizeToContents()
 	self.Karma:DockMargin(0, 0, Padding * 12 - self.Ping:GetWide(), 0)
+
+	self.Rank:SetColor(ColorAlpha(hook.Run("TTTGetPlayerColor", ply) or color_white, 0.9 * 255))
+	self.Rank:SetText(ply:GetUserGroup())
 end
 
 vgui.Register("ttt_scoreboard_player", PANEL, "ttt_curved_panel")
@@ -280,13 +322,11 @@ function PANEL:Init()
 		table.insert(result_tbl, ply)
 	end
 
-	local alpha = 25
-
-	self:AddGroup("Terrorists", Color(10, 250, 100, alpha), living)
-	self:AddGroup("Unidentified", Color(250, 150, 150, alpha), unidentified)
-	self:AddGroup("Dead", Color(78, 55, 53, alpha * 3), dead)
-	self:AddGroup("Spectators", Color(255, 255, 255, alpha), spectators)
-	self:AddGroup("Connecting", Color(255, 255, 255, alpha), connecting)
+	self:AddGroup("Terrorists", Color(14, 88, 34), living)
+	self:AddGroup("Unidentified", Color(85, 111, 87), unidentified)
+	self:AddGroup("Dead", Color(80, 105, 38), dead)
+	self:AddGroup("Spectators", Color(127, 129, 13), spectators)
+	--self:AddGroup("Connecting", Color(255, 255, 255), connecting)
 	self:InvalidateLayout()
 
 	self:SetPos((ScrW() - self:GetWide()) / 2, (ScrH() - self:GetTall()) / 2)
