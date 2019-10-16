@@ -34,7 +34,7 @@ function GM:TrackCurrentCommit()
 end
 
 function GM:CheckPassword(sid64, ipaddr, svpassword, clpassword, name)
-	printf("%s [%s] (%s) tried joining with password = %s", name, sid64, ipaddr, clpassword)
+	-- printf("%s [%s] (%s) tried joining with password = %s", name, sid64, ipaddr, clpassword)
 
 	self:TrackCurrentCommit()
 	if (self.InitialCommit and not self.CurrentCommit) then -- updating
