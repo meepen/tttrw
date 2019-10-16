@@ -35,13 +35,11 @@ local LastTarget, LastTime
 
 function GM:HUDDrawTargetID()
 	local ent = ttt.GetHUDTarget()
+	if (not IsValid(ent)) then return end
+
 	local tr = ent:GetEyeTrace()
-
 	ent = tr.Entity
-
-	if (not IsValid(ent)) then
-		return
-	end
+	if (not IsValid(ent)) then return end
 
 	local text = "n/a"
 	local extra
@@ -140,7 +138,7 @@ function GM:HUDPaint()
 	hook.Run "TTTDrawHitmarkers"
 
 	local targ = ttt.GetHUDTarget()
-	if (targ ~= LocalPlayer()) then
+	if (IsValid(targ) and targ ~= LocalPlayer()) then
 		-- https://github.com/Facepunch/garrysmod-issues/issues/3936
 		local wep = targ:GetActiveWeapon()
 		if (IsValid(wep)) then
@@ -156,7 +154,7 @@ function GM:PlayerPostThink()
 
 	local targ = ttt.GetHUDTarget()
 
-	if (targ ~= LocalPlayer()) then
+	if (IsValid(targ) and targ ~= LocalPlayer()) then
 		local wep = targ:GetActiveWeapon()
 		if (IsValid(wep)) then
 			wep:CalcAllUnpredicted()
