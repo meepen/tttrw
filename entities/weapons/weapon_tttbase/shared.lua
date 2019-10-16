@@ -169,6 +169,8 @@ function SWEP:Deploy()
 	if (IsValid(self:GetOwner()) and IsValid(self:GetOwner():GetHands())) then
 		self:GetOwner():GetHands():SetNoDraw(not self.UseHands)
 	end
+
+	return true
 end
 
 function SWEP:OnReloaded()
