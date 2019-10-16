@@ -43,13 +43,12 @@ end
 function GM:TTTPlayerRemoveSpectate(ply)
 	ply:Spectate(OBS_MODE_ROAMING)
 	ply:SetMoveType(MOVETYPE_NOCLIP)
-	ply:SpectateEntity(NULL)
 end
 
 function GM:PostPlayerDeath(ply)
 	for _, spec in pairs(player.GetAll()) do
 		if ((spec:GetObserverMode() == OBS_MODE_IN_EYE or spec:GetObserverMode() == OBS_MODE_CHASE) and spec:GetObserverTarget() == ply) then
-			self:TTTPlayerRemoveSpectate(ply)
+			self:TTTPlayerRemoveSpectate(spec)
 		end
 	end
 end
