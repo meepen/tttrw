@@ -129,7 +129,7 @@ function GM:Karma_DoPlayerDeath(ply, atk, dmg)
 end
 
 function GM:Karma_EntityTakeDamage(vic, dmg)
-	if (not KarmaEnabled()) then
+	if (not KarmaEnabled() or dmg:IsDamageType(DMG_DIRECT)) then
 		return
 	end
 
