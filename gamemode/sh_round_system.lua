@@ -27,6 +27,9 @@ function GM:OnRoundStateChange(old, new)
 
 	if (new == ttt.ROUNDSTATE_PREPARING) then
 		hook.Run "TTTPrepareRound"
+		if (CLIENT) then
+			system.FlashWindow()
+		end
 	elseif (new == ttt.ROUNDSTATE_ACTIVE) then
 		hook.Run "TTTBeginRound"
 	elseif (new == ttt.ROUNDSTATE_ENDED) then
