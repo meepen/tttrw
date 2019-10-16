@@ -82,7 +82,7 @@ function GM:HUDDrawTargetID()
 		end)
 	end
 
-	surface.SetFont "TargetIDSmall"
+	surface.SetFont "TargetID"
 	surface.SetTextColor(color_black)
 
 	local x, y = ScrW() / 2, ScrH() / 2
