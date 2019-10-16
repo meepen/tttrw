@@ -41,7 +41,7 @@ function GM:PreventCrouchJump(ply, mv)
 
 	local offset = ply:GetViewOffset()
 	local m_flDuckTime = math.sqrt(ply:GetCurrentViewOffset():DistToSqr(offset) / ply:GetViewOffsetDucked():DistToSqr(offset))
-	if (not ply:Crouching() and mv:KeyDown(IN_DUCK) and jumping) then
+	if (not ply:Crouching() and m_flDuckTime >= 0.5 and jumping) then
 		local velocity = mv:GetVelocity()
 
 		local extravel = vector_origin
