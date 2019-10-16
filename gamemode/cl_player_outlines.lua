@@ -9,12 +9,12 @@ local mat = CreateMaterial("tttrw_player_outline", "VertexLitGeneric", {
 })
 
 local incr = 0.01
-local scale = Vector(1 + incr * 3, 1 + incr * 3, 1 + incr)
+local scale = Vector(1 + incr * 5, 1 + incr * 5, 1 + incr)
 
 local matr = Matrix()
 matr:SetScale(scale)
 local matr_zero = Matrix()
-function GM:PreDrawOpaqueRenderables()
+function GM:PostDrawOpaqueRenderables()
 	if (not tttrw_outline_roles:GetBool()) then
 		return
 	end
@@ -39,6 +39,12 @@ function GM:PreDrawOpaqueRenderables()
 
 			ply:DrawModel()
 
+		matr:SetTranslation(Vector(0, 0, (mx.z - mn.z) * (scale.z - 1) / 2))
+		ply:EnableMatrix("RenderMultiply", matr)
+		ply:SetupBones()
+
+			ply:DrawModel()
+
 		ply:DisableMatrix("RenderMultiply")
 		ply:InvalidateBoneCache()
 	end
@@ -46,4 +52,13 @@ function GM:PreDrawOpaqueRenderables()
 	render.MaterialOverride()
 	render.SuppressEngineLighting(false)
 	render.SetColorModulation(r, g, b)
+
+	for _, ply in pairs(player.GetAll()) do
+		local mn, mx 
+		if (ply:GetRoleTeam() ~= "traitor" or not ply:Alive()) then
+			continue
+		end
+
+		ply:DrawModel()
+	end
 end
