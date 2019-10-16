@@ -25,6 +25,35 @@ function GM:EntityTakeDamage(targ, dmg)
 	end
 end
 
+function GM:Drown(ply)
+	if (ply:WaterLevel() == 3) then
+		if ply:IsOnFire() then
+			ply:Extinguish()
+		end
+
+		if ply.drowning then
+			if ply.drowning < CurTime() then
+				local dmginfo = DamageInfo()
+				dmginfo:SetDamage(15)
+				dmginfo:SetDamageType(DMG_DROWN)
+				dmginfo:SetAttacker(game.GetWorld())
+				dmginfo:SetInflictor(game.GetWorld())
+				dmginfo:SetDamageForce(Vector(0,0,1))
+
+				ply:TakeDamageInfo(dmginfo)
+
+				-- have started drowning properly
+				ply.drowning = CurTime() + 1
+			end
+		else
+			-- will start drowning soon
+			ply.drowning = CurTime() + 8
+		end
+	else
+		ply.drowning = nil
+	end
+end
+
 function GM:PlayerTakeDamage()
 end
 

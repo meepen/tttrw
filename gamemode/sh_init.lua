@@ -78,6 +78,9 @@ end
 
 function GM:PlayerTick(ply)
 	player_manager.RunClass(ply, "Think")
+	if (SERVER) then
+		self:Drown(ply)
+	end
 end
 
 function GM:StartCommand(ply, cmd)
