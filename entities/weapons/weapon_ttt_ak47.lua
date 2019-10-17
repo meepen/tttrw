@@ -23,7 +23,7 @@ SWEP.Bullets = {
 
 SWEP.Primary.Damage        = 22
 SWEP.Primary.Delay         = 0.12
-SWEP.Primary.Recoil        = 2.2
+SWEP.Primary.Recoil        = 3
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.ClipSize      = 30
