@@ -28,7 +28,7 @@ end
 
 if (SERVER) then
 	concommand.Add("_ttt_radio_send", function(ply, cmd, args)
-		if ((ply.NextRadioCommand or -math.huge) > CurTime()) then
+		if ((ply.NextRadioCommand or -math.huge) > CurTime() or not ply:Alive()) then
 			return
 		end
 		local str = args[1]
@@ -44,7 +44,7 @@ else
 		if (ttt.QuickChat[str]) then
 			RunConsoleCommand("_ttt_radio_send", str)
 			ply.NextRadioCommand = CurTime() + 1
-		elseif ((ply.NextRadioCommand or -math.huge) <= CurTime()) then
+		elseif ((ply.NextRadioCommand or -math.huge) <= CurTime() and LocalPlayer():Alive()) then
 			if (IsValid(ttt.radio_menu)) then
 				ttt.radio_menu:Remove()
 				return
