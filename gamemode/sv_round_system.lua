@@ -299,6 +299,8 @@ function GM:TTTBeginRound()
 	end
 end
 
+util.AddNetworkString "ttt_endround"
+
 function GM:TTTRoundEnd(winning_team, winners)
 	local winner_names = {}
 	local winner_ents  = {}
@@ -308,9 +310,13 @@ function GM:TTTRoundEnd(winning_team, winners)
 		table.insert(winner_ents, ply.Player)
 	end
 
-	for _, ply in pairs(player.GetAll()) do
-		ply:ChatPrint("Round is over, "..winning_team.." has won with players "..table.concat(winner_names, ", "))
-	end
+	net.Start "ttt_endround"
+		net.WriteString(winning_team)
+		net.WriteUInt(#winner_names, 8)
+		for i = 1, #winner_names do
+			net.WriteString(winner_names[i])
+		end
+	net.Broadcast()
 
 	round.SetState(ttt.ROUNDSTATE_ENDED, ttt_posttime_seconds:GetFloat()):_then(round.Prepare)
 end

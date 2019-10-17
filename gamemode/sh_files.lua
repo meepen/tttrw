@@ -19,6 +19,7 @@ AddCSLuaFile();
 	Client = {
 		"cl_hud_helpers.lua",
 		"vgui/ttt_skin.lua",
+		"vgui/ttt_centered_wrap.lua",
 		"vgui/ttt_curved_panel.lua",
 		"vgui/ttt_hud_customizable.lua",
 		"vgui/ttt_close_button.lua",
@@ -32,6 +33,7 @@ AddCSLuaFile();
 		"vgui/ttt_radio.lua",
 		"vgui/ttt_settings.lua",
 		"vgui/ttt_bug_report.lua",
+		"vgui/ttt_endround.lua",
 		"cl_hud.lua",
 		"cl_scoreboard.lua",
 		"cl_hitmarkers.lua",
