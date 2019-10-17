@@ -149,7 +149,7 @@ end
 
 function GM:TTTPrepareRoles(Team, Role)
 	Team "innocent":SetColor(56, 172, 87) :SetDeathIcon "materials/tttrw/roles/innocent.png"
-	Team "traitor":SeenBy {"traitor"}:SetColor(Color(240, 20, 20)):TeamChatSeenBy "traitor"
+	Team "traitor":SeenBy {"traitor"}:SetColor(Color(175, 47, 36)):TeamChatSeenBy "traitor"
 		:SetVoiceChannel "traitor" :SetEvil(true) :SetCanUseBuyMenu(true) :SetDeathIcon "materials/tttrw/tbutton.png"
 		:SetModifyTicketsFunc(function(tickets)
 			return 1
