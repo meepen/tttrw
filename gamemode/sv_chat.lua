@@ -40,7 +40,7 @@ end
 local function GetPlayersWhoHear(ply)
     local plys = player.GetAll()
     for i = #plys, 1, -1 do
-        if (hook.Run("PlayerCnaHearPlayersVoice", plys[i], ply)) then
+        if (hook.Run("PlayerCanHearPlayersVoice", plys[i], ply)) then
             table.remove(plys, i)
         end
     end
