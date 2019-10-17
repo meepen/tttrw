@@ -69,7 +69,8 @@ function GM:TTTDrawDamagePosition()
 end
 
 function GM:entity_killed(info)
-	if (LocalPlayer():UserID() == info.entindex_inflictor) then
+	local pl = LocalPlayer()
+	if (IsValid(pl) and pl:UserID() == info.entindex_inflictor) then
 		self.Damages = {}
 	end
 end
