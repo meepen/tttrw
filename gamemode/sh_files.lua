@@ -34,6 +34,7 @@ AddCSLuaFile();
 		"vgui/ttt_settings.lua",
 		"vgui/ttt_bug_report.lua",
 		"vgui/ttt_endround.lua",
+		"vgui/ttt_voice.lua",
 		"cl_hud.lua",
 		"cl_scoreboard.lua",
 		"cl_hitmarkers.lua",

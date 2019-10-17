@@ -37,6 +37,37 @@ function GM:PlayerCanSeePlayersChat(text, team, listener, speaker)
     return true
 end
 
+local function GetPlayersWhoHear(ply)
+    local plys = player.GetAll()
+    for i = #plys, 1, -1 do
+        if (hook.Run("PlayerCnaHearPlayersVoice", plys[i], ply)) then
+            table.remove(plys, i)
+        end
+    end
+
+    return plys
+end
+
+util.AddNetworkString "ttt_voice"
+
+function GM:VoiceKey(ply, key)
+    if (key == IN_SPEED) then
+        net.Start "ttt_voice"
+            net.WriteBool(true)
+            net.WriteEntity(ply)
+        net.Send(GetPlayersWhoHear(ply))
+    end
+end
+
+function GM:KeyRelease(ply, key)
+    if (key == IN_SPEED) then
+        net.Start "ttt_voice"
+            net.WriteBool(false)
+            net.WriteEntity(ply)
+        net.Send(GetPlayersWhoHear(ply))
+    end
+end
+
 function GM:PlayerCanHearPlayersVoice(hear, talk)
     if (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
         return true, false
