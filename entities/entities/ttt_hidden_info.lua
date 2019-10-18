@@ -10,7 +10,7 @@ function ENT:NetworkVarNotifyCallback(name, old, new)
 	if (not IsValid(self)) then
 		return
 	end
-	print(name, old, new)
+
 	self.LastValues[name] = new
 	local parent = self:GetParent()
 	-- printf("Player(%i) [%s] %s::%s: %s -> %s (seen as %s)", IsValid(parent) and parent:UserID() or -1, IsValid(parent) and parent:Nick() or "NULL", self:GetClass(), name, old, new, self["Get" .. name](self))

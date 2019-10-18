@@ -255,7 +255,6 @@ function SWEP:SecondaryAttack()
 		end
 
 		self:Remove()
-		debug.Trace()
 	end
 end
 
