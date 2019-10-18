@@ -35,9 +35,13 @@ function PANEL:Paint( w, h )
 		return
 	end
 
-	local col = Color(0, self.ply:VoiceVolume() * 255, 0, 240)
+	local col
 	if (IsValid(self.ply.HiddenState) and not self.ply.HiddenState:IsDormant() and self.ply.VoiceState) then
 		col = self.ply:GetRoleTeamData().Color
+	elseif (not self.ply:Alive()) then
+		col = Color(self.ply:VoiceVolume() * 255, self.ply:VoiceVolume() * 255, 0, 240)
+	else
+		col = Color(0, self.ply:VoiceVolume() * 255, 0, 240)
 	end
 
 	draw.RoundedBox(4, 0, 0, w, h, col)
