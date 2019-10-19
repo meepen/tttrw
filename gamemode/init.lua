@@ -54,6 +54,10 @@ function GM:Drown(ply)
 	end
 end
 
+function GM:PlayerShouldTaunt()
+	return false
+end
+
 function GM:PlayerTakeDamage()
 end
 
