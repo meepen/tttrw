@@ -256,4 +256,42 @@ function SWEP:CalcAllUnpredicted(force)
 	self:CalcFOV()
 end
 
+function SWEP:DrawWorldModel()
+    local hand, offset, rotate
+    local pl = self:GetOwner()
+
+    if IsValid(pl) and pl.SetupBones then
+        pl:SetupBones()
+        pl:InvalidateBoneCache()
+        self:InvalidateBoneCache()
+    end
+
+    if (IsValid(pl) and self.Offset) then
+        local boneIndex = pl:LookupBone "ValveBiped.Bip01_R_Hand"
+
+        if boneIndex then
+            local pos, ang
+
+            local mat = pl:GetBoneMatrix(boneIndex)
+            if mat then
+                pos, ang = mat:GetTranslation(), mat:GetAngles()
+            else
+                pos, ang = pl:GetBonePosition( handBone )
+            end
+
+            pos = pos + ang:Forward() * self.Offset.Pos.Forward + ang:Right() * self.Offset.Pos.Right + ang:Up() * self.Offset.Pos.Up
+            ang:RotateAroundAxis(ang:Up(), self.Offset.Ang.Up)
+            ang:RotateAroundAxis(ang:Right(), self.Offset.Ang.Right)
+            ang:RotateAroundAxis(ang:Forward(), self.Offset.Ang.Forward)
+            self:SetRenderOrigin(pos)
+            self:SetRenderAngles(ang)
+            self:DrawModel()
+        end
+    else
+        self:SetRenderOrigin(nil)
+        self:SetRenderAngles(nil)
+        self:DrawModel()
+    end
+end
+
 concommand.Remove "gmod_undo"
