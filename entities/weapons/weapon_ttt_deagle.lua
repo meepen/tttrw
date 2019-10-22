@@ -24,7 +24,7 @@ SWEP.Bullets = {
 	Spread = Vector(.01, .01, .01)
 }
 
-SWEP.Primary.Damage        = 37
+SWEP.Primary.Damage        = 24
 SWEP.Primary.Delay         = 0.66
 SWEP.Primary.Recoil        = 3.2
 SWEP.Primary.RecoilTiming  = 0.06
@@ -34,7 +34,7 @@ SWEP.Primary.ClipSize      = 8
 SWEP.Primary.DefaultClip   = 16
 SWEP.Primary.Sound         = Sound "Weapon_Deagle.Single"
 
-SWEP.HeadshotMultiplier    = 4.2
+SWEP.HeadshotMultiplier    = 5
 SWEP.DeploySpeed = 1.55
 
 SWEP.AutoSpawnable         = true
