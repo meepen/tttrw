@@ -54,4 +54,17 @@ else
 			ttt.radio_menu:SetActiveTime(CurTime())
 		end
 	end)
+
+	for k in pairs(ttt.QuickChat) do
+		concommand.Add("ttt_radio_" .. k, function()
+			RunConsoleCommand("_ttt_radio_send", k)
+		end)
+	end
+
+	hook.Add("ShowQuickChat", "quickchat", function(ply, pressed)
+		if (pressed) then
+			RunConsoleCommand "ttt_radio"
+		end
+		return true
+	end)
 end

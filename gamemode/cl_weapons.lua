@@ -40,14 +40,18 @@ local hooks = {
 	gm_showhelp = "ShowHelp",
 	gm_showteam = "ShowTeam",
 	gm_showspare2 = "ShowSpare2",
-	gm_showspare1 = "ShowSpare1"
+	gm_showspare1 = "ShowSpare1",
+	zoom = "ShowQuickChat",
+	suitzoom = "ShowQuickChat",
+	["+zoom"] = "ShowQuickChat",
+	["+suitzoom"] = "ShowQuickChat",
 }
 
 function GM:PlayerBindPress(ply, bind, pressed)
 	bind = bind:lower()
 
 	if (hooks[bind]) then
-		return hook.Run(hooks[bind], ply)
+		return hook.Run(hooks[bind], ply, pressed)
 	end
 
 	if (bind:match"^slot%d+$") then
