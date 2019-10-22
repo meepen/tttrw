@@ -67,14 +67,16 @@ function ENT:IsVisibleTo(ply)
 		return true
 	end
 
+	if (not own:Alive() and IsValid(own.DeadState)) then
+		if (own.DeadState:IsVisibleTo(ply)) then
+			return true
+		end
+	end
+
 	local roundstate = ttt.GetRoundState()
 
 	if (roundstate == ttt.ROUNDSTATE_ACTIVE) then
 		return ttt.CanPlayerSeePlayersRole(ply, own)
-	end
-
-	if (not own:Alive() and IsValid(own.DeadState)) then
-		return own.DeadState:IsVisibleTo(ply)
 	end
 
 	return roundstate ~= ttt.ROUNDSTATE_PREPARING
@@ -92,7 +94,6 @@ function ENT:Initialize()
 	end
 
 	self:GetParent().HiddenState = self
-
 end
 
 function ENT:Think()
