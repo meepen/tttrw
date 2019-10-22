@@ -255,3 +255,5 @@ function SWEP:CalcAllUnpredicted(force)
 	self:CalcViewModel()
 	self:CalcFOV()
 end
+
+concommand.Remove "gmod_undo"

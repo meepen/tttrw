@@ -21,7 +21,7 @@ function ENT:AcceptInput(name, activator, caller, data)
 		if (IsValid(activator) and activator:IsPlayer()) then
 			for _, ent in pairs(ents.FindByName(self.Damager) or {}) do
 				if (IsValid(ent) and ent.SetDamageOwner) then
-					printf("Setting damageowner on %s <%s> to %s", ent:GetName(), ent:GetClass(), activator:Nick())
+					-- printf("Setting damageowner on %s <%s> to %s", ent:GetName(), ent:GetClass(), activator:Nick())
 
 					ent:SetDamageOwner(activator)
 

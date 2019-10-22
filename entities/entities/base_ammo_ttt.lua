@@ -35,7 +35,9 @@ function ENT:Initialize()
 
 	self.AmmoEntMax = self.AmmoAmount
 
-	self:PhysWake()
+	if (SERVER) then
+		self:PhysWake()
+	end
 end
 
 -- Pseudo-clone of SDK's UTIL_ItemCanBeTouchedByPlayer
