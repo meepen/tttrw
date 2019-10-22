@@ -9,11 +9,13 @@ local ttt_karma_kill_penalty = CreateConVar("ttt_karma_kill_penalty", "15")
 local ttt_karma_strict = CreateConVar("ttt_karma_strict", "1")
 local ttt_karma_traitorkill_bonus = CreateConVar("ttt_karma_traitorkill_bonus", "40")
 
+AccessorFunc(FindMetaTable "Player", "m_Karma", "RealKarma")
+
 local expdecay = math.ExponentialDecay
 local function DecayedMultiplier(ply)
 	local max   = ttt_karma_max:GetInt()
 	local start = ttt_karma_starting:GetInt()
-	local k     = ply:GetKarma()
+	local k     = ply:GetRealKarma()
 
 	if (ttt_karma_clean_half:GetInt() <= 0 or k < start) then
 		return 1
@@ -34,13 +36,13 @@ end
 
 local function GiveReward(ply, reward)
    reward = DecayedMultiplier(ply) * reward
-   ply:SetKarma(math.min(ply:GetKarma() + reward, ttt_karma_max:GetFloat()))
+   ply:SetRealKarma(math.min(ply:GetRealKarma() + reward, ttt_karma_max:GetFloat()))
    return reward
 end
 
 local function GivePenalty(ply, penalty, vic)
 	if (not hook.Run("TTTKarmaGivePenalty", ply, penalty, vic)) then
-		ply:SetKarma(math.max(ply:GetKarma() - penalty, 0))
+		ply:SetRealKarma(math.max(ply:GetRealKarma() - penalty, 0))
 	end
 end
 
@@ -76,6 +78,7 @@ function GM:Karma_TTTEndRound()
 		end
 		local bonus = healbonus -- + (ply:GetCleanRound() and cleanbonus or 0)
 		GiveReward(ply, bonus)
+		ply:SetKarma(ply:GetRealKarma())
 	end
 end
 
@@ -89,6 +92,8 @@ function GM:Karma_PlayerInitialSpawn(ply)
 	else
 		ply:SetKarma(val)
 	end
+
+	ply:SetRealKarma(ply:GetKarma())
 end
 
 function GM:ShutDown()
@@ -99,13 +104,13 @@ function GM:ShutDown()
 
 	sql.Begin()
 	for _, ply in pairs(player.GetAll()) do
-		sql.Query("INSERT OR REPLACE INTO tttrw_karma (steamid, karma) VALUES (" .. sql.SQLStr(ply:SteamID()) .. ", " .. ply:GetKarma() .. ")")
+		sql.Query("INSERT OR REPLACE INTO tttrw_karma (steamid, karma) VALUES (" .. sql.SQLStr(ply:SteamID()) .. ", " .. ply:GetRealKarma() .. ")")
 	end
 	sql.Commit()
 end
 
 function GM:Karma_PlayerDisconnected(ply)
-	sql.Query("INSERT OR REPLACE INTO tttrw_karma (steamid, karma) VALUES (" .. sql.SQLStr(ply:SteamID()) .. ", " .. ply:GetKarma() .. ")")
+	sql.Query("INSERT OR REPLACE INTO tttrw_karma (steamid, karma) VALUES (" .. sql.SQLStr(ply:SteamID()) .. ", " .. ply:GetRealKarma() .. ")")
 end
 
 function GM:Karma_DoPlayerDeath(ply, atk, dmg)
@@ -118,7 +123,7 @@ function GM:Karma_DoPlayerDeath(ply, atk, dmg)
 	end
 
 	if (atk:GetRoleTeam() == ply:GetRoleTeam()) then
-		local penalty = GetKillPenalty(ply:GetKarma())
+		local penalty = GetKillPenalty(ply:GetRealKarma())
   
 		GivePenalty(atk, penalty, ply)
 
@@ -148,7 +153,7 @@ function GM:Karma_EntityTakeDamage(vic, dmg)
 
 	local hurt_amount = math.min(vic:Health(), dmg:GetDamage())
 	if (atk:GetRoleTeam() == vic:GetRoleTeam()) then
-		local penalty = GetKillPenalty(vic:GetKarma())
+		local penalty = GetKillPenalty(vic:GetRealKarma())
   
 		GivePenalty(atk, penalty, vic)
 
@@ -181,8 +186,8 @@ function GM:Karma_ScalePlayerDamage(ply, hg, dmg)
  
 	-- any karma at 1000 or over guarantees a df of 1, only when it's lower do we
 	-- need the penalty curve
-	if (atk:GetKarma() < 1000) then
-		local k = atk:GetKarma() - 1000
+	if (atk:GetRealKarma() < 1000) then
+		local k = atk:GetRealKarma() - 1000
 		if (ttt_karma_strict:GetBool()) then
 			-- this penalty curve sinks more quickly, less parabolic
 			df = 1 + (0.0007 * k) + (-0.000002 * (k ^ 2))

@@ -32,6 +32,10 @@ function PANEL:SetCurve(curve)
 end
 
 function PANEL:RebuildMesh(w, h)
+	if (not w) then
+		w, h = self:GetSize()
+	end
+
 	if (IsValid(self.Mesh)) then
 		self.Mesh:Remove()
 		self.Mesh = nil
@@ -39,7 +43,7 @@ function PANEL:RebuildMesh(w, h)
 
 	local x, y = self:LocalToScreen(0, 0)
 
-	self.Mesh = hud.BuildCurvedMesh(self:GetCurve() or 0, x, y, self:GetWide(), self:GetTall(), self:GetNoCurveTopLeft(), self:GetNoCurveTopRight(), self:GetNoCurveBottomLeft(), self:GetNoCurveBottomRight(), self:GetColor() or color_white)
+	self.Mesh = hud.BuildCurvedMesh(self:GetCurve() or 0, x, y, w, h, self:GetNoCurveTopLeft(), self:GetNoCurveTopRight(), self:GetNoCurveBottomLeft(), self:GetNoCurveBottomRight(), self:GetColor() or color_white)
 end
 
 local memoize = {}
@@ -106,7 +110,7 @@ function PANEL:Paint(w, h)
 
 	local x, y = self:LocalToScreen(0, 0)
 	if (self._OLDW ~= w or self._OLDH ~= h or self._OLDX ~= x or self._OLDY ~= y) then
-		self:RebuildMesh()
+		self:RebuildMesh(w, h)
 		self._OLDW = w
 		self._OLDH = h
 		self._OLDX = x
