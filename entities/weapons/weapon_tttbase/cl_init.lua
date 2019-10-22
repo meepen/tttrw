@@ -137,8 +137,8 @@ end
 local vector_lower = Vector(0, 0, 2)
 
 function SWEP:GetViewModelPosition(pos, ang)
-	if (not self.Ironsights or self.CurIronsights == nil) then
-		return
+	if (self.NoSights or not self.Ironsights or self.CurIronsights == nil) then
+		return pos, ang
 	end
 
 	local is_ironsights = self.CurIronsights

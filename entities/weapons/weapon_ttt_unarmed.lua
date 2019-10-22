@@ -40,10 +40,6 @@ function SWEP:OnDrop()
 	self:Remove()
 end
 
-function SWEP:ShouldDropOnDie()
-	return false
-end
-
 function SWEP:PrimaryAttack()
 end
 

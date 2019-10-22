@@ -12,6 +12,7 @@ function PLAYER:Loadout()
 
 	ply:Give "weapon_ttt_crowbar"
 	ply:Give "weapon_ttt_unarmed"
+	ply:Give "weapon_ttt_magneto"
 
 	hook.Run("TTTPlayerGiveWeapons", ply)
 end
