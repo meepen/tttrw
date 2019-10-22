@@ -76,7 +76,6 @@ if (CLIENT) then
 	local time_color = Color(255, 0, 0, 230)
 
 	function ENT:Paint()
-		print(self:IsDormant())
 		if (self:IsDormant()) then
 			return
 		end
