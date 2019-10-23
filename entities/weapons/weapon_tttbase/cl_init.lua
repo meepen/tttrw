@@ -276,7 +276,7 @@ function SWEP:DrawWorldModel()
             if mat then
                 pos, ang = mat:GetTranslation(), mat:GetAngles()
             else
-                pos, ang = pl:GetBonePosition( handBone )
+                pos, ang = pl:GetBonePosition(handBone)
             end
 
             pos = pos + ang:Forward() * self.Offset.Pos.Forward + ang:Right() * self.Offset.Pos.Right + ang:Up() * self.Offset.Pos.Up
