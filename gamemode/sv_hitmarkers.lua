@@ -14,7 +14,7 @@ function GM:CreateHitmarkers(vic, dmg)
 
     local hitmarker = ents.Create "ttt_damagenumber"
     hitmarker:SetOwner(atk)
-    hitmarker:SetDamage(dmg:GetDamage())
+    hitmarker:SetDamage(math.Round(dmg:GetDamage()))
     hitmarker:SetDamageType(dmg:GetDamageType())
     hitmarker:SetPos(dmg:GetDamagePosition())
     hitmarker:SetHitGroup(dmg:GetDamageCustom())
