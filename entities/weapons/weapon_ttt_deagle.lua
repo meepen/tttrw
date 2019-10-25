@@ -1,7 +1,6 @@
 AddCSLuaFile()
 
 SWEP.HoldType           = "pistol"
-
 SWEP.PrintName          = "Deagle"
 SWEP.Slot               = 1
 SWEP.TTTCompat = {
