@@ -119,7 +119,14 @@ function PANEL:Paint(w, h)
 
 	self:Scissor()
 	render.SetColorMaterial()
-	self.Mesh:Draw()
+	if (true) then
+		hud.StartStenciledMesh(self.Mesh, 0, 0)
+		surface.SetDrawColor(self.Color or color_white)
+		surface.DrawRect(0, 0, self:GetSize())
+		hud.EndStenciledMesh()
+	else
+		self.Mesh:Draw()
+	end
 	render.SetScissorRect(0, 0, 0, 0, false)
 end
 
