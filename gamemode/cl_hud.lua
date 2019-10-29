@@ -29,8 +29,6 @@ function ttt.GetHUDTarget()
 	return ply
 end
 
-white_text = Color(230, 230, 230, 255)
-
 local LastTarget, LastTime
 
 function GM:HUDDrawTargetID()

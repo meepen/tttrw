@@ -63,7 +63,7 @@ function GM:ShouldChangeMap()
         return true, "Server lua has been updated."
     end
 
-    return false
+    return hook.Run "TTTShouldChangeMap"
 end
 
 function GM:ChangeMap(reason)

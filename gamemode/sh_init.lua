@@ -12,6 +12,8 @@ ttt = ttt or GM or {}
 
 PLAYER = FindMetaTable "Player"
 
+white_text = Color(230, 230, 230, 255)
+
 function PLAYER:IsActive()
 	return self:Alive()
 end
