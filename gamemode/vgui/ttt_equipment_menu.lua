@@ -525,6 +525,10 @@ end
 vgui.Register("ttt_equipment_menu", PANEL, "EditablePanel")
 
 function GM:OnContextMenuOpen()
+	if (hook.Run "ShowEndRoundScreen") then
+		return
+	end
+
 	if (not LocalPlayer():GetRoleData().CanUseBuyMenu or ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE or not LocalPlayer():Alive()) then
 		return
 	end
