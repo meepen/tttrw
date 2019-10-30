@@ -109,10 +109,7 @@ local PANEL = {}
 
 function PANEL:Init()
 	self.Index = 1
-	self.Header = self:Add "ttt_settings_header_stuff"
-	self.Header:DockMargin(0, Padding * 2, 0, 0)
-	self.Header:Dock(TOP)
-	self.Header:SetZPos(0)
+	self:Dock(TOP)
 end
 
 function PANEL:SetText(t)
@@ -133,6 +130,8 @@ function PANEL:AddCheckBox(desc, convar)
 	surface.SetFont(lbl.Label:GetFont())
 	local _, h = surface.GetTextSize "A"
 	lbl:SetTall(h + Padding / 2)
+
+	self.Last = lbl
 end
 
 function PANEL:AddTextEntry(text, convar, v)
@@ -165,170 +164,150 @@ function PANEL:AddTextEntry(text, convar, v)
 		text:SetText(v)
 	end
 	text:SetDisabled(not convar)
+
+	self.Last = text
+end
+
+function PANEL:SizeToContents()
+	self:SetTall(select(2, self.Last:GetPos()) + self.Last:GetTall())
 end
 
 vgui.Register("ttt_settings_category", PANEL, "EditablePanel")
 
 local PANEL = {}
-DEFINE_BASECLASS "ttt_curved_panel"
 
 function PANEL:Init()
-    self:SetCurve(6)
-    self:SetColor(ttt_body_normal)
-    self:DockPadding(Padding, Padding, Padding, Padding)
-	self:SetCurveTopLeft(false)
-
-	self.Left = self:Add "ttt_settings_category"
-	self.Left:SetText "Gameplay Settings"
-	self.Left:DockMargin(0, 0, Padding, 0)
-	self.Left:Dock(LEFT)
-	self.Left:SetZPos(1)
-	self.Right = self:Add "ttt_settings_category"
-	self.Right:SetText "Sound Settings"
-	self.Right:Dock(FILL)
-
-	self.CrosshairSettings = self:Add "DButton"
-	self.CrosshairSettings:Dock(BOTTOM)
-	self.CrosshairSettings:SetFont "ttt_settings_settings_text_font"
-	self.CrosshairSettings:SetText "Crosshair Settings Menu"
-	self.CrosshairSettings:SetZPos(0)
-	function self.CrosshairSettings:DoClick()
-		RunConsoleCommand "tttrw_crosshair_menu"
+	local crosshair = self:Add "EditablePanel"
+	crosshair:SetPos(25,0)
+	crosshair:SetSize(200,475)
+	function crosshair:Paint(w, h)
+		ttt.DefaultCrosshair(w / 2, h / 2)
 	end
 
-	self.Index = 1
+	local col = self:Add "DColorMixer"
+	col:SetPos(crosshair:GetWide() - 400 + 450,50)
+	col:SetSize(300,150)
+	col:SetPalette(true)
+	col:SetWangs(true)
+	col:SetAlphaBar(false)
+	col:SetColor(Color(GetConVar("tttrw_crosshair_color_r"):GetInt(),GetConVar("tttrw_crosshair_color_g"):GetInt(),GetConVar("tttrw_crosshair_color_b"):GetInt()))
+	col:SetConVarR("tttrw_crosshair_color_r")
+	col:SetConVarG("tttrw_crosshair_color_g")
+	col:SetConVarB("tttrw_crosshair_color_b")
 
-	self.Left:AddCheckBox("Aim Down Sights Toggle", "tttrw_toggle_ads")
-	self.Left:AddCheckBox("Outline players roles", "tttrw_outline_roles")
-	self.Left:AddCheckBox("Automatically Bunny hop", "ttt_bhop_cl")
-	self.Left:AddCheckBox("Lowered Ironsights", "ttt_ironsights_lowered")
-	self.Left:AddCheckBox("Enable annoying HL2 crosshair", "hud_quickinfo")
-	self.Left:AddCheckBox("Enable Multicore Rendering (gives fps)", "tttrw_mcore")
-	self.Right:AddTextEntry("Where to put sounds (create if not exist)", nil, util.RelativePathToFull ".":sub(1, -2) .. "sound")
-	self.Right:AddTextEntry("Hitmarker", "tttrw_hitmarker_sound")
-	self.Right:AddTextEntry("Hitmarker (Headshot)", "tttrw_hitmarker_sound_hs")
-	self.Right:AddTextEntry("DNA Beep", "tttrw_dna_beep_sound")
+	local thick = self:Add "DNumSlider"
+	thick:SetPos(crosshair:GetWide() - 400 + 450,200)
+	thick:SetSize(300,50)
+	thick:SetText("Thickness")
+	thick:SetMin(0)
+	thick:SetMax(30)
+	thick:SetDecimals(0)
+	thick:SetConVar("tttrw_crosshair_thickness")
+
+	local len = self:Add "DNumSlider"
+	len:SetPos(crosshair:GetWide() - 400 + 450,240)
+	len:SetSize(300,50)
+	len:SetText("Length")
+	len:SetMin(0)
+	len:SetMax(100)
+	len:SetDecimals(0)
+	len:SetConVar("tttrw_crosshair_length")
+
+	local gap = self:Add "DNumSlider"
+	gap:SetPos(crosshair:GetWide() - 400 + 450,280)
+	gap:SetSize(300,50)
+	gap:SetText("Gap")
+	gap:SetMin(0)
+	gap:SetMax(50)
+	gap:SetDecimals(0)
+	gap:SetConVar("tttrw_crosshair_gap")
+
+	local op = self:Add "DNumSlider"
+	op:SetPos(crosshair:GetWide() - 400 + 450,320)
+	op:SetSize(300,50)
+	op:SetText("Opacity")
+	op:SetMin(0)
+	op:SetMax(255)
+	op:SetDecimals(0)
+	op:SetConVar("tttrw_crosshair_opacity")
+
+	local outop = self:Add "DNumSlider"
+	outop:SetPos(crosshair:GetWide() - 400 + 450,360)
+	outop:SetSize(300,50)
+	outop:SetText("Outline Opacity")
+	outop:SetMin(0)
+	outop:SetMax(255)
+	outop:SetDecimals(0)
+	outop:SetConVar("tttrw_crosshair_outline_opacity")
+
+	local dot = self:Add "DNumSlider"
+	dot:SetPos(crosshair:GetWide() - 400 + 450,400)
+	dot:SetSize(300,50)
+	dot:SetText("Dot Size")
+	dot:SetMin(0)
+	dot:SetMax(20)
+	dot:SetDecimals(0)
+	dot:SetConVar("tttrw_crosshair_dot_size")
+
+	local dotop = self:Add "DNumSlider"
+	dotop:SetPos(crosshair:GetWide() - 400 + 450,440)
+	dotop:SetSize(300,50)
+	dotop:SetText("Dot Opacity")
+	dotop:SetMin(0)
+	dotop:SetMax(255)
+	dotop:SetDecimals(0)
+	dotop:SetConVar("tttrw_crosshair_dot_opacity")
+
+	local reset = self:Add "DButton"
+	reset:SetPos(75,425)
+	reset:SetSize(100,50)
+	reset:SetText("Reset")
+	function reset:DoClick()
+		col:SetColor(Color(232,80,94))
+		thick:SetValue(2)
+		len:SetValue(7)
+		gap:SetValue(3)
+		op:SetValue(255)
+		outop:SetValue(255)
+		dot:SetValue(0)
+		dotop:SetValue(255)
+	end
+
+	self:SetSize(800, 500)
 end
 
-function PANEL:PerformLayout(w, h)
-	self.Left:SetWide(w / 2 - Padding / 2)
-end
-
-vgui.Register("ttt_settings_body", PANEL, "ttt_curved_panel")
-
-local PANEL = {}
-
-function PANEL:Init()
-    self.Tabs = {}
-end
-
-function PANEL:AddTab(text, class)
-    local pnl = self:Add(class)
-    pnl:SetZPos(0x7fff - #self.Tabs)
-    pnl:Dock(LEFT)
-    pnl:SetText(text)
-
-    table.insert(self.Tabs, pnl)
-
-    return pnl
-end
-
-vgui.Register("ttt_settings_tab_holder", PANEL, "EditablePanel")
-
-local PANEL = {}
-
-DEFINE_BASECLASS "ttt_curved_panel"
-
-function PANEL:Init()
-    self.Text = self:Add "DLabel"
-    self:SetFont "ttt_settings_header_font"
-    self:SetCurve(3)
-    self:SetColor(ttt_body_normal)
-end
-
-function PANEL:PerformLayout(w, h)
-    self.Text:SizeToContents()
-    self.Text:SetPos(Padding / 2, h / 2 - self.Text:GetTall() / 2)
-end
-
-function PANEL:SetFont(font)
-    self.Text:SetFont(font)
-end
-
-function PANEL:SetText(t)
-    self.Text:SetText(t)
-    self.Text:SizeToContents()
-    self.Text:SetPos(Padding / 2, self:GetTall() / 2 - self.Text:GetTall() / 2)
-end
-
-vgui.Register("ttt_settings_header", PANEL, "ttt_curved_panel")
-
-
-local PANEL = {}
-
-DEFINE_BASECLASS "ttt_curved_panel"
-
-function PANEL:Init()
-    self.Text = self:Add "DLabel"
-    self.Text:SetFont "ttt_settings_tab_font"
-    self:SetCurve(5)
-    self:SetColor(ttt_body_normal)
-    self:SetCurveBottomLeft(false)
-    self:SetCurveBottomRight(false)
-end
-
-function PANEL:PerformLayout(w, h)
-    self.Text:SizeToContents()
-    self.Text:SetPos(self:GetWide() / 2 - self.Text:GetWide() / 2, self:GetTall() - self.Text:GetTall())
-end
-
-function PANEL:SetText(t)
-    self.Text:SetText(t)
-    self.Text:SizeToContents()
-    self:SetWide(self.Text:GetWide() + Padding * 2)
-    self.Text:SetPos(self:GetWide() / 2 - self.Text:GetWide() / 2, self:GetTall() - self.Text:GetTall())
-end
-
-vgui.Register("ttt_settings_tab", PANEL, "ttt_curved_panel")
-
-local PANEL = {}
-
-function PANEL:Init()
-    self.Close = self:Add "ttt_close_button"
-    self.Close:SetZPos(1)
-    self.Close:SetColor(Color(37, 173, 125))
-
-    self.Inner = self:Add "ttt_settings_body"
-    self.Inner:Dock(FILL)
-    self.Tabs = self:Add "ttt_settings_tab_holder"
-	surface.SetFont "ttt_settings_tab_font"
-	self.Tabs:SetTall(select(2, surface.GetTextSize "a") + 4)
-    self.Tabs:Dock(TOP)
-    self.MainTab = self.Tabs:AddTab("Main Settings", "ttt_settings_tab")
-    self:DockPadding(Padding * 5 / 6, Padding, Padding * 5 / 6, Padding * 5 / 6)
-
-    self:SetColor(Color(13, 12, 13, 240))
-	self:SetCurve(10)
-	self:SetSize(ScrW() / 2, ScrH() / 2)
-	self:Center()
-	self:SetSkin "tttrw"
-end
-
-function PANEL:PerformLayout(w, h)
-    local _, endy = self:ScreenToLocal(self.Tabs:LocalToScreen(0, self.Tabs:GetTall()))
-    local rounded2 = math.Round(endy / 2)
-    self.Close:SetSize(rounded2, rounded2)
-    self.Close:SetPos(w - self.Close:GetWide() - Padding * 5 / 6, rounded2 / 2)
-end
-
-vgui.Register("ttt_settings", PANEL, "ttt_curved_panel")
+vgui.Register("tttrw_crosshair_customize", PANEL, "EditablePanel")
 
 function GM:ShowHelp()
 	if (IsValid(ttt.settings)) then
 		ttt.settings:Remove()
 	else
-		ttt.settings = vgui.Create "ttt_settings"
+		ttt.settings = vgui.Create "tttrw_base"
+		local gameplay = vgui.Create "ttt_settings_category"
+
+		gameplay:AddCheckBox("Aim Down Sights Toggle", "tttrw_toggle_ads")
+		gameplay:AddCheckBox("Outline players roles", "tttrw_outline_roles")
+		gameplay:AddCheckBox("Automatically Bunny hop", "ttt_bhop_cl")
+		gameplay:AddCheckBox("Lowered Ironsights", "ttt_ironsights_lowered")
+		gameplay:AddCheckBox("Enable annoying HL2 crosshair", "hud_quickinfo")
+		gameplay:AddCheckBox("Enable Multicore Rendering (gives fps)", "tttrw_mcore")
+		gameplay:InvalidateLayout(true)
+		gameplay:SizeToContents()
+		ttt.settings:AddTab("Gameplay", gameplay)
+
+		local sound = vgui.Create "ttt_settings_category"
+		sound:AddTextEntry("Where to put sounds (create if not exist)", nil, util.RelativePathToFull ".":sub(1, -2) .. "sound")
+		sound:AddTextEntry("Hitmarker", "tttrw_hitmarker_sound")
+		sound:AddTextEntry("Hitmarker (Headshot)", "tttrw_hitmarker_sound_hs")
+		sound:AddTextEntry("DNA Beep", "tttrw_dna_beep_sound")
+		sound:InvalidateLayout(true)
+		sound:SizeToContents()
+		ttt.settings:AddTab("Sound", sound)
+
+		ttt.settings:AddTab("Crosshair", vgui.Create "tttrw_crosshair_customize")
+
+		ttt.settings:SetSize(640, 400)
+		ttt.settings:Center()
 		ttt.settings:MakePopup()
-		--ttt.settings:SetKeyboardInputEnabled(false)
 	end
 end
