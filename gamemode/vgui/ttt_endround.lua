@@ -97,6 +97,7 @@ function GM:ShowEndRoundScreen()
 	ttt.endround:SetSize(640, 400)
 	ttt.endround:Center()
 	ttt.endround:MakePopup()
+	ttt.endround:SetKeyboardInputEnabled(false)
 	return true
 end
 
