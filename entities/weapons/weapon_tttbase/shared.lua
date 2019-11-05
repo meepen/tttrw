@@ -214,12 +214,53 @@ function SWEP:DoDamageDropoff(tr, dmginfo)
 	local max = self:GetDamageDropoffRangeMax()
 	local min = self:GetDamageMinimumPercent()
 
-
 	if (distance > dropoff) then
 		local pct = math.min(1, (distance - dropoff) / (max - dropoff))
 		dmginfo:ScaleDamage(1 - pct * (1 - min))
 	end
 end
+
+ttt.ModelHitboxes = ttt.ModelHitboxes or {}
+
+local function GetModel(ply)
+	local m = ply:GetModel()
+	local r = ttt.ModelHitboxes[m]
+
+	if (not r) then
+		local f = file.Open(ply:GetModel(), "rb", "GAME")
+
+		f:Seek(176)
+		local offset = f:ReadLong()
+
+		r = {}
+		ttt.ModelHitboxes[m] = r
+
+		for group = 0, ply:GetHitboxSetCount() - 1 do
+			r[group] = {}
+			f:Seek(offset + 12 * group + 8)
+			local new_offset = offset + f:ReadLong()
+			for hitbox = 0, ply:GetHitBoxCount(group) - 1 do
+				f:Seek(new_offset + hitbox * 68 + 4)	
+
+				r[group][hitbox] = {
+					Collide = CreatePhysCollideBox(ply:GetHitBoxBounds(hitbox, group)),
+					Group = f:ReadLong(),
+					Bone = ply:GetHitBoxBone(hitbox, group),
+				}
+			end
+		end
+
+		f:Close()
+	end
+
+	return r
+end
+
+
+local ignore = {
+	[HITGROUP_LEFTARM] = true,
+	[HITGROUP_RIGHTARM] = true,
+}
 
 function SWEP:FireBulletsCallback(tr, dmginfo)
 	local bullet = dmginfo:GetInflictor().Bullets
@@ -231,10 +272,36 @@ function SWEP:FireBulletsCallback(tr, dmginfo)
 	end
 
 	if (IsValid(tr.Entity) and tr.Entity:IsPlayer()) then
-		if (CLIENT) then
-			self.HitboxHit = tr.HitGroup
+		if (CLIENT and IsFirstTimePredicted()) then
+
+			local mdl = GetModel(tr.Entity)
+
+			local hitgroup = tr.HitGroup
+
+			if (mdl) then
+				local d = dmginfo:GetDamage()
+				local best = 0
+			
+				for _, hitbox in pairs(mdl[tr.Entity:GetHitboxSet()]) do
+					local matr = tr.Entity:GetBoneMatrix(hitbox.Bone)
+					local hitpos, norm, frac = hitbox.Collide:TraceBox(matr:GetTranslation(), matr:GetAngles(), tr.StartPos, tr.StartPos + tr.Normal * 10000, vector_origin, vector_origin)
+					if (hitpos and (ignore[tr.HitGroup] or hitpos:Distance(tr.HitPos) < 7)) then
+						dmginfo:SetDamage(d)
+						self:DoDamageDropoff(tr, dmginfo)
+						self:ScaleDamage(hitbox.Group, dmginfo)
+
+						if (dmginfo:GetDamage() > best) then
+							best, hitgroup = dmginfo:GetDamage(), hitbox.Group
+						end
+					end
+				end
+
+				dmginfo:SetDamage(d)
+			end
+
+			self.HitboxHit = hitgroup
 			self.EntityHit = tr.Entity
-		else
+		elseif (SERVER) then
 			dmginfo:SetDamageCustom(tr.Entity:LastHitGroup())
 		end
 		if (self.Bullets.Num == 1) then
