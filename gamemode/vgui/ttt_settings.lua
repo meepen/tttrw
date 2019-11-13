@@ -134,7 +134,7 @@ function PANEL:AddCheckBox(desc, convar)
 	self.Last = lbl
 end
 
-function PANEL:AddTextEntry(text, convar, v)
+function PANEL:AddLabel(text)
 	surface.SetFont "ttt_settings_settings_text_font"
 	local _, h = surface.GetTextSize "A"
 
@@ -148,6 +148,15 @@ function PANEL:AddTextEntry(text, convar, v)
 	lbl:Dock(TOP)
 	lbl:SetTall(h + Padding / 2)
 	lbl:SetContentAlignment(5)
+
+	self.Last = lbl
+
+	return h
+end
+
+
+function PANEL:AddTextEntry(text, convar, v)
+	local h = self:AddLabel(text)
 
 	local text = self:Add "DTextEntry"
 	text:SetZPos(self.Index)
@@ -166,6 +175,35 @@ function PANEL:AddTextEntry(text, convar, v)
 	text:SetDisabled(not convar)
 
 	self.Last = text
+end
+
+function PANEL:AddSlider(text, convar)
+	self:AddLabel(text)
+
+	local lbl = self.Last
+
+	local p = self:Add "DSlider"
+	p:SetSkin "tttrw"
+	p:Dock(TOP)
+	p:SetZPos(self.Index)
+	local cv = GetConVar(convar)
+	lbl:SetText(text .. string.format(" (%.2f)", cv:GetFloat()))
+
+	local old = p.OnCursorMoved
+
+	function p:OnCursorMoved(x, y)
+		old(self, x, y)
+
+		cv:SetFloat(self:GetSlideX() * (cv:GetMax() - cv:GetMin()) + cv:GetMin())
+
+		lbl:SetText(text .. string.format(" (%.2f)", cv:GetFloat()))
+	end
+
+	p:SetSlideX((cv:GetFloat() - cv:GetMin()) / (cv:GetMax() - cv:GetMin()))
+
+	self.Index = self.Index + 1
+
+	self.Last = p
 end
 
 function PANEL:SizeToContents()
@@ -309,5 +347,7 @@ function GM:ShowHelp()
 		ttt.settings:SetSize(640, 400)
 		ttt.settings:Center()
 		ttt.settings:MakePopup()
+
+		hook.Run "TTTPopulateSettingsMenu"
 	end
 end

@@ -33,6 +33,16 @@ function SKIN:PaintTextEntry( panel, w, h )
 	panel:DrawTextEntryText(white_text, panel:GetHighlightColor(), white_text)
 end
 
+function SKIN:PaintSlider(panel, w, h)
+	surface.SetDrawColor(Color(12, 13, 12))
+	surface.DrawRect(0, h / 4, w, h / 2)
+end
+
+function SKIN:PaintSliderKnob(panel, w, h)
+	surface.SetDrawColor(white_text)
+	surface.DrawRect(0, 0, w, h)
+end
+
 derma.DefineSkin("tttrw", "TTTRW Customized Default", SKIN)
 
 function GM:ForceDermaSkin()
