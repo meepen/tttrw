@@ -33,8 +33,9 @@ else
 	local lifetime = 8
 	function ttt.Notifications.Add(msg)
 		local p = ttt.NotifyContainer:Add "notify_panel"
-		p:SetText(msg)
 		p:Dock(TOP)
+		p:InvalidateParent(true)
+		p:SetText(msg)
 		p.Start = CurTime()
 		p.End = CurTime() + 3
 	end
@@ -57,9 +58,7 @@ else
 		self:InvalidateLayout(true)
 		self.Text:SetFont "ttt_notifications"
 		self.Text:SetText(t)
-		self.Text:InvalidateLayout(true)
 		self:SetTall(self.Text:GetTall() + 14)
 	end
 	vgui.Register("notify_panel", PANEL, "ttt_curved_panel")
-	
 end
