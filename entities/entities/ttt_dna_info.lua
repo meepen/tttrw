@@ -48,7 +48,7 @@ function ENT:Think()
 end
 
 function ENT:UpdateTransmitState()
-	return TRANSMIT_PVS
+	return TRANSMIT_ALWAYS
 end
 
 function ENT:GetImagePath()

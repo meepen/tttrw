@@ -11,23 +11,15 @@ function ENT:NetworkVarNotifyCallback(name, old, new)
 		return
 	end
 
-	self.LastValues[name] = new
 	local parent = self:GetParent()
 	-- printf("Player(%i) [%s] %s::%s: %s -> %s (seen as %s)", IsValid(parent) and parent:UserID() or -1, IsValid(parent) and parent:Nick() or "NULL", self:GetClass(), name, old, new, self["Get" .. name](self))
-	timer.Simple(0, function()
-		-- NW2Vars are late??
-		if (not IsValid(self)) then
-			return
-		end
-		hook.Run("OnPlayer"..name.."Change", self:GetParent(), old, new)
-	end)
+	hook.Run("OnPlayer"..name.."Change", self:GetParent(), old, new)
 end
 
 function ENT:SetupDataTables()
 	local vars = {}
 	hook.Run("TTTGetHiddenPlayerVariables", vars)
 	self.Vars = vars
-	self.LastValues = {}
 
 	local types = {}
 
@@ -39,23 +31,10 @@ function ENT:SetupDataTables()
 
 		-- printf("Registering variable %s (type %s)", var.Name, var.Type)
 		self:NetworkVar(var.Type, types[var.Type], var.Name)
+		self:NetworkVarNotify(var.Name, self.NetworkVarNotifyCallback)
 		if (SERVER and var.Default) then
 			self["Set"..var.Name](self, var.Default)
 		end
-
-		self.LastValues[var.Name] = var.Default
-
-		local setter = self["Set" .. var.Name]
-
-		self["Set" .. var.Name] = function(self, val)
-			if (self.LastValues[var.Name] ~= val) then
-				self:NetworkVarNotifyCallback(var.Name, self.LastValues[var.Name], val)
-			end
-
-			setter(self, val)
-		end
-
-		-- TODO(meep): fix with gmod update
 
 		types[var.Type] = types[var.Type] + 1
 	end
@@ -94,26 +73,6 @@ function ENT:Initialize()
 	end
 
 	self:GetParent().HiddenState = self
-end
-
-function ENT:Think()
-	if (not CLIENT) then
-		return
-	end
-
-	self:NextThink(CurTime() + 0.05)
-	if (CLIENT) then
-		self:SetNextClientThink(CurTime() + 0.05)
-	end
-
-	for _, var in ipairs(self.Vars) do
-		local val = self["Get" .. var.Name](self)
-		if (self.LastValues[var.Name] ~= val) then
-			self:NetworkVarNotifyCallback(var.Name, self.LastValues[var.Name], val)
-		end
-	end
-
-	return true
 end
 
 hook.Add("Initialize", "InitializeHiddenPlayerVariables", function()
