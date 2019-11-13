@@ -128,26 +128,41 @@ function GM:Move(ply, mv)
 	self:PreventCrouchJump(ply, mv)
 end
 
-if (SERVER) then
-	function GM:GetFallDamage(ply, speed)
-		local ent = ply:GetGroundEntity()
-		local damage = math.max(0, math.ceil(0.325 * speed - 141.75))
-		if (IsValid(ent) and ent:IsPlayer()) then
-			local dmg = DamageInfo()
-			dmg:SetAttacker(ply)
-			dmg:SetInflictor(ply)
-			dmg:SetDamage(damage)
-			dmg:SetDamageType(DMG_DIRECT)
-			ent:TakeDamageInfo(dmg)
-			return 0
-		end
-		return damage
+local fallsounds = {
+	Sound("player/damage1.wav"),
+	Sound("player/damage2.wav"),
+	Sound("player/damage3.wav")
+};
+
+function GM:OnPlayerHitGround(ply, in_water, on_floater, speed)
+	if (CLIENT or in_water or speed < 450 or not IsValid(ply)) then
+		return
 	end
 
-	--[[
-	concommand.Add("go_upwards", function(ply, cmd, arg)
-		ply:SetHealth(1000)
-		ply:SetPos(ply:GetPos() + Vector(0, 0, arg[1]))
-	end)
-	]]
+	-- Everything over a threshold hurts you, rising exponentially with speed
+	local damage = math.pow(0.05 * (speed - 420), 1.75)
+
+	-- I don't know exactly when on_floater is true, but it's probably when
+	-- landing on something that is in water.
+	if on_floater then damage = damage / 2 end
+
+	if math.floor(damage) > 0 then
+		local dmg = DamageInfo()
+		dmg:SetDamageType(DMG_FALL)
+		dmg:SetAttacker(game.GetWorld())
+		dmg:SetInflictor(game.GetWorld())
+		dmg:SetDamageForce(Vector(0,0,1))
+		dmg:SetDamage(damage)
+
+		ply:TakeDamageInfo(dmg)
+
+		-- play CS:S fall sound if we got somewhat significant damage
+		if damage > 5 then
+			sound.Play(table.Random(fallsounds), ply:GetShootPos(), 55 + math.Clamp(damage, 0, 50), 100)
+		end
+	end
+end
+
+function GM:GetFallDamage(ply, speed)
+	return 0
 end

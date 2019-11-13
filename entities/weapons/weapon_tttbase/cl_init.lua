@@ -197,7 +197,7 @@ function SWEP:GetCurrentUnpredictedFOVMultiplier()
 end
 
 function SWEP:TranslateFOV(fov)
-	return fov * self:GetCurrentUnpredictedFOVMultiplier()
+	return (hook.Run("TTTGetFOV", fov) or fov) * self:GetCurrentUnpredictedFOVMultiplier()
 end
 
 local quat_zero = Quaternion()
