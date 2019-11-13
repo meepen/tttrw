@@ -128,3 +128,22 @@ function GM:PostDrawViewModel(vm, ply, weapon)
 		end
 	end
 end
+
+function GM:PlayerSetHandsModel(ply, ent)
+	print(ply:GetActiveWeapon().NoPlayerModelHands and "models/player/phoenix.mdl" or ply:GetModel())
+	local simplemodel = player_manager.TranslateToPlayerModelName(ply:GetActiveWeapon().NoPlayerModelHands and "models/player/phoenix.mdl" or ply:GetModel())
+	local info = player_manager.TranslatePlayerHands(simplemodel)
+	if info then
+		ent:SetModel(info.model)
+		ent:SetSkin(info.skin)
+		ent:SetBodyGroups(info.body)
+	end
+end
+
+function GM:OnViewModelChanged(vm, old, new)
+	local ply = vm:GetOwner()
+	if (not IsValid(ply)) then
+		return
+	end
+	hook.Run("PlayerSetHandsModel", ply, ply:GetHands())
+end
