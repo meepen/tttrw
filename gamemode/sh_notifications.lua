@@ -12,7 +12,6 @@ if (SERVER) then
 		net.Send(self)
 	end
 else
-
 	local textheight = math.Round(ScrH() / 80)
 	surface.CreateFont("ttt_notifications", {
 		font = 'Lato',
@@ -20,60 +19,47 @@ else
 		weight = 200,
 	})
 
-	ttt.Notifications.NotificationList =  {}
-
+	if (not IsValid(ttt.NotifyContainer)) then
+		ttt.NotifyContainer = GetHUDPanel():Add "EditablePanel"
+	end
+	ttt.NotifyContainer:Dock(RIGHT)
 	net.Receive("ttt.Notifications", function()
 		ttt.Notifications.Add(net.ReadString())
 	end)
+	ttt.NotifyContainer:SetWide(textheight * 25)
+
+	ttt.Notifications.NotificationList =  {}
 
 	local lifetime = 8
 	function ttt.Notifications.Add(msg)
-		print(msg)
-		local notif = {}
-		notif.msg = msg
-		notif.birth = RealTime()
-		notif.lifetime = lifetime
-		notif.death = RealTime() + lifetime
-		
-		table.insert(ttt.Notifications.NotificationList, notif)
+		local p = ttt.NotifyContainer:Add "notify_panel"
+		p:SetText(msg)
+		p:Dock(TOP)
+		p.Start = CurTime()
+		p.End = CurTime() + 3
 	end
 
-	local bg_default = Color(0x0B, 0x0C, 0x0B, 0xE0)
-	hook.Add("HUDPaint", "ttt.Notifications.HUDPaint", function()
-		local w, h = textheight * 25, textheight * 1.5
-		local pad = h + 10
-		local x = ScrW() * 0.98 - w
-
-		local to_remove = {}
-
-		for i = #ttt.Notifications.NotificationList, 1, -1 do
-			local notif = ttt.Notifications.NotificationList[i]
-
-			if (notif.death <= RealTime()) then
-				table.insert(to_remove, i)
-			end
+	local PANEL = {}
+	function PANEL:Init()
+		self.Text = self:Add "ttt_centered_wrap"
+		self.Text:Dock(FILL)
+		self:SetCurve(8)
+		self.Text:DockPadding(8, 5, 8, 7)
+		self:DockMargin(0, 0, 0, 6)
+	end
+	function PANEL:Think()
+		self:SetColor(ColorAlpha(Color(12, 13, 12), 100 + 100 * (1 - (CurTime() - self.Start) / (self.End - self.Start))))
+		if (CurTime() > self.End) then
+			self:Remove()
 		end
-
-		for k, notif in pairs(ttt.Notifications.NotificationList) do
-			local y = ScrH() * 0.01 + pad * k
-
-
-			local frac = (RealTime() - notif.birth) / notif.lifetime
-			local alpha = 1
-			if (frac > 0.75) then
-				alpha = 1 - (frac - 0.75) * 4
-			end
-			alpha = Lerp(alpha, 0, 0xE0)
-			local col = ColorAlpha(bg_default, alpha)
-
-			draw.RoundedBox(4, x, y, w, h, col)
-		
-			draw.SimpleText(notif.msg, "ttt_notifications", x + w / 2, y + h / 2 - 1, Color(0xFE, 0xFE, 0xFE, alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		end
-
-		for _, idx in pairs(to_remove) do
-			table.remove(ttt.Notifications.NotificationList, idx)
-		end
-	end)
+	end
+	function PANEL:SetText(t)
+		self:InvalidateLayout(true)
+		self.Text:SetFont "ttt_notifications"
+		self.Text:SetText(t)
+		self.Text:InvalidateLayout(true)
+		self:SetTall(self.Text:GetTall() + 14)
+	end
+	vgui.Register("notify_panel", PANEL, "ttt_curved_panel")
 	
 end
