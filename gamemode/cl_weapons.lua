@@ -141,7 +141,7 @@ end
 
 function GM:OnViewModelChanged(vm, old, new)
 	local ply = vm:GetOwner()
-	if (not IsValid(ply)) then
+	if (not IsValid(ply) or not IsValid(ply:GetHands())) then
 		return
 	end
 	hook.Run("PlayerSetHandsModel", ply, ply:GetHands())
