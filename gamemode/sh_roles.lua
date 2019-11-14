@@ -1,6 +1,6 @@
 local ttt_traitor_max = CreateConVar("ttt_traitor_max", "32", FCVAR_REPLICATED, "The max amount of traitors in a round.")
 local ttt_traitor_pct = CreateConVar("ttt_traitor_pct", "0.25", FCVAR_REPLICATED, "The percent of players that will be traitors.")
-local ttt_detective_pct = CreateConVar("ttt_detective_pct ", "0.13", FCVAR_REPLICATED, "The percent of players that will be detectives.")
+local ttt_detective_pct = CreateConVar("ttt_detective_pct", "0.13", FCVAR_REPLICATED, "The percent of players that will be detectives.")
 local ttt_detective_max = CreateConVar("ttt_detective_max", "32", FCVAR_REPLICATED, "The max amount of detectives in a round.")
 local ttt_detective_min_players = CreateConVar("ttt_detective_min_players", "10", FCVAR_REPLICATED, "The amount of players needed before detectives spawn.")
 
