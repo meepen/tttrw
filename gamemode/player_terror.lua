@@ -28,6 +28,7 @@ function PLAYER:SetupDataTables()
 
 	self.Player:NetworkVar("Bool", 0, "Confirmed")
 	self.Player:NetworkVar("Int", 0, "Karma")
+	self.Player:NetworkVar("Float", 0, "HealthFloat")
 
 	-- TODO(meep): make hook here
 end

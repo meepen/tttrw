@@ -17,11 +17,10 @@ end
 
 function GM:EntityTakeDamage(targ, dmg)
 	self:CreateHitmarkers(targ, dmg)
-	self:DamageLogs_EntityTakeDamage(targ, dmg)
 	self:Karma_EntityTakeDamage(targ, dmg)
 	
 	if (targ:IsPlayer() and hook.Run("PlayerShouldTakeDamage", targ, dmg:GetAttacker())) then
-		GAMEMODE:PlayerTakeDamage(targ, dmg:GetInflictor(), dmg:GetAttacker(), dmg:GetDamage(), dmg)
+		self:PlayerTakeDamage(targ, dmg:GetInflictor(), dmg:GetAttacker(), dmg:GetDamage(), dmg)
 	end
 end
 
@@ -58,7 +57,16 @@ function GM:PlayerShouldTaunt()
 	return false
 end
 
-function GM:PlayerTakeDamage()
+function GM:PlayerTakeDamage(targ, wpn, atk, dmg, dmginfo)
+	local flt = targ:GetHealthFloat()
+	flt = flt - (dmg % 1)
+	if (flt < 0) then
+		flt = flt + 1
+		dmginfo:SetDamage(dmginfo:GetDamage() + 1)
+	end
+
+	targ:SetHealthFloat(flt)
+	self:DamageLogs_PlayerTakeDamage(targ, dmginfo)
 end
 
 function GM:TTTPrepareRound()

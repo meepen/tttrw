@@ -11,13 +11,8 @@ function GM:DamageLogs_FormatPlayer(ply)
     return string.format("%s <%s>", ply:Nick(), ply:GetRole())
 end
 
-function GM:DamageLogs_EntityTakeDamage(vic, dmg)
-    
+function GM:DamageLogs_PlayerTakeDamage(vic, dmg)
     if (not ttt.GetRoundState or ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
-        return
-    end
-
-    if (not vic:IsPlayer()) then
         return
     end
 
