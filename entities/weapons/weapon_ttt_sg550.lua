@@ -25,14 +25,14 @@ SWEP.Bullets = {
 	Spread = Vector(0.009, 0.009, 0),
 }
 
-SWEP.Primary.Damage        = 33
-SWEP.Primary.Delay         = 0.56
+SWEP.Primary.Damage        = 35
+SWEP.Primary.Delay         = 0.5
 SWEP.Primary.Recoil        = 3.7
 SWEP.Primary.RecoilTiming  = 0.085
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "357"
-SWEP.Primary.ClipSize      = 15 --15
-SWEP.Primary.DefaultClip   = 30 --30
+SWEP.Primary.ClipSize      = 16
+SWEP.Primary.DefaultClip   = 30
 SWEP.Primary.Sound         = Sound "Weapon_SG550.Single"
 SWEP.Secondary.Sound       = Sound "Default.Zoom"
 SWEP.HasScope              = true
