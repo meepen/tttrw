@@ -147,7 +147,7 @@ function SWEP:GetViewModelPosition(pos, ang)
 
 	local frac = math.min(1, (self:GetUnpredictedTime() - toggletime) / time)
 
-	local ironpos, ironang = self.Ironsights.Pos - (ttt_lowered:GetBool() and vector_lower or vector_origin), self.Ironsights.Angle
+	local ironpos, ironang = self.Ironsights.Pos - (not self.PreventLowered and ttt_lowered:GetBool() and vector_lower or vector_origin), self.Ironsights.Angle
 
 	local frompos, fromang, topos, toang = vector_origin, vector_origin, ironpos, ironang
 	if (not is_ironsights) then
