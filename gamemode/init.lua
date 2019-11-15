@@ -58,6 +58,7 @@ function GM:PlayerShouldTaunt()
 end
 
 function GM:PlayerTakeDamage(targ, wpn, atk, dmg, dmginfo)
+	self:DamageLogs_PlayerTakeDamage(targ, dmginfo)
 	local flt = targ:GetHealthFloat()
 	flt = flt - (dmg % 1)
 	if (flt < 0) then
@@ -66,7 +67,6 @@ function GM:PlayerTakeDamage(targ, wpn, atk, dmg, dmginfo)
 	end
 
 	targ:SetHealthFloat(flt)
-	self:DamageLogs_PlayerTakeDamage(targ, dmginfo)
 end
 
 function GM:TTTPrepareRound()
