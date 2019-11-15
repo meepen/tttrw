@@ -50,7 +50,7 @@ concommand.Add("list_weapon_info", function()
 			table.insert(damages[dam], name)
 		end
 
-		printf("%s (%s):\n\tDMG: %i * %i\n\tRPM: %i\n\tRCL: %.2f\n\tCLP: %i\n\tSPR: %s\n\tRLD: %.2f\n\tDPL: %.2f", 
+		printf("%s (%s):\n\tDMG: %i * %i\n\tRPM: %i\n\tRCL: %.2f\n\tCLP: %i\n\tSPR: %s\n\tRLD: %.2f\n\tDPL: %.2f\n\tZOM: %.2f", 
 			wep.PrintName, wep.ClassName,
 			wep.Primary.Damage,
 			wep.Bullets.Num,
@@ -59,7 +59,8 @@ concommand.Add("list_weapon_info", function()
 			wep.Primary.ClipSize,
 			VectorString(wep.Bullets.Spread),
 			wep.ReloadSpeed or 1,
-			wep.DeploySpeed or 1
+			wep.DeploySpeed or 1,
+			wep.Ironsights and wep.Ironsights.Zoom or 1
 		)
 
 		for dam, t in SortedPairsByMemberValue(damages, "Damage", true) do
