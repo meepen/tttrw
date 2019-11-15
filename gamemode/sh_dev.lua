@@ -26,6 +26,10 @@ local Hitgroups = {
 	[HITGROUP_GEAR] = "Gear",
 }
 
+local function VectorString(x)
+	return string.format("Vector(%.2f, %.2f)", x.x, x.y)
+end
+
 concommand.Add("list_weapon_info", function()
 	local dmg = DamageInfo()
 	for _, wep in pairs(weapons.GetList()) do
@@ -46,7 +50,17 @@ concommand.Add("list_weapon_info", function()
 			table.insert(damages[dam], name)
 		end
 
-		printf("%s (%s):\n\tDMG: %i * %i\n\tRPM: %i\n\tRCL: %.2f\n\tCLP: %i", wep.PrintName, wep.ClassName, wep.Primary.Damage, wep.Bullets.Num, 60 / wep.Primary.Delay, wep.Primary.Recoil, wep.Primary.ClipSize)
+		printf("%s (%s):\n\tDMG: %i * %i\n\tRPM: %i\n\tRCL: %.2f\n\tCLP: %i\n\tSPR: %s\n\tRLD: %.2f\n\tDPL: %.2f", 
+			wep.PrintName, wep.ClassName,
+			wep.Primary.Damage,
+			wep.Bullets.Num,
+			60 / wep.Primary.Delay,
+			wep.Primary.Recoil,
+			wep.Primary.ClipSize,
+			VectorString(wep.Bullets.Spread),
+			wep.ReloadSpeed or 1,
+			wep.DeploySpeed or 1
+		)
 
 		for dam, t in SortedPairsByMemberValue(damages, "Damage", true) do
 			dam = dam * wep.Bullets.Num
