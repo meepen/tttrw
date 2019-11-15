@@ -453,7 +453,7 @@ function SWEP:DoFireBullets()
 end
 
 function SWEP:GetSpread()
-	return self.Bullets.Spread * (0.25 + (-self:GetMultiplier() + 2) * 0.75) * (0.5 + self:GetCurrentZoom() / 2) ^ 0.7
+	return self.Bullets.Spread * (self.Primary.Ammo:lower() == "buckshot" and 1 or (0.25 + (-self:GetMultiplier() + 2) * 0.75)) * (0.5 + self:GetCurrentZoom() / 2) ^ 0.7
 end
 
 function SWEP:CanPrimaryAttack()
