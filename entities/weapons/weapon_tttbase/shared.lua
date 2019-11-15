@@ -539,13 +539,14 @@ function SWEP:Think()
 	local reloadtime = self:GetReloadEndTime()
 	if (reloadtime ~= math.huge) then
 		if (reloadtime > CurTime()) then
-			local time = (CurTime() - self:GetReloadStartTime()) * self:GetReloadAnimationSpeed()
+			local time = (CurTime() - self:GetReloadStartTime())
 	
 			local snd = IsFirstTimePredicted() and self.Sounds and self.Sounds.reload
 			if (snd) then
 				for _ = #snd, 1, -1 do
 					local inf = snd[_]
-					if (inf.time * self:GetReloadAnimationSpeed() <= time) then
+					print(time)
+					if (inf.time / self:GetReloadAnimationSpeed() <= time) then
 						if (self.LastSound ~= inf.sound) then
 							self:EmitSound(inf.sound)
 							self.LastSound = inf.sound
