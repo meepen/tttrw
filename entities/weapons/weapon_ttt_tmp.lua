@@ -33,6 +33,8 @@ SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_TMP.Single"
 
+SWEP.ReloadSpeed = 2
+
 SWEP.HeadshotMultiplier    = 1.2
 SWEP.DeploySpeed = 1.95 
 

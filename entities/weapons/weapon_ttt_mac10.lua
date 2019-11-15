@@ -37,6 +37,7 @@ SWEP.Primary.Sound         = Sound "Weapon_mac10.Single"
 
 SWEP.HeadshotMultiplier    = 1.2
 SWEP.DeploySpeed = 2.5
+SWEP.ReloadSpeed = 1.9
 
 SWEP.AutoSpawnable         = true	
 SWEP.Spawnable             = true
