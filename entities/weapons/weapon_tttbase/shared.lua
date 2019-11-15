@@ -100,6 +100,7 @@ function SWEP:SetupDataTables()
 	self:NetVar("RealLastShootTime", "Float", -math.huge)
 	self:NetVar("ConsecutiveShots", "Int", 0)
 	self:NetVar("ReloadEndTime", "Float", math.huge)
+	self:NetVar("ReloadStartTime", "Float", math.huge)
 	hook.Run("TTTInitWeaponNetVars", self)
 end
 
@@ -538,8 +539,25 @@ function SWEP:Think()
 	local reloadtime = self:GetReloadEndTime()
 	if (reloadtime ~= math.huge) then
 		if (reloadtime > CurTime()) then
+			local time = (CurTime() - self:GetReloadStartTime()) * self:GetReloadAnimationSpeed()
+	
+			local snd = IsFirstTimePredicted() and self.Sounds and self.Sounds.reload
+			if (snd) then
+				for _ = #snd, 1, -1 do
+					local inf = snd[_]
+					if (inf.time * self:GetReloadAnimationSpeed() <= time) then
+						if (self.LastSound ~= inf.sound) then
+							self:EmitSound(inf.sound)
+							self.LastSound = inf.sound
+						end
+						break
+					end
+				end
+			end
+
 			return
 		end
+
 
 		local ammocount = self:GetOwner():GetAmmoCount(self:GetPrimaryAmmoType())
 		local needed = self:GetMaxClip1() - self:Clip1()
@@ -618,6 +636,7 @@ function SWEP:DoReload(act)
 
 	local endtime = CurTime() + self:SequenceDuration() / speed + 0.1
 
+	self:SetReloadStartTime(CurTime())
 	self:SetReloadEndTime(endtime)
 	self:SetNextPrimaryFire(endtime)
 	self:SetNextSecondaryFire(endtime)
