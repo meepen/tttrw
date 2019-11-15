@@ -636,6 +636,7 @@ function SWEP:DoReload(act)
 
 	local endtime = CurTime() + self:SequenceDuration() / speed + 0.1
 
+	self.LastSound = nil
 	self:SetReloadStartTime(CurTime())
 	self:SetReloadEndTime(endtime)
 	self:SetNextPrimaryFire(endtime)
