@@ -51,8 +51,8 @@ SWEP.WorldModel            = "models/weapons/w_pist_fiveseven.mdl"
 SWEP.Ironsights = {
 	Pos = Vector(-5.95, -4, 2.799),
 	Angle = Vector(0, 0, 0),
-	TimeTo = 0.25,
+	TimeTo = 0.2,
 	TimeFrom = 0.15,
-	SlowDown = 0.3,
-	Zoom = 0.85,
+	SlowDown = 0.35,
+	Zoom = 0.75,
 }

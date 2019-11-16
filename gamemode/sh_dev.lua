@@ -73,16 +73,6 @@ concommand.Add("list_weapon_info", function()
 		end
 
 		if (wep.Ironsights) then
-			--[[
-				SWEP.Ironsights = {
-					Pos = Vector(-2.425, -2.343, 0.647),
-					Angle = Vector(0.681, -0.005, 0),
-					TimeTo = 0.2,
-					TimeFrom = 0.15,
-					SlowDown = 0.3,
-					Zoom = 0.9,
-				}
-			]]
 			local i = wep.Ironsights
 
 			printf("\tIRONSIGHTS\n\t\tTIMETO: %.2f\n\t\tTIMEFM: %.2f\n\t\tSLOWDN: %.2f\n\t\tZOOMIE: %.2f",

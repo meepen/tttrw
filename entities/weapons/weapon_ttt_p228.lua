@@ -48,8 +48,8 @@ SWEP.WorldModel            = "models/weapons/w_pist_p228.mdl"
 SWEP.Ironsights = {
 	Pos = Vector(-5.95, -4, 2.799),
 	Angle = Vector(0, 0, 0),
-	TimeTo = 0.25,
+	TimeTo = 0.1,
 	TimeFrom = 0.15,
-	SlowDown = 0.3,
+	SlowDown = 0.7,
 	Zoom = 0.85,
 }
