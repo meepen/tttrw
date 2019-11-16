@@ -63,6 +63,16 @@ concommand.Add("list_weapon_info", function()
 			wep.Ironsights and wep.Ironsights.Zoom or 1
 		)
 
+		if (wep.Bullets) then
+			local b = wep.Bullets
+			printf("\tBULLETINFO\n\t\tMINRNG: %.2f\n\t\tMAXRNG: %.2f\n\t\tHULLSZE: %.2f\n\t\tMINPCT: %.2f",
+				b.DamageDropoffRange,
+				b.DamageDropoffRangeMax,
+				b.HullSize,
+				b.DamageMinimumPercent
+			)
+		end
+
 		for dam, t in SortedPairsByMemberValue(damages, "Damage", true) do
 			dam = dam * wep.Bullets.Num
 			printf("\t%s\n\t\tDMG: %i\n\t\tDPS: %.1f", table.concat(t, ", "), dam, dam / wep.Primary.Delay)
