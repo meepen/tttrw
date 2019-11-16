@@ -31,6 +31,8 @@ end
 
 local LastTarget, LastTime
 
+local unided_color = Color(163, 148, 47)
+
 function GM:HUDDrawTargetID()
 	local ent = ttt.GetHUDTarget()
 	if (not IsValid(ent)) then return end
@@ -40,7 +42,7 @@ function GM:HUDDrawTargetID()
 	if (not IsValid(ent)) then return end
 
 	local text = "n/a"
-	local extra
+	local extra, extra_col = nil, white_text
 	local color = white_text
 
 	local target
@@ -53,13 +55,14 @@ function GM:HUDDrawTargetID()
 		local state = ent.HiddenState
 		if (not IsValid(state)) then
 			text = "Unidentified Body"
+			color = unided_color
 		else
 			local own = ent.HiddenState
+			text = own:GetNick() .. "'s body"
 			color = ttt.roles[ent.HiddenState:GetRole()].Color
-			if (ent.HiddenState:GetIdentified()) then
-				text = own:GetNick() .. "'s Identified Body"
-			else
-				text = own:GetNick() .. "'s Unidentified Body"
+			if (not ent.HiddenState:GetIdentified()) then
+				extra = "(unidentified)"
+				extra_col = unided_color
 			end
 		end
 	else
@@ -88,6 +91,10 @@ function GM:HUDDrawTargetID()
 	local tw, th = surface.GetTextSize(text)
 
 	hud.DrawTextOutlined(text, color, color_black, x - tw / 2, y, 1)
+
+	if (extra) then
+		hud.DrawTextOutlined(extra, extra_col, color_black, x - surface.GetTextSize(extra) / 2, y + th + 2, 1)
+	end
 
 
 	if (IsValid(ent) and ent:IsPlayer()) then
