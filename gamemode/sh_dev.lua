@@ -30,7 +30,7 @@ local function VectorString(x)
 	return string.format("Vector(%.2f, %.2f)", x.x, x.y)
 end
 
-concommand.Add("list_weapon_info", function()
+local function generate_info(printf)
 	local dmg = DamageInfo()
 	for _, wep in pairs(weapons.GetList()) do
 		if (not wep.AutoSpawnable) then
@@ -89,4 +89,29 @@ concommand.Add("list_weapon_info", function()
 			printf("\t%s\n\t\tDMG: %i\n\t\tDPS: %.1f", table.concat(t, ", "), dam, dam / wep.Primary.Delay)
 		end
 	end
+end
+
+concommand.Add("list_weapon_info", function()
+	generate_info(printf)
+end)
+
+concommand.Add("save_weapon_info", function(ply, cmd, args)
+	if (IsValid(ply) and SERVER) then
+		return
+	end
+
+	local f = file.Open(args[1], "wb", "DATA")
+
+	if (not f) then
+		printf("Couldn't open file: %s", tostring(args[1]))
+		return
+	end
+
+	generate_info(function(fmt, ...)
+		f:Write(string.format(fmt .. "\n", ...))
+	end)
+
+	f:Close()
+
+	printf("Saved to %s", util.RelativePathToFull("data/" .. args[1]))
 end)
