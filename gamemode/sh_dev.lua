@@ -50,7 +50,7 @@ concommand.Add("list_weapon_info", function()
 			table.insert(damages[dam], name)
 		end
 
-		printf("%s (%s):\n\tDMG: %.2f * %i\n\tRPM: %i\n\tRCL: %.2f\n\tCLP: %i\n\tSPR: %s\n\tRLD: %.2f\n\tDPL: %.2f\n\tZOM: %.2f", 
+		printf("%s (%s):\n\tDMG: %.2f * %i\n\tRPM: %i\n\tRCL: %.2f\n\tCLP: %i\n\tSPR: %s\n\tRLD: %.2f\n\tDPL: %.2f", 
 			wep.PrintName, wep.ClassName,
 			wep.Primary.Damage,
 			wep.Bullets.Num,
@@ -59,8 +59,7 @@ concommand.Add("list_weapon_info", function()
 			wep.Primary.ClipSize,
 			VectorString(wep.Bullets.Spread),
 			wep.ReloadSpeed or 1,
-			wep.DeploySpeed or 1,
-			wep.Ironsights and wep.Ironsights.Zoom or 1
+			wep.DeploySpeed or 1
 		)
 
 		if (wep.Bullets) then
@@ -72,6 +71,28 @@ concommand.Add("list_weapon_info", function()
 				b.DamageMinimumPercent
 			)
 		end
+
+		if (wep.Ironsights) then
+			--[[
+				SWEP.Ironsights = {
+					Pos = Vector(-2.425, -2.343, 0.647),
+					Angle = Vector(0.681, -0.005, 0),
+					TimeTo = 0.2,
+					TimeFrom = 0.15,
+					SlowDown = 0.3,
+					Zoom = 0.9,
+				}
+			]]
+			local i = wep.Ironsights
+
+			printf("\tIRONSIGHTS\n\t\tTIMETO: %.2f\n\t\tTIMEFM: %.2f\n\t\tSLOWDN: %.2f\n\t\tZOOMIE: %.2f",
+				i.TimeTo,
+				i.TimeFrom,
+				i.SlowDown,
+				i.Zoom
+			)
+		end
+
 
 		for dam, t in SortedPairsByMemberValue(damages, "Damage", true) do
 			dam = dam * wep.Bullets.Num
