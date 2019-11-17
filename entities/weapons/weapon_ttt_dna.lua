@@ -4,7 +4,7 @@ SWEP.PrintName          = "DNA Scanner"
 SWEP.Slot               = 8
 
 SWEP.ViewModelFlip      = false
-SWEP.ViewModelFOV       = 10
+SWEP.ViewModelFOV       = -100
 
 SWEP.Primary.Automatic     = false
 SWEP.Primary.Ammo          = "none"
