@@ -26,6 +26,12 @@ function GM:DrawOverlay()
 	hud.DrawTextOutlined(text, white_text, color_black, ScrW() / 2 - w / 2, 0, 3)
 end
 
+hook.Add("InputMouseApply", "tttrw_afk", function(c, x, y, a)
+	if (x ~= 0 or y ~= 0) then
+		Refresh()
+	end
+end)
+
 hook.Add("KeyPress", "tttrw_afk", function()
 	Refresh()
 end)
