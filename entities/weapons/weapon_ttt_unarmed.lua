@@ -6,7 +6,7 @@ SWEP.PrintName          = "Unarmed"
 SWEP.Slot               = 5
 
 SWEP.ViewModelFlip      = false
-SWEP.ViewModelFOV       = 10
+SWEP.ViewModelFOV       = -100
 
 SWEP.AllowDrop = false
 
