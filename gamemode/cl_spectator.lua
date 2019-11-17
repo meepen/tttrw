@@ -8,11 +8,20 @@ surface.CreateFont("tttrw_afk_font", {
 
 local function Refresh()
 	timer.Create("tttrw_afk", 90, 1, function()
+		if (not LocalPlayer():Alive()) then
+			return
+		end
 		tttrw_afk:SetBool(true)
 	end)
 end
 
 Refresh()
+
+function GM:CL_PlayerSpawn(p)
+	if (p == LocalPlayer()) then
+		Refresh()
+	end
+end
 
 function GM:DrawOverlay()
 	if (not tttrw_afk:GetBool()) then

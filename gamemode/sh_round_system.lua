@@ -40,6 +40,8 @@ end
 function GM:PlayerSpawn(ply)
 	if (SERVER) then
 		self:SV_PlayerSpawn(ply)
+	else
+		self:CL_PlayerSpawn(ply)
 	end
 	player_manager.RunClass(ply, "Spawn")
 end

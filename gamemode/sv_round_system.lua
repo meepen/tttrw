@@ -148,6 +148,7 @@ function round.Prepare()
 			if (not table.HasValue(eligible, oply)) then
 				oply:KillSilent()
 				oply:SetTeam(TEAM_SPECTATOR)
+				oply:SetRole "Spectator"
 				gmod.GetGamemode():Spectate(oply)
 			end
 		end
