@@ -140,12 +140,15 @@ function round.Prepare()
 			ply:StripWeapons()
 			ply:Spawn()
 			ply:SetHealth(ply:GetMaxHealth())
+			ply:SetTeam(TEAM_TERROR)
 			printf("%s <%s> has been respawned", ply:Nick(), ply:SteamID())
 		end
 
 		for _, oply in pairs(player.GetAll()) do
 			if (not table.HasValue(eligible, oply)) then
 				oply:KillSilent()
+				oply:SetTeam(TEAM_SPECTATOR)
+				gmod.GetGamemode():Spectate(oply)
 			end
 		end
 
@@ -163,6 +166,7 @@ function round.TryStart()
 	for _, oply in pairs(player.GetAll()) do
 		if (not table.HasValue(plys, oply)) then
 			oply:KillSilent()
+			gmod.GetGamemode():Spectate(oply)
 		end
 	end
 

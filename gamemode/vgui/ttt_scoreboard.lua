@@ -143,9 +143,7 @@ function PANEL:Think()
 	if (IsValid(ply)) then
 		local group = "Terrorists"
 
-		if (ply:Team() == TEAM_CONNECTING) then
-			group = "Connecting"
-		elseif (ply:Team() == TEAM_SPECTATOR) then
+		if (ply:Team() == TEAM_CONNECTING or ply:Team() == TEAM_SPECTATOR) then
 			group = "Spectators"
 		elseif (not ply:Alive() and IsValid(ply.DeadState) and ply.DeadState:GetIdentified()) then
 			group = "Dead"

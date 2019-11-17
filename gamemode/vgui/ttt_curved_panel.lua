@@ -337,7 +337,8 @@ function PANEL:Select(name)
 	self.LastSelect = name
 end
 
-function PANEL:SetTab(name)
+function PANEL:GetTabs()
+	return self.Tabs
 end
 
 vgui.Register("tttrw_base", PANEL, "ttt_curved_panel_shadow")

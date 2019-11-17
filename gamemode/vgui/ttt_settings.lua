@@ -317,12 +317,11 @@ end
 vgui.Register("tttrw_crosshair_customize", PANEL, "EditablePanel")
 
 function GM:ShowHelp()
-	if (IsValid(ttt.settings)) then
-		ttt.settings:Remove()
-	else
+	if (not IsValid(ttt.settings)) then
 		ttt.settings = vgui.Create "tttrw_base"
 		local gameplay = vgui.Create "ttt_settings_category"
 
+		gameplay:AddCheckBox("Spectator Mode", "tttrw_afk")
 		gameplay:AddCheckBox("Aim Down Sights Toggle", "tttrw_toggle_ads")
 		gameplay:AddCheckBox("Outline players roles", "tttrw_outline_roles")
 		gameplay:AddCheckBox("Automatically Bunny hop", "ttt_bhop_cl")

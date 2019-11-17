@@ -13,6 +13,8 @@ function GM:TTTRemoveIneligiblePlayers(plys)
 		local ply = plys[i]
 		if (ply:IsBot() and ttt_bots_are_spectators:GetBool()) then
 			table.remove(plys, i)
+		elseif (ply:GetInfoNum("tttrw_afk", 0) == 1) then
+			table.remove(plys, i)
 		end
 	end
 end
