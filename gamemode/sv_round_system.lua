@@ -143,6 +143,12 @@ function round.Prepare()
 			printf("%s <%s> has been respawned", ply:Nick(), ply:SteamID())
 		end
 
+		for _, oply in pairs(player.GetAll()) do
+			if (not table.HasValue(eligible, oply)) then
+				oply:KillSilent()
+			end
+		end
+
 		round.SetState(ttt.ROUNDSTATE_PREPARING, (round.FirstRound and ttt_firstpreptime or ttt_preptime_seconds):GetFloat()):_then(round.TryStart)
 	end)
 end
@@ -152,6 +158,12 @@ function round.TryStart()
 	if (#plys < ttt_minimum_players:GetInt()) then
 		round.SetState(ttt.ROUNDSTATE_WAITING, 0)
 		return false
+	end
+
+	for _, oply in pairs(player.GetAll()) do
+		if (not table.HasValue(plys, oply)) then
+			oply:KillSilent()
+		end
 	end
 
 	local roles_needed = {}
