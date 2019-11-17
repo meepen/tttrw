@@ -23,7 +23,7 @@ end
 
 function GM:AllowPlayerRTV(ply)
 	if (self.RTV and self.RTV[ply]) then
-		return false, "You already RTVed!"
+		return false, "You've already RTVed", true
 	end
 
 	return ttt.GetRoundNumber() >= 2, "Wait for " .. (3 - ttt.GetRoundNumber()) .. " rounds"
@@ -53,34 +53,36 @@ function GM:MapHasBeenRTVed()
 end
 
 function GM:PlayerSay(ply, text, team)
-	if (text:match "^[!%.]?rtv$") then
-		local allow, reason = hook.Run("AllowPlayerRTV", ply)
+	if (text:match "^[!%./]?rtv$") then
+		local allow, reason, noprevent = hook.Run("AllowPlayerRTV", ply)
 
 		if (not allow) then
 			hook.Run("PlayerRTVFailed", ply, reason)
+			if (not noprevent) then
+				return ""
+			end
+		else
+			self.RTV = self.RTV or {}
+			self.RTV[ply] = true
+		
+			local votes = 0
+			for ply in pairs(self.RTV) do
+				if (IsValid(ply)) then
+					votes = votes + 1
+				end
+			end
+		
+			local needed = math.max(1, math.floor(player.GetCount() * 3 / 4))
+		
+			if (needed <= votes) then
+				self.ShouldRTV = true
+				hook.Run "MapHasBeenRTVed"
+			end
+
+			hook.Run("DoPlayerRTV", ply, needed - votes)
+
 			return ""
 		end
-
-		self.RTV = self.RTV or {}
-		self.RTV[ply] = true
-	
-		local votes = 0
-		for ply in pairs(self.RTV) do
-			if (IsValid(ply)) then
-				votes = votes + 1
-			end
-		end
-	
-		local needed = math.max(1, math.floor(player.GetCount() * 3 / 4))
-	
-		if (needed <= votes) then
-			self.ShouldRTV = true
-			hook.Run "MapHasBeenRTVed"
-		end
-
-		hook.Run("DoPlayerRTV", ply, needed - votes)
-
-		return ""
 	end
 	return hook.Run("FormatPlayerText", ply, text)
 end

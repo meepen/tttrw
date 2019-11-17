@@ -76,16 +76,16 @@ local scales = {
 	[HITGROUP_RIGHTLEG] = 0.7,
 	[HITGROUP_GEAR] = 0.7
 }
-function SWEP:ScaleDamage(hitgroup, dmg)
-	-- More damage if we're shot in the head
-	if (hitgroup == HITGROUP_HEAD) then
-		dmg:ScaleDamage(self.HeadshotMultiplier)
-	end
 
-	-- Less damage if we're shot in the arms or legs
-	if (scales[hitgroup]) then
-		dmg:ScaleDamage(scales[hitgroup])
+function SWEP:GetHitgroupScale(hg)
+	if (hg == HITGROUP_HEAD) then
+		return self.HeadshotMultiplier or 1
 	end
+	return scales[hitgroup] or 1
+end
+
+function SWEP:ScaleDamage(hitgroup, dmg)
+	dmg:ScaleDamage(self:GetHitgroupScale(hitgroup))
 end
 
 function SWEP:SetupDataTables()
