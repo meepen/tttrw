@@ -90,26 +90,29 @@ function SWEP:OverrideCommand(ply, cmd)
 
 		tr.IsFake = true
 
-		local dmg = DamageInfo()
-		dmg:SetDamage(bullet.Damage)
-		dmg:SetAttacker(bullet.Attacker)
-		dmg:SetInflictor(self)
-		dmg:SetDamageForce(tr.Normal * (bullet.Force or 1))
-		dmg:SetDamagePosition(tr.HitPos)
-		dmg:SetAmmoType(self:GetPrimaryAmmoType())
-		dmg:SetDamageType(DMG_BULLET)
-		dmg:SetDamageCustom(hitbox)
-
-		if (bullet.Callback) then
-			bullet.Callback(entity, tr, dmg)
-		end
-
-		if (not hook.Run("ScalePlayerDamage", entity, hitbox, dmg)) then
-			if (dmg:GetDamage() > entity:Health()) then
-				entity:SetPos(collisions.Pos)
+		timer.Simple(0, function()
+			if (not IsValid(entity)) then
+				return
 			end
-			entity:TakeDamageInfo(dmg)
-		end
+
+			local dmg = DamageInfo()
+			dmg:SetDamage(bullet.Damage)
+			dmg:SetAttacker(bullet.Attacker)
+			dmg:SetInflictor(self)
+			dmg:SetDamageForce(tr.Normal * (bullet.Force or 1))
+			dmg:SetDamagePosition(tr.HitPos)
+			dmg:SetAmmoType(self:GetPrimaryAmmoType())
+			dmg:SetDamageType(DMG_BULLET)
+			dmg:SetDamageCustom(hitbox)
+
+			if (bullet.Callback) then
+				bullet.Callback(entity, tr, dmg)
+			end
+
+			if (not hook.Run("ScalePlayerDamage", entity, hitbox, dmg)) then
+				entity:TakeDamageInfo(dmg)
+			end
+		end)
 	end
 end
 

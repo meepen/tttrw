@@ -13,11 +13,11 @@ SWEP.Base                    = "weapon_tttbase"
 SWEP.ViewModel               = "models/weapons/c_crowbar.mdl"
 SWEP.WorldModel              = "models/weapons/w_crowbar.mdl"
 
-SWEP.Primary.Damage          = 20
+SWEP.Primary.Damage          = 13.5
 SWEP.Primary.ClipSize        = -1
 SWEP.Primary.DefaultClip     = -1
 SWEP.Primary.Automatic       = true
-SWEP.Primary.Delay           = 0.5
+SWEP.Primary.Delay           = 0.35
 SWEP.Primary.Ammo            = "none"
 
 SWEP.Secondary.ClipSize      = -1
