@@ -5,6 +5,13 @@ surface.CreateFont("tttrw_base_tab", {
 	size = 20
 })
 
+surface.CreateFont("tttrw_tab_selector", {
+	font = "Roboto",
+	extended = true,
+	weight = 100,
+	size = 18
+})
+
 local PANEL = {}
 ttt.ColorMaterials = ttt.ColorMaterials or {}
 
@@ -138,7 +145,136 @@ function PANEL:Paint(w, h)
 end
 
 vgui.Register("ttt_curved_panel", PANEL, "EditablePanel")
-vgui.Register("ttt_curved_button", table.Copy(PANEL), "DButton")
+PANEL = table.Copy(PANEL)
+AccessorFunc( PANEL, "m_bDisabled",		"Disabled",			FORCE_BOOL )
+
+function PANEL:Init()
+	self:SetCursor "hand"
+end
+
+function PANEL:OnMousePressed( mousecode )
+
+	if ( self:GetDisabled() ) then return end
+
+	if ( mousecode == MOUSE_LEFT && !dragndrop.IsDragging() && self.m_bDoubleClicking ) then
+
+		if ( self.LastClickTime && SysTime() - self.LastClickTime < 0.2 ) then
+
+			self:DoDoubleClickInternal()
+			self:DoDoubleClick()
+			return
+
+		end
+
+		self.LastClickTime = SysTime()
+
+	end
+
+	-- If we're selectable and have shift held down then go up
+	-- the parent until we find a selection canvas and start box selection
+	if ( self:IsSelectable() && mousecode == MOUSE_LEFT && input.IsShiftDown() ) then
+
+		return self:StartBoxSelection()
+
+	end
+
+	self:MouseCapture( true )
+	self.Depressed = true
+	self:OnDepressed()
+	self:InvalidateLayout(true)
+
+	--
+	-- Tell DragNDrop that we're down, and might start getting dragged!
+	--
+	self:DragMousePress( mousecode )
+end
+
+function PANEL:OnReleased()
+end
+
+function PANEL:OnDepressed()
+end
+
+function PANEL:OnToggled(bool)
+end
+
+function PANEL:DoClick()
+end
+
+function PANEL:DoRightClick()
+end
+
+function PANEL:DoMiddleClick()
+end
+
+function PANEL:DoClickInternal()
+end
+
+function PANEL:DoDoubleClick()
+end
+
+function PANEL:DoDoubleClickInternal()
+end
+
+function PANEL:OnMouseReleased( mousecode )
+
+	self:MouseCapture( false )
+
+	if ( self:GetDisabled() ) then return end
+	if ( !self.Depressed && dragndrop.m_DraggingMain != self ) then return end
+
+	if ( self.Depressed ) then
+		self.Depressed = nil
+		self:OnReleased()
+		self:InvalidateLayout( true )
+	end
+
+	--
+	-- If we were being dragged then don't do the default behaviour!
+	--
+	if ( self:DragMouseRelease( mousecode ) ) then
+		return
+	end
+	
+	if ( self:IsSelectable() && mousecode == MOUSE_LEFT ) then
+
+		local canvas = self:GetSelectionCanvas()
+		if ( canvas ) then
+			canvas:UnselectAll()
+		end
+
+	end
+
+	if ( !self.Hovered ) then return end
+
+	--
+	-- For the purposes of these callbacks we want to
+	-- keep depressed true. This helps us out in controls
+	-- like the checkbox in the properties dialog. Because
+	-- the properties dialog will only manually change the value
+	-- if IsEditing() is true - and the only way to work out if
+	-- a label/button based control is editing is when it's depressed.
+	--
+	self.Depressed = true
+
+	if ( mousecode == MOUSE_RIGHT ) then
+		self:DoRightClick()
+	end
+
+	if ( mousecode == MOUSE_LEFT ) then
+		self:DoClickInternal()
+		self:DoClick()
+	end
+
+	if ( mousecode == MOUSE_MIDDLE ) then
+		self:DoMiddleClick()
+	end
+
+	self.Depressed = nil
+
+end
+
+vgui.Register("ttt_curved_button", table.Copy(PANEL), "EditablePanel")
 
 local PANEL = {}
 
@@ -208,6 +344,8 @@ DEFINE_BASECLASS "ttt_curved_panel_shadow"
 function PANEL:Init()
 	BaseClass.Init(self)
 
+	self.Tabs = {}
+
 	self.Inner = self:Add "ttt_curved_panel_outline"
 	self.Inner:Dock(FILL)
 
@@ -253,10 +391,17 @@ function PANEL:Init()
 	self.Unused:Dock(RIGHT)
 	self.Unused:SetWide(44)
 
+	self.TabSelector = self.TopBar:Add "tttrw_tab_selector"
+	self.TabSelector.Main = self
+	self.TabSelector:Dock(RIGHT)
+	self.TabSelector:SetWide(24)
+
+	self.Unused2 = self.TopBar:Add "EditablePanel"
+	self.Unused2:Dock(RIGHT)
+	self.Unused2:SetWide(10)
+
 	self.TabList = self.TopBar:Add "tttrw_base_tabs"
 	self.TabList:Dock(FILL)
-
-	self.Tabs = {}
 
 	self.TabContentOutlineShadow = self.TabContainer:Add "ttt_curved_panel_shadow"
 	self.TabContentOutline = self.TabContentOutlineShadow:Add "ttt_curved_panel_outline"
@@ -590,3 +735,164 @@ function PANEL:DoClick()
 end
 
 vgui.Register("tttrw_base_tab", PANEL, "EditablePanel")
+
+local PANEL = {}
+function PANEL:Init()
+	self.Inner = self:Add "tttrw_base_tab_real"
+	self.Inner:Dock(BOTTOM)
+	self.Inner:SetZPos(1)
+	self.Pad = self:Add "EditablePanel"
+	self.Pad:Dock(BOTTOM)
+	self.Pad:SetZPos(0)
+
+	function self.Inner.DoClick()
+		self:Expand()
+	end
+
+	self:OnSelect()
+	self:SetText "v"
+end
+
+function PANEL:Expand()
+	if (IsValid(self.Expanse)) then
+		self.Expanse:Remove()
+		return
+	end
+	self.Expanse = vgui.Create "tttrw_dropdown"
+	self.Expanse:SetPos(self:LocalToScreen(0, self:GetTall()))
+	self.Expanse:MakePopup()
+	local now = self.Main.TabList.Next
+
+	while (IsValid(now)) do
+		local p = now
+		self.Expanse:AddButton(now:GetName(), function()
+			p:DoClick()
+		end)
+		now = now.Next
+	end
+end
+
+function PANEL:OnRemove()
+	if (IsValid(self.Expanse)) then
+		self.Expanse:Remove()
+	end
+end
+
+function PANEL:SetText(t)
+	self.Inner:SetText(t)
+	self:SetWide(self.Inner:GetWide())
+end
+
+function PANEL:PerformLayout(w, h)
+	if (self.Selected) then
+		self.Inner:SetTall(h)
+	else
+		self.Inner:SetTall(h - 10)
+	end
+end
+
+function PANEL:OnSelect()
+	self.Selected = true
+	self.Pad:SetTall(0)
+	self.Inner:Activate(true)
+end
+
+function PANEL:DoClick()
+end
+
+vgui.Register("tttrw_tab_selector", PANEL, "EditablePanel")
+
+
+local PANEL = {}
+
+local col = Color(31, 31, 32)
+function PANEL:Init()
+	self:SetSkin "tttrw"
+
+	self.Inner = self:Add "ttt_curved_panel_outline"
+	self.Inner:Dock(FILL)
+	self.InnerShadow = self:Add "ttt_curved_panel_shadow"
+	self.InnerShadow:Dock(FILL)
+
+	self.Fill = self.InnerShadow:Add "ttt_curved_panel"
+	self.Fill:Dock(FILL)
+
+	self.Fill:DockPadding(6, 6, 6, 6)
+
+	self.Scroller = self.Fill:Add "DScrollPanel"
+	self.Scroller:Dock(FILL)
+
+	self:SetSize(200, 10)
+
+	self.Inner:SetCurve(4)
+	self:SetCurve(4)
+	self.Inner:DockPadding(2, 2, 2, 2)
+	self.Inner:SetCurve(2)
+	self.Inner:SetColor(outline)
+	self:SetColor(outline)
+	self.InnerShadow:SetCurve(4)
+	self.InnerShadow:SetColor(outline)
+
+	self.Fill:SetColor(main_color)
+	self.Fill:SetCurve(2)
+
+	self.ButtonCount = 0
+end
+
+function PANEL:AddButton(text, doclick)
+	local btn = self.Scroller:Add "ttt_curved_panel_shadow_button"
+	btn.Inner = btn:Add "ttt_curved_panel_outline"
+	btn.Inner:SetMouseInputEnabled(false)
+	btn.Inner:Dock(FILL)
+
+	btn.InnerShadow = btn.Inner:Add "ttt_curved_panel_shadow"
+	btn.InnerShadow:Dock(FILL)
+
+	btn.Fill = btn.InnerShadow:Add "ttt_curved_panel"
+	btn.Fill:Dock(FILL)
+
+	btn.Label = btn.Fill:Add "DLabel"
+	btn.Label:SetContentAlignment(5)
+	btn.Label:SetFont "tttrw_tab_selector"
+	btn.Label:Dock(FILL)
+	btn.Label:SetText(text)
+	btn.Label:SetTextColor(white_text)
+
+
+	btn.SetRealColor = btn.SetColor
+	function btn:SetColor(col)
+		self.Fill:SetColor(col)
+	end
+
+	function btn.DoClick()
+		if (doclick) then
+			doclick()
+		end
+		self:Remove()
+	end
+
+	btn:SetColor(solid_color)
+
+	btn.InnerShadow:DockPadding(2, 2, 2, 2)
+
+	btn.InnerShadow:SetColor(outline)
+	btn.Inner:SetColor(outline)
+	btn:SetRealColor(outline)
+	btn.InnerShadow:SetCurve(4)
+	btn.Inner:SetCurve(4)
+	btn:SetCurve(4)
+	btn.Fill:SetCurve(2)
+
+	btn:Dock(TOP)
+	btn:DockMargin(0, 0, 0, 12)
+	btn:SetTall(30)
+
+	self.ButtonCount = self.ButtonCount + 1
+	if (self.ButtonCount <= 5) then
+		self:SetTall(self:GetTall() + btn:GetTall() + 12)
+	end
+
+	return btn
+end
+
+vgui.Register("tttrw_dropdown", PANEL, "ttt_curved_panel_shadow")
