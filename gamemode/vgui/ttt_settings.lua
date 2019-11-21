@@ -141,9 +141,12 @@ function PANEL:AddLabel(text)
 	local lbl = self:Add "DLabel"
 	lbl:SetZPos(self.Index)
 	self.Index = self.Index + 1
-	lbl:DockMargin(0, Padding, 0, 0)
+	if (IsValid(self.Last)) then
+		lbl:DockMargin(0, Padding, 0, 0)
+	end
 
 	lbl:SetText(text)
+	lbl:SetTextColor(white_text)
 	lbl:SetFont "ttt_settings_settings_text_font"
 	lbl:Dock(TOP)
 	lbl:SetTall(h + Padding / 2)
@@ -154,8 +157,60 @@ function PANEL:AddLabel(text)
 	return h
 end
 
+function PANEL:AddLabelButton(text)
+	local btn = self:Add "ttt_curved_panel_shadow_button"
+	btn.Inner = btn:Add "ttt_curved_panel_outline"
+	btn.Inner:SetMouseInputEnabled(false)
+	btn.Inner:Dock(FILL)
 
-function PANEL:AddTextEntry(text, convar, v)
+	btn.InnerShadow = btn.Inner:Add "ttt_curved_panel_shadow"
+	btn.InnerShadow:Dock(FILL)
+
+	btn.Fill = btn.InnerShadow:Add "ttt_curved_panel"
+	btn.Fill:Dock(FILL)
+
+	btn.Label = btn.Fill:Add "DLabel"
+	btn.Label:SetContentAlignment(5)
+	btn.Label:SetFont "tttrw_tab_selector"
+	btn.Label:Dock(FILL)
+	btn.Label:SetText(text)
+	btn.Label:SetTextColor(white_text)
+
+
+	btn.SetRealColor = btn.SetColor
+	function btn:SetColor(col)
+		self.Fill:SetColor(col)
+	end
+
+	btn:SetColor(solid_color)
+
+	btn.InnerShadow:DockPadding(2, 2, 2, 2)
+
+	btn.InnerShadow:SetColor(outline)
+	btn.Inner:SetColor(outline)
+	btn:SetRealColor(outline)
+	btn.InnerShadow:SetCurve(4)
+	btn.Inner:SetCurve(4)
+	btn:SetCurve(4)
+	btn.Fill:SetCurve(2)
+
+	btn:Dock(TOP)
+	btn:DockMargin(0, 0, 0, 12)
+	surface.SetFont "ttt_settings_settings_text_font"
+	local _, h = surface.GetTextSize "A"
+	btn:SetTall(h + Padding / 2)
+
+	btn.Label:SetText(text)
+	btn:SetZPos(self.Index)
+	btn:DockMargin(0, 0, 0, Padding)
+
+	self.Last = btn
+	self.Index = self.Index + 1
+
+	return btn
+end
+
+function PANEL:AddTextEntry(text, convar, v, enabled)
 	local h = self:AddLabel(text)
 
 	local text = self:Add "DTextEntry"
@@ -166,7 +221,7 @@ function PANEL:AddTextEntry(text, convar, v)
 	text:SetFont "ttt_settings_settings_text_font"
 	text:Dock(TOP)
 	text:SetTall(h + Padding / 2)
-	if (convar) then
+	if (isstring(convar)) then
 		text:SetConVar(convar)
 		text:SetText(GetConVar(convar):GetString())
 	else
@@ -175,6 +230,8 @@ function PANEL:AddTextEntry(text, convar, v)
 	text:SetDisabled(not convar)
 
 	self.Last = text
+
+	return text
 end
 
 function PANEL:AddSlider(text, convar)

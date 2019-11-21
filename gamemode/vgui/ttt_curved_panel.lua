@@ -332,12 +332,11 @@ local function HexColor(h)
 	return Color(unpack(col))
 end
 
-local outline = HexColor "#0e1c20ff"
-local inactive_tab = HexColor "#202629ff"
-local main_color = HexColor "#0b121370"
-local solid_color = Color(42, 50, 54)
-local dark = Color(32, 38, 41)
-
+outline = HexColor "#0e1c20ff"
+inactive_tab = HexColor "#202629ff"
+main_color = HexColor "#0b121370"
+solid_color = Color(42, 50, 54)
+dark = Color(32, 38, 41)
 
 local PANEL = {}
 DEFINE_BASECLASS "ttt_curved_panel_shadow"
@@ -476,7 +475,7 @@ function PANEL:Select(name)
 		end
 		local p = self.Tabs[name]
 		p:SetVisible(true)
-		p:SetParent(self.Contents:GetCanvas())
+		p:SetParent(p.NoScroll and self.TabContentBackdropShadow or self.Contents:GetCanvas())
 		p:InvalidateLayout(true)
 	end
 	self.LastSelect = name
@@ -805,7 +804,6 @@ vgui.Register("tttrw_tab_selector", PANEL, "EditablePanel")
 
 local PANEL = {}
 
-local col = Color(31, 31, 32)
 function PANEL:Init()
 	self:SetSkin "tttrw"
 
@@ -865,10 +863,9 @@ function PANEL:AddButton(text, doclick)
 	end
 
 	function btn.DoClick()
-		if (doclick) then
-			doclick()
+		if (not doclick or not doclick()) then
+			self:Remove()
 		end
-		self:Remove()
 	end
 
 	btn:SetColor(solid_color)
