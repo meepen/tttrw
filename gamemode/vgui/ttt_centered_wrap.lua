@@ -39,24 +39,24 @@ function PANEL:PerformLayout(_w, _h)
 	self.Tall = 0
 
 	for word in self.Text:gmatch("([^%s]+)%s*") do
-		cur[#cur + 1] = word
-		local w, h = surface.GetTextSize(table.concat(cur, " "))
+		local now = table.concat(cur, " ")
+		local w, h = surface.GetTextSize(now .. " " .. word .. "a")
 		if (w > _w) then
-			if (#cur == 1) then
+			if (#cur == 0) then
 				self:AddLine(word)
-				cur = {}
+				continue
 			else
-				cur[#cur] = nil
-				self:AddLine(table.concat(cur, " "))
-				local w, h = surface.GetTextSize(word)
+				self:AddLine(now)
+				cur = {}
+
+				local w, h = surface.GetTextSize(word .. "a")
 				if (w > _w) then
 					self:AddLine(word)
-					cur = {}
-				else
-					cur = {word}
+					continue
 				end
 			end
 		end
+		cur[#cur + 1] = word
 	end
 
 	if (#cur > 0) then

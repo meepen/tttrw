@@ -262,13 +262,14 @@ end
 
 function SWEP:DrawWorldModel()
     local hand, offset, rotate
-    local pl = self:GetOwner()
+    local pl = self:GetParent()
 
-    if IsValid(pl) and pl.SetupBones then
+    if (IsValid(pl) and pl.SetupBones) then
         pl:SetupBones()
         pl:InvalidateBoneCache()
         self:InvalidateBoneCache()
-    end
+	end
+	
 
     if (IsValid(pl) and self.Offset) then
         local boneIndex = pl:LookupBone "ValveBiped.Bip01_R_Hand"

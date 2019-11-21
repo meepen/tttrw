@@ -249,9 +249,10 @@ end
 
 function round.End(winning_team, winners)
 	if (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
-		warn("round.End called when ROUNDSTATE = %i\n", ttt.GetRoundState())
+		warn("round.End called when ROUNDSTATE = %s\n", ttt.Enums.RoundState[ttt.GetRoundState()])
 		return
 	end
+
 	hook.Run("TTTRoundEnd", winning_team, winners)
 end
 
@@ -360,6 +361,7 @@ function GM:PlayerInitialSpawn(ply)
 	local should, reason = hook.Run "ShouldChangeMap"
 
 	if (player.GetCount() == 1 and should) then
+		pprint("Changing maps: %s", tostring(reason))
 		game.LoadNextMap(reason)
 	end
 end

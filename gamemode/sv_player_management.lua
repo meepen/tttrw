@@ -18,3 +18,12 @@ function GM:TTTRemoveIneligiblePlayers(plys)
 		end
 	end
 end
+
+timer.Create("tttrw_afk", 0, 0, function()
+	for _, info in pairs(round.GetActivePlayers()) do
+		if (IsValid(info.Player) and info.Player:GetInfoNum("tttrw_afk", 0) == 1) then
+			info.Player:Say "I have been slain for being afk."
+			info.Player:Kill()
+		end
+	end
+end)

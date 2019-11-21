@@ -4,8 +4,7 @@ ttt.Notifications = ttt.Notifications or {}
 
 if (SERVER) then
 	util.AddNetworkString("ttt.Notifications")
-	
-	
+
 	function PLAYER:Notify(msg)
 		net.Start("ttt.Notifications")
 			net.WriteString(msg)

@@ -7,11 +7,24 @@ surface.CreateFont("tttrw_afk_font", {
 })
 
 local function Refresh()
-	timer.Create("tttrw_afk", 90, 1, function()
+	timer.Create("tttrw_afk", 80, 1, function()
 		if (not LocalPlayer():Alive()) then
 			return
 		end
-		tttrw_afk:SetBool(true)
+
+		local seconds = 10
+
+		timer.Create("tttrw_afk", 1, seconds + 1, function()
+			if (not LocalPlayer():Alive()) then
+				return
+			end
+			ttt.Notifications.Add("If you don't move around within " .. seconds .. " seconds, you will be slain for being AFK")
+			seconds = seconds - 1
+
+			if (seconds < 0) then
+				tttrw_afk:SetBool(true)
+			end
+		end)
 	end)
 end
 
