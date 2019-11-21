@@ -157,7 +157,7 @@ function round.Prepare()
 	end)
 end
 
-function round.TryStart()
+local function TryStart()
 	local plys = ttt.GetEligiblePlayers()
 	if (#plys < ttt_minimum_players:GetInt()) then
 		round.SetState(ttt.ROUNDSTATE_WAITING, 0)
@@ -238,6 +238,13 @@ function round.TryStart()
 	end)
 	round.FirstRound = false
 	return true
+end
+
+function round.TryStart()
+	if (TryStart()) then
+		return
+	end
+	timer.Simple(3, round.TryStart)
 end
 
 function round.End(winning_team, winners)
