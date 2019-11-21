@@ -150,6 +150,30 @@ AccessorFunc( PANEL, "m_bDisabled",		"Disabled",			FORCE_BOOL )
 
 function PANEL:Init()
 	self:SetCursor "hand"
+
+	self.Label = self:Add "DLabel"
+	self.Label:SetContentAlignment(5)
+	self.Label:Dock(FILL)
+end
+
+function PANEL:SetTextColor(c)
+	self.Label:SetTextColor(c)
+end
+
+function PANEL:SetText(c)
+	self.Label:SetText(c)
+end
+
+function PANEL:GetTexT()
+	return self.Label:GetText()
+end
+
+function PANEL:SetFont(f)
+	self.Label:SetFont(f)
+end
+
+function PANEL:GetFont(f)
+	return self.Label:GetFont()
 end
 
 function PANEL:OnMousePressed( mousecode )
