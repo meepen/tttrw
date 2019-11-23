@@ -470,6 +470,7 @@ function PANEL:Init()
 end
 
 function PANEL:AddTab(name, pnl)
+	pnl.MainPanel = self
 	self.Tabs[name] = pnl
 	pnl:SetParent(self)
 	pnl:SetVisible(false)

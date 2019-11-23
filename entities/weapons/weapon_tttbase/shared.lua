@@ -170,6 +170,7 @@ function SWEP:Deploy()
 	if (IsValid(self:GetOwner()) and IsValid(self:GetOwner():GetHands())) then
 		self:GetOwner():GetHands():SetNoDraw(not self.UseHands)
 	end
+	self:SendWeaponAnim(ACT_VM_DEPLOY)
 
 	return true
 end
@@ -228,6 +229,7 @@ local function GetModel(ply)
 	local r = ttt.ModelHitboxes[m]
 
 	if (not r) then
+		print(ply:GetModel())
 		local f = file.Open(ply:GetModel(), "rb", "GAME")
 
 		f:Seek(176)
@@ -438,6 +440,7 @@ function SWEP:DoFireBullets()
 		Tracer = self:GetTracers(),
 		TracerName = self:GetTracerName(),
 		Spread = self:GetSpread(),
+		HullSize = bullet_info.HullSize,
 		Callback = function(_, ...)
 			if (IsValid(self)) then
 				self:FireBulletsCallback(...)
@@ -651,6 +654,7 @@ end
 
 function SWEP:Holster()
 	self:CancelReload()
+	self:SendWeaponAnim(ACT_VM_DEPLOY)
 	return true
 end
 
