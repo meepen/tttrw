@@ -152,7 +152,7 @@ function GM:TTTPrepareRoles(Team, Role)
 	Team "traitor":SeenBy {"traitor"}:SetColor(Color(175, 47, 36)):TeamChatSeenBy "traitor"
 		:SetVoiceChannel "traitor" :SetEvil(true) :SetCanUseBuyMenu(true) :SetDeathIcon "materials/tttrw/tbutton.png"
 		:SetModifyTicketsFunc(function(tickets)
-			return 1
+			return tickets / 2
 		end)
 	Team "spectator":SeenByAll():SetColor(Color(0x4a, 0xc3, 0xff))
 
