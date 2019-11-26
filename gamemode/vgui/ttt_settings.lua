@@ -417,6 +417,45 @@ end
 
 vgui.Register("tttrw_crosshair_customize", PANEL, "EditablePanel")
 
+local RadioBinds = {}
+
+do
+	local f = file.Open("tttrw_radio_binds.json", "rb", "DATA")
+
+	if (f) then
+		RadioBinds = util.JSONToTable(f:Read(f:Size()))
+
+		f:Close()
+	else
+		printf("Couldn't open file: tttrw_radio_binds.json")
+	end
+end
+
+local function RegisterRadioBind(key, command)
+	RadioBinds[command] = key
+
+	local f = file.Open("tttrw_radio_binds.json", "wb", "DATA")
+
+	if (not f) then
+		printf("Couldn't open file: tttrw_radio_binds.json")
+		return
+	end
+
+	f:Write(util.TableToJSON(RadioBinds))
+
+	f:Close()
+end
+
+hook.Add("PlayerButtonDown", "tttrw_radio_binds", function(ply, key)
+	if (IsFirstTimePredicted()) then
+		for k, v in pairs(RadioBinds) do
+			if (v == key) then
+				RunConsoleCommand("_ttt_radio_send", k)
+			end
+		end
+	end
+end)
+
 function GM:ShowHelp()
 	if (not IsValid(ttt.settings)) then
 		ttt.settings = vgui.Create "tttrw_base"
@@ -443,6 +482,23 @@ function GM:ShowHelp()
 		ttt.settings:AddTab("Sound", sound)
 
 		ttt.settings:AddTab("Crosshair", vgui.Create "tttrw_crosshair_customize")
+
+		local radio = vgui.Create "ttt_settings_category"
+		for k, v in pairs(ttt.QuickChat) do
+			local btn = radio:AddBinder(v, function(key)
+				RegisterRadioBind(key, k)
+			end)
+
+			if (RadioBinds[k] and input.GetKeyName(RadioBinds[k])) then
+				btn:SetText("Bound to: " .. string.upper(input.GetKeyName(RadioBinds[k])))
+			else
+				btn:SetText("Not bound")
+			end
+		end
+
+		radio:InvalidateLayout(true)
+		radio:SizeToContents()
+		ttt.settings:AddTab("Binds", radio)
 
 		ttt.settings:SetSize(640, 400)
 		ttt.settings:Center()
