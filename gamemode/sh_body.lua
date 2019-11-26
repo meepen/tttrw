@@ -54,7 +54,7 @@ function GM:PlayerInspectBody(ply, ent, pos)
 		ent.HiddenState:SetVisibleTo(ply)
 
 		local creds = ent.HiddenState:GetCredits()
-		if (creds > 0 and ply:GetRoleData().DefaultCredits) then
+		if (ply:Alive() and creds > 0 and ply:GetRoleData().DefaultCredits) then
 			ply:SetCredits(ply:GetCredits() + creds)
 			ply:Notify("You've received " .. creds .. " credits from the body")
 			ent.HiddenState:SetCredits(0)
