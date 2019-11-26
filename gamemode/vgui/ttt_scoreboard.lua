@@ -95,15 +95,23 @@ function PANEL:Init()
 	self.Name:SetFont "ttt_scoreboard_player"
 	self.Name:DockMargin(10, 0, 0, 0)
 	self.Name:SetText("Name")
-	self.Name:SizeToContents()
+	self.Name:SizeToContentsX()
 	self.Name:Dock(LEFT)
 	self.Name:SetTextColor(white_text)
 
+	self.Mute = self:Add "DImageButton"
+	self.Mute:SetFont "ttt_scoreboard_player"
+	self.Mute:DockMargin(0, 0, 10, 0)
+	self.Mute:SetText "Mute"
+	self.Mute:SizeToContentsX()
+	self.Mute:Dock(RIGHT)
+	self.Mute:SetTextColor(white_text)
+
 	self.Ping = self:Add "DLabel"
 	self.Ping:SetFont "ttt_scoreboard_player"
-	self.Ping:DockMargin(0, 0, 10, 0)
+	self.Ping:DockMargin(0, 0, Padding * 5, 0)
 	self.Ping:SetText "Ping"
-	self.Ping:SizeToContents()
+	self.Ping:SizeToContentsX()
 	self.Ping:Dock(RIGHT)
 	self.Ping:SetTextColor(white_text)
 
@@ -111,7 +119,7 @@ function PANEL:Init()
 	self.Karma:SetFont "ttt_scoreboard_player"
 	self.Karma:DockMargin(0, 0, Padding * 10, 0)
 	self.Karma:SetText "Karma"
-	self.Karma:SizeToContents()
+	self.Karma:SizeToContentsX()
 	self.Karma:Dock(RIGHT)
 	self.Karma:SetTextColor(white_text)
 
@@ -121,7 +129,7 @@ function PANEL:Init()
 	self.Rank:SetFont "ttt_scoreboard_player"
 	self.Rank:DockMargin(0, 0, 10, 0)
 	self.Rank:SetText "Rank"
-	self.Rank:SizeToContents()
+	self.Rank:SizeToContentsX()
 	self.Rank:Dock(RIGHT)
 	self.Rank:SetTextColor(white_text)
 end
@@ -169,19 +177,40 @@ function PANEL:SetPlayer(ply, group)
 	self.Avatar:SetPlayer(ply)
 
 	self.Name:SetText(ply:Nick())
-	self.Name:SizeToContents()
+	self.Name:SizeToContentsX()
 	self.Name:Dock(LEFT)
 
 	self.Karma:SetText "1000"
-	self.Karma:SizeToContents()
+	self.Karma:SizeToContentsX()
 	self.Karma:Dock(RIGHT)
 
 	self.Ping:SetText(self.Player:Ping() .. "ms")
-	self.Ping:SizeToContents()
+	self.Ping:SizeToContentsX()
 	self.Karma:DockMargin(0, 0, Padding * 12 - self.Ping:GetWide(), 0)
 
 	self.Rank:SetColor(ColorAlpha(hook.Run("TTTGetPlayerColor", ply) or color_white, 0.9 * 255))
 	self.Rank:SetText(ply:GetUserGroup())
+
+	self.Mute:SetSize(24, 24)
+	self.Mute:SetText ""
+
+	if (ply:IsMuted()) then
+		self.Mute:SetImage "icon32/muted.png"
+	else
+		self.Mute:SetImage "icon32/unmuted.png"
+	end
+
+	function self.Mute:DoClick()
+		if (IsValid(ply)) then
+			ply:SetMuted(not ply:IsMuted())
+
+			if (ply:IsMuted()) then
+				self:SetImage "icon32/muted.png"
+			else
+				self:SetImage "icon32/unmuted.png"
+			end
+		end
+	end
 end
 
 vgui.Register("ttt_scoreboard_player", PANEL, "ttt_curved_panel")

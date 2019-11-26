@@ -263,6 +263,50 @@ function PANEL:AddSlider(text, convar)
 	self.Last = p
 end
 
+function PANEL:AddBinder(text, callback)
+	self:AddLabel(text)
+	local btn = self:AddLabelButton(text)
+	btn:DockMargin(0, 0, 0, 0)
+	function btn:DoClick()
+		self:SetText("Press a key")
+		input.StartKeyTrapping()
+		self.Trapping = true
+	end
+
+	function btn:DoRightClick()
+		self:SetText("Not bound")
+		self.SelectedCode = 0
+
+		callback(nil)
+	end
+
+	function btn:Think()
+		if (input.IsKeyTrapping() and self.Trapping) then
+			local code = input.CheckKeyTrapping()
+
+			if (code) then
+				if (code == KEY_ESCAPE) then
+					if (self.SelectedCode) then
+						local key = input.GetKeyName(self.SelectedCode)
+						self:SetText("Bound to: " .. string.upper(key))
+					else
+						self:SetText("Not bound")
+					end
+				else
+					self.SelectedCode = code
+					local key = input.GetKeyName(code)
+					self:SetText("Bound to: " .. string.upper(key))
+					callback(code)
+				end
+
+				self.Trapping = false
+			end
+		end
+	end
+
+	return btn
+end
+
 function PANEL:SizeToContents()
 	self:SetTall(select(2, self.Last:GetPos()) + self.Last:GetTall())
 end
@@ -353,8 +397,17 @@ function PANEL:Init()
 	dotop:SetDecimals(0)
 	dotop:SetConVar("tttrw_crosshair_dot_opacity")
 
+	local spreadmult = self:Add "DNumSlider"
+	spreadmult:SetPos(crosshair:GetWide() - 400 + 450,480)
+	spreadmult:SetSize(300,50)
+	spreadmult:SetText("Spread Multiplier")
+	spreadmult:SetMin(0)
+	spreadmult:SetMax(2048)
+	spreadmult:SetDecimals(0)
+	spreadmult:SetConVar("tttrw_crosshair_spread_multiplier")
+
 	local reset = self:Add "DButton"
-	reset:SetPos(75,425)
+	reset:SetPos(75,465)
 	reset:SetSize(100,50)
 	reset:SetText("Reset")
 	function reset:DoClick()
@@ -368,10 +421,49 @@ function PANEL:Init()
 		dotop:SetValue(255)
 	end
 
-	self:SetSize(800, 500)
+	self:SetSize(800, 540)
 end
 
 vgui.Register("tttrw_crosshair_customize", PANEL, "EditablePanel")
+
+local RadioBinds = {}
+
+do
+	local f = file.Open("tttrw_radio_binds.json", "rb", "DATA")
+
+	if (f) then
+		RadioBinds = util.JSONToTable(f:Read(f:Size()))
+
+		f:Close()
+	else
+		printf("Couldn't open file: tttrw_radio_binds.json")
+	end
+end
+
+local function RegisterRadioBind(key, command)
+	RadioBinds[command] = key
+
+	local f = file.Open("tttrw_radio_binds.json", "wb", "DATA")
+
+	if (not f) then
+		printf("Couldn't open file: tttrw_radio_binds.json")
+		return
+	end
+
+	f:Write(util.TableToJSON(RadioBinds))
+
+	f:Close()
+end
+
+hook.Add("PlayerButtonDown", "tttrw_radio_binds", function(ply, key)
+	if (IsFirstTimePredicted()) then
+		for k, v in pairs(RadioBinds) do
+			if (v == key) then
+				RunConsoleCommand("_ttt_radio_send", k)
+			end
+		end
+	end
+end)
 
 function GM:ShowHelp()
 	if (not IsValid(ttt.settings)) then
@@ -399,6 +491,23 @@ function GM:ShowHelp()
 		ttt.settings:AddTab("Sound", sound)
 
 		ttt.settings:AddTab("Crosshair", vgui.Create "tttrw_crosshair_customize")
+
+		local radio = vgui.Create "ttt_settings_category"
+		for k, v in pairs(ttt.QuickChat) do
+			local btn = radio:AddBinder(v, function(key)
+				RegisterRadioBind(key, k)
+			end)
+
+			if (RadioBinds[k] and input.GetKeyName(RadioBinds[k])) then
+				btn:SetText("Bound to: " .. string.upper(input.GetKeyName(RadioBinds[k])))
+			else
+				btn:SetText("Not bound")
+			end
+		end
+
+		radio:InvalidateLayout(true)
+		radio:SizeToContents()
+		ttt.settings:AddTab("Binds", radio)
 
 		ttt.settings:SetSize(640, 400)
 		ttt.settings:Center()
