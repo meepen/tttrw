@@ -455,7 +455,7 @@ local function RegisterRadioBind(key, command)
 	f:Close()
 end
 
-hook.Add("PlayerButtonDown", "tttrw_radio_binds", function(ply, key)
+function GM:PlayerButtonDown(ply, key)
 	if (IsFirstTimePredicted()) then
 		for k, v in pairs(RadioBinds) do
 			if (v == key) then
@@ -463,7 +463,7 @@ hook.Add("PlayerButtonDown", "tttrw_radio_binds", function(ply, key)
 			end
 		end
 	end
-end)
+end
 
 function GM:ShowHelp()
 	if (not IsValid(ttt.settings)) then
