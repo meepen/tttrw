@@ -263,6 +263,50 @@ function PANEL:AddSlider(text, convar)
 	self.Last = p
 end
 
+function PANEL:AddBinder(text, callback)
+	self:AddLabel(text)
+	local btn = self:AddLabelButton(text)
+	btn:DockMargin(0, 0, 0, 0)
+	function btn:DoClick()
+		self:SetText("Press a key")
+		input.StartKeyTrapping()
+		self.Trapping = true
+	end
+
+	function btn:DoRightClick()
+		self:SetText("Not bound")
+		self.SelectedCode = 0
+
+		callback(nil)
+	end
+
+	function btn:Think()
+		if (input.IsKeyTrapping() and self.Trapping) then
+			local code = input.CheckKeyTrapping()
+
+			if (code) then
+				if (code == KEY_ESCAPE) then
+					if (self.SelectedCode) then
+						local key = input.GetKeyName(self.SelectedCode)
+						self:SetText("Bound to: " .. string.upper(key))
+					else
+						self:SetText("Not bound")
+					end
+				else
+					self.SelectedCode = code
+					local key = input.GetKeyName(code)
+					self:SetText("Bound to: " .. string.upper(key))
+					callback(code)
+				end
+
+				self.Trapping = false
+			end
+		end
+	end
+
+	return btn
+end
+
 function PANEL:SizeToContents()
 	self:SetTall(select(2, self.Last:GetPos()) + self.Last:GetTall())
 end
