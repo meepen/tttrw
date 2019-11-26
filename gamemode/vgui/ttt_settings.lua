@@ -397,8 +397,17 @@ function PANEL:Init()
 	dotop:SetDecimals(0)
 	dotop:SetConVar("tttrw_crosshair_dot_opacity")
 
+	local spreadmult = self:Add "DNumSlider"
+	spreadmult:SetPos(crosshair:GetWide() - 400 + 450,480)
+	spreadmult:SetSize(300,50)
+	spreadmult:SetText("Spread Multiplier")
+	spreadmult:SetMin(0)
+	spreadmult:SetMax(2048)
+	spreadmult:SetDecimals(0)
+	spreadmult:SetConVar("tttrw_crosshair_spread_multiplier")
+
 	local reset = self:Add "DButton"
-	reset:SetPos(75,425)
+	reset:SetPos(75,465)
 	reset:SetSize(100,50)
 	reset:SetText("Reset")
 	function reset:DoClick()
@@ -412,7 +421,7 @@ function PANEL:Init()
 		dotop:SetValue(255)
 	end
 
-	self:SetSize(800, 500)
+	self:SetSize(800, 540)
 end
 
 vgui.Register("tttrw_crosshair_customize", PANEL, "EditablePanel")

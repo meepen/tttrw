@@ -51,7 +51,7 @@ function SWEP:DoDrawCrosshair(x, y)
 		return true
 	end
 	
-	ttt.DefaultCrosshair(x, y)
+	ttt.DefaultCrosshair(x, y, self)
 
 	return true
 end
