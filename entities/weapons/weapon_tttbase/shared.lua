@@ -229,7 +229,6 @@ local function GetModel(ply)
 	local r = ttt.ModelHitboxes[m]
 
 	if (not r) then
-		print(ply:GetModel())
 		local f = file.Open(ply:GetModel(), "rb", "GAME")
 
 		f:Seek(176)
@@ -288,7 +287,7 @@ function SWEP:FireBulletsCallback(tr, dmginfo)
 				for _, hitbox in pairs(mdl[tr.Entity:GetHitboxSet()]) do
 					local matr = tr.Entity:GetBoneMatrix(hitbox.Bone)
 					local hitpos, norm, frac = hitbox.Collide:TraceBox(matr:GetTranslation(), matr:GetAngles(), tr.StartPos, tr.StartPos + tr.Normal * 10000, vector_origin, vector_origin)
-					if (hitpos and (ignore[tr.HitGroup] or hitpos:Distance(tr.HitPos) < 7)) then
+					if (hitpos and (ignore[tr.HitGroup] or hitpos:Distance(tr.HitPos) < 14)) then
 						dmginfo:SetDamage(d)
 						self:DoDamageDropoff(tr, dmginfo)
 						self:ScaleDamage(hitbox.Group, dmginfo)
