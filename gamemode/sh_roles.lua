@@ -148,26 +148,48 @@ local function Role(name, team)
 end
 
 function GM:TTTPrepareRoles(Team, Role)
-	Team "innocent":SetColor(56, 172, 87) :SetDeathIcon "materials/tttrw/roles/innocent.png"
-	Team "traitor":SeenBy {"traitor"}:SetColor(Color(175, 47, 36)):TeamChatSeenBy "traitor"
-		:SetVoiceChannel "traitor" :SetEvil(true) :SetCanUseBuyMenu(true) :SetDeathIcon "materials/tttrw/tbutton.png"
+	Team "innocent"
+		:SetColor(56, 172, 87)
+		:SetDeathIcon "materials/tttrw/roles/innocent.png"
+
+	Team "traitor"
+		:SeenBy {"traitor"}
+		:SetColor(Color(175, 47, 36))
+	:TeamChatSeenBy "traitor"
+		:SetVoiceChannel "traitor"
+		:SetEvil(true)
+		:SetCanUseBuyMenu(true)
+		:SetDeathIcon "materials/tttrw/tbutton.png"
 		:SetModifyTicketsFunc(function(tickets)
 			return tickets / 2
 		end)
-	Team "spectator":SeenByAll():SetColor(Color(0x4a, 0xc3, 0xff))
+
+	Team "spectator"
+		:SeenByAll()
+		:SetColor(Color(0x4a, 0xc3, 0xff))
 
 	Role("Innocent", "innocent")
 	Role("Spectator", "spectator")
-	Role("Detective", "innocent"):SeenByAll()
+	Role("Detective", "innocent")
+		:SeenByAll()
 		:SetCalculateAmountFunc(function(total_players)
 			return math.floor(math.Clamp(total_players * ttt_detective_pct:GetFloat(), 0, ttt_detective_max:GetInt()))
-		end):SetColor(56, 80, 210):TeamChatSeenBy "Detective" :SetVoiceChannel "Detective" :SetCanUseBuyMenu(true)
+		end)
+		:SetColor(56, 80, 210)
+		:TeamChatSeenBy "Detective"
+		:SetVoiceChannel "Detective"
+		:SetCanUseBuyMenu(true)
 		:SetModifyTicketsFunc(function(tickets)
 			return tickets - 1
-		end) :SetDeathIcon "materials/tttrw/roles/detective.png" :SetDefaultCredits(2)
-	Role("Traitor", "traitor"):SetCalculateAmountFunc(function(total_players)
-		return math.floor(math.Clamp(total_players * ttt_traitor_pct:GetFloat(), 1, ttt_traitor_max:GetInt()))
-	end):SetDefaultCredits(2)
+		end)
+		:SetDeathIcon "materials/tttrw/roles/detective.png"
+		:SetDefaultCredits(2)
+
+	Role("Traitor", "traitor")
+		:SetCalculateAmountFunc(function(total_players)
+			return math.floor(math.Clamp(total_players * ttt_traitor_pct:GetFloat(), 1, ttt_traitor_max:GetInt()))
+		end)
+		:SetDefaultCredits(2)
 end
 
 function GM:SetupRoles()

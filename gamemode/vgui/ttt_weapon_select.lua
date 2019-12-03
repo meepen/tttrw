@@ -33,7 +33,7 @@ function PANEL:Init()
 end
 function PANEL:OnPlayerRoleChange(ply, old, new)
 	if (ply == Player()) then
-		self:SetColor(ttt.roles[new].Color)
+		self:SetColor((ttt.roles[new] or ttt.roles.Spectator).Color)
 	end
 end
 

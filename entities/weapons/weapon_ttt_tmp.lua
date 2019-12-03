@@ -3,7 +3,7 @@ AddCSLuaFile()
 SWEP.HoldType              = "ar2"
 
 SWEP.PrintName          = "TMP"
-SWEP.Slot               = 2
+SWEP.Slot               = 1
 
 SWEP.ViewModelFlip      = false
 SWEP.ViewModelFOV       = 54
