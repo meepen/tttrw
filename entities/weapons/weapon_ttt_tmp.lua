@@ -29,7 +29,7 @@ SWEP.Primary.Delay         = 0.05
 SWEP.Primary.Recoil        = 1.2
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "pistol"
-SWEP.Primary.ClipSize      = 30
+SWEP.Primary.ClipSize      = 20
 SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_TMP.Single"
 
