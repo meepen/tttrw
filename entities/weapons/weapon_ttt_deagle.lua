@@ -33,7 +33,7 @@ SWEP.Primary.ClipSize      = 8
 SWEP.Primary.DefaultClip   = 16
 SWEP.Primary.Sound         = Sound "Weapon_Deagle.Single"
 
-SWEP.HeadshotMultiplier    = 4.4
+SWEP.HeadshotMultiplier    = 4.6
 SWEP.DeploySpeed = 1.55
 
 SWEP.AutoSpawnable         = true
