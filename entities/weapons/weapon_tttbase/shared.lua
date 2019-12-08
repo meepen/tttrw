@@ -99,6 +99,7 @@ function SWEP:SetupDataTables()
 	self:NetVar("ViewPunchTime", "Float", -math.huge)
 	self:NetVar("RealLastShootTime", "Float", -math.huge)
 	self:NetVar("ConsecutiveShots", "Int", 0)
+	self:NetVar("BulletsShot", "Int", 0)
 	self:NetVar("ReloadEndTime", "Float", math.huge)
 	self:NetVar("ReloadStartTime", "Float", math.huge)
 	hook.Run("TTTInitWeaponNetVars", self)
@@ -432,26 +433,51 @@ function SWEP:DoFireBullets()
 	local bullet_info = self.Bullets
 	local owner = self:GetOwner()
 
+
+	local src = owner:GetShootPos()
+	local dir = owner:EyeAngles():Forward()
 	local bullets = {
 		Num = bullet_info.Num,
 		Attacker = owner,
 		Damage = self:GetDamage(),
-		Tracer = self:GetTracers(),
+		Tracer = 0,
 		TracerName = self:GetTracerName(),
 		Spread = self:GetSpread(),
 		HullSize = bullet_info.HullSize,
 		Callback = function(_, ...)
 			if (IsValid(self)) then
 				self:FireBulletsCallback(...)
+				self:TracerEffect(...)
 			end
 		end,
-		Src = owner:GetShootPos(),
-		Dir = owner:EyeAngles():Forward(),
+		Src = src,
+		Dir = dir,
 	}
 
 	self.LastBullets = table.Copy(bullets)
 
 	self:FireBullets(bullets)
+
+	self:SetBulletsShot(self:GetBulletsShot() + 1)
+end
+
+function SWEP:TracerEffect(tr, dmg)
+	if ((not CLIENT or IsFirstTimePredicted()) and self:GetTracers() ~= 0 and self:GetBulletsShot() % self:GetTracers() == 0) then
+		local d = EffectData()
+		d:SetScale(4000)
+		d:SetFlags(0)
+		d:SetStart(tr.StartPos)
+		d:SetOrigin(tr.HitPos or tr.StartPos)
+		d:SetDamageType(dmg:GetDamageType())
+		d:SetColor(1)
+
+		local r
+		if (SERVER) then
+			r = RecipientFilter()
+			r:AddAllPlayers()
+		end
+		util.Effect(self:GetTracerName(), d, true, r)
+	end
 end
 
 function SWEP:GetSpread()
@@ -669,7 +695,7 @@ function SWEP:GetTracers()
 end
 
 function SWEP:GetTracerName()
-	return self.Bullets.TracerName
+	return self.Bullets.TracerName or "Tracer"
 end
 
 function SWEP:GetDamageDropoffRange()
