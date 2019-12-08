@@ -5,6 +5,8 @@ SWEP.HoldType           = "ar2"
 SWEP.PrintName          = "AK47"
 SWEP.Slot               = 2
 
+SWEP.Ortho = {5, 3}
+
 SWEP.ViewModelFlip      = false
 SWEP.ViewModelFOV       = 54
 

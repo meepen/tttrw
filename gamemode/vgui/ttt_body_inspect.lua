@@ -110,6 +110,70 @@ end
 vgui.Register("ttt_body_inspect_body_inner", PANEL, "ttt_curved_panel")
 
 local PANEL = {}
+DEFINE_BASECLASS "ttt_curved_button"
+function PANEL:Paint(w, h)
+	BaseClass.Paint(self, w, h)
+	local err = self.Model
+	local class = self.Class
+
+	if (not IsValid(err) or not class) then
+		return
+	end
+
+	local lookup = weapons.GetStored(class).Ortho or {0, 0}
+
+	local x, y = self:LocalToScreen(0, 0)
+	local mins, maxs = err:GetModelBounds()
+	local angle = Angle(0, -90)
+	local size = mins:Distance(maxs) / 2.5 * (lookup.size or 1) * 1.1
+
+	print(x, y, w, h)
+
+	cam.Start3D(vector_origin, lookup.angle or angle, 90, x, y, w, h)
+		cam.StartOrthoView(lookup[1] + -size, lookup[2] + size, lookup[1] + size, lookup[2] + -size)
+			render.SuppressEngineLighting(true)
+				err:SetAngles(Angle(-40, 10, 10))
+				render.PushFilterMin(TEXFILTER.ANISOTROPIC)
+				render.PushFilterMag(TEXFILTER.ANISOTROPIC)
+					err:DrawModel()
+				render.PopFilterMag()
+				render.PopFilterMin()
+			render.SuppressEngineLighting(false)
+		cam.EndOrthoView()
+	cam.End3D()
+end
+
+function PANEL:SetImage(v)
+	self.Class = v:match "^WEAPON_(.+)"
+	
+	if (not self.Class) then
+		return
+	end
+
+	self.Model = ClientsideModel(weapons.GetStored(self.Class).WorldModel, RENDERGROUP_OTHER)
+
+	if (not IsValid(self.Model)) then
+		return
+	end
+
+	self.Model:SetNoDraw(true)
+end
+
+function PANEL:Init()
+	self:SetText ""
+	self:SetColor(Color(201, 127, 8))
+	self:SetCurve(4)
+
+	self.Outline = self:Add "ttt_curved_panel_outline"
+	self.Outline:Dock(FILL)
+	self.Outline:SetColor(color_black)
+	self.Outline:SetCurve(self:GetCurve())
+end
+
+vgui.Register("ttt_body_inspect_weapon_button", PANEL, "ttt_curved_button")
+
+
+local PANEL = {}
 
 function PANEL:Init()
 	self.Buttons = {}
@@ -130,17 +194,29 @@ function PANEL:OnBodyInfoInitialized(ent)
 	self:BodyDataInitialized(ent:GetParent())
 end
 
+local function GenerateIcon(self, var)
+	local v
+	if (var:GetIcon():StartWith "WEAPON_") then
+		v = self:Add "ttt_body_inspect_weapon_button"
+	else
+		v = self:Add "DImageButton"
+	end
+
+	v:SetImage(var:GetIcon())
+	v:Dock(LEFT)
+
+	return v
+end
+
 function PANEL:BodyDataInitialized(ent)
 	if (ent:GetRagdoll() ~= ttt.InspectBody) then
 		return
 	end
 
 	for i, var in ipairs(ent:GetData()) do
-		self.Buttons[i] = self:Add "DImageButton"
-		self.Buttons[i]:SetImage(var:GetIcon())
-		self.Buttons[i]:Dock(LEFT)
-		self.Buttons[i]:SetZPos(i)
-		self.Buttons[i].DoClick = function()
+		local v = GenerateIcon(self, var)
+		v:SetZPos(i)
+		v.DoClick = function()
 			self:GetParent():Select(var)
 		end
 	end
@@ -200,6 +276,11 @@ function PANEL:Think()
 			self.Description = desc
 		end
 		if (self.Image ~= image) then
+			if (self.Variable:GetIcon():StartWith "WEAPON") then
+				self.Icon:SetVisible(false)
+			else
+				self.Icon:SetVisible(true)
+			end
 			self.Icon:SetImage(image)
 			self.Image = image
 		end

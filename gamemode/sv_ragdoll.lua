@@ -88,7 +88,7 @@ function GM:InitializeBodyData(variables, Information)
 	if (IsValid(wep)) then
 		table.insert(variables, {
 			Title = "Weapon",
-			Icon = "materials/tttrw/disagree.png",
+			Icon = "WEAPON_" .. wep:GetClass(),
 			Description = "This person appears to have died from a " .. (wep.PrintName or wep:GetClass())
 		})
 	end

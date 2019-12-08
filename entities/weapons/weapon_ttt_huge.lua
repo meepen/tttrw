@@ -8,7 +8,7 @@ SWEP.Slot               = 2
 SWEP.ViewModelFlip      = false
 SWEP.ViewModelFOV       = 69
 
-SWEP.IconLetter         = "w"
+SWEP.Ortho = {4, 6.5}
 
 SWEP.Base                  = "weapon_tttbase"
 

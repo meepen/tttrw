@@ -8,8 +8,7 @@ SWEP.Slot               = 1
 SWEP.ViewModelFlip      = false
 SWEP.ViewModelFOV       = 54
 
-SWEP.Icon               = "vgui/ttt/icon_glock"
-SWEP.IconLetter         = "c"
+SWEP.Ortho = {1, 4, size = 1.1}
 
 SWEP.Base                  = "weapon_tttbase"
 
