@@ -127,8 +127,6 @@ function PANEL:Paint(w, h)
 	local angle = Angle(0, -90)
 	local size = mins:Distance(maxs) / 2.5 * (lookup.size or 1) * 1.1
 
-	print(x, y, w, h)
-
 	cam.Start3D(vector_origin, lookup.angle or angle, 90, x, y, w, h)
 		cam.StartOrthoView(lookup[1] + -size, lookup[2] + size, lookup[1] + size, lookup[2] + -size)
 			render.SuppressEngineLighting(true)
