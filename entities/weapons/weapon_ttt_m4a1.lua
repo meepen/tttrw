@@ -26,7 +26,7 @@ SWEP.Bullets = {
 }
 
 SWEP.Primary.Damage        = 19
-SWEP.Primary.Delay         = 0.13
+SWEP.Primary.Delay         = 0.145
 SWEP.Primary.Recoil        = 1.76
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Pistol"
