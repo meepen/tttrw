@@ -26,7 +26,7 @@ SWEP.Bullets = {
 
 SWEP.TTTCompat = {"weapon_zm_pistol"}
 
-SWEP.Primary.Damage        = 25
+SWEP.Primary.Damage        = 23
 SWEP.Primary.Delay         = 0.5
 SWEP.Primary.Recoil        = 1.5
 SWEP.Primary.RecoilTiming  = 0.06
@@ -36,7 +36,7 @@ SWEP.Primary.ClipSize      = 16
 SWEP.Primary.DefaultClip   = 64
 SWEP.Primary.Sound         = Sound "Weapon_FiveSeven.Single"
 
-SWEP.HeadshotMultiplier    = 1.43
+SWEP.HeadshotMultiplier    = 2
 SWEP.DeploySpeed = 1.66
 
 
