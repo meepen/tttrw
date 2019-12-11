@@ -18,11 +18,11 @@ SWEP.Bullets = {
 	DamageDropoffRange = 550,
 	DamageDropoffRangeMax = 3500,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(0.025, 0.025),
+	Spread = Vector(0.025, 0.02),
 }
 
 SWEP.Primary.Damage        = 17
-SWEP.Primary.Delay         = 0.1
+SWEP.Primary.Delay         = 0.09
 SWEP.Primary.Recoil        = 1.5
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "SMG1"
