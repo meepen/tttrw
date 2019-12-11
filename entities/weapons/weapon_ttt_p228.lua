@@ -25,7 +25,7 @@ SWEP.Bullets = {
 }
 
 SWEP.Primary.Damage        = 22
-SWEP.Primary.Delay         = 0.27
+SWEP.Primary.Delay         = 0.25
 SWEP.Primary.Recoil        = 1.3
 SWEP.Primary.RecoilTiming  = 0.06
 SWEP.Primary.Automatic     = true
@@ -34,7 +34,7 @@ SWEP.Primary.ClipSize      = 12
 SWEP.Primary.DefaultClip   = 24
 SWEP.Primary.Sound         = Sound "Weapon_P228.Single"
 
-SWEP.HeadshotMultiplier    = 1.43
+SWEP.HeadshotMultiplier    = 1.6
 SWEP.DeploySpeed = 1.66
 
 
