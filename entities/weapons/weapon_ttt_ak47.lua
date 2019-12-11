@@ -24,7 +24,7 @@ SWEP.Bullets = {
 }
 
 SWEP.Primary.Damage        = 22
-SWEP.Primary.Delay         = 0.146
+SWEP.Primary.Delay         = 0.115
 SWEP.Primary.Recoil        = 2.5
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Pistol"
@@ -32,7 +32,7 @@ SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_AK47.Single"
 
-SWEP.HeadshotMultiplier    = 2
+SWEP.HeadshotMultiplier    = 1.9
 SWEP.DeploySpeed = 1.3
 
 SWEP.AutoSpawnable         = true
