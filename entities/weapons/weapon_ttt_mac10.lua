@@ -29,7 +29,7 @@ SWEP.Bullets = {
 SWEP.TTTCompat = {"weapon_zm_mac10"}
 
 SWEP.Primary.Damage        = 12
-SWEP.Primary.Delay         = 0.065
+SWEP.Primary.Delay         = 0.063
 SWEP.Primary.Recoil        = 1.2
 SWEP.Primary.Automatic     = true
 SWEP.Primary.ClipSize      = 30
@@ -38,7 +38,7 @@ SWEP.Primary.Sound         = Sound "Weapon_mac10.Single"
 SWEP.Primary.Ammo          = "smg1"
 SWEP.AmmoEnt               = "item_ammo_smg1_ttt"
 
-SWEP.HeadshotMultiplier    = 1.2
+SWEP.HeadshotMultiplier    = 1.4
 SWEP.DeploySpeed = 2.5
 SWEP.ReloadSpeed = 1.9
 
