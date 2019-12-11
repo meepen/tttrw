@@ -23,7 +23,7 @@ SWEP.Bullets = {
 
 SWEP.TTTCompat = {"weapon_zm_sledge"}
 
-SWEP.Primary.Damage        = 6
+SWEP.Primary.Damage        = 11
 SWEP.Primary.Delay         = 0.06
 SWEP.Primary.Recoil        = 2
 SWEP.Primary.Automatic     = true
