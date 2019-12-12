@@ -28,9 +28,7 @@ function GM:EntityTakeDamage(targ, dmg)
 end
 
 function GM:SetupMove(ply, mv)
-
 	if (ply.RestoreVelocity) then
-		print(ply, ply.RestoreVelocity)
 		mv:SetVelocity(ply.RestoreVelocity)
 		ply.RestoreVelocity = nil
 	end
