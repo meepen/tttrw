@@ -148,7 +148,12 @@ function PANEL:SetImage(v)
 		return
 	end
 
-	self.Model = ClientsideModel(weapons.GetStored(self.Class).WorldModel, RENDERGROUP_OTHER)
+	local wep = weapons.GetStored(self.Class)
+	if (not wep) then
+		return
+	end
+
+	self.Model = ClientsideModel(wep.WorldModel, RENDERGROUP_OTHER)
 
 	if (not IsValid(self.Model)) then
 		return

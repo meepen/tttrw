@@ -27,96 +27,101 @@ function ENT:NetVar(name, type, default, notify)
 end
 
 function ENT:SetupDataTables()
-	self:NetVar("TickCreated", "Int", 0, true)
 	self:NetVar("DieTime", "Float", -math.huge, true)
 end
 
 function ENT:Initialize()
-	self:SetTickCreated(engine.TickCount())
-
 	self:SetDieTime(CurTime() + 2)
 
-	if (CLIENT and not self.Client) then
+    self:SetMoveType(MOVETYPE_NONE)
+	self:SetModel(self.Model)
+	self:DrawShadow(false)
+
+	if (CLIENT and self:GetOwner() == LocalPlayer()) then
 		self:SetPredictable(true)
 	end
 
-	self:SetModel(self.Model)
-
 	hook.Add("PlayerTick", self, self.PlayerTick)
+
+	self:PlayerTick()
+end
+
+function ENT:PlayerTick(ply)
+	if (ply ~= self:GetOwner()) then
+		return
+	end
+
+	self:Tick()
 end
 
 local function reflect(d, n)
 	return d - 2 * d:Dot(n) * n
 end
 
+ENT.Mask = MASK_SOLID
+ENT.CollisionGroup = COLLISION_GROUP_PLAYERSOLID
+
 function ENT:Trace(from, to)
-	return util.TraceHull {
+	self:GetOwner():LagCompensation(true)
+	local tr = util.TraceHull {
 		start = from,
 		endpos = to,
 		maxs = Vector(10, 10, 5),
 		mins = Vector(-10, -10, -8),
-		mask = MASK_SOLID,
-		collisiongroup = COLLISION_GROUP_WEAPON,
+		mask = self.Mask,
+		collisiongroup = self.CollisionGroup,
+		filter = self:GetOwner()
 	}
+	self:GetOwner():LagCompensation(false)
+	return tr
 end
 
 function ENT:SetOrigin(v)
-	if (self.Client) then
-		self.Origin = v
-	else
-		self:SetPos(v)
-	end
+	self:SetNetworkOrigin(v)
 end
 
 function ENT:GetOrigin()
-	if (self.Client) then
-		return self.Origin
-	else
-		return self:GetPos()
-	end
+	return self:GetNetworkOrigin()
 end
 
 function ENT:SETVelocity(v)
-	if (self.Client) then
-		self.Velocity = v
-	else
-		self:SetAbsVelocity(v)
-	end
+	self:SetAbsVelocity(v)
 end
 
 function ENT:GETVelocity()
-	if (self.Client) then
-		return self.Velocity or vector_origin
-	else
-		return self:GetAbsVelocity()
-	end
+	return self:GetAbsVelocity()
 end
-
 
 function ENT:Tick()
 	if (CurTime() >= self:GetDieTime()) then
 		if (self.DoRemove) then
+			self:SetPos(self:GetOrigin())
+			self:Explode()
 			self:Remove()
+			self.DoRemove = false
+			return
 		end
 	end
 
-	self:SETVelocity(self:GETVelocity() + Vector(0, 0, -300) * engine.TickInterval())
+	local ft = FrameTime()
+
+	self:SETVelocity(self:GETVelocity() + Vector(0, 0, -300) * ft)
 
 	local cur_pos = self:GetOrigin()
-	local next_pos = cur_pos + self:GETVelocity() * engine.TickInterval()
+	local next_pos = cur_pos + self:GETVelocity() * ft
 
 	local tr = self:Trace(cur_pos, next_pos)
 
 	local frac = 1
 
-	while (not tr.StartSolid and not tr.AllSolid and tr.Hit and tr.Fraction ~= 0) do
+	while ((not tr.StartSolid or tr.FractionLeftSolid ~= tr.Fraction) and not tr.AllSolid and tr.Hit and tr.Fraction ~= 0 and not self:Collide(tr)) do
 		frac = frac - tr.Fraction
 
 		cur_pos = tr.HitPos
 
 		self:SETVelocity(reflect(self:GETVelocity(), tr.HitNormal) * 0.5)
 
-		next_pos = cur_pos + self:GETVelocity() * engine.TickInterval() * frac
+		next_pos = cur_pos + self:GETVelocity() * ft * frac
 
 		tr = self:Trace(cur_pos, next_pos)
 	end
@@ -128,23 +133,65 @@ function ENT:Tick()
 	self:SetOrigin(next_pos)
 end
 
-function ENT:Think(ply)
-	local curtick = engine.TickCount()
-	if (self.Client and self.LastTick == curtick) then
-		return
-	end
-	self.LastTick = curtick
-
-	self:Tick()
-
-	self:NextThink(CurTime())
+function ENT:Collide(t)
 	return true
 end
 
-function ENT:CalcAbsolutePosition(pos, ang)
-	if (self.Client) then
-		return self.Origin, ang
+function ENT:StartFires(pos, num, lifetime, explode, dmgowner)
+	for i=1, num do
+		local ang = Angle(-math.Rand(0, 180), math.Rand(0, 360), math.Rand(0, 360))
+
+		local vstart = pos
+
+		local flame = ents.Create("ttt_flame")
+		flame:SetPos(pos)
+		if IsValid(dmgowner) and dmgowner:IsPlayer() then
+			flame:SetDamageParent(dmgowner)
+			flame:SetOwner(dmgowner)
+		end
+		flame:SetDieTime(CurTime() + lifetime + math.Rand(-2, 2))
+		flame:SetExplodeOnDeath(explode)
+
+		flame:Spawn()
+		flame:PhysWake()
+
+		local phys = flame:GetPhysicsObject()
+		if IsValid(phys) then
+			-- the balance between mass and force is subtle, be careful adjusting
+			phys:SetMass(2)
+			phys:ApplyForceCenter(ang:Forward() * 500)
+			phys:AddAngleVelocity(Vector(ang.p, ang.r, ang.y))
+		end
+	end
+end
+
+
+function ENT:Explode()
+	if (not SERVER) then
+		return
 	end
 
-	return pos, ang
+	self:SetNoDraw(true)
+	self:SetSolid(SOLID_NONE)
+
+	local pos = self:GetPos()
+
+	if (util.PointContents(pos) == CONTENTS_WATER) then
+	   return
+	end
+
+	local effect = EffectData()
+	effect:SetStart(pos)
+	effect:SetOrigin(pos)
+	effect:SetScale(100)
+	effect:SetRadius(255)
+	effect:SetMagnitude(1)
+
+	util.Effect("Explosion", effect, true, true)
+
+	util.BlastDamage(self, self:GetOwner(), pos, 255, 1)
+
+	self:StartFires(pos, 10, 20, false, self:GetOwner())
+
+	--self:SetDetonateExact(0)
 end

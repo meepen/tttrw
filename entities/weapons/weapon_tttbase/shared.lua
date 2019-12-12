@@ -433,9 +433,10 @@ function SWEP:DoFireBullets()
 	local bullet_info = self.Bullets
 	local owner = self:GetOwner()
 
-
 	local src = owner:GetShootPos()
 	local dir = owner:EyeAngles():Forward()
+	local force = 2 / math.max(bullet_info.Num / 2, 1)
+
 	local bullets = {
 		Num = bullet_info.Num,
 		Attacker = owner,
@@ -444,10 +445,11 @@ function SWEP:DoFireBullets()
 		TracerName = self:GetTracerName(),
 		Spread = self:GetSpread(),
 		HullSize = bullet_info.HullSize,
-		Callback = function(_, ...)
+		Force = force,
+		Callback = function(atk, tr, dmg)
 			if (IsValid(self)) then
-				self:FireBulletsCallback(...)
-				self:TracerEffect(...)
+				self:FireBulletsCallback(tr, dmg)
+				self:TracerEffect(tr, dmg)
 			end
 		end,
 		Src = src,

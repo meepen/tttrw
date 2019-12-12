@@ -1,4 +1,4 @@
-local in_buttons = 0
+in_buttons = 0
 
 function GM:CreateMove(cmd)
     cmd:SetButtons(bit.bor(cmd:GetButtons(), in_buttons))

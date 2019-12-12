@@ -32,10 +32,6 @@ SWEP.WorldModel            = "models/weapons/w_crowbar.mdl"
 
 DEFINE_BASECLASS "weapon_tttbase"
 
-function SWEP:GetClass()
-	return "weapon_ttt_unarmed"
-end
-
 function SWEP:OnDrop()
 	self:Remove()
 end

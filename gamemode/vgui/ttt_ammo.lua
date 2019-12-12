@@ -28,25 +28,32 @@ function PANEL:Paint(w, h)
 		return
 	end
 
+	local lookup = wep.Ortho or {0, 0}
+
 	local x, y = self:LocalToScreen(0, 0)
 	local mins, maxs = err:GetModelBounds()
-	local offset = -Vector(0, 0, (maxs.z - mins.z) / 2)
 	local angle = Angle(0, -90)
-	cam.Start3D(angle:Forward() * -25, angle, 90, x, y, w, h)
-		render.SuppressEngineLighting(true)
-			local renderpos, renderang = wep:GetRenderOrigin(), wep:GetRenderAngles()
-			err:SetAngles(angle_zero)
-			err:SetPos(offset)
-			render.MaterialOverride(colour)
-				local col = self:GetCurrentColor()
-				local r, g, b = render.GetColorModulation()
-				render.SetColorModulation(col.r / 255, col.g / 255, col.b / 255)
-					render.SetBlend(col.a / 255)
-						err:DrawModel()
-					render.SetBlend(1)
-				render.SetColorModulation(r, g, b)
-			render.MaterialOverride()
-		render.SuppressEngineLighting(false)
+	local size = mins:Distance(maxs) / 2.5 * (lookup.size or 1) * 1.1
+
+	cam.Start3D(vector_origin, lookup.angle or angle, 90, x, y, w, h)
+		cam.StartOrthoView(lookup[1] + -size, lookup[2] + size, lookup[1] + size, lookup[2] + -size)
+			render.SuppressEngineLighting(true)
+				err:SetAngles(Angle(-40, 10, 10))
+				render.PushFilterMin(TEXFILTER.ANISOTROPIC)
+				render.PushFilterMag(TEXFILTER.ANISOTROPIC)
+					render.MaterialOverride(colour)
+						local col = self:GetCurrentColor()
+						local r, g, b = render.GetColorModulation()
+						render.SetColorModulation(col.r / 255, col.g / 255, col.b / 255)
+							render.SetBlend(col.a / 255)
+								err:DrawModel()
+							render.SetBlend(1)
+						render.SetColorModulation(r, g, b)
+					render.MaterialOverride()
+				render.PopFilterMag()
+				render.PopFilterMin()
+			render.SuppressEngineLighting(false)
+		cam.EndOrthoView()
 	cam.End3D()
 end
 

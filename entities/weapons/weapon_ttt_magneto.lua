@@ -5,7 +5,7 @@ DEFINE_BASECLASS "weapon_tttbase"
 
 SWEP.HoldType               = "pistol"
 
-SWEP.PrintName           = "Magenta Stick"
+SWEP.PrintName           = "Magneto Stick"
 SWEP.Slot                = 4
 
 SWEP.DrawCrosshair       = true

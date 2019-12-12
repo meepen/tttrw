@@ -15,6 +15,7 @@ AddCSLuaFile();
 		"sv_mapvote.lua",
 		"sv_bug_report.lua",
 		"sv_karma.lua",
+		"sv_damage_positions.lua",
 	},
 	Client = {
 		"cl_hud_helpers.lua",

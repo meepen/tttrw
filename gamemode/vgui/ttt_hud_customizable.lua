@@ -20,6 +20,18 @@ function PANEL:AcceptInput(key, value)
 		self:Dock(docks[value])
 	elseif (key == "curve") then
 		self:SetCurve(math.Round(ScrH() * value / 2) * 2)
+	elseif (key == "curvetargets") then
+		for key, curve in pairs(value) do
+			if (key == "topright") then
+				self:SetCurveTopRight(curve)
+			elseif (key == "topleft") then
+				self:SetCurveTopLeft(curve)
+			elseif (key == "bottomleft") then
+				self:SetCurveBottomLeft(curve)
+			elseif (key == "bottomright") then
+				self:SetCurveBottomRight(curve)
+			end
+		end
 	elseif (key == "disappear_no_target" and value) then
 		hook.Add("Think", self, self.Tick)
 	end
@@ -124,7 +136,8 @@ function PANEL:GetCustomizedColor(value)
 	return col
 end
 
-local number_functions = {
+local number_functions
+number_functions = {
 	lerp = function(self, data)
 		return Lerp(data.frac, self:GetCustomizedNumber(data.from), self:GetCustomizedNumber(data.to))
 	end,
@@ -174,6 +187,9 @@ local number_functions = {
 		end
 		return wep:GetMaxClip1()
 	end,
+	clip_frac = function()
+		return number_functions.clip() / number_functions.clip_max()
+	end,
 	ammo_reserve = function()
 		local targ = ttt.GetHUDTarget()
 		if (not IsValid(targ)) then
@@ -217,7 +233,7 @@ local text_functions = {
 			return ""
 		end
 
-		return string.format("%i / %i", clip, max)
+		return string.format("%i / %i + %i", clip, max, number_functions.ammo_reserve())
 	end,
 	reserve_pretty = function()
 		local targ = ttt.GetHUDTarget()
@@ -387,6 +403,22 @@ function PANEL:AcceptInput(key, value)
 		self.Outer:SetCurve(value)
 		self.Inner:SetCurve(value / 2)
 		self.Outer:DockPadding(value / 2, value / 2, value / 2, value / 2)
+	elseif (key == "curvetargets") then
+		for key, curve in pairs(value) do
+			if (key == "topright") then
+				self.Outer:SetCurveTopRight(curve)
+				self.Inner:SetCurveTopRight(curve)
+			elseif (key == "topleft") then
+				self.Outer:SetCurveTopLeft(curve)
+				self.Inner:SetCurveTopLeft(curve)
+			elseif (key == "bottomleft") then
+				self.Outer:SetCurveBottomLeft(curve)
+				self.Inner:SetCurveBottomLeft(curve)
+			elseif (key == "bottomright") then
+				self.Outer:SetCurveBottomRight(curve)
+				self.Inner:SetCurveBottomRight(curve)
+			end
+		end
 	else
 		BaseClass.AcceptInput(self, key, value)
 	end

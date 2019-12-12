@@ -33,6 +33,13 @@ local LastTarget, LastTime
 
 local unided_color = Color(163, 148, 47)
 
+surface.CreateFont("TTTRWTargetID", {
+	font = "Roboto",
+	extended = true,
+	size = 20,
+	shadow = true,
+})
+
 function GM:HUDDrawTargetID()
 	local ent = ttt.GetHUDTarget()
 	if (not IsValid(ent)) then return end
@@ -81,7 +88,7 @@ function GM:HUDDrawTargetID()
 		end)
 	end
 
-	surface.SetFont "TargetID"
+	surface.SetFont "TTTRWTargetID"
 	surface.SetTextColor(color_black)
 
 	local x, y = ScrW() / 2, ScrH() / 2
@@ -129,7 +136,7 @@ function GM:HUDDrawTargetID()
 		surface.SetDrawColor(0, 0, 0, a)
 		surface.DrawRect(x - wid / 2 + hpw, y, wid - hpw, th)
 
-		surface.SetDrawColor(200, 200, 200, 255)
+		surface.SetDrawColor(12, 13, 12, 255)
 		surface.DrawOutlinedRect(x - wid / 2 - 1, y - 1, wid + 2, th + 2)
 	end
 end
@@ -196,10 +203,10 @@ local default = [[
 		"name": "SpectatingOverlay",
 		"type": "ttt_curve_outline",
 		"pos": [0.5, 0.1, 0],
-		"size": [0.22, 0.04],
+		"size": [0.18, 0.036],
 		"curve": 0.005,
-		"bg_color": [154, 153, 153],
-		"outline_color": [230, 230, 230],
+		"bg_color": "role",
+		"outline_color": [12, 13, 12, 255],
 		"disappear_no_target": true,
 		"children": [
 			{
@@ -220,142 +227,197 @@ local default = [[
 		]
 	},
 	{
-		"name": "HealthBackground",
+		"name": "BottomLeft",
 		"type": "ttt_curve",
-		"bg_color": "black_bg",
-		"pos": [0.12, 0.9, 1],
-		"size": [0.22, 0.04],
-		"curve": 0.005,
+		"bg_color": [0, 0, 0, 0],
+		"pos": [0.1, 0.93, 1],
+		"size": [0.18, 0.1],
+		"curve": 0.004,
+		"curvetargets": {
+			"topleft": false,
+			"topright": false
+		},
 		"children": [
 			{
-				"name": "HealthBar",
-				"type": "ttt_curve_outline",
-				"bg_color": {
-					"func": "lerp",
-					"frac": "health_frac",
-					"points": [
-						[200, 49, 59],
-						[153, 129, 6],
-						[59, 171, 91]
-					]
-				},
-				"outline_color": "white",
-				"dock": "fill",
-				"frac": "health_frac",
-				"curve": 0.005,
+				"name": "HealthBackground",
+				"type": "ttt_curve",
+				"bg_color": "black_bg",
+				"dock": "top",
+				"size": [0.22, 0.036],
+				"pos": [0, 0, 2],
+				"curve": 0.004,
 				"children": [
 					{
-						"name": "HealthText",
+						"name": "HealthBar",
+						"type": "ttt_curve_outline",
+						"bg_color": {
+							"func": "lerp",
+							"frac": "health_frac",
+							"points": [
+								[200, 49, 59],
+								[153, 129, 6],
+								[59, 171, 91]
+							]
+						},
+						"curvetargets": {
+							"topleft": false,
+							"topright": false
+						},
+						"outline_color": [12, 13, 12, 255],
+						"dock": "fill",
+						"frac": "health_frac",
+						"curve": 0.004,
+						"children": [
+							{
+								"name": "HealthText",
+								"type": "ttt_text",
+								"color": "white",
+								"text": [
+									"%i / %i",
+									"health",
+									"health_max"
+								],
+								"font": {
+									"size": 0.024,
+									"font": "Lato",
+									"weight": 1000
+								},
+								"dock": "fill"
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "Divider",
+				"type": "ttt_curve",
+				"dock": "top",
+				"pos": [0, 0, 1],
+				"size": [0, 0.002],
+				"bg_color": [0, 0, 0, 0],
+				"curve": 0.004,
+				"curvetargets": {
+					"topleft": false,
+					"topright": false,
+					"bottomleft": false,
+					"bottomright": false
+				}
+			},
+			{
+				"name": "RoleAndTimeBar",
+				"type": "ttt_curve_outline",
+				"pos": [0.12, 0.95, 0],
+				"dock": "top",
+				"size": [0.22, 0.036],
+				"curve": 0.004,
+				"bg_color": "role",
+				"outline_color": [12, 13, 12, 255],
+
+				"curvetargets": {
+					"bottomleft": false,
+					"bottomright": false
+				},
+
+				"padding": [0.15, 0, 0.15, 0],
+				"children": [
+					{
+						"name": "TimeText",
 						"type": "ttt_text",
 						"color": "white",
 						"text": [
-							"%i / %i",
-							"health",
-							"health_max"
+							"%s",
+							"time_remaining_pretty"
 						],
 						"font": {
 							"size": 0.024,
 							"font": "Lato",
 							"weight": 1000
 						},
-						"dock": "fill"
+						"dock": "fill",
+						"align": "right"
+					},
+					{
+						"name": "RoleText",
+						"type": "ttt_text",
+						"color": "white",
+						"text": [
+							"%s",
+							"role_name"
+						],
+						"font": {
+							"size": 0.024,
+							"font": "Lato",
+							"weight": 1000
+						},
+						"dock": "fill",
+						"align": "left"
 					}
 				]
 			}
 		]
 	},
 	{
-		"name": "RoleAndTimeBar",
-		"type": "ttt_curve_outline",
-		"pos": [0.12, 0.95, 0],
-		"size": [0.22, 0.04],
-		"curve": 0.005,
-		"bg_color": "role",
-		"outline_color": [230, 230, 230],
-		"padding": [0.15, 0, 0.15, 0],
-		"children": [
-			{
-				"name": "TimeText",
-				"type": "ttt_text",
-				"color": "white",
-				"text": [
-					"%s",
-					"time_remaining_pretty"
-				],
-				"font": {
-					"size": 0.024,
-					"font": "Lato",
-					"weight": 1000
-				},
-				"dock": "fill",
-				"align": "right"
-			},
-			{
-				"name": "RoleText",
-				"type": "ttt_text",
-				"color": "white",
-				"text": [
-					"%s",
-					"role_name"
-				],
-				"font": {
-					"size": 0.024,
-					"font": "Lato",
-					"weight": 1000
-				},
-				"dock": "fill",
-				"align": "left"
-			}
-		]
-	},
-	{
-		"name": "AmmoBackground",
+		"name": "BottomRight",
 		"type": "ttt_curve",
 		"bg_color": [0, 0, 0, 0],
-		"pos": [0.915, 0.875],
-		"size": [0.15, 0.2],
-		"curve": 0.005,
+		"pos": [0.9, 0.93, 0],
+		"size": [0.18, 0.1],
+		"curve": 0.004,
 		"children": [
 			{
-				"name": "AmmoClip",
-				"type": "ttt_text",
-				"color": "white",
-				"text": [
-					"%s",
-					"clip_pretty"
-				],
-				"font": {
-					"size": 0.05,
-					"font": "Lato",
-					"weight": 1000
-				},
+				"name": "AmmoBackground",
+				"type": "ttt_curve",
+				"bg_color": "black_bg",
 				"dock": "top",
-				"size": [0.15, 0.05],
-				"pos": [0, 0, 0]
-			},
-			{
-				"name": "AmmoReserves",
-				"type": "ttt_text",
-				"color": "white",
-				"text": [
-					"%s",
-					"reserve_pretty"
-				],
-				"font": {
-					"size": 0.03,
-					"font": "Lato",
-					"weight": 1000
-				},
-				"dock": "top",
-				"size": [0.15, 0.03],
-				"pos": [0, 0, 1]
-			},
-			{
-				"name": "WeaponShadow",
-				"type": "ttt_weapon",
-				"color": [0, 0, 0, 0],
-				"dock": "fill",
-				"color": "white"
+				"size": [0.22, 0.036],
+				"pos": [0, 0, 1],
+				"curve": 0.004,
+				"children": [
+					{
+						"name": "AmmoBar",
+						"type": "ttt_curve_outline",
+						"bg_color": {
+							"func": "lerp",
+							"frac": "clip_frac",
+							"points": [
+								[200, 49, 59],
+								[153, 129, 6],
+								[59, 171, 91]
+							]
+						},
+						"outline_color": [12, 13, 12, 255],
+						"dock": "fill",
+						"frac": "clip_frac",
+						"curve": 0.004,
+						"children": [
+							{
+								"name": "AmmoClip2",
+								"type": "ttt_text",
+								"color": "white",
+								"text": [
+									"%s",
+									"clip_pretty"
+								],
+								"font": {
+									"size": 0.024,
+									"font": "Lato",
+									"weight": 1000
+								},
+								"dock": "fill",
+								"children": [
+									{
+										"name": "WeaponShadow",
+										"type": "ttt_weapon",
+										"color": [0, 0, 0, 0],
+										"dock": "right",
+										"color": "white",
+										"size": [0.028, 0]
+									}
+								]
+							}
+						]
+					}
+				]
 			}
 		]
 	},

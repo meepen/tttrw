@@ -13,6 +13,8 @@ SWEP.Base                  = "weapon_tttbase"
 SWEP.AutoSpawnable         = false
 SWEP.Spawnable             = false
 
+
+SWEP.Primary.Ammo = "none"
 SWEP.Primary.Automatic = false
 
 SWEP.ViewModel             = "models/weapons/cstrike/c_rif_ak47.mdl"
@@ -25,7 +27,6 @@ function SWEP:PrimaryAttack()
 	if (SERVER) then
 		e = ents.Create(self.GrenadeEntity)
 		e.DoRemove = true
-	elseif (IsFirstTimePredicted()) then
 	end
 
 	if (IsValid(e)) then
@@ -34,7 +35,9 @@ function SWEP:PrimaryAttack()
 		e.Owner = self:GetOwner()
 		e:SETVelocity(self:GetOwner():GetAimVector() * 800 + self:GetOwner():GetVelocity() * 0.8)
 		e:Spawn()
-		-- self:Remove()
+
+		--hook.Run("DropCurrentWeapon", self:GetOwner())
+		--self:Remove()
 	end
 end
 

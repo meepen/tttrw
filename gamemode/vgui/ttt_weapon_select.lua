@@ -1,16 +1,15 @@
 
 local font_tall = math.max(16, math.Round(ScrH() / 70))
 surface.CreateFont("ttt_weapon_select_font", {
-	font = 'Lato',
+	font = "Roboto",
 	size = font_tall,
 	weight = 100,
 	shadow = true
 })
 surface.CreateFont("ttt_weapon_select_font_outline", {
-	font = 'Lato',
+	font = "Roboto",
 	size = font_tall,
-	weight = 100,
-	outline = true
+	weight = 1000,
 })
 
 local function Player()
@@ -26,8 +25,9 @@ function PANEL:Init()
 	self.Label:Dock(FILL)
 	self.Label:SetContentAlignment(5)
 	self.Label:SetFont "ttt_weapon_select_font_outline"
+	self.Label:SetTextColor(Color(12, 13, 12))
 	self:SetColor(LocalPlayer():GetRoleData().Color)
-	self:SetCurve(4)
+	self:SetCurve(2)
 	self:SetCurveBottomRight(false)
 	self:SetCurveTopRight(false)
 end
@@ -44,20 +44,26 @@ DEFINE_BASECLASS "ttt_curved_panel"
 function PANEL:Init()
 	hook.Add("OnPlayerRoleChange", self, self.OnPlayerRoleChange)
 	self:SetCurve(4)
-	self:SetColor(Color(0xb, 0xc, 0xb, 200))
+	self:SetColor(Color(0xb, 0xc, 0xb, 255))
 	self:SetCurveTopRight(false)
 	self:SetCurveBottomRight(false)
 
 	self:DockMargin(0, 0, 0, 4)
 
+	self.Inner = self:Add "ttt_curved_panel"
+	self.Inner:Dock(FILL)
+	self.Inner:SetColor(Color(0xb, 0xc, 0xb, 200))
+	self.Inner:SetZPos(0)
+
 	self.Label = self:Add "DLabel"
 	self.Label:Dock(FILL)
 	self.Label:SetContentAlignment(5)
 	self.Label:SetFont "ttt_weapon_select_font"
+	self.Label:SetZPos(2)
 
 	self.Number = self:Add "ttt_weapon_select_number"
 	self.Number:Dock(LEFT)
-	self.Number:SetZPos(0)
+	self.Number:SetZPos(1)
 end
 function PANEL:OnPlayerRoleChange(ply, old, new)
 	if (ply == Player() and IsValid(self.Active)) then
@@ -78,17 +84,27 @@ function PANEL:SetActive(b)
 	if (IsValid(self.Active) and not b) then
 		self.Active:Remove()
 	elseif (not IsValid(self.Active) and b) then
-		self.Active = self:Add "DImage"
-		self.Active:SetSize(self:GetTall() - 4, self:GetTall() - 4)
+		self.Active = self.Label:Add "EditablePanel"
+		function self.Active:Paint(w, h)
+			surface.SetDrawColor(self.Color)
+			draw.NoTexture()
+			surface.DrawPoly {
+				{ x = 0, y = 0, },
+				{ x = w, y = h, },
+				{ x = 0, y = h, },
+			}
+		end
+		function self.Active:SetImageColor(col)
+			self.Color = col
+		end
+		self.Active:SetSize(self:GetTall() - 8, self:GetTall())
 		self.Active:Dock(LEFT)
-		self.Active:DockMargin(6, 2, 2, 2)
-		self.Active:SetImage "materials/tttrw/heart.png"
 		self.Active:SetImageColor(LocalPlayer():GetRoleData().Color)
 		self.Active:SetZPos(1)
 	end
 end
 
-vgui.Register("ttt_weapon_select_weapon", PANEL, "ttt_curved_panel")
+vgui.Register("ttt_weapon_select_weapon", PANEL, "ttt_curved_panel_outline")
 
 local PANEL = {}
 gameevent.Listen "player_spawn"
@@ -96,7 +112,7 @@ gameevent.Listen "entity_killed"
 function PANEL:Init()
 	hook.Add("PlayerSwitchWeapon", self, self.PlayerSwitchWeapon)
 
-	self:SetWide(ScrW() / 6)
+	self:SetWide(math.max(ScrW() / 6, 100))
 
 	self.CachedWeapons = {}
 	self.OrderedPanels = {}

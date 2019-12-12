@@ -5,20 +5,13 @@ GM.Damages = GM.Damages or {}
 
 local LIFETIME = 1.5
 
-function GM:player_hurt(info)
-	local vic = Player(info.userid)
-	local att = Player(info.attacker)
-
-	if (vic ~= LocalPlayer() or not att:IsPlayer() or att == vic) then
-		return
-	end
-
-	table.insert(self.Damages, {
-		Position = att:GetShootPos(),
+net.Receive("tttrw_damage_position", function(len, cl)
+	table.insert(ttt.Damages, {
+		Position = net.ReadVector(),
 		Time = CurTime(),
-		Damage = vic:Health() - info.health
+		Damage = net.ReadFloat()
 	})
-end
+end)
 
 
 function GM:TTTDrawDamagePosition()

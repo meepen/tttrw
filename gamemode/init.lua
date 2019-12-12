@@ -16,11 +16,23 @@ function GM:PlayerUse(ply, ent)
 end
 
 function GM:EntityTakeDamage(targ, dmg)
+	if (dmg:GetDamage() > 0 and dmg:GetDamageType() == DMG_BULLET) then
+		targ.RestoreVelocity = targ:GetVelocity()
+	end
 	self:CreateHitmarkers(targ, dmg)
 	self:Karma_EntityTakeDamage(targ, dmg)
-	
+
 	if (targ:IsPlayer() and hook.Run("PlayerShouldTakeDamage", targ, dmg:GetAttacker())) then
 		self:PlayerTakeDamage(targ, dmg:GetInflictor(), dmg:GetAttacker(), dmg:GetDamage(), dmg)
+	end
+end
+
+function GM:SetupMove(ply, mv)
+
+	if (ply.RestoreVelocity) then
+		print(ply, ply.RestoreVelocity)
+		mv:SetVelocity(ply.RestoreVelocity)
+		ply.RestoreVelocity = nil
 	end
 end
 
