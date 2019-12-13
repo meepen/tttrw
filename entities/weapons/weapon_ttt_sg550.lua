@@ -12,8 +12,6 @@ SWEP.Ortho = {3.0, 5}
 
 SWEP.Base                  = "weapon_tttbase"
 
-SWEP.Kind                  = WEAPON_HEAVY
-SWEP.WeaponID              = AMMO_PISTOL
 SWEP.ViewModelFOV          = 63
 
 SWEP.Bullets = {
@@ -22,7 +20,7 @@ SWEP.Bullets = {
 	DamageDropoffRange = 4500,
 	DamageDropoffRangeMax = 7520,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(0.009, 0.009, 0),
+	Spread = vector_origin
 }
 
 SWEP.Primary.Damage        = 35
