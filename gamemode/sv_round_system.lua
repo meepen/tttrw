@@ -21,7 +21,7 @@ round = round or {
 		]]
 	},
 	Started = {},
-	CurrentePromise = nil
+	CurrentPromise = nil,
 }
 
 AccessorFunc(ttt, "RealRoundEndTime", "RoundEndTime")
@@ -71,6 +71,7 @@ function round.SetState(state, time)
 
 	if (time) then
 		timer.Create("TTTRoundStatePromise", time, 1, function()
+			round.CurrentPromise = nil
 			if (promise["then"]) then
 				promise["then"](state, time)
 			else
@@ -158,6 +159,10 @@ function round.Prepare()
 end
 
 local function TryStart()
+	if (round.CurrentPromise) then
+		return true
+	end
+
 	local plys = ttt.GetEligiblePlayers()
 	if (#plys < ttt_minimum_players:GetInt()) then
 		round.SetState(ttt.ROUNDSTATE_WAITING, 0)
@@ -361,7 +366,7 @@ function GM:PlayerInitialSpawn(ply)
 	local should, reason = hook.Run "ShouldChangeMap"
 
 	if (player.GetCount() == 1 and should) then
-		pprint("Changing maps: %s", tostring(reason))
+		print("Changing maps: " .. tostring(reason))
 		game.LoadNextMap(reason)
 	end
 end
