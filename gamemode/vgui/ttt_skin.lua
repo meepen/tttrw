@@ -78,6 +78,10 @@ function PANEL:Init()
 
 	self.btnGrip = self.Inner:Add "DScrollBarGrip"
 
+	self.btnUp = self:Add "EditablePanel"
+	self.btnDown = self.btnUp
+	self.btnUp:SetVisible(false)
+
 	self:SetColor(Color(31, 31, 32))
 	self.Inner:SetColor(Color(31, 31, 32))
 	self:SetCurve(4)
