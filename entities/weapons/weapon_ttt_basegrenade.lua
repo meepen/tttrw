@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 SWEP.HoldType           = "ar2"
 
-SWEP.PrintName          = "GRENADA"
+SWEP.PrintName          = "Incediary Grenada"
 SWEP.Slot               = 3
 
 SWEP.ViewModelFlip      = false
@@ -17,8 +17,8 @@ SWEP.Spawnable             = false
 SWEP.Primary.Ammo = "none"
 SWEP.Primary.Automatic = false
 
-SWEP.ViewModel             = "models/weapons/cstrike/c_rif_ak47.mdl"
-SWEP.WorldModel            = "models/weapons/w_rif_ak47.mdl"
+SWEP.ViewModel             = "models/weapons/v_eq_flashbang.mdl"
+SWEP.WorldModel            = "models/weapons/w_eq_flashbang.mdl"
 
 SWEP.GrenadeEntity = "ttt_basegrenade"
 
@@ -36,8 +36,8 @@ function SWEP:PrimaryAttack()
 		e:SETVelocity(self:GetOwner():GetAimVector() * 800 + self:GetOwner():GetVelocity() * 0.8)
 		e:Spawn()
 
-		--hook.Run("DropCurrentWeapon", self:GetOwner())
-		--self:Remove()
+		hook.Run("DropCurrentWeapon", self:GetOwner())
+		self:Remove()
 	end
 end
 

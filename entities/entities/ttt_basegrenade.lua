@@ -134,7 +134,7 @@ function ENT:Tick()
 end
 
 function ENT:Collide(t)
-	return true
+	return false
 end
 
 function ENT:StartFires(pos, num, lifetime, explode, dmgowner)
