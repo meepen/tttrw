@@ -287,6 +287,10 @@ function SWEP:FireBulletsCallback(tr, dmginfo)
 			
 				for _, hitbox in pairs(mdl[tr.Entity:GetHitboxSet()]) do
 					local matr = tr.Entity:GetBoneMatrix(hitbox.Bone)
+					if (not IsValid(hitbox.Collide)) then
+						continue
+					end
+
 					local hitpos, norm, frac = hitbox.Collide:TraceBox(matr:GetTranslation(), matr:GetAngles(), tr.StartPos, tr.StartPos + tr.Normal * 10000, vector_origin, vector_origin)
 					if (hitpos and (ignore[tr.HitGroup] or hitpos:Distance(tr.HitPos) < 14)) then
 						dmginfo:SetDamage(d)
