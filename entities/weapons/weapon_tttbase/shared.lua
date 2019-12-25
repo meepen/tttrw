@@ -232,6 +232,10 @@ local function GetModel(ply)
 	if (not r) then
 		local f = file.Open(ply:GetModel(), "rb", "GAME")
 
+		if (not f) then
+			error("PlayerModel File doesn't exist!: " .. ply:GetModel())
+		end
+
 		f:Seek(176)
 		local offset = f:ReadLong()
 
