@@ -34,7 +34,7 @@ SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_M4A1.Single"
 
-SWEP.HeadshotMultiplier    = 2.2
+SWEP.HeadshotMultiplier    = 1.7
 SWEP.DeploySpeed = 1.4
 
 SWEP.AutoSpawnable         = true
