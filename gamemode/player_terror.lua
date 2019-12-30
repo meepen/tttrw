@@ -30,7 +30,20 @@ function PLAYER:SetupDataTables()
 	self.Player:NetworkVar("Int", 0, "Karma")
 	self.Player:NetworkVar("Float", 0, "HealthFloat")
 
-	-- TODO(meep): make hook here
+	local fake = {
+		NetworkVar = function(self, ...)
+			self.list[#self.list + 1] = {n = select("#", ...), ...}
+		end,
+		list = {},
+	}
+
+	hook.Run("SetupPlayerNetworking", fake)
+
+	table.sort(fake, function(a, b) return a[1] < b[1] end)
+
+	for _, d in ipairs(fake) do
+		self.Player:NetworkVar(unpack(d, 1, d.n))
+	end
 end
 
 function PLAYER:GetSpeedData()

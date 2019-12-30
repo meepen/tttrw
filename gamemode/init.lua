@@ -23,7 +23,7 @@ function GM:EntityTakeDamage(targ, dmg)
 	self:Karma_EntityTakeDamage(targ, dmg)
 
 	if (targ:IsPlayer() and hook.Run("PlayerShouldTakeDamage", targ, dmg:GetAttacker())) then
-		self:PlayerTakeDamage(targ, dmg:GetInflictor(), dmg:GetAttacker(), dmg:GetDamage(), dmg)
+		hook.Run("PlayerTakeDamage", targ, dmg:GetInflictor(), dmg:GetAttacker(), dmg:GetDamage(), dmg)
 	end
 end
 
