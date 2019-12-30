@@ -15,21 +15,28 @@ if (SERVER) then
 			return false
 		end
 
-
 		if (ttt.Equipment.List[class]:OnBuy(self)) then
 			printf("[Equipment] gave %s %s.", self:Nick(), class)
 			self:SetCredits(self:GetCredits() - eq.Cost)
 		end
 	end
-
-	concommand.Add("weps", function(ply,cmd,arg)
-		if (not ply:GetUserGroup() == "superadmin") then return end
-		player.GetByID(1):StripWeapon(arg[1])
-		player.GetByID(1):Give(arg[1])	
-	end)
 	
 	concommand.Add("ttt_buy_equipment", function(ply, cmd, args)
 		ply:GiveEquipment(args[1])
+	end)
+	
+	concommand.Add("ttt_buy_equipment_force", function(ply, cmd, args)
+		local class = args[1]
+		local eq = ttt.Equipment.List[class]
+
+		if (not eq) then
+			print "?"
+			return
+		end
+
+		if (ttt.Equipment.List[class]:OnBuy(ply)) then
+			printf("[Equipment] cheated %s %s.", ply:Nick(), class)
+		end
 	end)
 end
 

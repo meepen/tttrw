@@ -37,25 +37,35 @@ function ENT:Initialize()
 end
 
 if (CLIENT) then
-	surface.CreateFont('TabLarge', {font = 'Lato', size = 13, weight = 900})
+	surface.CreateFont("ttt_radar_font", {font = "Lato", size = 13, weight = 900})
+	surface.CreateFont("ttt_radar_num_font", {font = "Roboto", size = 16, weight = 900})
 
-	function ENT:DrawTarget(pl, size, offset)
+	function ENT:DrawTarget(pl)
 		local scrpos = pl.Pos:ToScreen() -- sweet
-		local sz = IsOffScreen(scrpos) and size / 2 or size
+		local sz = IsOffScreen(scrpos) and 12 or 24
 		scrpos.x = math.Clamp(scrpos.x, sz, ScrW() - sz)
 		scrpos.y = math.Clamp(scrpos.y, sz, ScrH() - sz)
 		if (IsOffScreen(scrpos)) then return end
-		
-		surface.DrawTexturedRect(scrpos.x - sz, scrpos.y - sz, sz * 2, sz * 2)
 
-		-- Drawing full size?
-		if (sz == size) then
-			local text = math.ceil(LocalPlayer():GetPos():Distance(pl.Pos))
-			local w, h = surface.GetTextSize(text)
-			-- Show range to target
-			surface.SetTextPos(scrpos.x - w / 2, scrpos.y + (offset * sz) - h / 2)
-			surface.DrawText(text)
+		local text = math.ceil(LocalPlayer():GetPos():Distance(pl.Pos))
+		local w, h = surface.GetTextSize(text)
+		-- Show range to target
+
+		local mult = surface.GetAlphaMultiplier()
+		local dist = Vector(ScrW() / 2, ScrH() / 2):Distance(Vector(scrpos.x, scrpos.y))
+		if (dist < 400) then
+			surface.SetAlphaMultiplier(0.05 + 0.5 * dist / 400)
+		else
+			surface.SetAlphaMultiplier(1)
 		end
+
+		draw.SimpleTextOutlined(text, "ttt_radar_num_font", scrpos.x, scrpos.y, white_text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 2, Color(0, 0, 0, 255))
+
+		surface.SetDrawColor(pl.Color)
+
+		surface.DrawOutlinedRect(scrpos.x - w / 2 - 5, scrpos.y - h / 2 - 5, w + 10, h + 10)
+		surface.DrawOutlinedRect(scrpos.x - w / 2 - 6, scrpos.y - h / 2 - 6, w + 12, h + 12)
+		surface.SetAlphaMultiplier(mult)
 	end
 	
 	function ENT:GetTargets()
@@ -79,8 +89,6 @@ if (CLIENT) then
 		if (self:IsDormant()) then
 			return
 		end
-
-		surface.SetFont("HudSelectionText")
 		
 		if (self:GetNW2Float("next_scan") != self.NextScan) then
 			self:GetTargets()
@@ -94,14 +102,13 @@ if (CLIENT) then
 			if (not scrpos.visible) then continue end
 			
 			surface.SetDrawColor(pl.Color)
-			surface.SetTextColor(pl.Color)
 
-			self:DrawTarget(pl, 24, 0)
+			self:DrawTarget(pl)
 		end
 
 		
 		-- Time until next scan
-		surface.SetFont("TabLarge")
+		surface.SetFont "ttt_radar_font"
 		surface.SetTextColor(time_color)
 
 		local remaining = math.max(0, self.NextScan - CurTime())
@@ -120,8 +127,10 @@ else
 			if (pl == self:GetParent() or not pl:Alive()) then continue end
 			
 			i = i + 1
+
+			local mn, mx = pl:GetModelBounds()
 			
-			self:SetNW2Vector("scan_pos_" .. i, pl:GetPos())
+			self:SetNW2Vector("scan_pos_" .. i, pl:GetPos() + Vector(0, 0, (mx.z + mn.z) / 2))
 			
 			local color = pl.HiddenState:IsVisibleTo(self:GetParent()) and pl:GetRoleData().Color or ttt.teams.innocent.Color
 			
