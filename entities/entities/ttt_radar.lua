@@ -53,10 +53,11 @@ if (CLIENT) then
 		-- Show range to target
 
 		local mult = surface.GetAlphaMultiplier()
-		local dist = Vector(ScrW() / 2, ScrH() / 2):Distance(Vector(scrpos.x, scrpos.y))
+		local dist = Vector(ScrW() / 2, ScrH() / 2):Distance(Vector(scrpos.x, scrpos.y)) / math.sqrt(ScrW() * ScrH()) * 1500
 		if (dist < 400) then
-			surface.SetAlphaMultiplier(0.05 + 0.5 * dist / 400)
+			surface.SetAlphaMultiplier(0.1 + 0.5 * dist / 400)
 		else
+			print(dist)
 			surface.SetAlphaMultiplier(1)
 		end
 
