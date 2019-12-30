@@ -89,6 +89,10 @@ function TEAM:TeamChatSeenBy(what)
 	return self
 end
 
+function TEAM:CreditOnRoleDeath(func)
+	self.OnRoleDeath = func
+end
+
 AccessorFunc(TEAM, "ModifyTickets", "ModifyTicketsFunc")
 AccessorFunc(TEAM, "Evil")
 AccessorFunc(TEAM, "CanUseBuyMenu")
@@ -184,12 +188,42 @@ function GM:TTTPrepareRoles(Team, Role)
 		end)
 		:SetDeathIcon "materials/tttrw/roles/detective.png"
 		:SetDefaultCredits(2)
+		:CreditOnRoleDeath(function(roles, deathrole)
+			if (not deathrole.IsEvil) then
+				return 0
+			end
+
+			local amt = 0
+
+			for role, i in pairs(roles) do
+				if (role.IsEvil) then
+					amt = amt + i
+				end
+			end
+
+			return amt % 3 == 0 and 1 or 0
+		end)
 
 	Role("Traitor", "traitor")
 		:SetCalculateAmountFunc(function(total_players)
 			return math.floor(math.Clamp(total_players * ttt_traitor_pct:GetFloat(), 1, ttt_traitor_max:GetInt()))
 		end)
 		:SetDefaultCredits(2)
+		:CreditOnRoleDeath(function(roles, deathrole)
+			if (deathrole.Team == "traitor") then
+				return 0
+			end
+
+			local amt = 0
+
+			for role, i in pairs(roles) do
+				if (role.Team.Name ~= "traitor") then
+					amt = amt + i
+				end
+			end
+
+			return amt % 4 == 0 and 1 or 0
+		end)
 end
 
 function GM:SetupRoles()

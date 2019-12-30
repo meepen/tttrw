@@ -453,8 +453,28 @@ function ttt.CheckTeamWin()
 end
 
 function GM:TTTPlayerRemoved(removed)
-	if (IsValid(removed)) then
-		-- removed:SetRole "Spectator"
+	local state = {}
+
+	for _, data in pairs(round.GetStartingPlayers()) do
+		state[data.Role] = (state[data.Role] or 0) + 1
+	end
+
+	for _, data in pairs(round.GetActivePlayers()) do
+		state[data.Role] = (state[data.Role] or 0) - 1
+	end
+
+	for rolename, roledata in pairs(ttt.roles) do
+		if (roledata.OnRoleDeath) then
+			local amt = roledata.OnRoleDeath(state, removed:GetRoleData())
+			if (amt and amt > 0) then
+				for _, ply in pairs(round.GetActivePlayersByRole(rolename)) do
+					if (IsValid(ply)) then
+						ply:SetCredits(ply:GetCredits() + amt)
+						ply:Notify("You have received " .. amt .. " credit(s)")
+					end
+				end
+			end
+		end
 	end
 
 	timer.Simple(0, function()
