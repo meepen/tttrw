@@ -48,6 +48,7 @@ if (CLIENT) then
 		if (IsOffScreen(scrpos)) then return end
 
 		local text = math.ceil(LocalPlayer():GetPos():Distance(pl.Pos))
+		surface.SetFont "ttt_radar_num_font"
 		local w, h = surface.GetTextSize(text)
 		-- Show range to target
 
