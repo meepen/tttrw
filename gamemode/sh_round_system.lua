@@ -47,6 +47,10 @@ function GM:PlayerSpawn(ply)
 end
 
 function GM:PlayerShouldTakeDamage(ply, atk)
+	if (ply:GetGroundEntity() == atk and IsValid(atk) and atk ~= game.GetWorld() and not atk:IsPlayer()) then
+		return false
+	end
+
 	if (IsValid(atk) and atk:IsPlayer()) then
 		local state = ttt.GetRoundState()
 		return state == ttt.ROUNDSTATE_ACTIVE or ttt_postround_dm:GetBool() and state == ttt.ROUNDSTATE_ENDED

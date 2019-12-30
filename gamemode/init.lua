@@ -94,12 +94,15 @@ local tttrw_door_speedup = CreateConVar("tttrw_door_speed_mult", 1, FCVAR_NONE, 
 
 local block = {
 	func_button = true,
-	trigger_push = true
+	trigger_push = true,
+	func_door = true,
 }
 function GM:EntityKeyValue(ent, key, value)
 	if (not block[ent:GetClass()] and key:lower() == "speed") then
 		return value / 66 / engine.TickInterval() * tttrw_door_speedup:GetFloat()
 	end
+
+	return value
 end
 
 function GM:CreateDNAData(owner)
@@ -107,6 +110,18 @@ function GM:CreateDNAData(owner)
 	e:SetDNAOwner(owner)
 
 	return e
+end
+
+function GM:OnEntityCreated(e)
+	timer.Simple(0, function()
+		if (not IsValid(e)) then
+			return
+		end
+
+		if (e:HasSpawnFlags(SF_PHYSPROP_MOTIONDISABLED)) then
+			e:SetMoveType(MOVETYPE_NONE)
+		end
+	end)
 end
 
 local ttt_dna_max_time = CreateConVar("ttt_dna_max_time", "120", FCVAR_REPLICATED)
