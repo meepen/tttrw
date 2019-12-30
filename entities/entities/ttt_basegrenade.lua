@@ -31,8 +31,6 @@ function ENT:SetupDataTables()
 end
 
 function ENT:Initialize()
-	self:SetDieTime(CurTime() + 2)
-
     self:SetMoveType(MOVETYPE_NONE)
 	self:SetModel(self.Model)
 	self:DrawShadow(false)
@@ -119,18 +117,28 @@ function ENT:Tick()
 
 		cur_pos = tr.HitPos
 
-		self:SETVelocity(reflect(self:GETVelocity(), tr.HitNormal) * 0.5)
+		local old = self:GETVelocity()
+
+		self:SETVelocity(reflect(self:GETVelocity(), tr.HitNormal) * self:GetBounciness())
+		self:SetAngles(self:GetAngles() + self:GETVelocity():Angle() - old:Angle())
 
 		next_pos = cur_pos + self:GETVelocity() * ft * frac
 
 		tr = self:Trace(cur_pos, next_pos)
 	end
 
-	if (tr.StartSolid) then
+	if (tr.StartSolid or tr.Fraction == 0) then
+		self:SETVelocity(vector_origin)
 		next_pos = cur_pos
+	else
+		self:SetAngles(self:GetAngles() + self:GETVelocity():Angle() * 0.01 * math.min(self:GETVelocity():Length() - 10, 1))
 	end
 
 	self:SetOrigin(next_pos)
+end
+
+function ENT:GetBounciness()
+	return 0.3
 end
 
 function ENT:Collide(t)
@@ -189,7 +197,7 @@ function ENT:Explode()
 
 	util.Effect("Explosion", effect, true, true)
 
-	util.BlastDamage(self, self:GetOwner(), pos, 255, 1)
+	util.BlastDamage(self, self:GetOwner(), pos, 255, 50)
 
 	self:StartFires(pos, 10, 20, false, self:GetOwner())
 

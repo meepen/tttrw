@@ -57,7 +57,6 @@ if (CLIENT) then
 		if (dist < 400) then
 			surface.SetAlphaMultiplier(0.1 + 0.5 * dist / 400)
 		else
-			print(dist)
 			surface.SetAlphaMultiplier(1)
 		end
 
