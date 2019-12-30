@@ -5,7 +5,7 @@ SWEP.HoldType           = "slam"
 SWEP.PrintName          = "Incediary Grenada"
 SWEP.Slot               = 3
 
-SWEP.ViewModelFlip      = false
+SWEP.ViewModelFlip      = true
 SWEP.ViewModelFOV       = 54
 
 SWEP.Base                  = "weapon_tttbase"
