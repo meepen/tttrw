@@ -37,7 +37,7 @@ SWEP.HeadshotMultiplier = 1.5
 
 SWEP.TTTCompat = {"weapon_zm_shotgun"}
 
-SWEP.Primary.Damage        = 6.5
+SWEP.Primary.Damage        = 5.5
 SWEP.Primary.Delay         = 0.7
 SWEP.Primary.RecoilTiming  = 0.1
 SWEP.Primary.Recoil        = 7
