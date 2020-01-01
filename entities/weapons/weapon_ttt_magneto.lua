@@ -123,6 +123,31 @@ function SWEP:Reset(keep_velocity)
 
 	self:SetCarriedRag(NULL)
 
+	if (IsValid(self.EntHolding)) then
+		self.EntHolding.REALGROUP = self.OldGroup
+		hook.Add("Think", self.EntHolding, function(self)
+			for _, ply in pairs(player.GetAll()) do
+				local tr = util.TraceHull {
+					start = ply:GetPos(),
+					endpos = ply:GetPos(),
+					mins = ply:OBBMins(),
+					maxs = ply:OBBMaxs(),
+					filter = function(e)
+						return e == self
+					end,
+					ignoreworld = true,
+				}
+				if (tr.Hit) then
+					return
+				end
+			end
+
+			self:SetCollisionGroup(self.REALGROUP)
+			hook.Remove("Think", self)
+			self.REALGROUP = nil
+		end)
+	end
+
 	self.EntHolding = nil
 	self.CarryHack = nil
 	self.Constr = nil
@@ -407,6 +432,28 @@ function SWEP:Pickup()
 
 			self.Constr = constraint.Weld(self.CarryHack, self.EntHolding, 0, bone, max_force, true)
 
+			self.OldGroup = self.EntHolding.REALGROUP or self.EntHolding:GetCollisionGroup()
+
+			hook.Add("Think", self.EntHolding, function(self)
+				for _, ply in pairs(player.GetAll()) do
+					local tr = util.TraceHull {
+						start = ply:GetPos(),
+						endpos = ply:GetPos(),
+						mins = ply:OBBMins(),
+						maxs = ply:OBBMaxs(),
+						filter = function(e)
+							return e == self
+						end,
+						ignoreworld = true,
+					}
+					if (tr.Hit) then
+						self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+						return
+					end
+				end
+
+				self:SetCollisionGroup(self.REALGROUP)
+			end)
 
 		end
 	end
