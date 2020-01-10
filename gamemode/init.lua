@@ -2,7 +2,7 @@ resource.AddSingleFile "resource/fonts/Lato-Regular.ttf"
 resource.AddSingleFile "resource/fonts/Lato-Semibold.ttf"
 
 include "sh_files.lua"
-
+DEFINE_BASECLASS "gamemode_base"
 util.AddNetworkString "tttrw_console_print"
 
 function PLAYER:ConsolePrint(text)
@@ -110,18 +110,6 @@ function GM:CreateDNAData(owner)
 	e:SetDNAOwner(owner)
 
 	return e
-end
-
-function GM:OnEntityCreated(e)
-	timer.Simple(0, function()
-		if (not IsValid(e)) then
-			return
-		end
-
-		if (e:HasSpawnFlags(SF_PHYSPROP_MOTIONDISABLED)) then
-			e:SetMoveType(MOVETYPE_NONE)
-		end
-	end)
 end
 
 local ttt_dna_max_time = CreateConVar("ttt_dna_max_time", "120", FCVAR_REPLICATED)
