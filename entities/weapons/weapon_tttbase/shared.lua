@@ -586,6 +586,7 @@ function SWEP:Think()
 					if (inf.time / self:GetReloadAnimationSpeed() <= time) then
 						if (self.LastSound ~= inf.sound) then
 							self:EmitSound(inf.sound)
+							print(inf.sound)
 							self.LastSound = inf.sound
 						end
 						break

@@ -275,6 +275,7 @@ function SWEP:OnRemove()
 end
 
 if CLIENT then
+	surface.CreateFont("ttt_knife_font", {font = "Lato", size = 13, weight = 900})
 	function SWEP:DrawHUD()
 		local tr = self:GetOwner():GetEyeTrace(MASK_SHOT)
 
@@ -294,7 +295,7 @@ if CLIENT then
 			surface.DrawLine(x - outer, y + outer, x - inner, y + inner)
 			surface.DrawLine(x + outer, y - outer, x + inner, y - inner)
 
-			draw.SimpleText("INSTANT KILL", "TabLarge", x, y - 30, COLOR_RED, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+			draw.SimpleText("INSTANT KILL", "ttt_knife_font", x, y - 30, COLOR_RED, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
 		end
 
 		return self.BaseClass.DrawHUD(self)

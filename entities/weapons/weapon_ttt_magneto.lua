@@ -608,6 +608,7 @@ function SWEP:OnDrop()
 end
 
 function SWEP:DrawHUD()
+	surface.CreateFont("tttrw_magneto_font", {font = "Lato", size = 13, weight = 900})
 	BaseClass.DrawHUD(self)
 
 	if (self:GetCanRagPin() and IsValid(self:GetCarriedRag())) then
@@ -622,7 +623,7 @@ function SWEP:DrawHUD()
 			}
 
 			if (tr.HitWorld and not tr.HitSky) then
-				draw.SimpleText("Primary fire to attach body to surface.", "TabLarge", ScrW() / 2, ScrH() / 2 - 50, COLOR_RED, TEXT_ALIGN_CENTER)
+				draw.SimpleText("Primary fire to attach body to surface.", "tttrw_magneto_font", ScrW() / 2, ScrH() / 2 - 50, COLOR_RED, TEXT_ALIGN_CENTER)
 			end
 		end
 	end
