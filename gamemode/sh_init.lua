@@ -90,7 +90,8 @@ function GM:StartCommand(ply, cmd)
 		cmd:SetTickCount(cmd:TickCount() - 1)
 	end
 	-- fixes some hitreg issues
-	ply:SetAngles(Angle(0, cmd:GetViewAngles().y))
+	-- causes issues with props!
+	-- ply:SetAngles(Angle(0, cmd:GetViewAngles().y))
 
 	local wep = ply:GetActiveWeapon()
 	if (IsValid(wep) and wep.OverrideCommand) then
