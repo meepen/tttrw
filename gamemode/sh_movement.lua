@@ -131,7 +131,7 @@ local fallsounds = {
 	Sound("player/damage3.wav")
 };
 
-function GM:OnPlayerHitGround(ply, in_water, on_floater, speed)
+function GM:GetFallDamage(ply, speed)
 	if (CLIENT or in_water or speed < 450 or not IsValid(ply)) then
 		return
 	end
@@ -151,15 +151,21 @@ function GM:OnPlayerHitGround(ply, in_water, on_floater, speed)
 		dmg:SetDamageForce(Vector(0,0,1))
 		dmg:SetDamage(damage)
 
-		ply:TakeDamageInfo(dmg)
-
 		-- play CS:S fall sound if we got somewhat significant damage
 		if damage > 5 then
 			sound.Play(table.Random(fallsounds), ply:GetShootPos(), 55 + math.Clamp(damage, 0, 50), 100)
 		end
-	end
-end
 
-function GM:GetFallDamage(ply, speed)
+		local ground = ply:GetGroundEntity()
+		if (IsValid(ground) and ground:IsPlayer()) then
+			dmg:ScaleDamage(0.8)
+			dmg:SetInflictor(ply)
+			dmg:SetAttacker(ply)
+			ply = ground
+		end
+
+		ply:TakeDamageInfo(dmg)
+	end
+
 	return 0
 end
