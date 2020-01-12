@@ -607,8 +607,11 @@ function SWEP:OnDrop()
 	self:Remove()
 end
 
-function SWEP:DrawHUD()
+if (CLIENT) then
 	surface.CreateFont("tttrw_magneto_font", {font = "Lato", size = 13, weight = 900})
+end
+
+function SWEP:DrawHUD()
 	BaseClass.DrawHUD(self)
 
 	if (self:GetCanRagPin() and IsValid(self:GetCarriedRag())) then
