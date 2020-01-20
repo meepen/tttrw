@@ -88,6 +88,8 @@ function GM:TTTEndRound()
 	self:DamageLogs_TTTEndRound()
 	self:MapVote_TTTEndRound()
 	self:Karma_TTTEndRound()
+
+	ttt.SetRoundSpeedup(1)
 end
 
 local tttrw_door_speedup = CreateConVar("tttrw_door_speed_mult", 1, FCVAR_NONE, "How much faster doors are (2 = double, 0.5 = half)")
@@ -151,4 +153,45 @@ function GM:DoPlayerDeath(ply, atk, dmg)
 		ply:SetActiveWeapon(wep)
 		self:DropCurrentWeapon(ply)
 	end
+
+	if (hook.Run("TTTShouldPlayerScream", ply, atk, dmg)) then
+		hook.Run("TTTPlayerScream", ply)
+	end
+end
+
+function GM:TTTShouldPlayerScream(ply, atk, dmg)
+	local wep = dmg:GetInflictor()
+	if (IsValid(wep) and wep:IsWeapon() and wep.IsSilent) then
+		return false
+	end
+	return true
+end
+
+local deathsounds = {
+	Sound "player/death1.wav",
+	Sound "player/death2.wav",
+	Sound "player/death3.wav",
+	Sound "player/death4.wav",
+	Sound "player/death5.wav",
+	Sound "player/death6.wav",
+	Sound "vo/npc/male01/pain07.wav",
+	Sound "vo/npc/male01/pain08.wav",
+	Sound "vo/npc/male01/pain09.wav",
+	Sound "vo/npc/male01/pain04.wav",
+	Sound "vo/npc/Barney/ba_pain06.wav",
+	Sound "vo/npc/Barney/ba_pain07.wav",
+	Sound "vo/npc/Barney/ba_pain09.wav",
+	Sound "vo/npc/Barney/ba_ohshit03.wav",
+	Sound "vo/npc/Barney/ba_no01.wav",
+	Sound "vo/npc/male01/no02.wav",
+	Sound "hostage/hpain/hpain1.wav",
+	Sound "hostage/hpain/hpain2.wav",
+	Sound "hostage/hpain/hpain3.wav",
+	Sound "hostage/hpain/hpain4.wav",
+	Sound "hostage/hpain/hpain5.wav",
+	Sound "hostage/hpain/hpain6.wav",
+}
+
+function GM:TTTPlayerScream(ply)
+	sound.Play(table.Random(deathsounds), ply:GetShootPos(), 90, 100)
 end
