@@ -14,7 +14,7 @@ if (SERVER) then
 end
 
 function GM:TryInspectBody(ply)
-	local tr = ply:GetEyeTrace()
+	local tr = ply:GetEyeTrace(MASK_SHOT)
 
 	if (not IsValid(tr.Entity) or tr.HitPos:Distance(ply:GetShootPos()) > MAX_DISTANCE) then
 		return false
