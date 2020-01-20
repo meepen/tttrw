@@ -18,9 +18,9 @@ SWEP.WeaponID              = AMMO_PISTOL
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
-	DamageDropoffRange = 500,
-	DamageDropoffRangeMax = 3200,
-	DamageMinimumPercent = 0.1,
+	DamageDropoffRange = 300,
+	DamageDropoffRangeMax = 500,
+	DamageMinimumPercent = 0.4,
 	Spread = Vector(0.06, 0.04, 0),
 }
 
@@ -35,6 +35,7 @@ SWEP.Primary.Sound         = Sound "Weapon_P90.Single"
 
 SWEP.HeadshotMultiplier    = 1.30
 SWEP.DeploySpeed = 1.53
+SWEP.ReloadSpeed = 5
 
 
 SWEP.AutoSpawnable         = true
