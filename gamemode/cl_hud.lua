@@ -44,7 +44,7 @@ function GM:HUDDrawTargetID()
 	local ent = ttt.GetHUDTarget()
 	if (not IsValid(ent)) then return end
 
-	local tr = ent:GetEyeTrace()
+	local tr = ent:GetEyeTrace(MASK_SHOT)
 	ent = tr.Entity
 	if (not IsValid(ent)) then return end
 

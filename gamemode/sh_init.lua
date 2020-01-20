@@ -12,6 +12,15 @@ ttt = ttt or GM or {}
 
 PLAYER = FindMetaTable "Player"
 
+function PLAYER:GetEyeTrace(mask)
+	return util.TraceLine {
+		start = self:EyePos(),
+		endpos = self:EyePos() + self:GetAimVector() * 0xffff,
+		mask = mask,
+		filter = self,
+	}
+end
+
 white_text = Color(230, 230, 230, 255)
 
 function PLAYER:IsActive()
