@@ -18,24 +18,24 @@ SWEP.Bullets = {
 	DamageDropoffRange = 650,
 	DamageDropoffRangeMax = 4200,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(0.02, 0.03)
+	Spread = Vector(0.03, 0.05)
 }
 
 SWEP.Primary.Damage        = 17
 SWEP.Primary.Delay         = 0.11
 SWEP.Primary.Recoil        = 2
 SWEP.Primary.Automatic     = true
-SWEP.Primary.Ammo          = "SMG1"
 SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_AUG.Single"
 
-SWEP.HeadshotMultiplier    = 1.9
+SWEP.HeadshotMultiplier    = 1.7
 SWEP.DeploySpeed = 1.3
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
-SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
+SWEP.Primary.Ammo          = "smg1"
+SWEP.AmmoEnt               = "item_ammo_smg1_ttt"
 
 SWEP.ViewModel			= "models/weapons/cstrike/c_rif_aug.mdl"
 SWEP.WorldModel			= "models/weapons/w_rif_aug.mdl"
