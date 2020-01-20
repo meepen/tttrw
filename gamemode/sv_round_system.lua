@@ -41,6 +41,14 @@ function round.SetRoundEndTime(time)
 	end
 end
 
+function round.Speedup(speedup)
+	local old = ttt.GetRoundSpeedup()
+
+	round.SetRoundEndTime(CurTime() + (ttt.GetRealRoundEndTime() - CurTime()) * old / speedup)
+	ttt.SetVisibleRoundEndTime(CurTime() + (ttt.GetVisibleRoundEndTime() - CurTime()) * old / speedup)
+	ttt.SetRoundSpeedup(speedup)
+end
+
 function round.SetState(state, time)
 	ttt.SetRoundState(state)
 	ttt.SetRoundStateChangeTime(CurTime())
@@ -102,6 +110,17 @@ function round.GetActivePlayersByRole(roleteam)
 	return ret
 end
 
+function round.GetAllPlayersWithRole(roleteam)
+	local ret = {}
+	for _, ply in pairs(round.GetActivePlayers()) do
+		if (ply.Role.Name == roleteam or ply.Role.Team.Name == roleteam) then
+			ret[#ret + 1] = ply
+		end
+	end
+
+	return ret
+end
+
 function round.IsPlayerActive(ply)
 	local plys = round.GetActivePlayers()
 	for _, active in pairs(plys) do
@@ -120,7 +139,7 @@ function round.RemovePlayer(ply)
 			table.remove(plys, i)
 			hook.Run("TTTPlayerRemoved", ply)
 			if (ttt_haste:GetBool() and ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE) then
-				round.SetRoundEndTime(ttt.GetRealRoundEndTime() + ttt_haste_minutes_per_death:GetFloat() * 60)
+				round.SetRoundEndTime(ttt.GetRealRoundEndTime() + ttt_haste_minutes_per_death:GetFloat() * 60 / ttt.GetRoundSpeedup())
 			end
 			return true
 		end
@@ -239,7 +258,7 @@ local function TryStart()
 			end
 		end
 
-		round.End("innocent", winners)
+		round.End("innocent", winners, "time_limit")
 	end)
 	round.FirstRound = false
 	return true
@@ -252,13 +271,19 @@ function round.TryStart()
 	timer.Simple(3, round.TryStart)
 end
 
-function round.End(winning_team, winners)
+function round.End(winning_team, winners, why)
 	if (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
 		warn("round.End called when ROUNDSTATE = %s\n", ttt.Enums.RoundState[ttt.GetRoundState()])
 		return
 	end
 
-	hook.Run("TTTRoundEnd", winning_team, winners)
+	winning_team, winners, why = hook.Run("TTTOverrideWin", winning_team, winners, why)
+
+	hook.Run("TTTRoundEnd", winning_team, winners, why)
+end
+
+function GM:TTTOverrideWin(winning_team, winners, why)
+	return winning_team, winners, why
 end
 
 function GM:OnPlayerRoleChange(ply, old, new)

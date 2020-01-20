@@ -18,22 +18,31 @@ function ttt.GetRoleColor(role)
 	return color_unknown
 end
 
+local function pcall_(fn, ...)
+	local s, e = xpcall(fn, debug.traceback, ...)
+
+	if (not s) then
+		print"???"
+		printf("Error: %s", e)
+	end
+end
+
 function GM:OnRoundStateChange(old, new)
 	if (new == ttt.ROUNDSTATE_PREPARING) then
 		local list = {}
-		hook.Run("TTTAddPermanentEntities", list)
+		pcall_(hook.Run, "TTTAddPermanentEntities", list)
 		game.CleanUpMap(false, list)
 	end
 
 	if (new == ttt.ROUNDSTATE_PREPARING) then
-		hook.Run "TTTPrepareRound"
+		pcall_(hook.Run, "TTTPrepareRound")
 		if (CLIENT) then
 			system.FlashWindow()
 		end
 	elseif (new == ttt.ROUNDSTATE_ACTIVE) then
-		hook.Run "TTTBeginRound"
+		pcall_(hook.Run, "TTTBeginRound")
 	elseif (new == ttt.ROUNDSTATE_ENDED) then
-		hook.Run "TTTEndRound"
+		pcall_(hook.Run, "TTTEndRound")
 	end
 end
 
@@ -93,5 +102,10 @@ hook.Add("TTTPrepareNetworkingVariables", "RoundState", function(vars)
 			TimeLimit = 0
 		},
 		Default = 0
+	})
+	table.insert(vars, {
+		Name = "RoundSpeedup",
+		Type = "Float",
+		Default = 1
 	})
 end)
