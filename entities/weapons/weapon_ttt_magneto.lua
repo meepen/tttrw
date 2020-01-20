@@ -124,7 +124,6 @@ function SWEP:Reset(keep_velocity)
 	self:SetCarriedRag(NULL)
 
 	if (IsValid(self.EntHolding)) then
-		self.EntHolding.REALGROUP = self.OldGroup
 		hook.Add("Think", self.EntHolding, function(self)
 			for _, ply in pairs(player.GetAll()) do
 				local tr = util.TraceHull {
@@ -432,7 +431,7 @@ function SWEP:Pickup()
 
 			self.Constr = constraint.Weld(self.CarryHack, self.EntHolding, 0, bone, max_force, true)
 
-			self.OldGroup = self.EntHolding.REALGROUP or self.EntHolding:GetCollisionGroup()
+			self.EntHolding.REALGROUP = self.EntHolding.REALGROUP or self.EntHolding:GetCollisionGroup() or COLLISION_GROUP_NONE
 
 			hook.Add("Think", self.EntHolding, function(self)
 				for _, ply in pairs(player.GetAll()) do
