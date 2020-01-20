@@ -315,7 +315,7 @@ end
 function GM:TTTRoundStart()
 	for _, info in pairs(round.GetActivePlayers()) do
 		if (IsValid(info.Player)) then
-			info.Player:ChatPrint("Your role is "..info.Role.Name.." on team "..info.Role.Team.Name)
+			info.Player:ChatPrint(white_text, "Your role is ", info.Role.Color, info.Role.Name, white_text, " on team ", info.Role.Team.Color, info.Role.Team.Name)
 			info.Player:SetRole(info.Role.Name)
 			info.Player:SetCredits(info.Player:GetRoleData().DefaultCredits or 0)
 			self:ProvideRoleGuns(info.Player)
