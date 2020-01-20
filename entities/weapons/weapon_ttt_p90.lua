@@ -35,8 +35,6 @@ SWEP.Primary.Sound         = Sound "Weapon_P90.Single"
 
 SWEP.HeadshotMultiplier    = 1.30
 SWEP.DeploySpeed = 1.53
-SWEP.ReloadSpeed = 5
-
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
