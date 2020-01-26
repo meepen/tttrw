@@ -20,19 +20,19 @@ SWEP.Bullets = {
 	DamageDropoffRange = 650,
 	DamageDropoffRangeMax = 4200,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(0.03, 0.035)
+	Spread = Vector(0.037, 0.037)
 }
 
 SWEP.Primary.Damage        = 22
 SWEP.Primary.Delay         = 0.135
-SWEP.Primary.Recoil        = 2.5
+SWEP.Primary.Recoil        = 2.65
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_AK47.Single"
 
-SWEP.HeadshotMultiplier    = 1.9
+SWEP.HeadshotMultiplier    = 1.8
 SWEP.DeploySpeed = 1.3
 
 SWEP.AutoSpawnable         = true
