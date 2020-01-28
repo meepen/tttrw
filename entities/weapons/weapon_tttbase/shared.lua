@@ -437,6 +437,10 @@ function SWEP:ShootBullet()
 	end
 end
 
+function SWEP:GetBulletDistance()
+	return self.Bullets and self.Bullets.Distance or nil
+end
+
 function SWEP:DoFireBullets()
 	local bullet_info = self.Bullets
 	local owner = self:GetOwner()
@@ -460,6 +464,7 @@ function SWEP:DoFireBullets()
 				self:TracerEffect(tr, dmg)
 			end
 		end,
+		Distance = self:GetBulletDistance(),
 		Src = src,
 		Dir = dir,
 	}
