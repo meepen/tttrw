@@ -10,11 +10,11 @@ function PLAYER:Loadout()
 	ply:StripAmmo()
 	ply:StripWeapons()
 
+	hook.Run("TTTPlayerGiveWeapons", ply)
+
 	ply:Give "weapon_ttt_crowbar"
 	ply:Give "weapon_ttt_unarmed"
 	ply:Give "weapon_ttt_magneto"
-
-	hook.Run("TTTPlayerGiveWeapons", ply)
 end
 
 function PLAYER:Spawn()
