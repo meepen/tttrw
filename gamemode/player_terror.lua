@@ -26,23 +26,35 @@ end
 function PLAYER:SetupDataTables()
 	local ply = self.Player
 
-	self.Player:NetworkVar("Bool", 0, "Confirmed")
-	self.Player:NetworkVar("Int", 0, "Karma")
-	self.Player:NetworkVar("Float", 0, "HealthFloat")
-
 	local fake = {
-		NetworkVar = function(self, ...)
-			self.list[#self.list + 1] = {n = select("#", ...), ...}
+		NetworkVar = function(self, name, type)
+			local list = self.list[type]
+			if (not list) then
+				list = {}
+				self.list[type] = list
+			end
+
+			list[#list + 1] = {
+				Name = name,
+				Type = type
+			}
 		end,
 		list = {},
+		Player = ply
 	}
+
+	fake:NetworkVar("Confirmed", "Bool")
+	fake:NetworkVar("Karma", "Int")
+	fake:NetworkVar("HealthFloat", "Float")
 
 	hook.Run("SetupPlayerNetworking", fake)
 
 	table.sort(fake, function(a, b) return a[1] < b[1] end)
 
-	for _, d in ipairs(fake) do
-		self.Player:NetworkVar(unpack(d, 1, d.n))
+	for type, list in pairs(fake.list) do
+		for num, data in ipairs(list) do
+			self.Player:NetworkVar(data.Type, num, data.Name)
+		end
 	end
 end
 
