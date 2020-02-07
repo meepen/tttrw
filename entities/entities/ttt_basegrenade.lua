@@ -101,6 +101,10 @@ function ENT:Tick()
 		end
 	end
 
+	self:Move()
+end
+
+function ENT:Move()
 	local ft = FrameTime()
 
 	self:SETVelocity(self:GETVelocity() + Vector(0, 0, -300) * ft)
@@ -112,10 +116,14 @@ function ENT:Tick()
 
 	local frac = 1
 
-	while ((not tr.StartSolid or tr.FractionLeftSolid ~= tr.Fraction) and not tr.AllSolid and tr.Hit and tr.Fraction ~= 0 and not self:Collide(tr)) do
+	while ((not tr.StartSolid or tr.FractionLeftSolid ~= tr.Fraction) and not tr.AllSolid and tr.Hit and tr.Fraction ~= 0) do
 		frac = frac - tr.Fraction
 
 		cur_pos = tr.HitPos
+
+		if (self:Collide(tr)) then
+			break
+		end
 
 		local old = self:GETVelocity()
 
@@ -151,7 +159,7 @@ function ENT:StartFires(pos, num, lifetime, explode, dmgowner)
 
 		local vstart = pos
 
-		local flame = ents.Create("ttt_flame")
+		local flame = ents.Create "ttt_flame"
 		flame:SetPos(pos)
 		if IsValid(dmgowner) and dmgowner:IsPlayer() then
 			flame:SetDamageParent(dmgowner)
