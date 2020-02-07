@@ -160,6 +160,10 @@ function GM:DoPlayerDeath(ply, atk, dmg)
 end
 
 function GM:TTTShouldPlayerScream(ply, atk, dmg)
+	if (dmg:GetDamageCustom() == HITGROUP_HEAD) then
+		return false
+	end
+
 	local wep = dmg:GetInflictor()
 	if (IsValid(wep) and wep:IsWeapon() and wep.IsSilent) then
 		return false

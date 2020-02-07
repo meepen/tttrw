@@ -13,10 +13,14 @@ DEFINE_BASECLASS "ttt_point_info"
 local ID = 0
 
 function ENT:SetupDataTables()
-    self:NetworkVar("Int", 0, "Damage")
-    self:NetworkVar("Int", 1, "DamageType")
-    self:NetworkVar("Int", 2, "ID")
-    self:NetworkVar("Int", 3, "HitGroup")
+    self:NetworkVar("Float", 0, "RealDamage")
+    self:NetworkVar("Int", 0, "DamageType")
+    self:NetworkVar("Int", 1, "ID")
+    self:NetworkVar("Int", 2, "HitGroup")
+end
+
+function ENT:GetDamage()
+    return math.Round(self:GetRealDamage(), 1)
 end
 
 function ENT:Initialize()
