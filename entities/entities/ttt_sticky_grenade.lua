@@ -2,6 +2,7 @@ AddCSLuaFile()
 
 ENT.PrintName = "Sticky Grenade"
 ENT.Base = "ttt_basegrenade"
+ENT.Model = "models/weapons/w_eq_fraggrenade_thrown.mdl"
 
 DEFINE_BASECLASS "ttt_basegrenade"
 

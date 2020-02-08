@@ -5,7 +5,7 @@ SWEP.HoldType           = "slam"
 SWEP.PrintName          = "Incediary Grenada"
 SWEP.Slot               = 3
 
-SWEP.ViewModelFlip      = true
+SWEP.ViewModelFlip      = false
 SWEP.ViewModelFOV       = 54
 
 SWEP.Base                  = "weapon_tttbase"
@@ -18,7 +18,7 @@ SWEP.Primary.Delay = 3
 SWEP.Primary.Ammo = "none"
 SWEP.Primary.Automatic = false
 
-SWEP.ViewModel             = "models/weapons/v_eq_flashbang.mdl"
+SWEP.ViewModel             = "models/weapons/cstrike/c_eq_flashbang.mdl"
 SWEP.WorldModel            = "models/weapons/w_eq_flashbang.mdl"
 
 SWEP.GrenadeEntity = "ttt_basegrenade"
