@@ -27,9 +27,21 @@ function ENT:Collide(tr)
 		self:SetParent(tr.Entity)
 		self:SetLocalPos(tr.Entity:WorldToLocal(tr.HitPos))
 		self:SetLocalAngles(tr.Entity:GetAngles())
+
+		if (tr.Entity:IsPlayer()) then
+			hook.Add("PlayerDeath", self, self.PlayerDeath)
+		end
 	end
 
 	return true
+end
+
+function ENT:PlayerDeath(p)
+	if (p == self:GetParent()) then
+		self:SETVelocity(vector_origin)
+		self:SetParent()
+		self:SetStuck(false)
+	end
 end
 
 function ENT:Move()
@@ -99,11 +111,6 @@ function ENT:Explode()
 				mask = MASK_SHOT,
 				filter = self,
 			}
-
-			if (v:IsPlayer()) then
-				print(v)
-				PrintTable(tr)
-			end
 
 			if (not tr.Hit and tr.Entity ~= v and tr.Fraction ~= 1) then
 				continue

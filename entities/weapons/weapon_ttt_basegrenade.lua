@@ -27,12 +27,11 @@ DEFINE_BASECLASS "weapon_tttbase"
 function SWEP:SetupDataTables()
 	BaseClass.SetupDataTables(self)
 
-	self:NetVar("ThrowStart", "Float", 0)
+	self:NetVar("ThrowStart", "Float", math.huge)
 end
 
 function SWEP:PrimaryAttack()
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
-	self.DoThrow = true
 	self:SetThrowStart(CurTime())
 
 	self:PullPin()
@@ -53,31 +52,23 @@ function SWEP:Throw()
 		e:SetDieTime(self:GetThrowStart() + self.Primary.Delay)
 		e:Spawn()
 
+
+		self:SetThrowStart(math.huge)
 		hook.Run("DropCurrentWeapon", self:GetOwner())
 		self:Remove()
 	end
 end
 
 function SWEP:Think()
-	if (self.DoThrow) then
-		if (not IsValid(self:GetOwner())) then
-			self.DoThrow = false
-			return
-		end
-
-		if (not self:GetOwner():KeyDown(IN_ATTACK) or self:GetThrowStart() + self.Primary.Delay < CurTime()) then
-			self:Throw()
-		end
+	if (self:GetThrowStart() ~= math.huge and (not self:GetOwner():KeyDown(IN_ATTACK) or self:GetThrowStart() + self.Primary.Delay < CurTime())) then
+		self:Throw()
 	end
-
 end
 
 function SWEP:PullPin()
 	self:SendWeaponAnim(ACT_VM_PULLPIN)
 
-	if self.SetHoldType then
-		self:SetHoldType "grenade"
-	end
+	self:SetHoldType "grenade"
 end
 
 function SWEP:SecondaryAttack()
@@ -87,8 +78,16 @@ function SWEP:TranslateFOV(fov)
 	return hook.Run("TTTGetFOV", fov) or fov
 end
 
+function SWEP:PreDrop()
+	if (self:GetThrowStart() ~= math.huge) then
+		return true
+	end
+end
+
 function SWEP:Holster()
-	self.DoThrow = false
+	if (self:GetThrowStart() ~= math.huge) then
+		return false
+	end
 
 	return BaseClass.Holster(self)
 end

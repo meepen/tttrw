@@ -22,7 +22,9 @@ function GM:DropCurrentWeapon(ply)
     end
 
 	if (wep.PreDrop) then
-		wep:PreDrop()
+		if (wep:PreDrop()) then
+			return
+		end
     end
 
     for _, _wep in pairs(ply:GetWeapons()) do

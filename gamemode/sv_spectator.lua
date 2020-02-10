@@ -64,7 +64,7 @@ function GM:SpectatorKey(ply, key)
 			if (IsValid(ply:GetObserverTarget())) then
 				ply:SetObserverMode(ply:GetObserverMode() == OBS_MODE_CHASE and OBS_MODE_IN_EYE or OBS_MODE_CHASE)
 			else
-				UpdatePlayerSpectating(ply, ply:GetObserverMode() == OBS_MODE_CHASE and OBS_MODE_IN_EYE or OBS_MODE_CHASE)
+				UpdatePlayerSpectating(ply, ply:GetObserverMode() == OBS_MODE_CHASE and OBS_MODE_IN_EYE or OBS_MODE_CHASE, 1)
 			end
 		elseif (key == IN_ATTACK) then
 			UpdatePlayerSpectating(ply, nil, -1)
