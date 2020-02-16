@@ -13,3 +13,5 @@ SWEP.ViewModel          = "models/weapons/cstrike/c_eq_fraggrenade.mdl"
 SWEP.WorldModel         = "models/weapons/w_eq_fraggrenade.mdl"
 
 SWEP.TTTCompat = {"weapon_ttt_confgrenade"}
+
+SWEP.Ortho = {1.5, 2.3}

@@ -14,7 +14,7 @@ local function RandVector(spread)
     return vector_origin
 end
 
-local smokeparticles = {
+EFFECT.Particles = {
 	Model("particle/particle_smokegrenade"),
 	Model("particle/particle_noisesphere")
 }
@@ -30,7 +30,7 @@ function EFFECT:Init(data)
 	local r = data:GetRadius()
 	for i = 1, data:GetMagnitude() * 10 do
 		local prpos = RandVector(dist / 2)
-		local p = em:Add(table.Random(smokeparticles), center + prpos)
+		local p = em:Add(table.Random(self.Particles), center + prpos)
 		if (p) then
 			local gray = math.random(75, 200)
 			p:SetColor(gray, gray, gray)

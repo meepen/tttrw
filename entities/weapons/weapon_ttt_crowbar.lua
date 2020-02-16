@@ -34,6 +34,8 @@ SWEP.AutoSpawnable           = false
 SWEP.AllowDelete             = false -- never removed for weapon reduction
 SWEP.AllowDrop               = false
 
+SWEP.Ortho = {1, 1, angle = Angle(180, -90, -0)}
+
 local sound_single = Sound "Weapon_Crowbar.Single"
 local sound_open = Sound "DoorHandles.Unlocked3"
 
