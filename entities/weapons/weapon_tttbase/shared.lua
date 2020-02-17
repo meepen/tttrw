@@ -634,7 +634,7 @@ function SWEP:Think()
 end
 
 function SWEP:GetCurrentFOVMultiplier()
-	return self:GetOldFOVMultiplier() + (self:GetFOVMultiplier() - self:GetOldFOVMultiplier()) * math.min(1, (CurTime() - self:GetFOVMultiplierTime()) / self:GetFOVMultiplierDuration())
+	return self:GetOldFOVMultiplier() + (self:GetFOVMultiplier() - self:GetOldFOVMultiplier()) * math.min(1, (CurTime() - self:GetFOVMultiplierTime()) / (self:GetFOVMultiplierDuration() + 0.00001))
 end
 
 function SWEP:ChangeFOVMultiplier(fovmult, duration)
