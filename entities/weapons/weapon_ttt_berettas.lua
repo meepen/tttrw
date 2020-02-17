@@ -42,3 +42,5 @@ SWEP.ViewModel  = "models/weapons/cstrike/c_pist_elite.mdl"
 SWEP.WorldModel = "models/weapons/w_pist_elite.mdl"
 
 SWEP.Ironsights = false
+
+SWEP.Ortho = {0.5, -1, angle = Angle(90, 0, 0), size = 0.8}
