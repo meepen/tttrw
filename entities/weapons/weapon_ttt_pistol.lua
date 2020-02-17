@@ -33,7 +33,7 @@ SWEP.Primary.RecoilTiming  = 0.06
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "Pistol"
 SWEP.Primary.ClipSize      = 16
-SWEP.Primary.DefaultClip   = 64
+SWEP.Primary.DefaultClip   = 32
 SWEP.Primary.Sound         = Sound "Weapon_FiveSeven.Single"
 
 SWEP.HeadshotMultiplier    = 2
