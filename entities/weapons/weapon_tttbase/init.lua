@@ -4,6 +4,8 @@ AddCSLuaFile "cl_init.lua"
 AddCSLuaFile "shared.lua"
 include "shared.lua"
 
+resource.AddFile "materials/tttrw/scope.vmt"
+
 function SWEP:Equip()
 end
 

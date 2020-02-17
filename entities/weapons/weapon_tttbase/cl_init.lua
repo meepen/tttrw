@@ -3,7 +3,7 @@ include "shared.lua"
 local ttt_lowered = CreateConVar("ttt_ironsights_lowered", "1", FCVAR_ARCHIVE)
 
 SWEP.DrawCrosshair = true
-SWEP.ScopeArcTexture = Material "sprites/scope_arc"
+SWEP.ScopeArcTexture = Material "tttrw/scope"
 
 function SWEP:DrawHUD()
 	if (self:GetIronsights() and self.HasScope) then
