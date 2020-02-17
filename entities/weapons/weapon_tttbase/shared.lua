@@ -15,6 +15,10 @@ SWEP.Primary.DefaultClip = 100000
 SWEP.Primary.ClipSize    = 32
 SWEP.Primary.Damage      = 20
 
+SWEP.Secondary.Ammo = "none"
+SWEP.Secondary.ClipSize = 0
+SWEP.Secondary.DefaultClip = 0
+
 SWEP.Secondary.Delay     = 0.1
 SWEP.ReloadSpeed         = 1
 

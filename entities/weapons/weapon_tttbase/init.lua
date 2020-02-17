@@ -5,8 +5,6 @@ AddCSLuaFile "shared.lua"
 include "shared.lua"
 
 function SWEP:Equip()
-    -- TODO(meep): figure out why the fuck this is happening???
-    self:GetOwner():RemoveAmmo(24, "Pistol")
 end
 
 function SWEP:OnDrop()
