@@ -16,6 +16,7 @@ SWEP.Primary.ClipSize    = 32
 SWEP.Primary.Damage      = 20
 
 SWEP.Secondary.Ammo = "none"
+SWEP.Secondary.Sound = false
 SWEP.Secondary.ClipSize = 0
 SWEP.Secondary.DefaultClip = 0
 
@@ -156,6 +157,9 @@ function SWEP:DoZoom(state)
 	end
 
 	if (state) then
+		if (self.HasScope and self.Secondary.Sound) then
+			self:EmitSound(self.Secondary.Sound)
+		end
 		self:ChangeFOVMultiplier(self.Ironsights.Zoom, self:GetIronsightsTimeTo())
 	elseif (self.HasScope) then
 		self:ChangeFOVMultiplier(1, 0)
