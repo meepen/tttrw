@@ -43,6 +43,8 @@ local PANEL = {}
 DEFINE_BASECLASS "ttt_curved_panel"
 function PANEL:Init()
 	hook.Add("OnPlayerRoleChange", self, self.OnPlayerRoleChange)
+	hook.Add("Think", self, self.OnWeaponNameChange)
+
 	self:SetCurve(4)
 	self:SetColor(Color(0xb, 0xc, 0xb, 255))
 	self:SetCurveTopRight(false)
@@ -65,6 +67,13 @@ function PANEL:Init()
 	self.Number:Dock(LEFT)
 	self.Number:SetZPos(1)
 end
+
+function PANEL:OnWeaponNameChange()
+	if (IsValid(self.Weapon) and self.Weapon.GetPrintName) then
+		self.Label:SetText(self.Weapon:GetPrintName())
+	end
+end
+
 function PANEL:OnPlayerRoleChange(ply, old, new)
 	if (ply == Player() and IsValid(self.Active)) then
 		self.Active:SetImageColor(ttt.roles[new].Color)
@@ -75,11 +84,15 @@ function PANEL:PerformLayout(w, h)
 	self:GetParent():SizeToChildren(false, true)
 	self.Number:SetWide(h + self.Number:GetCurve())
 end
+
 function PANEL:SetWeapon(wep)
 	local swep_tbl = weapons.GetStored(wep:GetClass())
-	self.Label:SetText(swep_tbl.PrintName)
+	self.Weapon = wep
+	self.Label:SetText "lol who knows"
+	local swep_tbl = 
 	self.Number.Label:SetText(swep_tbl.Slot + 1)
 end
+
 function PANEL:SetActive(b)
 	if (IsValid(self.Active) and not b) then
 		self.Active:Remove()

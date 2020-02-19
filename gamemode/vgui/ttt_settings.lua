@@ -224,8 +224,10 @@ function PANEL:AddTextEntry(text, convar, v, enabled)
 	if (isstring(convar)) then
 		text:SetConVar(convar)
 		text:SetText(GetConVar(convar):GetString())
-	else
+	elseif (v) then
 		text:SetText(v)
+	else
+		text:SetText ""
 	end
 	text:SetDisabled(not convar)
 
