@@ -26,14 +26,24 @@ function EFFECT:Init(data)
     local center = data:GetStart()
 
 	local em = ParticleEmitter(center, false)
+	local ent = data:GetEntity()
+	local color = data:GetColor()
 
 	local r = data:GetRadius()
 	for i = 1, data:GetMagnitude() * 10 do
 		local prpos = RandVector(dist / 2)
 		local p = em:Add(table.Random(self.Particles), center + prpos)
 		if (p) then
-			local gray = math.random(75, 200)
-			p:SetColor(gray, gray, gray)
+			local col
+			if (color == 1) then
+				col = ColorRand()
+			end
+
+			if (not col) then
+				local gray = math.random(75, 200)
+				col = Color(gray, gray, gray)
+			end
+			p:SetColor(col.r, col.g, col.b)
 			p:SetStartAlpha(255)
 			p:SetEndAlpha(0)
 			p:SetLifeTime(0)

@@ -28,6 +28,7 @@ end
 
 function ENT:SetupDataTables()
 	self:NetVar("DieTime", "Float", -math.huge, true)
+	self:NetVar("Bounciness", "Float", 0.3, true)
 end
 
 function ENT:Initialize()
@@ -59,19 +60,28 @@ end
 ENT.Mask = MASK_SOLID
 ENT.CollisionGroup = COLLISION_GROUP_PLAYERSOLID
 
+ENT.Bounds = {
+	Mins = Vector(10, 10, 5),
+	Maxs = Vector(-10, -10, -8),
+}
+
 function ENT:Trace(from, to)
 	self:GetOwner():LagCompensation(true)
 	local tr = util.TraceHull {
 		start = from,
 		endpos = to,
-		maxs = Vector(10, 10, 5),
-		mins = Vector(-10, -10, -8),
+		maxs = self.Bounds.Mins,
+		mins = self.Bounds.Maxs,
 		mask = self.Mask,
 		collisiongroup = self.CollisionGroup,
 		filter = self:GetOwner()
 	}
 	self:GetOwner():LagCompensation(false)
 	return tr
+end
+
+function ENT:SetWeapon(w)
+	self.WeaponData = w:GetTable()
 end
 
 function ENT:SetOrigin(v)
@@ -143,10 +153,6 @@ function ENT:Move()
 	end
 
 	self:SetOrigin(next_pos)
-end
-
-function ENT:GetBounciness()
-	return 0.3
 end
 
 function ENT:Collide(t)
