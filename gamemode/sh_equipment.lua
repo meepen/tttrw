@@ -24,20 +24,6 @@ if (SERVER) then
 	concommand.Add("ttt_buy_equipment", function(ply, cmd, args)
 		ply:GiveEquipment(args[1])
 	end)
-	
-	concommand.Add("ttt_buy_equipment_force", function(ply, cmd, args)
-		local class = args[1]
-		local eq = ttt.Equipment.List[class]
-
-		if (not eq) then
-			print "?"
-			return
-		end
-
-		if (ttt.Equipment.List[class]:OnBuy(ply)) then
-			printf("[Equipment] cheated %s %s.", ply:Nick(), class)
-		end
-	end)
 end
 
 function PLAYER:CanReceiveEquipment(class)
