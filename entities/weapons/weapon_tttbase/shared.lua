@@ -40,8 +40,10 @@ SWEP.Ironsights = {
 	Angle = Vector(0, 0, 1.5),
 	TimeTo = 0.01,
 	TimeFrom = 2,
-	Editing
 }
+
+SWEP.VElements = {}
+SWEP.WElements = {}
 
 SWEP.AllowDrop = true
 
@@ -118,6 +120,12 @@ function SWEP:Initialize()
 	end
 	if (SERVER) then
 		self:SV_Initialize()
+	else
+		self.VElements = table.Copy(self.VElements)
+		self.WElements = table.Copy(self.WElements)
+
+		self:CreateModels(self.VElements)
+		self:CreateModels(self.WElements)
 	end
 	self:SetHoldType(self.HoldType)
 end
@@ -494,6 +502,12 @@ function SWEP:TracerEffect(tr, dmg)
 		d:SetDamageType(dmg:GetDamageType())
 		d:SetColor(1)
 
+		local att = self:LookupAttachment "muzzle"
+
+		if (att ~= -1) then
+			d:SetAttachment(att)
+		end
+
 		local r
 		if (SERVER) then
 			r = RecipientFilter()
@@ -551,6 +565,18 @@ function SWEP:PrimaryAttack()
 end
 
 local quat_zero = Quaternion()
+
+function SWEP:GenerateRecoilInstructions()
+	if (not self.RecoilInstructions) then
+		self.RecoilInstructions = {
+			Angle(5, -3),
+			Angle(5, -3),
+			Angle(0, 8)
+		}
+	end
+
+	return self.RecoilInstructions
+end
 
 function SWEP:GetCurrentViewPunch()
 	local delay = self.Primary.RecoilTiming or self:GetDelay()
@@ -662,7 +688,12 @@ function SWEP:GetMultiplier()
 end
 
 function SWEP:GetViewPunchAngles()
-	return Angle((-self.Primary.Recoil * self:GetMultiplier() * (0.5 + self:GetCurrentZoom() / 2) ^ 0.7))
+	local instr = self:GenerateRecoilInstructions()
+	local thing = math.floor(self:GetConsecutiveShots() / (instr.Interval or 10))
+
+	local current = instr[thing % #instr + 1]
+
+	return current / 10
 end
 
 function SWEP:AdjustMouseSensitivity()
@@ -743,4 +774,45 @@ end
 
 function SWEP:GetDelay()
 	return self.Primary.Delay
+end
+
+function SWEP:CreateModels(tab)
+	if (not tab) then
+		return
+	end
+
+	for k, v in pairs( tab ) do
+		if (v.type == "Model" and v.model and v.model ~= "" and (not IsValid(v.modelEnt) or v.createdModel ~= v.model)) then
+			v.modelEnt = ClientsideModel(v.model, RENDER_GROUP_VIEW_MODEL_OPAQUE)
+			if (IsValid(v.modelEnt)) then
+				v.modelEnt:SetPos(self:GetPos())
+				v.modelEnt:SetAngles(self:GetAngles())
+				v.modelEnt:SetParent(self)
+				v.modelEnt:SetNoDraw(true)
+				v.createdModel = v.model
+			else
+				v.modelEnt = nil
+			end
+		elseif (v.type == "Sprite" and v.sprite and v.sprite ~= "" and (not v.spriteMaterial or v.createdSprite ~= v.sprite)) then
+			local name = v.sprite.."-"
+
+			local params = {
+				["$basetexture"] = v.sprite
+			}
+
+			-- // make sure we create a unique name based on the selected options
+			local tocheck = { "nocull", "additive", "vertexalpha", "vertexcolor", "ignorez" }
+			for i, j in pairs(tocheck) do
+				if (v[j]) then
+					params["$"..j] = 1
+					name = name.."1"
+				else
+					name = name.."0"
+				end
+			end
+
+			v.createdSprite = v.sprite
+			v.spriteMaterial = CreateMaterial(name, "UnlitGeneric", params)
+		end
+	end
 end

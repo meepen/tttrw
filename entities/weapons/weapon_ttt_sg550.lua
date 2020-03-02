@@ -53,3 +53,8 @@ SWEP.Ironsights = {
 	SlowDown = 0.3,
 	Zoom = 0.2,
 }
+
+SWEP.RecoilInstructions = {
+	Interval = 1,
+	Angle(-20),
+}

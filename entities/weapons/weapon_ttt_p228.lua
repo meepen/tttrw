@@ -21,7 +21,7 @@ SWEP.Bullets = {
 	DamageDropoffRange = 400,
 	DamageDropoffRangeMax = 2500,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(.02, .02)
+	Spread = Vector(0.02, 0.02)
 }
 
 SWEP.Primary.Damage        = 22
@@ -52,4 +52,21 @@ SWEP.Ironsights = {
 	TimeFrom = 0.15,
 	SlowDown = 0.7,
 	Zoom = 0.85,
+}
+
+
+local power = 6
+
+SWEP.RecoilInstructions = {
+	Interval = 1,
+	Angle(-power * 0.6, -power * 0.5),
+	Angle(-power * 0.48, -power * 0.8),
+	Angle(-power * 0.2, -power * 0.3),
+	Angle(-power * 0.4, power * 0.2),
+	Angle(-power * 0.2, power * 0.1),
+	Angle(-power * 0.6, power * 0.4),
+	Angle(-power * 0.35, -power * 0.1),
+	Angle(-power * 0.2, power * 0.3),
+	Angle(-power * 0.2, power * 0.1),
+	Angle(-power * 0.4, -power * 0.1),
 }

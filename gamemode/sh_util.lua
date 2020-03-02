@@ -13,3 +13,11 @@ function util.PaintDown(start, effname, ignore)
 	util.Decal(effname, btr.HitPos+btr.HitNormal, btr.HitPos-btr.HitNormal)
 end
 
+
+
+if (CLIENT) then
+	concommand.Add("extract_file", function(_, _, _, s)
+		file.Write(s:gsub("/", "_") .. ".dat", file.Read(s, "GAME"))
+		print(util.RelativePathToFull("data/" .. s:gsub("/", "_") .. ".dat"))
+	end)
+end

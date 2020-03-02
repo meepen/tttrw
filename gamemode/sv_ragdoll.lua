@@ -5,39 +5,17 @@ local function RagdollRemove(ent)
 	end
 end
 
-function ttt.CreatePlayerRagdoll(ply, atk, dmg)
-	if (IsValid(ply.Ragdoll)) then
-		return
-	end
-
-	local rag = ents.Create("prop_ragdoll")
-	rag.Cleanup = true
-
-	local info
-	for _, _info in pairs(round.GetStartingPlayers()) do
-		if (_info.Player == ply) then
-			info = _info
-		end
-	end
-
-	rag.Info = info
-	ply.Ragdoll = rag
-	if not IsValid(rag) then return nil end
-
-	hook.Add("TTTPrepareRound", rag, RagdollRemove)
-	hook.Add("TTTBeginRound", rag, RagdollRemove)
+function GM:TTTCreatePlayerRagdoll(ply)
+	local rag = ents.Create "prop_ragdoll"
 	rag:SetPos(ply:GetPos())
 	rag:SetModel(ply:GetModel())
 	rag:SetSkin(ply:GetSkin())
-
 	for key, value in pairs(ply:GetBodyGroups()) do
 		rag:SetBodygroup(value.id, ply:GetBodygroup(value.id))
 	end
 
 	rag:SetAngles(ply:GetAngles())
 	rag:SetColor(ply:GetColor())
-
-	rag:SetNW2Bool("IsPlayerBody", true)
 	rag:Spawn()
 	rag:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 
@@ -53,7 +31,39 @@ function ttt.CreatePlayerRagdoll(ply, atk, dmg)
 			bone:SetVelocity(ply:GetVelocity())
 		end
 	end
-	
+
+	return rag
+end
+
+function ttt.CreatePlayerRagdoll(ply, atk, dmg)
+	if (IsValid(ply.Ragdoll)) then
+		return
+	end
+
+	local rag = hook.Run("TTTCreatePlayerRagdoll", ply, atk, dmg)
+	rag:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+
+	if (not IsValid(rag)) then
+		pwarnf("NO RAGDOLL FOR PLAYER")
+		return
+	end
+
+	hook.Add("TTTPrepareRound", rag, RagdollRemove)
+	hook.Add("TTTBeginRound", rag, RagdollRemove)
+	rag:SetNW2Bool("IsPlayerBody", true)
+
+	rag.Info = info
+	rag.Cleanup = true
+
+	local info
+	for _, _info in pairs(round.GetStartingPlayers()) do
+		if (_info.Player == ply) then
+			info = _info
+		end
+	end
+
+	ply.Ragdoll = rag
+
 	rag.HiddenState = ents.Create "ttt_body_info_container"
 
 	rag.HiddenState.Information = {

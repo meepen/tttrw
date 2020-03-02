@@ -13,7 +13,7 @@ SWEP.Base                    = "weapon_tttbase"
 SWEP.ViewModel               = "models/weapons/c_crowbar.mdl"
 SWEP.WorldModel              = "models/weapons/w_crowbar.mdl"
 
-SWEP.Primary.Damage          = 13.5
+SWEP.Primary.Damage          = 20
 SWEP.Primary.ClipSize        = -1
 SWEP.Primary.DefaultClip     = -1
 SWEP.Primary.Automatic       = true
@@ -36,7 +36,7 @@ SWEP.AllowDrop               = false
 
 SWEP.Ortho = {1, 1, angle = Angle(180, -90, -0)}
 
-local sound_single = Sound "Weapon_Crowbar.Single"
+SWEP.Primary.Sound = Sound "Weapon_Crowbar.Single"
 local sound_open = Sound "DoorHandles.Unlocked3"
 
 if SERVER then
@@ -113,7 +113,7 @@ function SWEP:PrimaryAttack()
 	}
 	local hitEnt = tr_main.Entity
 
-	self:EmitSound(sound_single)
+	self:EmitSound(self.Primary.Sound)
 
 	if (IsValid(hitEnt) or tr_main.HitWorld) then
 		self:SendWeaponAnim(ACT_VM_HITCENTER)
@@ -155,15 +155,7 @@ function SWEP:PrimaryAttack()
 				self:TryOpen(tr_all.Entity)
 			end
 
-			local dmg = DamageInfo()
-			dmg:SetDamage(self.Primary.Damage)
-			dmg:SetAttacker(owner)
-			dmg:SetInflictor(self)
-			dmg:SetDamageForce(owner:GetAimVector() * 1500)
-			dmg:SetDamagePosition(tr_main.HitPos)
-			dmg:SetDamageType(DMG_CLUB)
-
-			hitEnt:DispatchTraceAttack(dmg, tr_main)
+			self:DoHit(hitEnt, tr_main)
 		else
 			if tr_all.Entity and tr_all.Entity:IsValid() then
 				self:OpenEnt(tr_all.Entity)
@@ -172,6 +164,19 @@ function SWEP:PrimaryAttack()
 	end
 
 	owner:LagCompensation(false)
+end
+
+function SWEP:DoHit(hitEnt, tr)
+	local owner = self:GetOwner()
+	local dmg = DamageInfo()
+	dmg:SetDamage(self.Primary.Damage)
+	dmg:SetAttacker(owner)
+	dmg:SetInflictor(self)
+	dmg:SetDamageForce(owner:GetAimVector() * 1500)
+	dmg:SetDamagePosition(tr.HitPos)
+	dmg:SetDamageType(DMG_CLUB)
+
+	hitEnt:DispatchTraceAttack(dmg, tr)
 end
 
 function SWEP:CanSecondaryAttack()
@@ -209,7 +214,7 @@ function SWEP:SecondaryAttack()
 			}
 		end
 
-		self:EmitSound(sound_single)      
+		self:EmitSound(self.Primary.Sound)      
 		self:SendWeaponAnim(ACT_VM_HITCENTER)
 
 		self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)

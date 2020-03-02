@@ -16,9 +16,9 @@ SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
 	DamageDropoffRange = 700,
-	DamageDropoffRangeMax = 1500,
-	DamageMinimumPercent = 0.5,
-	Spread = Vector(0.07, 0.07)
+	DamageDropoffRangeMax = 1300,
+	DamageMinimumPercent = 0.35,
+	Spread = Vector(0.03, 0.03)
 }
 
 SWEP.TTTCompat = {"weapon_zm_sledge"}
@@ -49,4 +49,20 @@ SWEP.Ironsights = {
 	TimeFrom = 0.25,
 	SlowDown = 0.35,
 	Zoom = 0.85,
+}
+
+local power = 9
+
+SWEP.RecoilInstructions = {
+	Interval = 2,
+	Angle(-power, -power * 0.6),
+	Angle(-power, -power * 0.48),
+	Angle(-power, -power * 0.2),
+	Angle(-power, power * 0.4),
+	Angle(-power, power * 0.2),
+	Angle(-power, power * 0.6),
+	Angle(-power, power * 0.35),
+	Angle(-power, power * 0.2),
+	Angle(-power, -power * 0.2),
+	Angle(-power, -power * 0.4),
 }

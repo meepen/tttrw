@@ -199,3 +199,12 @@ local deathsounds = {
 function GM:TTTPlayerScream(ply)
 	sound.Play(table.Random(deathsounds), ply:GetShootPos(), 90, 100)
 end
+
+function GM:PlayerSwitchFlashlight(ply, en)
+	if (ply.LastFlashlight and ply.LastFlashlight > CurTime() - 0.15) then
+		return false
+	end
+
+	ply.LastFlashlight = CurTime()
+	return true
+end

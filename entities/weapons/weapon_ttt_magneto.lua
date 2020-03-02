@@ -170,7 +170,7 @@ end
 
 local function PlayerStandsOn(ent)
 	for _, ply in ipairs(player.GetAll()) do
-		if ply:GetGroundEntity() == ent and ply:IsTerror() then
+		if ply:GetGroundEntity() == ent and ply:Alive() then
 			return true
 		end
 	end

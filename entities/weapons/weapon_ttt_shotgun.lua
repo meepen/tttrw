@@ -173,3 +173,9 @@ function SWEP:Deploy()
 	self.ReloadTimer = 0
 	return BaseClass.Deploy(self)
 end
+
+
+SWEP.RecoilInstructions = {
+	Interval = 1,
+	Angle(-40),
+}
