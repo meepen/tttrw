@@ -177,5 +177,5 @@ end
 
 SWEP.RecoilInstructions = {
 	Interval = 1,
-	Angle(-40),
+	Angle(-70),
 }
