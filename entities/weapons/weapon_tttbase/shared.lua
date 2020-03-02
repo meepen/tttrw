@@ -459,6 +459,16 @@ function SWEP:ShootBullet()
 	end
 end
 
+function SWEP:GetPrimaryAttackAnimation()
+	return ACT_VM_PRIMARYATTACK
+end
+
+function SWEP:ShootEffects()
+	self:SendWeaponAnim(self:GetPrimaryAttackAnimation())
+	self.Owner:MuzzleFlash()
+	self.Owner:SetAnimation(PLAYER_ATTACK1)
+end
+
 function SWEP:GetBulletDistance()
 	return self.Bullets and self.Bullets.Distance or nil
 end

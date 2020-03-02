@@ -173,7 +173,7 @@ function SWEP:GetViewModelPosition(pos, ang)
 	local toggletime = self.IronTime or 0
 	local time = is_ironsights and self.Ironsights.TimeTo or self.Ironsights.TimeFrom
 
-	local frac = math.min(1, (self:GetUnpredictedTime() - toggletime) / time)
+	local frac = math.min(1, (self:GetUnpredictedTime() - toggletime) / time) ^ 1.3
 
 	pos, ang = self:GetIronsightsPos(is_ironsights, frac, pos, ang)
 
@@ -198,7 +198,7 @@ function SWEP:GetCurrentUnpredictedFOVMultiplier()
 
 	local cur = math.min(1, (self:GetUnpredictedTime() - time) / duration)
 
-	local res = ofov + (fov - ofov) * cur ^ 0.5
+	local res = ofov + (fov - ofov) * cur ^ 0.9
 
 	if (self:GetOwner() ~= LocalPlayer()) then
 		return math.sqrt(res)

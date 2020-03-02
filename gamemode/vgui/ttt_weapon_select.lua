@@ -86,7 +86,7 @@ function PANEL:PerformLayout(w, h)
 end
 
 function PANEL:SetWeapon(wep)
-	local swep_tbl = weapons.GetStored(wep:GetClass())
+	local swep_tbl = baseclass.Get(wep:GetClass())
 	self.Weapon = wep
 	self.Label:SetText "lol who knows"
 	local swep_tbl = 
