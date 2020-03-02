@@ -187,7 +187,13 @@ function SWEP:Deploy()
 	if (IsValid(self:GetOwner()) and IsValid(self:GetOwner():GetHands())) then
 		self:GetOwner():GetHands():SetNoDraw(not self.UseHands)
 	end
-	self:SendWeaponAnim(ACT_VM_DEPLOY)
+	self:SendWeaponAnim(ACT_VM_DRAW)
+
+	local speed = self.DeploySpeed
+	self:SetPlaybackRate(speed)
+	if (IsValid(self:GetOwner())) then
+		self:GetOwner():GetViewModel():SetPlaybackRate(speed)
+	end
 
 	return true
 end
@@ -733,7 +739,7 @@ end
 
 function SWEP:Holster()
 	self:CancelReload()
-	self:SendWeaponAnim(ACT_VM_DEPLOY)
+	self:SendWeaponAnim(ACT_VM_HOLSTER)
 	return true
 end
 

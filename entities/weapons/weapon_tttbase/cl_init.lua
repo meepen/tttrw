@@ -136,22 +136,10 @@ end
 
 local vector_lower = Vector(0, 0, 2)
 
-function SWEP:GetViewModelPosition(pos, ang)
-	if (self.ViewModelPos) then
-		pos = pos + self.ViewModelPos
-	end
+function SWEP:GetIronsightsPos(is_ironsights, frac, pos, ang)
+	local complete_ironpos, complete_ironang = self.Ironsights.Pos, self.Ironsights.Angle
 
-	if (self.NoSights or not self.Ironsights or self.CurIronsights == nil) then
-		return pos, ang
-	end
-
-	local is_ironsights = self.CurIronsights
-	local toggletime = self.IronTime or 0
-	local time = is_ironsights and self.Ironsights.TimeTo or self.Ironsights.TimeFrom
-
-	local frac = math.min(1, (self:GetUnpredictedTime() - toggletime) / time)
-
-	local ironpos, ironang = -(self.ViewModelPos or vector_origin) + self.Ironsights.Pos - (not self.PreventLowered and ttt_lowered:GetBool() and vector_lower or vector_origin), self.Ironsights.Angle
+	local ironpos, ironang = -(self.ViewModelPos or vector_origin) + complete_ironpos - (not self.PreventLowered and ttt_lowered:GetBool() and vector_lower or vector_origin), complete_ironang
 
 	local frompos, fromang, topos, toang = vector_origin, vector_origin, ironpos, ironang
 	if (not is_ironsights) then
@@ -169,6 +157,25 @@ function SWEP:GetViewModelPosition(pos, ang)
 	          + newpos.y * ang:Forward()
 			  + newpos.z * ang:Up()
 
+	return pos, ang
+end
+
+function SWEP:GetViewModelPosition(pos, ang)
+	if (self.ViewModelPos) then
+		pos = pos + self.ViewModelPos
+	end
+
+	if (self.NoSights or not self.Ironsights or self.CurIronsights == nil) then
+		return pos, ang
+	end
+
+	local is_ironsights = self.CurIronsights
+	local toggletime = self.IronTime or 0
+	local time = is_ironsights and self.Ironsights.TimeTo or self.Ironsights.TimeFrom
+
+	local frac = math.min(1, (self:GetUnpredictedTime() - toggletime) / time)
+
+	pos, ang = self:GetIronsightsPos(is_ironsights, frac, pos, ang)
 
 	if (is_ironsights) then
 		self.SwayScale = 0.2
