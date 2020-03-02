@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 SWEP.HoldType           = "shotgun"
 
-SWEP.PrintName          = "Shotgun"
+SWEP.PrintName          = "XM1014"
 SWEP.Slot               = 2
 
 SWEP.ViewModelFlip      = false
