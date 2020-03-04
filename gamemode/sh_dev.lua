@@ -56,7 +56,7 @@ local function generate_info(printf)
 			wep.Primary.Damage,
 			wep.Bullets.Num,
 			60 / wep.Primary.Delay,
-			wep.Primary.Recoil,
+			wep.Primary.Recoil or -1,
 			wep.Primary.ClipSize,
 			VectorString(wep.Bullets.Spread),
 			wep.ReloadSpeed or 1,
