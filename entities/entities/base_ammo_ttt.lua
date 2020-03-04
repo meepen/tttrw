@@ -66,6 +66,7 @@ function ENT:CheckForWeapon(ply)
 		-- create a cache of what weapon classes use this ammo
 		local tbl = {}
 		for k,v in pairs(weapons.GetList()) do
+			v = baseclass.Get(v.ClassName)
 			if v and v.AmmoEnt == self:GetClass() then
 				table.insert(tbl, v.ClassName)
 			end
