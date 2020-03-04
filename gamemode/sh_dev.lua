@@ -33,6 +33,7 @@ end
 local function generate_info(printf)
 	local dmg = DamageInfo()
 	for _, wep in pairs(weapons.GetList()) do
+		wep = baseclass.Get(wep.ClassName)
 		if (not wep.AutoSpawnable) then
 			continue
 		end
