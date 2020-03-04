@@ -178,7 +178,7 @@ function PANEL:Think()
 
 	for wep in pairs(wep_lookup) do
 		local pnl = self:Add "ttt_weapon_select_weapon"
-		pnl:SetZPos(weapons.GetStored(wep:GetClass()).Slot)
+		pnl:SetZPos(baseclass.Get(wep:GetClass()).Slot)
 		pnl:SetWeapon(wep)
 		pnl:Dock(TOP)
 		table.insert(self.OrderedPanels, pnl)

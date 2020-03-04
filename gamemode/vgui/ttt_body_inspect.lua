@@ -120,7 +120,7 @@ function PANEL:Paint(w, h)
 		return
 	end
 
-	local lookup = weapons.GetStored(class).Ortho or {0, 0}
+	local lookup = baseclass.Get(class).Ortho or {0, 0}
 
 	local x, y = self:LocalToScreen(0, 0)
 	local mins, maxs = err:GetModelBounds()
@@ -148,7 +148,7 @@ function PANEL:SetImage(v)
 		return
 	end
 
-	local wep = weapons.GetStored(self.Class)
+	local wep = baseclass.Get(self.Class)
 	if (not wep) then
 		return
 	end
