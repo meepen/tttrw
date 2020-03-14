@@ -10,8 +10,8 @@ SWEP.ViewModelFOV       = 54
 
 SWEP.Base                  = "weapon_tttbase"
 
-SWEP.AutoSpawnable         = false
-SWEP.Spawnable             = false
+SWEP.AutoSpawnable         = true
+SWEP.Spawnable             = true
 
 SWEP.Primary.Delay = 3
 

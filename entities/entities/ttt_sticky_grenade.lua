@@ -31,6 +31,8 @@ function ENT:Collide(tr)
 		if (tr.Entity:IsPlayer()) then
 			hook.Add("PlayerDeath", self, self.PlayerDeath)
 		end
+
+		hook.Run("TTTGrenadeStuck", self)
 	end
 
 	return true

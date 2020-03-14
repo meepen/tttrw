@@ -26,6 +26,8 @@ SWEP.ReloadSpeed         = 1
 SWEP.HeadshotMultiplier  = 2
 SWEP.DeploySpeed = 1
 
+SWEP.DeployAnim = ACT_VM_DRAW
+
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
@@ -187,7 +189,7 @@ function SWEP:Deploy()
 	if (IsValid(self:GetOwner()) and IsValid(self:GetOwner():GetHands())) then
 		self:GetOwner():GetHands():SetNoDraw(not self.UseHands)
 	end
-	self:SendWeaponAnim(ACT_VM_DRAW)
+	self:SendWeaponAnim(self.DeployAnim)
 
 	local speed = self.DeploySpeed
 	self:SetPlaybackRate(speed)
