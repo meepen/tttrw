@@ -254,34 +254,19 @@ local function GetModel(ply)
 	local r = ttt.ModelHitboxes[m]
 
 	if (not r) then
-		local f = file.Open(ply:GetModel(), "rb", "GAME")
-
-		if (not f) then
-			error("PlayerModel File doesn't exist!: " .. ply:GetModel())
-		end
-
-		f:Seek(176)
-		local offset = f:ReadLong()
-
 		r = {}
 		ttt.ModelHitboxes[m] = r
 
 		for group = 0, ply:GetHitboxSetCount() - 1 do
 			r[group] = {}
-			f:Seek(offset + 12 * group + 8)
-			local new_offset = offset + f:ReadLong()
 			for hitbox = 0, ply:GetHitBoxCount(group) - 1 do
-				f:Seek(new_offset + hitbox * 68 + 4)	
-
 				r[group][hitbox] = {
 					Collide = CreatePhysCollideBox(ply:GetHitBoxBounds(hitbox, group)),
-					Group = f:ReadLong(),
+					Group = ply:GetHitBoxHitGroup(hitbox, group),
 					Bone = ply:GetHitBoxBone(hitbox, group),
 				}
 			end
 		end
-
-		f:Close()
 	end
 
 	return r
@@ -314,12 +299,12 @@ function SWEP:FireBulletsCallback(tr, dmginfo)
 				local best = 0
 			
 				for _, hitbox in pairs(mdl[tr.Entity:GetHitboxSet()]) do
-					local matr = tr.Entity:GetBoneMatrix(hitbox.Bone)
+					local origin, angles = tr.Entity:GetBonePosition(hitbox.Bone)
 					if (not IsValid(hitbox.Collide)) then
 						continue
 					end
 
-					local hitpos, norm, frac = hitbox.Collide:TraceBox(matr:GetTranslation(), matr:GetAngles(), tr.StartPos, tr.StartPos + tr.Normal * 10000, vector_origin, vector_origin)
+					local hitpos, norm, frac = hitbox.Collide:TraceBox(origin, angles, tr.StartPos, tr.StartPos + tr.Normal * 10000, vector_origin, vector_origin)
 					if (hitpos and (ignore[tr.HitGroup] or hitpos:Distance(tr.HitPos) < 14)) then
 						dmginfo:SetDamage(d)
 						self:DoDamageDropoff(tr, dmginfo)
