@@ -21,7 +21,7 @@ SWEP.Bullets = {
 	Spread = Vector(0.01, 0.02)
 }
 
-SWEP.Primary.Damage        = 17
+SWEP.Primary.Damage        = 18
 SWEP.Primary.Delay         = 0.11
 SWEP.Primary.Recoil        = 2
 SWEP.Primary.Automatic     = true
@@ -58,7 +58,7 @@ SWEP.RecoilInstructions = {
 	pow * Angle(-1, 0),
 	pow * Angle(-1, 0),
 	pow * Angle(-3, 2),
-	pow * Angle(-3, 1),
+	pow * Angle(-5, 1),
 	pow * Angle(-2, 0),
 	pow * Angle(-3, -3),
 }
