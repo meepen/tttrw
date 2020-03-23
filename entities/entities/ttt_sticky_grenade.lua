@@ -101,9 +101,9 @@ end
 local max_dist = 150
 
 function ENT:Explode()
-
 	for k,v in pairs(ents.GetAll()) do
-		local dist = v:GetPos():Distance(self:GetOrigin())
+		local top = v:GetPos() + vector_up * (v:OBBMaxs().z - v:OBBMins().z)
+		local dist = math.min(top:Distance(self:GetOrigin()), v:GetPos():Distance(self:GetOrigin()))
 
 		if (dist < max_dist) then
 

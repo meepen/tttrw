@@ -62,8 +62,8 @@ function SWEP:OverrideCommand(ply, cmd)
 
 		local pos = util.IntersectRayWithOBB(tr.StartPos, tr.Normal * (bullet.Distance or 56756), origin, angle_zero, mins, maxs)
 		if (not pos) then
-			-- printf("%s tried to hit someone they didn't hit", self:GetOwner():Nick())
-			-- print(origin, mins, maxs, tr.StartPos + tr.Normal * origin:Distance(tr.StartPos))
+			printf("%s tried to hit someone they didn't hit", self:GetOwner():Nick())
+			print(origin, mins, maxs, tr.StartPos + tr.Normal * origin:Distance(tr.StartPos))
 			return
         end
 
