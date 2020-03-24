@@ -116,7 +116,7 @@ end
 
 function SWEP:Initialize()
 	hook.Run("TTTWeaponInitialize", self)
-	self:SetDeploySpeed(self.DeploySpeed)
+	self:SetDeploySpeed(4)
 	if (SERVER and self.Primary and self.Primary.Ammo == "Buckshot" and not self.PredictableSpread) then
 		printf("Warning: %s weapon type has shotgun ammo and no predictable spread", self:GetClass())
 	end
@@ -192,16 +192,23 @@ function SWEP:Deploy()
 	self:SendWeaponAnim(self.DeployAnim)
 
 	local speed = self.DeploySpeed
+
 	self:SetPlaybackRate(speed)
 	if (IsValid(self:GetOwner())) then
 		self:GetOwner():GetViewModel():SetPlaybackRate(speed)
 	end
 
-	return true
-end
+	local duration = self:SequenceDuration()
 
-function SWEP:OnReloaded()
-	self:SetDeploySpeed(self.DeploySpeed)
+	if (speed > 0) then
+		duration = duration / speed
+	else
+		duration = duration * speed
+	end
+
+	self:SetNextPrimaryFire(CurTime() + duration)
+
+	return true
 end
 
 function SWEP:Reload()
