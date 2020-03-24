@@ -24,8 +24,8 @@ SWEP.Bullets = {
 	Spread = Vector(0.02, 0.02)
 }
 
-SWEP.Primary.Damage        = 22
-SWEP.Primary.Delay         = 0.25
+SWEP.Primary.Damage        = 27
+SWEP.Primary.Delay         = 0.2
 SWEP.Primary.Recoil        = 1.3
 SWEP.Primary.RecoilTiming  = 0.06
 SWEP.Primary.Automatic     = true
@@ -50,10 +50,9 @@ SWEP.Ironsights = {
 	Angle = Vector(0, 0, 0),
 	TimeTo = 0.1,
 	TimeFrom = 0.15,
-	SlowDown = 0.7,
+	SlowDown = 0.9,
 	Zoom = 0.85,
 }
-
 
 local power = 6
 

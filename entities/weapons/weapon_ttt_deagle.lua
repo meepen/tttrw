@@ -48,7 +48,7 @@ SWEP.Ironsights = {
 	Angle = Vector(0, 0, 0),
 	TimeTo = 0.25,
 	TimeFrom = 0.25,
-	SlowDown = 0.5,
+	SlowDown = 0.75,
 	Zoom = 0.9,
 }
 
