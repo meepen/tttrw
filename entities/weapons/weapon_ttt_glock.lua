@@ -49,16 +49,17 @@ SWEP.Ironsights = {
 	Zoom = 0.9,
 }
 
-local pow = 1.35
+local pow = 3
+local pow_y = 0.5
 SWEP.RecoilInstructions = {
 	Interval = 1,
-	pow * Angle(-6, -2),
-	pow * Angle(-4, -1),
-	pow * Angle(-2, 3),
-	pow * Angle(-1, 0),
-	pow * Angle(-1, 0),
-	pow * Angle(-3, 2),
-	pow * Angle(-3, 1),
-	pow * Angle(-2, 0),
-	pow * Angle(-3, -3),
+	Angle(pow * -4, pow_y * -2),
+	Angle(pow * -3, pow_y * -1),
+	Angle(pow * -2, pow_y * 3),
+	Angle(pow * -1, pow_y * 0),
+	Angle(pow * -1, pow_y * 0),
+	Angle(pow * -3, pow_y * 2),
+	Angle(pow * -3, pow_y * 1),
+	Angle(pow * -2, pow_y * 0),
+	Angle(pow * -3, pow_y * -3),
 }
