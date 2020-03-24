@@ -36,7 +36,7 @@ SWEP.Primary.Sound         = Sound "Weapon_TMP.Single"
 SWEP.ReloadSpeed = 2
 
 SWEP.HeadshotMultiplier    = 1.2
-SWEP.DeploySpeed = 1.95 
+SWEP.DeploySpeed = 1.7
 
 SWEP.AutoSpawnable         = true	
 SWEP.Spawnable             = true
@@ -50,7 +50,7 @@ SWEP.Ironsights = {
 	Angle = Vector(2, 0, 2),
 	TimeTo = 0.15,
 	TimeFrom = 0.15,
-	SlowDown = 0.6,
+	SlowDown = 0.7,
 	Zoom = 0.9,
 }
 

@@ -37,7 +37,7 @@ SWEP.Primary.DefaultClip   = 32
 SWEP.Primary.Sound         = Sound "Weapon_FiveSeven.Single"
 
 SWEP.HeadshotMultiplier    = 1.9
-SWEP.DeploySpeed = 1.66
+SWEP.DeploySpeed = 2
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
