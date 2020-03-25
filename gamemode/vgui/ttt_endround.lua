@@ -106,4 +106,6 @@ function GM:TTTBeginRound()
 	if (IsValid(ttt.endround)) then
 		ttt.endround:Remove()
 	end
+
+	self:EquipmentReset()
 end

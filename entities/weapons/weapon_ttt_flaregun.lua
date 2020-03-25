@@ -27,7 +27,6 @@ SWEP.Equipment = {
 	Desc 		   = "Burns bodies to a crisp.",
 	CanBuy	       = { traitor = true },
 	Cost 	   	   = 1,
-	Limit	       = 1,
 	Icon           = "materials/tttrw/equipment/flaregun.png"
 }
 

@@ -33,7 +33,6 @@ SWEP.Equipment = {
 	Desc 		   = "Store a location with right click, then travel there again with left click.",
 	CanBuy	       = { traitor = true },
 	Cost 	   	   = 1,
-	Limit	       = 1,
 	Icon           = "materials/tttrw/equipment/teleporter.png",
 }
 

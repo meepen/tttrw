@@ -5,19 +5,25 @@ if (SERVER) then
 
 	-- Development command
 	function PLAYER:GiveEquipment(class)
-		if (not self:CanReceiveEquipment(class)) then
-			return false
+		local success, msg = self:CanReceiveEquipment(class)
+	
+		if (not success) then
+			return false, msg
 		end
 
 		local eq = ttt.Equipment.List[class]
 
-		if (eq.Limit > self:GetCredits()) then
-			return false
-		end
+		if (eq.Cost > self:GetCredits()) then
+			return false, "Not enough credits to buy this"
+		end	
 
 		if (ttt.Equipment.List[class]:OnBuy(self)) then
+			self.TTTRWEquipmentTracker = self.TTTRWEquipmentTracker or {}
+			self.TTTRWEquipmentTracker[class] = (self.TTTRWEquipmentTracker[class] or 0) + 1
 			printf("[Equipment] gave %s %s.", self:Nick(), class)
 			self:SetCredits(self:GetCredits() - eq.Cost)
+		else
+			return false, "Buy failed."
 		end
 	end
 	
@@ -32,31 +38,26 @@ function PLAYER:CanReceiveEquipment(class)
 	end
 
 	local eq = ttt.Equipment.List[class]
+
 	if (not eq) then
-		return false
+		return false, "No such equipment exists"
 	end
+
 	if (eq.CanBuy and not (eq.CanBuy[self:GetRole()] or eq.CanBuy[self:GetRoleTeam()])) then
-		return false
+		return false, "You cannot buy that on that role"
 	end
 
-	if (eq.Limit) then
-		if (not eq.IsWeapon) then
-			local children = self:GetChildren()
-
-			local count = 0
-			for _, child in pairs(self:GetChildren()) do
-				if (child:GetClass() == class) then
-					count = count + 1
-				end
-			end
-
-			if (count >= eq.Limit) then
-				return false
-			end
-		end
+	if (eq.Limit and self.TTTRWEquipmentTracker and self.TTTRWEquipmentTracker[class] and self.TTTRWEquipmentTracker[class] >= eq.Limit) then
+		return false, "You bought too many."
 	end
 
 	return true
+end
+
+function GM:EquipmentReset()
+	for _, ply in pairs(player.GetAll()) do
+		ply.TTTRWEquipmentTracker = {}
+	end
 end
 
 TTT_Equipment = {}
@@ -71,7 +72,8 @@ function ttt.Equipment.Add(id, w)
 	if (w) then
 		e = weapons.Get(id)
 		function e.Equipment:OnBuy(ply)
-			return IsValid(ply:Give(self.ClassName))
+			local wep = ply:Give(self.ClassName)
+			return IsValid(wep) and IsValid(wep:GetOwner())
 		end
 	else
 		e = scripted_ents.Get(id)

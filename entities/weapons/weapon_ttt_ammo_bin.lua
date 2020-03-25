@@ -29,7 +29,6 @@ SWEP.Equipment = {
 	Desc 		   = "Grants up to 300% ammo to your reserves.",
 	CanBuy	       = { traitor = true, Detective = true },
 	Cost 	   	   = 1,
-	Limit	       = 1,
 	Icon           = "materials/tttrw/equipment/ammobin.png",
 }
 
