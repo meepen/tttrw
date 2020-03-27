@@ -187,7 +187,7 @@ function GM:TTTPrepareRoles(Team, Role)
 
 	Team "spectator"
 		:SeenByAll()
-		:SetColor(Color(0x4a, 0xc3, 0xff))
+		:SetColor(Color(51, 54, 56))
 
 	Role("Innocent", "innocent")
 	Role("Spectator", "spectator")

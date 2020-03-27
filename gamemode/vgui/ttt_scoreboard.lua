@@ -5,7 +5,7 @@ local white_text = Color(209, 209, 209)
 
 surface.CreateFont("ttt_scoreboard_player", {
 	font = 'Lato',
-	size = math.max(22, ScrH() / 65),
+	size = math.max(22, ScrH() / 60),
 	weight = 300,
 })
 
@@ -21,8 +21,9 @@ surface.CreateFont("ttt_scoreboard_group", {
 	weight = 200,
 })
 
-local Padding = math.Round(ScrH() * 0.0075)
+local Padding = math.Round(ScrH() * 0.008)
 local Curve = math.Round(Padding / 2)
+local Slant = Padding * 5
 
 local PANEL = {}
 
@@ -50,8 +51,6 @@ vgui.Register("ttt_scoreboard_header", PANEL, "ttt_curved_panel")
 local PANEL = {}
 
 function PANEL:Init()
-	self:SetCurve(4)
-
 	self.Text = self:Add "DLabel"
 	self.Text:Dock(FILL)
 	self.Text:SetContentAlignment(5)
@@ -69,21 +68,96 @@ function PANEL:SetFont(f)
 	self.Text:SetFont(f)
 end
 
-vgui.Register("ttt_scoreboard_rank", PANEL, "ttt_curved_panel_outline")
+function PANEL:SetColor(col)
+	self.Color = col
+end
+
+function PANEL:Paint(w, h)
+	if (not self.Rect) then return end
+	surface.SetDrawColor(self.Color)
+	draw.NoTexture()
+	surface.DrawPoly(self.Rect)
+end
+
+function PANEL:PerformLayout(w, h)
+	self.Rect = {
+		{x = Slant * (h / (h + Padding)), y = 0},
+		{x = w, y = 0},
+		{x = w - Slant * (h / (h + Padding)), y = h},
+		{x = 0, y = h}
+	}
+end
+
+vgui.Register("ttt_scoreboard_rank", PANEL, "ttt_curved_panel")
+
+local PANEL = {}
+
+function PANEL:Init()
+	self:SetText("")
+
+	self.Text = self:Add "DLabel"
+	self.Text:Dock(FILL)
+	self.Text:SetContentAlignment(5)
+	self.Text:SetFont "ttt_scoreboard_player"
+	self.Text:SetTextColor(white_text)
+
+	self:SetStatus(ttt.STATUS_DEFAULT)
+	self:SetColor(Color(0, 0, 0, 0))
+end
+
+function PANEL:SetStatus(stat)
+	if (stat == self.Status) then stat = ttt.STATUS_DEFAULT end
+	self.Status = stat
+	self:SetColor(ttt.Status[self.Status]["color"])
+	self.Text:SetText(ttt.Status[self.Status]["text"])
+
+	if (IsValid(self:GetParent().Player)) then
+		ttt.SetPlayerStatus(self:GetParent().Player, stat)
+		self:GetParent():GetParent():Toggle()
+	end
+end
+
+function PANEL:SetColor(col)
+	self.Color = col
+end
+
+function PANEL:DoClick()
+	self:GetParent():DoClick()
+end
+
+function PANEL:Paint(w, h)
+	if (not self.Rect) then return end
+	surface.SetDrawColor(self.Color)
+	draw.NoTexture()
+	surface.DrawPoly(self.Rect)
+end
+
+function PANEL:PerformLayout(w, h)
+	self.Rect = {
+		{x = Slant * (h / (h + Padding)), y = 0},
+		{x = w, y = 0},
+		{x = w - Slant * (h / (h + Padding)), y = h},
+		{x = 0, y = h}
+	}
+end
+
+vgui.Register("ttt_scoreboard_status", PANEL, "ttt_curved_button")
 
 local PANEL = {}
 DEFINE_BASECLASS "ttt_curved_panel"
 
 function PANEL:Init()
 	self:SetCurve(math.Round(Padding / 2))
-	self:SetColor(Color(70, 102, 135, 0.8 * 255))
+	--self:SetColor(Color(70, 102, 135, 0.8 * 255))
 
-	self:DockMargin(Padding, 0, Padding, Padding)
+	self:DockMargin(0, 0, 0, Padding)
 	self:DockPadding(Padding / 2, Padding / 2, Padding / 2, Padding / 2)
 	self:Dock(TOP)
 	surface.SetFont "ttt_scoreboard_player"
 	local _, h = surface.GetTextSize "A"
 	self:SetTall(h + Padding)
+
+	self:SetText("")
 
 	self.Avatar = self:Add "AvatarImage"
 	self.Avatar:Dock(LEFT)
@@ -124,26 +198,89 @@ function PANEL:Init()
 	self.Karma:SetTextColor(white_text)
 
 	self.Rank = self:Add "ttt_scoreboard_rank"
-	self.Rank:SetWide(self.Rank:GetWide() * 2)
+	self.Rank:SetWide(self.Rank:GetWide() * 3)
 	self.Rank:SetColor(Color(0, 0, 0, 0))
 	self.Rank:SetFont "ttt_scoreboard_player"
-	self.Rank:DockMargin(0, 0, 10, 0)
+	self.Rank:DockMargin(0, 0, 30, 0)
 	self.Rank:SetText "Rank"
 	self.Rank:SizeToContentsX()
 	self.Rank:Dock(RIGHT)
 	self.Rank:SetTextColor(white_text)
+
+	self.Status = self:Add "ttt_scoreboard_status"
+	self.Status:SetWide(self.Status:GetWide() * 3)
+	self.Status:SizeToContentsX()
+end
+
+function PANEL:DoClick()
+	self:GetParent():Toggle()
+end
+
+function PANEL:Scissor()
+    local x0, y0, x1, y1 = self:GetRenderBounds()
+    render.SetScissorRect(x0, y0, x1, y1, true)
 end
 
 function PANEL:Paint(w, h)
-	if (IsValid(self.Player)) then
-		if (ttt.GetRoundState() ~= ttt.ROUNDSTATE_PREPARING and IsValid(self.Player.HiddenState) and not self.Player.HiddenState:IsDormant()) then
-			self:SetColor(ColorAlpha(self.Player:GetRoleData().Color, 100))
-		else
-			self:SetColor(Color(17, 15, 13, 0.75 * 255))
-		end
+
+	if (not IsValid(self.Player)) then
+		self:SetColor(Color(17, 15, 13, 0.75 * 255))
+		BaseClass.Paint(self, w, h)
+		return
 	end
 
-	BaseClass.Paint(self, w, h)
+	if (not self.Rect1) then return end
+
+	self.OldRemove = self.OldRemove or self.OnRemove or function() end
+	self.OnRemove = self.MeshRemove
+
+	local x, y = self:LocalToScreen(0, 0)
+	if (self._OLDW ~= w or self._OLDH ~= h or self._OLDX ~= x or self._OLDY ~= y) then
+		self:RebuildMesh(w, h)
+		self._OLDW = w
+		self._OLDH = h
+		self._OLDX = x
+		self._OLDY = y
+	end
+
+	self:Scissor()
+	render.SetColorMaterial()
+	if (true) then
+		hud.StartStenciledMesh(self.Mesh, 0, 0)
+
+		draw.NoTexture()
+
+		surface.SetDrawColor(ColorAlpha(self.Player:GetRoleData().Color, 0.75 * 255))
+		surface.DrawPoly(self.Rect1)
+
+		surface.SetDrawColor(17, 15, 13, 0.75 * 255)
+		surface.DrawPoly(self.Rect2)
+
+		hud.EndStenciledMesh()
+	else
+		self.Mesh:Draw()
+	end
+	render.SetScissorRect(0, 0, 0, 0, false)
+end
+
+function PANEL:PerformLayout(w, h)
+	self.Rect1 = {
+		{x = 0, y = 0},
+		{x = w*.4, y = 0},
+		{x = w*.4-Slant, y = h},
+		{x = 0, y = h}
+	}
+
+	self.Rect2 = {
+		{x = w*.4+Padding, y = 0},
+		{x = w, y = 0},
+		{x = w, y = h},
+		{x = w*.4-Slant+Padding, y = h},
+	}
+
+	if (IsValid(self.Status)) then 
+		self.Status:SetPos(w*.4-Slant+Padding*3, Padding/2)
+	end
 end
 
 function PANEL:Think()
@@ -153,14 +290,14 @@ function PANEL:Think()
 
 		if (ply:Team() == TEAM_CONNECTING or ply:Team() == TEAM_SPECTATOR) then
 			group = "Spectators"
-		elseif (not ply:Alive() and IsValid(ply.DeadState) and ply.DeadState:GetIdentified()) then
+		elseif (not ply:Alive() and IsValid(ply.DeadState) and (ply.DeadState:GetIdentified() or ply:GetConfirmed())) then
 			group = "Dead"
-		elseif (not ply:Alive() and (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE or not LocalPlayer():Alive() or LocalPlayer():GetRoleData().Evil or ply:GetConfirmed())) then
+		elseif (not ply:Alive() and (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE or not LocalPlayer():Alive() or LocalPlayer():GetRoleData().Evil)) then
 			group = "Unidentified"
 		end
 
 		if (self.Group ~= group) then
-			self:SetParent(self:GetParent():GetParent():GetParent():GetParent().Groups[group])
+			self:GetParent():SetParent(self:GetParent():GetParent():GetParent():GetParent():GetParent().Groups[group])
 			self.Group = group
 		end
 
@@ -211,7 +348,81 @@ function PANEL:SetPlayer(ply, group)
 			end
 		end
 	end
+
+	self.Status:SetStatus(ttt.GetPlayerStatus(self.Player))
+	self:GetParent():Toggle()
 end
+
+vgui.Register("ttt_scoreboard_player_render", PANEL, "ttt_curved_button")
+
+local PANEL = {}
+
+function PANEL:Init()
+	self.Statuses = {}
+	self:DockPadding(0, 0, Padding * Padding, 0)
+	self:DockMargin(0, -Padding/4, 0, 0)
+	
+	for STATUS = ttt.STATUS_MISSING, ttt.STATUS_KOS do
+		self.Statuses[STATUS] = self:Add("ttt_scoreboard_status")
+		self.Statuses[STATUS]:SetStatus(STATUS)
+		self.Statuses[STATUS]:SetWide(self.Statuses[STATUS]:GetWide() * 3)
+		self.Statuses[STATUS]:SizeToContentsX()
+		self.Statuses[STATUS]:DockMargin(0, 0, -1.5 * Padding, 0)
+		self.Statuses[STATUS]:Dock(RIGHT)
+		self.Statuses[STATUS].DoClick = function()
+			self:GetParent().Render.Status:SetStatus(STATUS)
+		end
+	end
+end
+
+function PANEL:Paint() end
+
+vgui.Register("ttt_scoreboard_statuses", PANEL, "ttt_curved_panel")
+
+local PANEL = {}
+
+function PANEL:Init()
+	self.Expanded = false
+
+	self:DockMargin(0, 0, 0, Padding)
+	self:Dock(TOP)
+
+	surface.SetFont "ttt_scoreboard_player"
+	_, self.ContractedSize = surface.GetTextSize "A"
+	self:SetTall(self.ContractedSize + Padding)
+
+	self.Render = self:Add("ttt_scoreboard_player_render")
+	self.Render:Dock(TOP)
+end
+
+function PANEL:SetPlayer(ply)
+	self.Render:SetPlayer(ply)
+
+	if (ply == LocalPlayer() and IsValid(self.Render.Status)) then
+		self.Render.Status:Remove()
+		function self.Toggle() end
+	end
+end
+
+function PANEL:Toggle()
+	if (self.Expanded) then
+		self:SetTall(self:GetTall()/2)
+
+		if (IsValid(self.Statuses)) then self.Statuses:Remove() end
+		
+		self.Expanded = false
+	else
+		self:SetTall(self:GetTall()*2)
+		
+		self.Statuses = self:Add("ttt_scoreboard_statuses")
+		self.Statuses:Dock(TOP)
+		self.Statuses:SetTall(self.ContractedSize)
+		
+		self.Expanded = true
+	end
+end
+
+function PANEL:Paint() end
 
 vgui.Register("ttt_scoreboard_player", PANEL, "ttt_curved_panel")
 
@@ -219,14 +430,15 @@ local PANEL = {}
 function PANEL:Init()
 	self.Render = self:Add "ttt_scoreboard_group_header_render"
 	self.Render:Dock(LEFT)
-	self:DockMargin(Padding * 6, 0, 0, 0)
+	self:Dock(TOP)
 end
 function PANEL:SetColor(col)
-	self.Render:SetColor(col)
+	--self.Render:SetColor(col)
+	self.Render:SetColor(ttt_scoreboard_header_color)
 end
 function PANEL:SetText(text)
 	self.Render:SetText(text)
-	self:SetTall(self.Render:GetTall() * 1.5)
+	self:SetTall(self.Render:GetTall() * 1.8)
 end
 function PANEL:Paint() end
 vgui.Register("ttt_scoreboard_group_header", PANEL, "EditablePanel")
@@ -236,7 +448,7 @@ local PANEL = {}
 function PANEL:Init()
 	self:SetCurve(Curve)
 
-	self:DockPadding(Padding, Padding / 4, Padding, Padding / 4)
+	self:DockPadding(0, Padding / 2, 0, Padding / 2)
 
 	self.Text = self:Add "DLabel"
 	self.Text:SetFont "ttt_scoreboard_group"
@@ -252,7 +464,7 @@ end
 
 function PANEL:PerformLayout(w, h)
 	self.Text:SizeToContents()
-	self:SetWide(self:GetParent():GetWide() / 9)
+	self:SetWide(self:GetParent():GetWide())
 
 	self.Text:Center()
 end
@@ -264,7 +476,7 @@ local PANEL = {}
 function PANEL:Init()
 	self.Players = {}
 	self:Dock(TOP)
-	self:DockMargin(Padding, 0, Padding, Padding)
+	self:DockMargin(0, 0, 0, Padding)
 
 	self.Header = self:Add "ttt_scoreboard_group_header"
 	self.Header:Dock(TOP)
@@ -313,16 +525,19 @@ function PANEL:Init()
 
 	self:SetWide(ScrW() - ScrW() / 3)
 
+	self:DockPadding(Padding, 0, Padding, Padding)
+
 	self.Contents = {}
 
 	self.Groups = {}
 
-	self.Guide = self:Add "ttt_scoreboard_player"
+	self.Guide = self:Add "ttt_scoreboard_player_render"
 	self.Guide:SetColor(ttt_scoreboard_header_color)
-	self.Guide:DockMargin(Padding * 2, 10, Padding * 2, Padding / 4)
+	self.Guide:DockMargin(0, 10, 0, Padding / 4)
 	self.Guide.Karma:DockMargin(0, 0, Padding * 12 - self.Guide.Ping:GetWide() - 10, 0)
 	self.Guide.Name:DockMargin(42, 0, 0, 0)
 	self.Guide.Avatar:Remove()
+	self.Guide.Status:SetStatus(ttt.STATUS_HEADER)
 
 	self.Scroller = self:Add "DScrollPanel"
 	self.Scroller:Dock(FILL)
@@ -350,7 +565,9 @@ function PANEL:Init()
 	end
 
 	self:AddGroup("Terrorists", Color(14, 88, 34), living)
-	self:AddGroup("Unidentified", Color(85, 111, 87), unidentified)
+	if (LocalPlayer():GetRoleData().Evil or not LocalPlayer():Alive() or ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
+		self:AddGroup("Unidentified", Color(85, 111, 87), unidentified)
+	end
 	self:AddGroup("Dead", Color(80, 105, 38), dead)
 	self:AddGroup("Spectators", Color(127, 129, 13), spectators)
 	--self:AddGroup("Connecting", Color(255, 255, 255), connecting)

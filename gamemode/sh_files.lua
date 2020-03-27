@@ -19,6 +19,7 @@ AddCSLuaFile();
 	},
 	Client = {
 		"cl_hud_helpers.lua",
+		"cl_player_status.lua",
 		"vgui/ttt_skin.lua",
 		"vgui/ttt_centered_wrap.lua",
 		"vgui/ttt_curved_panel.lua",
