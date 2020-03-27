@@ -297,7 +297,7 @@ function PANEL:Think()
 		end
 
 		if (self.Group ~= group) then
-			self:GetParent():SetParent(self:GetParent():GetParent():GetParent():GetParent():GetParent().Groups[group])
+			self:GetParent():SetParent(ttt.Scoreboard.Inner.Groups[group])
 			self.Group = group
 		end
 
