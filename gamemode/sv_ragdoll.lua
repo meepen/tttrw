@@ -77,6 +77,8 @@ function ttt.CreatePlayerRagdoll(ply, atk, dmg)
 	rag.HiddenState:Spawn()
 
 	hook.Run("PlayerRagdollCreated", ply, rag, atk, dmg)
+
+	return rag
 end
 
 function GM:TTTActivePlayerDisconnected(ply)

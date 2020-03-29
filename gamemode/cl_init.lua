@@ -86,5 +86,9 @@ local function Callback()
 		RunConsoleCommand("cl_threaded_bone_setup", "0")
 	end
 end
-Callback()
 cvars.AddChangeCallback(tttrw_mcore:GetName(), Callback)
+
+hook.Add("HUDPaint", "gmod_mcore_test", function()
+	hook.Remove("HUDPaint", "gmod_mcore_test")
+	timer.Simple(2, Callback)
+end)

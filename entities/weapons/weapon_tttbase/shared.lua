@@ -42,6 +42,7 @@ SWEP.Ironsights = {
 	Angle = Vector(0, 0, 1.5),
 	TimeTo = 0.01,
 	TimeFrom = 2,
+	Zoom = 1,
 }
 
 SWEP.VElements = {}
@@ -285,7 +286,7 @@ local ignore = {
 	[HITGROUP_RIGHTARM] = true,
 }
 
-function SWEP:FireBulletsCallback(tr, dmginfo)
+function SWEP:FireBulletsCallback(tr, dmginfo, data)
 	local bullet = dmginfo:GetInflictor().Bullets
 
 	self:DoDamageDropoff(tr, dmginfo)
@@ -406,7 +407,7 @@ end
 
 local vector_origin = vector_origin
 
-function SWEP:ShootBullet()
+function SWEP:ShootBullet(data)
 	local owner = self:GetOwner()
 	
 	self:Hitboxes()
@@ -444,7 +445,7 @@ function SWEP:ShootBullet()
 		end
 	end
 
-	self:DoFireBullets()
+	self:DoFireBullets(nil, nil, data)
 	owner:LagCompensation(false)
 
 	-- how this happen?
@@ -467,12 +468,12 @@ function SWEP:GetBulletDistance()
 	return self.Bullets and self.Bullets.Distance or nil
 end
 
-function SWEP:DoFireBullets()
+function SWEP:DoFireBullets(src, dir, data)
 	local bullet_info = self.Bullets
 	local owner = self:GetOwner()
 
-	local src = owner:GetShootPos()
-	local dir = owner:EyeAngles():Forward()
+	src = src or owner:GetShootPos()
+	dir = dir or owner:EyeAngles():Forward()
 	local force = 2 / math.max(bullet_info.Num / 2, 1)
 
 	local bullets = {
@@ -486,13 +487,14 @@ function SWEP:DoFireBullets()
 		Force = force,
 		Callback = function(atk, tr, dmg)
 			if (IsValid(self)) then
-				self:FireBulletsCallback(tr, dmg)
+				self:FireBulletsCallback(tr, dmg, data)
 				self:TracerEffect(tr, dmg)
 			end
 		end,
 		Distance = self:GetBulletDistance(),
 		Src = src,
 		Dir = dir,
+		IgnoreEntity = data and data.IgnoreEntity
 	}
 
 	self.LastBullets = table.Copy(bullets)
@@ -563,7 +565,9 @@ function SWEP:PrimaryAttack()
 		self:EmitSound("weapons/pistol/pistol_empty.wav", self.Primary.SoundLevel, 255, 2, CHAN_USER_BASE + 1)
 	end
 
-	self:EmitSound(self.Primary.Sound, self.Primary.SoundLevel)
+	if (self.Primary.Sound) then
+		self:EmitSound(self.Primary.Sound, self.Primary.SoundLevel or 1)
+	end
 
 	self:ShootBullet()
 
@@ -717,7 +721,7 @@ function SWEP:GetReloadAnimationSpeed()
 end
 
 function SWEP:DoReload(act)
-	local speed = self:GetReloadAnimationSpeed()
+	local speed = 1 -- self:GetReloadAnimationSpeed()
 
 	self:SendWeaponAnim(act)
 	self:SetPlaybackRate(speed)
@@ -783,7 +787,7 @@ function SWEP:GetIronsightsTimeTo()
 end
 
 function SWEP:GetDelay()
-	return self.Primary.Delay
+	return self.Primary.Delay or 1
 end
 
 function SWEP:CreateModels(tab)

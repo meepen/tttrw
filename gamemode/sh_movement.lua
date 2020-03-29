@@ -115,11 +115,58 @@ function GM:PreventCrouchJump(ply, mv)
 	end
 end
 
+local function GetDuckSpamSpeed(count)
+	return 0.2 + math.min(count * 0.035, 0.3)
+end
+
+function GM:PreventCrouchSpam(ply, mv)
+	if (mv:KeyWasDown(IN_DUCK) and not mv:KeyDown(IN_DUCK)) then
+		ply:SetLastDuck(CurTime())
+	end
+
+	if (not mv:KeyWasDown(IN_DUCK) and mv:KeyDown(IN_DUCK)) then
+		local offset = ply:GetViewOffset()
+		local m_flDuckTime = math.sqrt(ply:GetCurrentViewOffset():DistToSqr(offset) / ply:GetViewOffsetDucked():DistToSqr(offset))
+
+		if (m_flDuckTime > 0.05) then
+			mv:SetButtons(bit.band(bit.bnot(IN_DUCK), mv:GetButtons()))
+			return
+		end
+
+		if (CurTime() - ply:GetLastDuck() < 0.3) then
+			ply:SetDucksInRow(ply:GetDucksInRow() + 1)
+		else
+			ply:SetDucksInRow(0)
+		end
+
+		local speed = GetDuckSpamSpeed(ply:GetDucksInRow())
+
+		ply:SetDuckSpeed(speed)
+		ply:SetUnDuckSpeed(speed)
+	end
+end
+
 function GM:Move(ply, mv)
 	local data = player_manager.RunClass(ply, "GetSpeedData")
 
-	mv:SetMaxSpeed(mv:GetMaxSpeed() * data.Multiplier * data.FinalMultiplier)
-	mv:SetMaxClientSpeed(mv:GetMaxClientSpeed() * data.Multiplier * data.FinalMultiplier)
+	local speed
+	
+	local offset = ply:GetViewOffset()
+	local m_flDuckTime = math.sqrt(ply:GetCurrentViewOffset():DistToSqr(offset) / ply:GetViewOffsetDucked():DistToSqr(offset))
+
+	if (mv:KeyDown(IN_WALK) and ply:IsOnGround()) then
+		speed = ply:GetSlowWalkSpeed()
+	else
+		speed = ply:GetWalkSpeed()
+	end
+
+	if (ply:Crouching() and ply:IsOnGround() and m_flDuckTime > 0.01) then
+		speed = speed * ply:GetCrouchedWalkSpeed()
+	end
+	self:PreventCrouchSpam(ply, mv)
+
+	mv:SetMaxSpeed(speed * data.Multiplier * data.FinalMultiplier)
+	mv:SetMaxClientSpeed(speed * data.Multiplier * data.FinalMultiplier)
 
 	self:PreventCrouchJump(ply, mv)
 	self:DoBunnyHop(ply, mv)

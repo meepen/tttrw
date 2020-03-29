@@ -46,6 +46,8 @@ function PLAYER:SetupDataTables()
 	fake:NetworkVar("Confirmed", "Bool")
 	fake:NetworkVar("Karma", "Int")
 	fake:NetworkVar("HealthFloat", "Float")
+	fake:NetworkVar("DucksInRow", "Int")
+	fake:NetworkVar("LastDuck", "Float")
 
 	hook.Run("SetupPlayerNetworking", fake)
 
