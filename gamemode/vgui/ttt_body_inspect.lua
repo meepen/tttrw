@@ -149,7 +149,7 @@ function PANEL:SetImage(v)
 	end
 
 	local wep = baseclass.Get(self.Class)
-	if (not wep) then
+	if (not wep or not weapons.GetStored(self.Class)) then
 		return
 	end
 
