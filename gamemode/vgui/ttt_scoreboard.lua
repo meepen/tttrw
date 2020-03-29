@@ -25,26 +25,30 @@ local Padding = math.Round(ScrH() * 0.008)
 local Curve = math.Round(Padding / 2)
 local Slant = Padding * 5
 
+function GM:TTTScoreboardHeader(PANEL)
+	function PANEL:Init()
+		self:SetCurve(4)
+		self:SetColor(bg_color)
+		self.Logo = self:Add "DLabel"
+		self.Logo:SetFont "ttt_scoreboard_header"
+		
+		self:DockPadding(Padding, Padding, Padding, Padding)
+	end
+	
+	function PANEL:PerformLayout(w, h)
+		self.Logo:SetText "TTT Rewrite"
+		self.Logo:SizeToContents()
+		self.Logo:SetPos(self:GetWide() / 2 - self.Logo:GetWide() / 2, (self:GetTall() - self.Logo:GetTall())/2)
+		self:SetTall(self.Logo:GetTall() + Padding * 2)
+		self.Logo:Center()
+	end
+end
+
 local PANEL = {}
 
 DEFINE_BASECLASS "ttt_curved_panel"
 
-function PANEL:Init()
-	self:SetCurve(4)
-	self:SetColor(bg_color)
-	self.Logo = self:Add "DLabel"
-	self.Logo:SetFont "ttt_scoreboard_header"
-	
-	self:DockPadding(Padding, Padding, Padding, Padding)
-end
-
-function PANEL:PerformLayout(w, h)
-	self.Logo:SetText "TTT Rewrite"
-	self.Logo:SizeToContents()
-	self.Logo:SetPos(self:GetWide() / 2 - self.Logo:GetWide() / 2, (self:GetTall() - self.Logo:GetTall())/2)
-	self:SetTall(self.Logo:GetTall() + Padding * 2)
-	self.Logo:Center()
-end
+hook.Run("TTTScoreboardHeader", PANEL, Padding)
 
 vgui.Register("ttt_scoreboard_header", PANEL, "ttt_curved_panel")
 
@@ -114,6 +118,9 @@ function PANEL:SetStatus(stat)
 	if (IsValid(self:GetParent().Player)) then
 		ttt.SetPlayerStatus(self:GetParent().Player, stat)
 		self:GetParent():GetParent():Toggle()
+		function self.Text:Paint(w, h)
+			draw.SimpleTextOutlined(self:GetText(), self:GetFont(), w/2, h/2, self:GetTextColor(), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0))
+		end
 	end
 end
 
@@ -292,11 +299,22 @@ function PANEL:Think()
 			group = "Spectators"
 		elseif (not ply:Alive() and IsValid(ply.DeadState) and (ply.DeadState:GetIdentified() or ply:GetConfirmed())) then
 			group = "Dead"
+
+
 		elseif (not ply:Alive() and (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE or not LocalPlayer():Alive() or LocalPlayer():GetRoleData().Evil)) then
 			group = "Unidentified"
 		end
 
 		if (self.Group ~= group) then
+			if (group == "Unidentified" and !ttt.Scoreboard.Inner.Groups["Unidentified"]) then
+				AddGroup("Unidentified", Color(85, 111, 87), {})
+			end
+
+			if (group ~= "Terrorists" and ply ~= LocalPlayer()) then
+				self.Status:SetStatus(ttt.STATUS_DEAD)
+				self:GetParent():Disable()
+			end
+			
 			self:GetParent():SetParent(ttt.Scoreboard.Inner.Groups[group])
 			self.Group = group
 		end
@@ -387,6 +405,8 @@ function PANEL:Init()
 	self:DockMargin(0, 0, 0, Padding)
 	self:Dock(TOP)
 
+	self.Disabled = false
+
 	surface.SetFont "ttt_scoreboard_player"
 	_, self.ContractedSize = surface.GetTextSize "A"
 	self:SetTall(self.ContractedSize + Padding)
@@ -400,11 +420,19 @@ function PANEL:SetPlayer(ply)
 
 	if (ply == LocalPlayer() and IsValid(self.Render.Status)) then
 		self.Render.Status:Remove()
-		function self.Toggle() end
+		self:Disable()
 	end
 end
 
+function PANEL:Disable()
+	if (self.Expanded) then self:Toggle() end
+	if (self.Disabled) then return end
+
+	self.Disabled = true
+end
+
 function PANEL:Toggle()
+	if (self.Disabled) then return end
 	if (self.Expanded) then
 		self:SetTall(self:GetTall()/2)
 
@@ -596,7 +624,7 @@ local PANEL = {}
 function PANEL:Init()
 	self.Header = self:Add "ttt_scoreboard_header"
 	self.Header:Dock(TOP)
-	self.Header:SetTall(100)
+	--self.Header:SetTall(150)
 	self.Header:DockMargin(0, 0, 0, 1)
 	self.Header:SetCurveBottomLeft(false)
 	self.Header:SetCurveBottomRight(false)

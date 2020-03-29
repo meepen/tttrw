@@ -24,23 +24,23 @@ ttt.Status = {
 	},
 	[ttt.STATUS_MISSING] = {
 		text = "Missing",
-		color = Color(25, 39, 94)
+		color = Color(103, 90, 110)
 	},
 	[ttt.STATUS_FRIEND] = {
 		text = "Friend",
-		color = Color(1, 96, 82)
+		color = Color(56, 172, 87)
 	},
 	[ttt.STATUS_AVOID] = {
 		text = "Avoid",
-		color = Color(167, 122, 41)
+		color = Color(175, 149, 49)
 	},
 	[ttt.STATUS_SUSPECT] = {
 		text = "Suspect",
-		color = Color(138, 49, 25)
+		color = Color(179, 98, 27)
 	},
 	[ttt.STATUS_KOS] = {
 		text = "KOS",
-		color = Color(139, 21, 23)
+		color = Color(175, 47, 36)
 	}
 }
 
