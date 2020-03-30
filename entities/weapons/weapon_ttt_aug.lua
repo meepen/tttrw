@@ -31,6 +31,7 @@ SWEP.Primary.Sound         = Sound "Weapon_AUG.Single"
 
 SWEP.HeadshotMultiplier    = 1.7
 SWEP.DeploySpeed = 1.3
+SWEP.HasScope              = true --STOP COMPLAINING AAAAAAAAAAAAAAA
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
@@ -46,7 +47,7 @@ SWEP.Ironsights = {
 	TimeTo = 0.25,
 	TimeFrom = 0.15,
 	SlowDown = 0.4,
-	Zoom = 0.75,
+	Zoom = 0.3,
 }
 
 local pow = 1.5
