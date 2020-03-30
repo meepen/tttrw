@@ -36,6 +36,7 @@ SWEP.Secondary.Sound       = Sound "Default.Zoom"
 
 SWEP.HeadshotMultiplier    = 1.45
 SWEP.DeploySpeed = 1.8
+SWEP.HasScope              = true --maybe they'll stop crying :)
 
 
 SWEP.AutoSpawnable         = true
@@ -51,7 +52,7 @@ SWEP.Ironsights = {
 	TimeTo = 0.25,
 	TimeFrom = 0.2,
 	SlowDown = 0.35,
-	Zoom = 0.85,
+	Zoom = 0.3,
 }
 
 local pow = 1.4
