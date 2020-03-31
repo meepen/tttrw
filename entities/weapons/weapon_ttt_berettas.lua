@@ -17,19 +17,19 @@ SWEP.Bullets = {
 	DamageDropoffRange = 500,
 	DamageDropoffRangeMax = 2500,
 	DamageMinimumPercent = 0.4,
-	Spread = Vector(0.05, 0.03),
+	Spread = Vector(0.04, 0.05),
 }
 
 SWEP.Primary.Damage        = 14
 SWEP.Primary.Delay         = 0.135
-SWEP.Primary.Recoil        = 1
+SWEP.Primary.Recoil        = 0.5
 SWEP.Primary.RecoilTiming  = nil
 SWEP.Primary.Automatic     = true
 SWEP.Primary.ClipSize      = 20
 SWEP.Primary.DefaultClip   = 40
 SWEP.Primary.Sound         = Sound "Weapon_Elite.Single"
 
-SWEP.HeadshotMultiplier    = 1.3
+SWEP.HeadshotMultiplier    = 2.3
 SWEP.DeploySpeed = 1.7
 
 SWEP.AutoSpawnable         = true
