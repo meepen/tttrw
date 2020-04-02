@@ -721,7 +721,7 @@ function SWEP:GetReloadAnimationSpeed()
 end
 
 function SWEP:DoReload(act)
-	local speed = 1 -- self:GetReloadAnimationSpeed()
+	local speed = self:GetReloadAnimationSpeed()
 
 	self:SendWeaponAnim(act)
 	self:SetPlaybackRate(speed)

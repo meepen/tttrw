@@ -22,7 +22,6 @@ local function pcall_(fn, ...)
 	local s, e = xpcall(fn, debug.traceback, ...)
 
 	if (not s) then
-		print"???"
 		printf("Error: %s", e)
 	end
 end
