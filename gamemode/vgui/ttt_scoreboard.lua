@@ -144,6 +144,15 @@ function PANEL:Init()
 
 	self:SetStatus(ttt.STATUS_DEFAULT)
 	self:SetColor(Color(0, 0, 0, 0))
+
+	surface.SetFont(self.Text:GetFont())
+	local max_w = 0
+	for k, data in pairs(ttt.Status) do
+		local w = surface.GetTextSize(data.text)
+		max_w = math.max(max_w, w)
+	end
+
+	self:SetWide(max_w + Padding * 4 + Slant * 2)
 end
 
 function PANEL:SetStatus(stat)
@@ -232,7 +241,7 @@ function PANEL:Init()
 
 	self.Karma = self:Add "DLabel"
 	self.Karma:SetFont "ttt_scoreboard_info"
-	self.Karma:DockMargin(0, 0, Padding * 10, 0)
+	self.Karma:DockMargin(0, 0, Padding, 0)
 	self.Karma:SetText "Karma"
 	self.Karma:SizeToContentsX()
 	self.Karma:Dock(RIGHT)
@@ -242,15 +251,15 @@ function PANEL:Init()
 	self.Rank:SetWide(self.Rank:GetWide() * 3)
 	self.Rank:SetColor(Color(0, 0, 0, 0))
 	self.Rank:SetFont "ttt_scoreboard_rank"
-	self.Rank:DockMargin(0, 0, 30, 0)
+	self.Rank:DockMargin(0, 0, Padding, 0)
 	self.Rank:SetText "Rank"
 	self.Rank:SizeToContentsX()
 	self.Rank:Dock(RIGHT)
 	self.Rank:SetTextColor(white_text)
 
 	self.Status = self:Add "ttt_scoreboard_status"
-	self.Status:SetWide(self.Status:GetWide() * 3)
-	self.Status:SizeToContentsX()
+	
+	self.Rank:SetWide(self.Status:GetWide())
 end
 
 function PANEL:DoClick()
@@ -341,7 +350,7 @@ function PANEL:Think()
 
 		if (self.Group ~= group) then
 			if (group == "Unidentified" and not ttt.Scoreboard.Inner.Groups["Unidentified"]) then
-				AddGroup("Unidentified", Color(85, 111, 87), {})
+				ttt.Scoreboard.Inner:AddGroup("Unidentified", Color(85, 111, 87), {})
 			end
 
 			if (group ~= "Terrorists" and ply ~= LocalPlayer()) then
@@ -420,11 +429,9 @@ function PANEL:Init()
 	self:DockMargin(0, -Padding/4, 0, 0)
 	
 	for STATUS = ttt.STATUS_MISSING, ttt.STATUS_KOS do
-		self.Statuses[STATUS] = self:Add("ttt_scoreboard_status")
+		self.Statuses[STATUS] = self:Add "ttt_scoreboard_status"
 		self.Statuses[STATUS]:SetStatus(STATUS)
-		self.Statuses[STATUS]:SetWide(self.Statuses[STATUS]:GetWide() * 3)
 		self.Statuses[STATUS]:SizeToContentsX()
-		self.Statuses[STATUS]:DockMargin(0, 0, -1.5 * Padding, 0)
 		self.Statuses[STATUS]:Dock(RIGHT)
 		self.Statuses[STATUS].DoClick = function()
 			self:GetParent().Render.Status:SetStatus(STATUS)
@@ -432,9 +439,7 @@ function PANEL:Init()
 	end
 end
 
-function PANEL:Paint() end
-
-vgui.Register("ttt_scoreboard_statuses", PANEL, "ttt_curved_panel")
+vgui.Register("ttt_scoreboard_statuses", PANEL, "EditablePanel")
 
 local PANEL = {}
 
@@ -481,7 +486,7 @@ function PANEL:Toggle()
 	else
 		self:SetTall(self:GetTall()*2)
 		
-		self.Statuses = self:Add("ttt_scoreboard_statuses")
+		self.Statuses = self:Add "ttt_scoreboard_statuses"
 		self.Statuses:Dock(TOP)
 		self.Statuses:SetTall(self.ContractedSize)
 		
