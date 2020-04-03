@@ -1,49 +1,55 @@
 if (SERVER) then
 	util.AddNetworkString "tttrw_chat"
 
-	function ttt.chat(...)
-		net.Start "tttrw_chat"
-			net.WriteUInt(select("#", ...), 8)
-			for i = 1, select("#", ...) do
-				local arg = select(i, ...)
-				if (IsColor(arg)) then
+	local function WriteNetwork(...)
+		for i = 1, select("#", ...) do
+			local args = {(select(i, ...))}
+
+			local mt = debug.getmetatable(args[1])
+
+			if (mt and mt.__colorprint) then
+				args = mt.__colorprint(args[1])
+			end
+
+			for _, data in ipairs(args) do
+				net.WriteBool(true)
+				if (IsColor(data)) then
 					net.WriteBool(false)
-					net.WriteColor(arg)
+					net.WriteColor(data)
 				else
 					net.WriteBool(true)
-					net.WriteString(tostring(arg))
+					net.WriteString(tostring(data))
 				end
 			end
+		end
+		net.WriteBool(false)
+	end
+
+	function ttt.chat(...)
+		net.Start "tttrw_chat"
+			WriteNetwork(...)
 		net.Broadcast()
 	end
 
 	FindMetaTable "Player".ChatPrint = function(self, ...)
 		net.Start "tttrw_chat"
-			net.WriteUInt(select("#", ...), 8)
-			for i = 1, select("#", ...) do
-				local arg = select(i, ...)
-				if (IsColor(arg)) then
-					net.WriteBool(false)
-					net.WriteColor(arg)
-				else
-					net.WriteBool(true)
-					net.WriteString(tostring(arg))
-				end
-			end
+			WriteNetwork(...)
 		net.Send(self)
 	end
 else
 	net.Receive("tttrw_chat", function(len, cl)
-		local stuff = {}
-		for i = 1, net.ReadUInt(8) do
-			if (net.ReadBool()) then
-				stuff[i] = net.ReadString()
-			else
-				stuff[i] = net.ReadColor()
-			end
-		end
+		local stuff = {white_text}
 
-		table.insert(stuff, 1, white_text)
+		while (net.ReadBool()) do
+			local data
+			if (net.ReadBool()) then
+				data = net.ReadString()
+			else
+				data = net.ReadColor()
+			end
+
+			stuff[#stuff + 1] = data
+		end
 
 		chat.AddText(unpack(stuff))
 	end)
