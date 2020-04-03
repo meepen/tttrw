@@ -106,10 +106,21 @@ function GM:PreventCrouchJump(ply, mv)
 			}
 
 			if (not tr.Hit) then
-				return
+				tr = util.TraceHull {
+					start = mv:GetOrigin(),
+					endpos = mv:GetOrigin() + velocity,
+					mins = mins,
+					maxs = maxs,
+					filter = ply,
+					mask = MASK_PLAYERSOLID,
+					collisiongroup = ply:GetCollisionGroup(),
+				}
+
+				if (tr.Hit) then
+					return
+				end
 			end
 
-			mv:SetButtons(bit.band(bit.bnot(IN_DUCK), mv:GetButtons()))
 		end
 		mv:SetButtons(bit.band(bit.bnot(IN_DUCK), mv:GetButtons()))
 	end
