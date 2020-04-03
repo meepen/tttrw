@@ -138,6 +138,11 @@ function GM:HUDDrawTargetID()
 
 		surface.SetDrawColor(12, 13, 12, 255)
 		surface.DrawOutlinedRect(x - wid / 2 - 1, y - 1, wid + 2, th + 2)
+
+		local status = ttt.GetPlayerStatus(ent)
+		if (status ~= ttt.STATUS_DEFAULT) then
+			hud.DrawTextOutlined(ttt.Status[status].text, ttt.Status[status].color, color_black, x - surface.GetTextSize(ttt.Status[status].text) / 2, y + th + 4, 1)
+		end
 	end
 end
 
