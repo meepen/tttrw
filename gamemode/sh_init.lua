@@ -155,7 +155,8 @@ end
 
 -- do this here so we can format stuff clientside to predict it ourselves
 function GM:FormatPlayerText(ply, text, team)
-    local replacements = {}
+	local replacements = {}
+	local capitalize = {}
 
 	if (IsValid(ply.Target)) then
 		if (ply.Target:IsPlayer()) then
@@ -164,15 +165,23 @@ function GM:FormatPlayerText(ply, text, team)
 			replacements["{target}"] = ply.Target.HiddenState:GetNick() .. "'s body"
 		else
 			replacements["{target}"] = "an unidentified body"
+			capitalize["{target}"] = true
 		end
-
 	else
-		-- https://steamcommunity.com/profiles/76561198015341647/
-		-- blame him
-        replacements["{target}"] = ("nobody"):gsub(".", function(a) return (math.random(1, 2) == 1 and string.lower or string.upper)(a) end)
+		replacements["{target}"] = "nobody"
+		capitalize["{target}"] = true
 	end
 	
+	capitalize["{lookingat}"] = capitalize["{target}"]
 	replacements["{lookingat}"] = replacements["{target}"]
 
-    return text:gsub("{.+}", replacements)
+	return text:gsub("()({.+})", function(ind, what)
+		local replace = replacements[what]
+
+		if (ind == 1 and capitalize[what] and replace) then
+			replace = replace:sub(1, 1):upper() .. replace:sub(2)
+		end
+
+		return replace
+	end)
 end
