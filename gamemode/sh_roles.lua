@@ -154,12 +154,12 @@ end
 
 function GM:TTTPrepareRoles(Team, Role)
 	Team "innocent"
-		:SetColor(56, 172, 87)
+		:SetColor(19, 130, 77)
 		:SetDeathIcon "materials/tttrw/roles/innocent.png"
 
 	Team "traitor"
 		:SeenBy {"traitor"}
-		:SetColor(Color(175, 47, 36))
+		:SetColor(136, 21, 22)
 		:SetDefaultCredits(2)
 		:CreditOnRoleDeath(function(roles, deathrole)
 			if (deathrole.Team == "traitor") then
@@ -196,7 +196,7 @@ function GM:TTTPrepareRoles(Team, Role)
 		:SetCalculateAmountFunc(function(total_players)
 			return math.floor(math.Clamp(total_players * ttt_detective_pct:GetFloat(), 0, ttt_detective_max:GetInt()))
 		end)
-		:SetColor(56, 80, 210)
+		:SetColor(5, 75, 153)
 		:TeamChatSeenBy "Detective"
 		:SetVoiceChannel "Detective"
 		:SetCanUseBuyMenu(true)
