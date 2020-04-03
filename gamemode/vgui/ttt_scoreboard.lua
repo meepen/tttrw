@@ -256,6 +256,7 @@ function PANEL:Init()
 	self.Rank:SizeToContentsX()
 	self.Rank:Dock(RIGHT)
 	self.Rank:SetTextColor(white_text)
+	self.Rank:SetMouseInputEnabled(false)
 
 	self.Status = self:Add "ttt_scoreboard_status"
 	
