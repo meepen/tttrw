@@ -101,11 +101,15 @@ function GM:ShowEndRoundScreen()
 	return true
 end
 
-function GM:TTTBeginRound_EndRound()
+function GM:TTTBeginRound()
 	ttt.endroundinfo = nil
 	if (IsValid(ttt.endround)) then
 		ttt.endround:Remove()
 	end
 
 	self:EquipmentReset()
+
+	if (SERVER) then
+		self:SV_TTTBeginRound()
+	end
 end

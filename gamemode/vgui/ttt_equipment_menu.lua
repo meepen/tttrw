@@ -528,6 +528,10 @@ function GM:OnContextMenuOpen()
 	if (hook.Run "ShowEndRoundScreen") then
 		return
 	end
+	if (IsValid(ttt.equipment_menu) and ttt.equipment_menu:IsVisible()) then
+		ttt.equipment_menu:SetVisible(false)
+		return
+	end
 
 	if (not LocalPlayer():GetRoleData().CanUseBuyMenu or ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE or not LocalPlayer():Alive()) then
 		return
@@ -547,7 +551,4 @@ function GM:OnContextMenuOpen()
 end
 
 function GM:OnContextMenuClose()
-	if (IsValid(ttt.equipment_menu)) then
-		ttt.equipment_menu:SetVisible(false)
-	end
 end

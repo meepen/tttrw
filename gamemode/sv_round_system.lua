@@ -336,7 +336,7 @@ function GM:TTTRoundStart()
 	return true
 end
 
-function GM:TTTBeginRound()
+function GM:SV_TTTBeginRound()
 	self:MapVote_TTTBeginRound()
 	for _, info in pairs(round.GetActivePlayers()) do
 		if (not IsValid(info.Player)) then
@@ -354,10 +354,6 @@ function GM:TTTBeginRound()
 	end
 
 	self:EquipmentReset()
-
-	if (CLIENT) then
-		self:TTTBeginRound_EndRound()
-	end
 end
 
 util.AddNetworkString "ttt_endround"
