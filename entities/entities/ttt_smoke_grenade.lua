@@ -18,7 +18,7 @@ function ENT:Explode()
 	local data = EffectData()
 
 	data:SetStart(self:GetPos())
-	data:SetMagnitude(8)
+	data:SetMagnitude(24)
 	data:SetRadius(80) -- 10 = 1 meter
 	data:SetColor(self:GetGrenadeColor() or 0)
 	util.Effect("tttrw_smoke", data, true, true)
