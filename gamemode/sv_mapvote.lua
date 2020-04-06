@@ -1,15 +1,5 @@
 local ttt_round_limit = CreateConVar("ttt_round_limit", 6, FCVAR_NONE, "How many rounds until map change. Lua can override this.")
 
-
-hook.Add("TTTPrepareNetworkingVariables", "RoundNumber", function(vars)
-	table.insert(vars, {
-		Name = "RoundNumber",
-		Type = "Int",
-		Default = 0
-    })
-end)
-
-
 local function ReadCommitFile()
     local filename = "gamemodes/" .. gmod.GetGamemode().FolderName .. "/commit.json"
     if (not file.Exists(filename, "GAME")) then

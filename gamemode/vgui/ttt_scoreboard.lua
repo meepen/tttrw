@@ -78,8 +78,19 @@ function PANEL:Init()
 
 	self:SetTall(self.Logo:GetTall() + Padding * 2)
 
+	self.RoundNumber = self:Add "DLabel"
+	self.RoundNumber:Dock(RIGHT)
+	self.RoundNumber:SetContentAlignment(3)
+	self.RoundNumber:SetFont "ttt_scoreboard_rank"
+
 	self:DockPadding(Padding, Padding, Padding, Padding)
 end
+
+function PANEL:Think()
+	self.RoundNumber:SetText(string.format("Round %i", ttt.GetRoundNumber() + 1))
+	self.RoundNumber:SizeToContents()
+end
+
 
 vgui.Register("tttrw_scoreboard_header", PANEL, "ttt_curved_panel")
 
@@ -500,20 +511,23 @@ function PANEL:Paint() end
 vgui.Register("ttt_scoreboard_player", PANEL, "ttt_curved_panel")
 
 local PANEL = {}
+
 function PANEL:Init()
 	self.Render = self:Add "ttt_scoreboard_group_header_render"
 	self.Render:Dock(LEFT)
 	self:Dock(TOP)
 end
+
 function PANEL:SetColor(col)
 	--self.Render:SetColor(col)
 	self.Render:SetColor(ttt_scoreboard_header_color)
 end
+
 function PANEL:SetText(text)
 	self.Render:SetText(text)
 	self:SetTall(self.Render:GetTall() * 1.8)
 end
-function PANEL:Paint() end
+
 vgui.Register("ttt_scoreboard_group_header", PANEL, "EditablePanel")
 
 local PANEL = {}

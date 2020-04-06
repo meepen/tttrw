@@ -101,7 +101,7 @@ function GM:ShowEndRoundScreen()
 	return true
 end
 
-function GM:TTTBeginRound()
+function GM:TTTBeginRound_EndRound()
 	ttt.endroundinfo = nil
 	if (IsValid(ttt.endround)) then
 		ttt.endround:Remove()

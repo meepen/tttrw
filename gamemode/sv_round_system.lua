@@ -354,6 +354,7 @@ function GM:TTTBeginRound()
 	end
 
 	self:EquipmentReset()
+	self:TTTBeginRound_EndRound()
 end
 
 util.AddNetworkString "ttt_endround"

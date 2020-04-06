@@ -107,4 +107,9 @@ hook.Add("TTTPrepareNetworkingVariables", "RoundState", function(vars)
 		Type = "Float",
 		Default = 1
 	})
+	table.insert(vars, {
+		Name = "RoundNumber",
+		Type = "Int",
+		Default = 0
+    })
 end)
