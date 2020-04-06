@@ -108,8 +108,4 @@ function GM:TTTBeginRound()
 	end
 
 	self:EquipmentReset()
-
-	if (SERVER) then
-		self:SV_TTTBeginRound()
-	end
 end
