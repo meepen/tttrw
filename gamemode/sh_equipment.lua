@@ -22,6 +22,7 @@ if (SERVER) then
 			self.TTTRWEquipmentTracker[class] = (self.TTTRWEquipmentTracker[class] or 0) + 1
 			printf("[Equipment] gave %s %s.", self:Nick(), class)
 			self:SetCredits(self:GetCredits() - eq.Cost)
+			hook.Run("TTTOrderedEquipment", self, class, true, eq.Cost)
 		else
 			return false, "Buy failed."
 		end
