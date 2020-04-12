@@ -9,6 +9,8 @@ SWEP.ReloadAnimation = ACT_VM_RELOAD
 
 DEFINE_BASECLASS "weapon_base"
 
+SWEP.MuzzleAttachment = "muzzle"
+
 SWEP.Primary.Automatic   = true
 SWEP.Primary.Delay       = 0.1
 SWEP.Primary.DefaultClip = 100000
@@ -513,8 +515,9 @@ function SWEP:TracerEffect(tr, dmg)
 		d:SetOrigin(tr.HitPos or tr.StartPos)
 		d:SetDamageType(dmg:GetDamageType())
 		d:SetColor(1)
+		d:SetEntity(self)
 
-		local att = self:LookupAttachment "muzzle"
+		local att = self:LookupAttachment(self.MuzzleAttachment)
 
 		if (att ~= -1) then
 			d:SetAttachment(att)
@@ -692,7 +695,7 @@ function SWEP:GetCurrentZoom()
 	local mult = 1
 	if (self.Ironsights) then
 		local base = self.Ironsights.Zoom
-		mult = (self:GetCurrentFOVMultiplier() - base) / (1 - base)
+		mult = (self:GetCurrentFOVMultiplier() - base) / (1 - base + 0.000001)
 	end
 	return mult
 end
