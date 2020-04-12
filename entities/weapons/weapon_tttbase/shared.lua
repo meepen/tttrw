@@ -540,14 +540,14 @@ function SWEP:CanPrimaryAttack()
 	if (self:Clip1() > 0) then
 		return true
 	end
-	self:EmitSound "Weapon_Pistol.Empty"
-	self:SetNextPrimaryFire(CurTime() + 0.2)
-	self:Reload()
 	return false
 end
 
 function SWEP:PrimaryAttack()
 	if (not self:CanPrimaryAttack()) then
+		self:EmitSound "Weapon_Pistol.Empty"
+		self:SetNextPrimaryFire(CurTime() + 0.2)
+		self:Reload()
 		return
 	end
 
@@ -749,6 +749,7 @@ function SWEP:CancelReload()
 end
 
 function SWEP:Holster()
+	self.FirstThink = false
 	self:CancelReload()
 	self:SendWeaponAnim(ACT_VM_HOLSTER)
 	return true

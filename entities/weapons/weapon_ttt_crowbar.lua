@@ -18,6 +18,7 @@ SWEP.Primary.ClipSize        = -1
 SWEP.Primary.DefaultClip     = -1
 SWEP.Primary.Automatic       = true
 SWEP.Primary.Delay           = 0.35
+SWEP.Primary.Range           = 70
 SWEP.Primary.Ammo            = "none"
 
 SWEP.Secondary.ClipSize      = -1
@@ -25,6 +26,7 @@ SWEP.Secondary.DefaultClip   = -1
 SWEP.Secondary.Automatic     = true
 SWEP.Secondary.Ammo          = "none"
 SWEP.Secondary.Delay         = 5
+SWEP.Secondary.Animation = ACT_VM_HITCENTER
 SWEP.DeploySpeed = 1.3
 
 SWEP.NoSights                = true
@@ -96,57 +98,67 @@ function SWEP:TryOpen(hitEnt)
 	return true
 end
 
+function SWEP:MeleeAnimation(tr_main)
+	if (IsValid(tr_main.Entity) or tr_main.HitWorld) then
+		self:SendWeaponAnim(ACT_VM_HITCENTER)
+	else
+		self:SendWeaponAnim(ACT_VM_MISSCENTER)
+	end
+end
+
+function SWEP:HitEffects(tr_main)
+	if (IsValid(tr_main.Entity) or tr_main.HitWorld) then
+		if (not CLIENT or IsFirstTimePredicted()) then
+			local edata = EffectData()
+			edata:SetStart(tr_main.StartPos)
+			edata:SetOrigin(tr_main.HitPos)
+			edata:SetNormal(VectorRand())
+			edata:SetSurfaceProp(tr_main.SurfaceProps)
+			edata:SetHitBox(tr_main.HitBox)
+			edata:SetDamageType(DMG_CLUB)
+			edata:SetEntity(tr_main.Entity)
+
+			util.Effect("Impact", edata)
+			if (tr_main.Entity:IsPlayer() or tr_main.Entity:GetClass() == "prop_ragdoll") then
+				edata:SetColor(BLOOD_COLOR_RED)
+				edata:SetScale(1)
+				util.Effect("BloodImpact", edata, true, true)
+			end
+		end
+	end
+end
+
+function SWEP:SoundEffect(tr_main)
+	self:EmitSound(self.Primary.Sound)
+end
+
+function SWEP:DoTrace(mask)
+	local owner = self:GetOwner()
+
+	return util.TraceLine {
+		start = owner:GetShootPos(),
+		endpos = owner:GetShootPos() + owner:GetAimVector() * self.Primary.Range,
+		filter = owner,
+		mask = mask
+	}
+end
+
 function SWEP:PrimaryAttack()
 	local owner = self:GetOwner()
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 
 	owner:LagCompensation(true)
 
-	local spos = owner:GetShootPos()
-	local sdest = spos + owner:GetAimVector() * 70
-
-	local tr_main = util.TraceLine {
-		start = spos,
-		endpos = sdest,
-		filter = owner,
-		mask = MASK_SHOT_HULL
-	}
+	local tr_main = self:DoTrace(MASK_SHOT_HULL)
 	local hitEnt = tr_main.Entity
 
-	self:EmitSound(self.Primary.Sound)
-
-	if (IsValid(hitEnt) or tr_main.HitWorld) then
-		self:SendWeaponAnim(ACT_VM_HITCENTER)
-
-		if (not CLIENT or IsFirstTimePredicted()) then
-			local edata = EffectData()
-			edata:SetStart(spos)
-			edata:SetOrigin(tr_main.HitPos)
-			edata:SetNormal(VectorRand())
-			edata:SetSurfaceProp(tr_main.SurfaceProps)
-			edata:SetHitBox(tr_main.HitBox)
-			edata:SetDamageType(DMG_CLUB)
-			edata:SetEntity(hitEnt)
-
-			util.Effect("Impact", edata)
-			if (hitEnt:IsPlayer() or hitEnt:GetClass() == "prop_ragdoll") then
-				edata:SetColor(BLOOD_COLOR_RED)
-				edata:SetScale(1)
-				util.Effect("BloodImpact", edata, true, true)
-			end
-		end
-	else
-		self:SendWeaponAnim(ACT_VM_MISSCENTER)
-	end
-
+	self:MeleeAnimation(tr_main)
+	self:HitEffects(tr_main)
+	self:SoundEffect(tr_main)
 
 	if (SERVER) then
 		-- Do another trace that sees nodraw stuff like func_button
-		local tr_all = util.TraceLine {
-			start = spos,
-			endpos = sdest,
-			filter = owner
-		}
+		local tr_all = self:DoTrace()
 		
 		owner:SetAnimation(PLAYER_ATTACK1)
 
@@ -166,10 +178,10 @@ function SWEP:PrimaryAttack()
 	owner:LagCompensation(false)
 end
 
-function SWEP:DoHit(hitEnt, tr)
+function SWEP:DoHit(hitEnt, tr, damage)
 	local owner = self:GetOwner()
 	local dmg = DamageInfo()
-	dmg:SetDamage(self.Primary.Damage)
+	dmg:SetDamage(damage or self.Primary.Damage)
 	dmg:SetAttacker(owner)
 	dmg:SetInflictor(self)
 	dmg:SetDamageForce(owner:GetAimVector() * 1500)
@@ -214,8 +226,8 @@ function SWEP:SecondaryAttack()
 			}
 		end
 
-		self:EmitSound(self.Primary.Sound)      
-		self:SendWeaponAnim(ACT_VM_HITCENTER)
+		self:EmitSound(self.Primary.Sound)
+		self:SendWeaponAnim(self.Secondary.Animation)
 
 		self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
 	end
