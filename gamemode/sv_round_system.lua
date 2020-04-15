@@ -436,6 +436,7 @@ function GM:PlayerDisconnected(ply)
 	end
 
 	self:Karma_PlayerDisconnected(ply)
+	self:PropSpectating_PlayerDisconnected( ply )
 end
 
 function GM:TTTHasRoundBeenWon(plys, roles)
