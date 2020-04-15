@@ -277,7 +277,7 @@ function PANEL:AddBinder(text, callback)
 
 	function btn:DoRightClick()
 		self:SetText("Not bound")
-		self.SelectedCode = 0
+		self.SelectedCode = nil
 
 		callback(nil)
 	end
@@ -295,10 +295,18 @@ function PANEL:AddBinder(text, callback)
 						self:SetText("Not bound")
 					end
 				else
-					self.SelectedCode = code
-					local key = input.GetKeyName(code)
-					self:SetText("Bound to: " .. string.upper(key))
-					callback(code)
+					if (code == 0) then
+						if (self.SelectedCode) then
+							local key = input.GetKeyName(self.SelectedCode)
+							self:SetText("Bound to: " .. string.upper(key))
+						else
+							self:SetText("Not bound")
+						end
+					else
+						local key = input.GetKeyName(code)
+						self:SetText("Bound to: " .. string.upper(key))
+						callback(code)
+					end
 				end
 
 				self.Trapping = false
@@ -457,7 +465,7 @@ local function RegisterRadioBind(key, command)
 	f:Close()
 end
 
-hook.Add("PlayerButtonDown", "tttrw_radio_binds", function(ply, key)
+function GM:PlayerButtonDown(ply, key)
 	if (IsFirstTimePredicted()) then
 		for k, v in pairs(RadioBinds) do
 			if (v == key) then
@@ -465,7 +473,7 @@ hook.Add("PlayerButtonDown", "tttrw_radio_binds", function(ply, key)
 			end
 		end
 	end
-end)
+end
 
 function GM:ShowHelp()
 	if (not IsValid(ttt.settings)) then
