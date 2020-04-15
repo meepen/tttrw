@@ -6,6 +6,7 @@ AddCSLuaFile();
 		"sv_round_system.lua",
 		"sv_spawning.lua",
 		"sv_spectator.lua",
+		"sv_spectator_props.lua",
 		"sv_ragdoll.lua",
 		"sv_chat.lua",
 		"sv_hitmarkers.lua",
