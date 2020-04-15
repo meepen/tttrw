@@ -232,6 +232,50 @@ local default = [[
 		]
 	},
 	{
+		"name": "PropPunchBackground",
+		"type": "ttt_curve",
+		"bg_color": "black_bg",
+		"pos": [0.5, 0.9, 0],
+		"size": [0.18, 0.036],
+		"disappear_no_prop": true,
+		"curve": 0.004,
+		"children": [
+			{
+				"name": "PropPunchOverlay",
+				"type": "ttt_curve_outline",
+				"dock": "fill",
+				"curve": 0.005,
+				"frac": "prop_punches_frac",
+				"bg_color": {
+					"func": "lerp",
+					"frac": "prop_punches_frac",
+					"points": [
+						[200, 49, 59],
+						[153, 129, 6],
+						[59, 171, 91]
+					]
+				},
+				"outline_color": [12, 13, 12, 255],
+				"children": [
+					{
+						"name": "PropPunchText",
+						"type": "ttt_text",
+						"color": "white",
+						"text": [
+							"Prop Punches"
+						],
+						"font": {
+							"size": 0.024,
+							"font": "Lato",
+							"weight": 1000
+						},
+						"dock": "fill"
+					}
+				]
+			}
+		]
+	},
+	{
 		"name": "BottomLeft",
 		"type": "ttt_curve",
 		"bg_color": [0, 0, 0, 0],
