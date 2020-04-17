@@ -56,6 +56,10 @@ end
 function GM:Spectate(ply)
 	ply:Spectate(OBS_MODE_ROAMING)
 	ply:SetMoveType(MOVETYPE_NOCLIP)
+
+	local ang = ply:EyeAngles()
+	ang.r = 0
+	ply:SetEyeAngles(ang)
 end
 
 function GM:SpectatorKey(ply, key)
