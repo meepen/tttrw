@@ -118,7 +118,9 @@ function GM:SpectatePropRecharge(ply)
 end
 
 function GM:PropSpectating_PlayerDisconnected(ply)
-	StopSpectatingProp(ply)
+	if (ply.propspec) then
+		StopSpectatingProp(ply)
+	end
 end
 
 function GM:EntityRemoved(ent)
