@@ -519,6 +519,13 @@ function GM:ShowHelp()
 		radio:SizeToContents()
 		ttt.settings:AddTab("Binds", radio)
 
+		local buyMenu = vgui.Create "ttt_settings_category"
+		buyMenu:AddCheckBox("Enable radial buy menu", "tttrw_radial_buy_menu")
+		buyMenu:AddCheckBox("Hover to buy items in radial buy menu", "tttrw_radial_buy_menu_hover")
+		buyMenu:InvalidateLayout(true)
+		buyMenu:SizeToContents()
+		ttt.settings:AddTab("Buy Menu", buyMenu)
+
 		ttt.settings:SetSize(640, 400)
 		ttt.settings:Center()
 		ttt.settings:MakePopup()
