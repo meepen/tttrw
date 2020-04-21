@@ -91,6 +91,10 @@ function GM:PlayerTick(ply)
 	player_manager.RunClass(ply, "Think")
 	if (SERVER) then
 		self:Drown(ply)
+
+		if (ply.propspec) then
+			self:SpectatePropRecharge(ply)
+		end
 	end
 end
 

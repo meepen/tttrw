@@ -37,6 +37,8 @@ function GM:CL_PlayerSpawn(p)
 end
 
 function GM:DrawOverlay()
+	self:DrawRadialBuyMenu_DrawOverlay()
+
 	if (not tttrw_afk:GetBool()) then
 		return
 	end

@@ -6,6 +6,7 @@ AddCSLuaFile();
 		"sv_round_system.lua",
 		"sv_spawning.lua",
 		"sv_spectator.lua",
+		"sv_spectator_props.lua",
 		"sv_ragdoll.lua",
 		"sv_chat.lua",
 		"sv_hitmarkers.lua",
@@ -17,6 +18,7 @@ AddCSLuaFile();
 		"sv_damage_positions.lua",
 	},
 	Client = {
+		"libraries/circles.lua",
 		"cl_hud_helpers.lua",
 		"cl_player_status.lua",
 		"vgui/ttt_skin.lua",
@@ -46,6 +48,7 @@ AddCSLuaFile();
 		"cl_player_outlines.lua",
 		"cl_damage_positions.lua",
 		"cl_spectator.lua",
+		"cl_radial_buy_menu.lua",
 	},
 	Shared = {
 		"sh_init.lua",

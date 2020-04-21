@@ -527,19 +527,7 @@ function PANEL:Paint(w, h)
 end
 vgui.Register("ttt_equipment_menu", PANEL, "EditablePanel")
 
-function GM:OnContextMenuOpen()
-	if (hook.Run "ShowEndRoundScreen") then
-		return
-	end
-	if (IsValid(ttt.equipment_menu) and ttt.equipment_menu:IsVisible()) then
-		ttt.equipment_menu:SetVisible(false)
-		return
-	end
-
-	if (not LocalPlayer():GetRoleData().CanUseBuyMenu or ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE or not LocalPlayer():Alive()) then
-		return
-	end
-
+function GM:OpenBuyMenu()
 	if (IsValid(ttt.equipment_menu)) then
 		if (not ttt.equipment_menu:IsVisible()) then
 			ttt.equipment_menu:SetVisible(true)
@@ -553,5 +541,32 @@ function GM:OnContextMenuOpen()
 	ttt.equipment_menu:SetKeyboardInputEnabled(false)
 end
 
+local tttrw_radial_buy_menu = CreateConVar("tttrw_radial_buy_menu", 1, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
+
+function GM:OnContextMenuOpen()
+	if (hook.Run "ShowEndRoundScreen") then
+		return
+	end
+	if (IsValid(ttt.equipment_menu) and ttt.equipment_menu:IsVisible()) then
+		ttt.equipment_menu:SetVisible(false)
+		return
+	end
+
+	if (not LocalPlayer():GetRoleData().CanUseBuyMenu or ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE or not LocalPlayer():Alive()) then
+		return
+	end
+
+	if (tttrw_radial_buy_menu:GetBool()) then
+		self:OpenRadialBuyMenu()
+	else
+		self:OpenBuyMenu()
+	end
+end
+
+local tttrw_radial_buy_menu_hover = CreateConVar("tttrw_radial_buy_menu_hover", 1, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
+
 function GM:OnContextMenuClose()
+	if (tttrw_radial_buy_menu_hover:GetBool()) then
+		self:CloseRadialBuyMenu()
+	end
 end

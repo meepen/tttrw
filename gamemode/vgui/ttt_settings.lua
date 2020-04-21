@@ -277,7 +277,7 @@ function PANEL:AddBinder(text, callback)
 
 	function btn:DoRightClick()
 		self:SetText("Not bound")
-		self.SelectedCode = 0
+		self.SelectedCode = nil
 
 		callback(nil)
 	end
@@ -295,10 +295,18 @@ function PANEL:AddBinder(text, callback)
 						self:SetText("Not bound")
 					end
 				else
-					self.SelectedCode = code
-					local key = input.GetKeyName(code)
-					self:SetText("Bound to: " .. string.upper(key))
-					callback(code)
+					if (code == 0) then
+						if (self.SelectedCode) then
+							local key = input.GetKeyName(self.SelectedCode)
+							self:SetText("Bound to: " .. string.upper(key))
+						else
+							self:SetText("Not bound")
+						end
+					else
+						local key = input.GetKeyName(code)
+						self:SetText("Bound to: " .. string.upper(key))
+						callback(code)
+					end
 				end
 
 				self.Trapping = false
@@ -457,7 +465,7 @@ local function RegisterRadioBind(key, command)
 	f:Close()
 end
 
-hook.Add("PlayerButtonDown", "tttrw_radio_binds", function(ply, key)
+function GM:PlayerButtonDown(ply, key)
 	if (IsFirstTimePredicted()) then
 		for k, v in pairs(RadioBinds) do
 			if (v == key) then
@@ -465,7 +473,7 @@ hook.Add("PlayerButtonDown", "tttrw_radio_binds", function(ply, key)
 			end
 		end
 	end
-end)
+end
 
 function GM:ShowHelp()
 	if (not IsValid(ttt.settings)) then
@@ -510,6 +518,13 @@ function GM:ShowHelp()
 		radio:InvalidateLayout(true)
 		radio:SizeToContents()
 		ttt.settings:AddTab("Binds", radio)
+
+		local buyMenu = vgui.Create "ttt_settings_category"
+		buyMenu:AddCheckBox("Enable radial buy menu", "tttrw_radial_buy_menu")
+		buyMenu:AddCheckBox("Hover to buy items in radial buy menu", "tttrw_radial_buy_menu_hover")
+		buyMenu:InvalidateLayout(true)
+		buyMenu:SizeToContents()
+		ttt.settings:AddTab("Buy Menu", buyMenu)
 
 		ttt.settings:SetSize(640, 400)
 		ttt.settings:Center()

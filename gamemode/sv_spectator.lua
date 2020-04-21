@@ -60,7 +60,9 @@ end
 
 function GM:SpectatorKey(ply, key)
 	if (not ply:Alive()) then
-		if (key == IN_RELOAD) then
+		if (ply.propspec) then
+			self:SpectatePropKey(ply, key)
+		elseif (key == IN_RELOAD) then
 			if (IsValid(ply:GetObserverTarget())) then
 				ply:SetObserverMode(ply:GetObserverMode() == OBS_MODE_CHASE and OBS_MODE_IN_EYE or OBS_MODE_CHASE)
 			else
@@ -72,6 +74,8 @@ function GM:SpectatorKey(ply, key)
 			UpdatePlayerSpectating(ply, nil, 1)
 		elseif (key == IN_DUCK) then
 			self:Spectate(ply)
+		elseif (key == IN_CANCEL) then
+			self:SpectateProp(ply)
 		end
 	end
 end

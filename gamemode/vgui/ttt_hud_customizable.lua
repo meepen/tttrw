@@ -33,12 +33,28 @@ function PANEL:AcceptInput(key, value)
 			end
 		end
 	elseif (key == "disappear_no_target" and value) then
-		hook.Add("Think", self, self.Tick)
+		hook.Add("Think", self, self.HasTarget)
+	elseif (key == "disappear_no_prop" and value) then
+		hook.Add("Think", self, self.HasProp)
 	end
 end
 
-function PANEL:Tick()
-	self:SetVisible(IsValid(LocalPlayer():GetObserverTarget()))
+function PANEL:HasTarget()
+	local targ = LocalPlayer():GetObserverTarget()
+	if (IsValid(targ) and targ:IsPlayer()) then
+		self:SetVisible(true)
+	else
+		self:SetVisible(false)
+	end
+end
+
+function PANEL:HasProp()
+	local targ = LocalPlayer():GetObserverTarget()
+	if (IsValid(targ) and not targ:IsPlayer()) then
+		self:SetVisible(true)
+	else
+		self:SetVisible(false)
+	end
 end
 
 function PANEL:AnimationThink()
@@ -201,6 +217,14 @@ number_functions = {
 			return 0
 		end
 		return targ:GetAmmoCount(wep:GetPrimaryAmmoType())
+	end,
+	prop_punches_frac = function()
+		local targ = ttt.GetHUDTarget()
+		if (not IsValid(targ)) then
+			return 0
+		end
+
+		return targ:GetNWFloat("spectator_punches", 0)
 	end
 }
 
@@ -269,7 +293,11 @@ local text_functions = {
 			return ""
 		end
 
-		return targ:Nick()
+		if (targ:IsPlayer()) then
+			return targ:Nick()
+		else
+			return language.GetPhrase(targ:GetClass())
+		end
 	end
 }
 
