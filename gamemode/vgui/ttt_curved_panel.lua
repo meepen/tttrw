@@ -51,7 +51,7 @@ function PANEL:RebuildMesh(w, h)
 	end
 
 	if (IsValid(self.Mesh)) then
-		self.Mesh:Remove()
+		self.Mesh:Destroy()
 		self.Mesh = nil
 	end
 
@@ -110,7 +110,7 @@ end
 
 function PANEL:MeshRemove()
 	if (IsValid(self.Mesh)) then
-		self.Mesh:Remove()
+		self.Mesh:Destroy()
 	end
 
 	if (self.OldRemove) then
@@ -304,7 +304,7 @@ local PANEL = {}
 
 function PANEL:RebuildMesh(w, h)
 	if (IsValid(self.Mesh)) then
-		self.Mesh:Remove()
+		self.Mesh:Destroy()
 		self.Mesh = nil
 	end
 

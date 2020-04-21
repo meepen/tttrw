@@ -139,7 +139,10 @@ function PANEL:Init()
 	self.List:SetSpaceY(GetSpacing() / 2)
 	self.List:Dock(FILL)
 	hook.Add("OnPlayerRoleChange", self, self.OnPlayerRoleChange)
-	print(LocalPlayer():GetRole())
+
+	self.VBar = self:Add "DVScrollBar"
+	self.VBar:SetVisible(false)
+
 	self:OnPlayerRoleChange(LocalPlayer(), LocalPlayer():GetRole(), LocalPlayer():GetRole())
 end
 
