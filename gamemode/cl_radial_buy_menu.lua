@@ -1,6 +1,6 @@
 local circles = include("libraries/circles.lua")
 
-local tttrw_radial_buy_menu_hover = CreateConVar("tttrw_radial_buy_menu_hover", 1, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
+tttrw_radial_buy_menu_hover = CreateConVar("tttrw_radial_buy_menu_hover", 1, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
 local tttrw_radial_buy_menu = CreateConVar("tttrw_radial_buy_menu", 1, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
 
 local centerX, centerY = ScrW() * 0.5, ScrH() * 0.5
@@ -70,17 +70,19 @@ local function GetSelectedEquipment()
 	return selectedEquipment
 end
 
-function GM:CloseRadialBuyMenu()
+function GM:CloseRadialBuyMenu(should_buy)
 	if (not self.RadialMenuOpen) then return end
 	self.RadialMenuOpen = false
 
-	local selectedEquipment = GetSelectedEquipment()
+	if (should_buy) then
+		local selectedEquipment = GetSelectedEquipment()
 
-	if selectedEquipment then
-		if selectedEquipment == 0 then
-			self:OpenBuyMenu()
-		elseif istable(selectedEquipment) then
-			RunConsoleCommand("ttt_buy_equipment", selectedEquipment.ClassName)
+		if selectedEquipment then
+			if selectedEquipment == 0 then
+				self:OpenBuyMenu()
+			elseif istable(selectedEquipment) then
+				RunConsoleCommand("ttt_buy_equipment", selectedEquipment.ClassName)
+			end
 		end
 	end
 
@@ -88,8 +90,8 @@ function GM:CloseRadialBuyMenu()
 end
 
 local function DrawRadialMenu()
-	if (input.IsMouseDown(MOUSE_LEFT) and not tttrw_radial_buy_menu_hover:GetBool()) then
-		GAMEMODE:CloseRadialBuyMenu()
+	if (input.IsMouseDown(MOUSE_LEFT)) then
+		hook.Run("CloseRadialBuyMenu", true)
 
 		return
 	end

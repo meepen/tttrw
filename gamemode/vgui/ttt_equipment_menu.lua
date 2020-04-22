@@ -140,9 +140,6 @@ function PANEL:Init()
 	self.List:Dock(FILL)
 	hook.Add("OnPlayerRoleChange", self, self.OnPlayerRoleChange)
 
-	self.VBar = self:Add "DVScrollBar"
-	self.VBar:SetVisible(false)
-
 	self:OnPlayerRoleChange(LocalPlayer(), LocalPlayer():GetRole(), LocalPlayer():GetRole())
 end
 
@@ -566,7 +563,5 @@ end
 local tttrw_radial_buy_menu_hover = CreateConVar("tttrw_radial_buy_menu_hover", 1, {FCVAR_ARCHIVE, FCVAR_UNLOGGED}, "")
 
 function GM:OnContextMenuClose()
-	if (tttrw_radial_buy_menu_hover:GetBool()) then
-		self:CloseRadialBuyMenu()
-	end
+	hook.Run("CloseRadialBuyMenu", tttrw_radial_buy_menu_hover:GetBool())
 end
