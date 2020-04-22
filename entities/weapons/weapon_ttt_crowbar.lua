@@ -9,6 +9,7 @@ SWEP.ViewModelFlip        = false
 SWEP.ViewModelFOV         = 54
 
 SWEP.Base                    = "weapon_tttbase"
+DEFINE_BASECLASS(SWEP.Base)
 
 SWEP.ViewModel               = "models/weapons/c_crowbar.mdl"
 SWEP.WorldModel              = "models/weapons/w_crowbar.mdl"
@@ -20,6 +21,7 @@ SWEP.Primary.Automatic       = true
 SWEP.Primary.Delay           = 0.35
 SWEP.Primary.Range           = 70
 SWEP.Primary.Ammo            = "none"
+SWEP.Primary.Extents         = Vector(1, 1, 1)
 
 SWEP.Secondary.ClipSize      = -1
 SWEP.Secondary.DefaultClip   = -1
@@ -68,6 +70,16 @@ end
 
 local function CrowbarCanUnlock(t)
 	return not GAMEMODE.crowbar_unlocks or GAMEMODE.crowbar_unlocks[t == "rot" and "doors" or t]
+end
+
+function SWEP:SetupDataTables()
+	BaseClass.SetupDataTables(self)
+	self:NetVar("Secondary", "Float", math.huge)
+end
+
+function SWEP:Deploy()
+	self:SetSecondary(math.huge)
+	return BaseClass.Deploy(self)
 end
 
 -- will open door AND return what it did
@@ -132,24 +144,44 @@ function SWEP:SoundEffect(tr_main)
 	self:EmitSound(self.Primary.Sound)
 end
 
+function SWEP:GetExtents()
+	return self.Primary.Extents
+end
+
+function SWEP:GetMask()
+	return MASK_SHOT_HULL
+end
+
+function SWEP:GetRange()
+	return self.Primary.Range
+end
+
 function SWEP:DoTrace(mask)
 	local owner = self:GetOwner()
 
-	return util.TraceLine {
-		start = owner:GetShootPos(),
-		endpos = owner:GetShootPos() + owner:GetAimVector() * self.Primary.Range,
+	local origin = owner:GetShootPos()
+
+	local dir = owner:GetAimVector()
+
+	return util.TraceHull {
+		start = origin,
+		endpos = origin + dir * self:GetRange(),
 		filter = owner,
-		mask = mask
+		mask = mask,
+		mins = -self:GetExtents(),
+		maxs = self:GetExtents(),
 	}
 end
 
 function SWEP:PrimaryAttack()
+	self:SetBulletsShot(self:GetBulletsShot() + 1)
+
 	local owner = self:GetOwner()
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 
 	owner:LagCompensation(true)
 
-	local tr_main = self:DoTrace(MASK_SHOT_HULL)
+	local tr_main = self:DoTrace(self:GetMask())
 	local hitEnt = tr_main.Entity
 
 	self:MeleeAnimation(tr_main)
@@ -176,6 +208,34 @@ function SWEP:PrimaryAttack()
 	end
 
 	owner:LagCompensation(false)
+end
+
+function SWEP:Think()
+	BaseClass.Think(self)
+	if (self:GetSecondary() < CurTime()) then
+		-- do attack
+		self:SetSecondary(math.huge)
+		local owner = self:GetOwner()
+		owner:LagCompensation(true)
+	
+		local spos = owner:GetShootPos()
+		local sdest = spos + owner:GetAimVector() * 120
+	
+		local tr_main = util.TraceLine {
+			start = spos,
+			endpos = sdest,
+			filter = owner,
+			mask = MASK_SHOT_HULL
+		}
+
+		owner:LagCompensation(false)
+
+		self:HitEffects(tr_main)
+		if (IsValid(tr_main.Entity)) then
+			self:DoHit(tr_main.Entity, tr_main, 60)
+		end
+		self:EmitSound(self:GetCurrentAnimation().snd)
+	end
 end
 
 function SWEP:DoHit(hitEnt, tr, damage)

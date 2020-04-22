@@ -18,6 +18,7 @@ function PLAYER:Loadout()
 end
 
 function PLAYER:Spawn()
+	self.Player:SetJumpPower(160)
 	if (SERVER) then
 		self.Player:SetupHands(self.Player)
 	end
