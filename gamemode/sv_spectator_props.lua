@@ -19,7 +19,7 @@ local function StartSpectatingProp(ply, ent)
 end
 
 local function StopSpectatingProp(ply)
-	local ent = ply.propspec.ent
+	local ent = ply.propspec and ply.propspec.ent
 
 	if IsValid(ent) then
 		ent.spectator = nil
