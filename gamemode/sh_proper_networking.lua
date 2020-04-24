@@ -10,7 +10,7 @@ function GM:InitializeNetworking()
 		local index = "Get"..var.Name
 		ttt[index] = function()
 			local world = gmod.GetGamemode().NetworkingEntity
-			return world[index](world)
+			return world[index](world, var.Default)
 		end
 
 		local set_index = "Set"..var.Name

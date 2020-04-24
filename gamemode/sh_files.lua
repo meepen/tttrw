@@ -94,7 +94,7 @@ AddCSLuaFile();
 		end
 
 		if (CLIENT) then return end
-		
+
 		for _, file in ipairs(self.Resources) do
 			resource.AddFile(file)
 		end

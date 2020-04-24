@@ -177,24 +177,7 @@ function round.Prepare()
 	end)
 end
 
-local function TryStart()
-	if (round.CurrentPromise) then
-		return true
-	end
-
-	local plys = ttt.GetEligiblePlayers()
-	if (#plys < ttt_minimum_players:GetInt()) then
-		round.SetState(ttt.ROUNDSTATE_WAITING, 0)
-		return false
-	end
-
-	for _, oply in pairs(player.GetAll()) do
-		if (not table.HasValue(plys, oply)) then
-			oply:KillSilent()
-			gmod.GetGamemode():Spectate(oply)
-		end
-	end
-
+function GM:TTTSelectRoles(plys)
 	local roles_needed = {}
 
 	for role, info in pairs(ttt.roles) do
@@ -206,7 +189,6 @@ local function TryStart()
 		end
 	end
 
-	round.Players = {}
 	local randPlayers = table.Copy(plys)
 	for i, ply in pairs(randPlayers) do
 		randPlayers[i] = {
@@ -214,9 +196,11 @@ local function TryStart()
 			Tickets = math.random() * ply.Tickets
 		}
 	end
+
 	table.sort(randPlayers, function(a, b)
 		return a.Tickets > b.Tickets
 	end)
+
 	for i, info in ipairs(randPlayers) do
 		local ply = info.Player
 		local role, amt = next(roles_needed)
@@ -237,6 +221,28 @@ local function TryStart()
 			Role = ttt.roles[role]
 		}
 	end
+end
+
+local function TryStart()
+	if (round.CurrentPromise) then
+		return true
+	end
+
+	local plys = ttt.GetEligiblePlayers()
+	if (#plys < ttt_minimum_players:GetInt()) then
+		round.SetState(ttt.ROUNDSTATE_WAITING, 0)
+		return false
+	end
+
+	for _, oply in pairs(player.GetAll()) do
+		if (not table.HasValue(plys, oply)) then
+			oply:KillSilent()
+			gmod.GetGamemode():Spectate(oply)
+		end
+	end
+
+	round.Players = {}
+	hook.Run("TTTSelectRoles", plys)
 
 	if (not hook.Run("TTTRoundStart", plys)) then
 		printf("Round state is %i and failed to start round", ttt.GetRoundState())

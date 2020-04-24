@@ -87,7 +87,7 @@ function PANEL:Init()
 end
 
 function PANEL:Think()
-	self.RoundNumber:SetText(string.format("Round %i", ttt.GetRoundNumber() + 1))
+	self.RoundNumber:SetText(string.format("Round %i", ttt.GetRoundNumber()))
 	self.RoundNumber:SizeToContents()
 end
 
