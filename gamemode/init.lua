@@ -208,3 +208,7 @@ function GM:PlayerSwitchFlashlight(ply, en)
 	ply.LastFlashlight = CurTime()
 	return true
 end
+
+function GM:AllowPlayerPickup()
+	return false
+end
