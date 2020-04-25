@@ -20,7 +20,7 @@ function ENT:SetupDataTables()
 end
 
 function ENT:GetDamage()
-    return math.Round(self:GetRealDamage(), 1)
+    return math.floor(self:GetRealDamage())
 end
 
 function ENT:Initialize()
