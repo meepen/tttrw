@@ -87,7 +87,7 @@ local function generate_info(printf)
 
 		for dam, t in SortedPairsByMemberValue(damages, "Damage", true) do
 			dam = dam * wep.Bullets.Num
-			printf("\t%s\n\t\tDMG: %i\n\t\tDPS: %.1f", table.concat(t, ", "), dam, dam / wep.Primary.Delay)
+			printf("\t%s\n\t\tDMG: %.2f\n\t\tDPS: %.1f", table.concat(t, ", "), dam, dam / wep.Primary.Delay)
 		end
 	end
 end
