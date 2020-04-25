@@ -4,7 +4,7 @@ function GM:InsertLog(...)
         Text = string.format(...)
     })
 
-    print(string.format("%.2f: %s", CurTime() - self.StartTime, string.format(...)))
+    -- print(string.format("%.2f: %s", CurTime() - self.StartTime, string.format(...)))
 end
 
 function GM:DamageLogs_FormatPlayer(ply)

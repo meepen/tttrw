@@ -82,7 +82,7 @@ function round.SetState(state, time)
 			round.CurrentPromise = nil
 			if (promise["then"]) then
 				promise["then"](state, time)
-				elseif (state ~= ttt.ROUNDSTATE_WAITING) then
+			elseif (state ~= ttt.ROUNDSTATE_WAITING) then
 				warn("no then found for roundstate %s\n", ttt.Enums.RoundState[state])
 			end
 		end)

@@ -17,7 +17,7 @@ function GM:TTTCreatePlayerRagdoll(ply)
 	rag:SetAngles(ply:GetAngles())
 	rag:SetColor(ply:GetColor())
 	rag:Spawn()
-	rag:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+	rag:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER)
 
 	for i = 0, rag:GetPhysicsObjectCount() - 1 do
 		local bone = rag:GetPhysicsObjectNum(i)
@@ -41,7 +41,7 @@ function ttt.CreatePlayerRagdoll(ply, atk, dmg)
 	end
 
 	local rag = hook.Run("TTTCreatePlayerRagdoll", ply, atk, dmg)
-	rag:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+	rag:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER)
 
 	if (not IsValid(rag)) then
 		pwarnf("NO RAGDOLL FOR PLAYER")
