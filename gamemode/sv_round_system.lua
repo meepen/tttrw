@@ -404,18 +404,26 @@ function GM:PlayerInitialSpawn(ply)
 	end
 end
 
+function ttt.ForcePlayerSpawn(ply)
+	ply.AllowSpawn = true
+	ply:Spawn()
+	ply.AllowSpawn = false
+end
+
 function GM:SV_PlayerSpawn(ply)
 	ply.Killed = {}
 	local state = ttt.GetRoundState()
 
 	if (state == ttt.ROUNDSTATE_WAITING) then
 		round.Prepare()
-	elseif (state ~= ttt.ROUNDSTATE_PREPARING) then
+	elseif (state ~= ttt.ROUNDSTATE_PREPARING and not ply.AllowSpawn) then
 		printf("Player %s <%s> joined while round is active, killing silently", ply:Nick(), ply:SteamID())
 		ply:KillSilent()
 		-- TODO(meep): make spectator code
 		return
 	end
+
+	ply.AllowSpawn = nil
 
 	ply:UnSpectate()
 
@@ -520,7 +528,8 @@ function GM:TTTPlayerRemoved(removed)
 	end)
 end
 
-function GM:PlayerDeath(ply)
+function GM:PostPlayerDeath(ply)
 	round.RemovePlayer(ply)
 	ply:Extinguish()
+	self:Spectate_PostPlayerDeath(ply)
 end

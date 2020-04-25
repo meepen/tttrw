@@ -20,7 +20,6 @@ function GM:PostDrawOpaqueRenderables()
 	end
 
 	local r, g, b = render.GetColorModulation()
-	render.SetColorModulation(1, 0, 0)
 	render.SuppressEngineLighting(true)
 	render.MaterialOverride(mat)
 
@@ -29,6 +28,8 @@ function GM:PostDrawOpaqueRenderables()
 		if (ply:GetRoleTeam() ~= "traitor" or not ply:Alive()) then
 			continue
 		end
+		local col = ply:GetRoleData().Color
+		render.SetColorModulation(col.r / 255, col.g / 255, col.b / 255)
 
 		mn, mx = ply:GetCollisionBounds()
 
