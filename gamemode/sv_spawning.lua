@@ -23,6 +23,9 @@ function GM:TTTPlayerGiveWeapons(ply)
 	end
 end
 
+function GM:PlayerDeath()
+end
+
 function GM:PlayerDeathThink(ply)
 	if (IsValid(ply:GetObserverTarget()) and ply:GetObserverMode() == OBS_MODE_IN_EYE) then
 		ply:SetPos(ply:GetObserverTarget():GetPos())
