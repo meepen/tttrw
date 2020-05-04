@@ -158,7 +158,7 @@ function GM:HUDPaint()
 	if (IsValid(targ) and targ ~= LocalPlayer()) then
 		-- https://github.com/Facepunch/garrysmod-issues/issues/3936
 		local wep = targ:GetActiveWeapon()
-		if (IsValid(wep)) then
+		if (IsValid(wep) and wep.DoDrawCrosshair) then
 			wep:DoDrawCrosshair(ScrW() / 2, ScrH() / 2)
 		end
 	end
@@ -173,7 +173,7 @@ function GM:PlayerPostThink()
 
 	if (IsValid(targ) and targ ~= LocalPlayer()) then
 		local wep = targ:GetActiveWeapon()
-		if (IsValid(wep)) then
+		if (IsValid(wep) and wep.CalcAllUnpredicted) then
 			wep:CalcAllUnpredicted()
 		end
 	end
