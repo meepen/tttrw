@@ -144,23 +144,37 @@ function GM:KeyRelease(ply, key)
 	end
 end
 
+local cache = setmetatable({}, {__index = {}})
+
+timer.Create("tttrw_hear_player_cache", 0.25, 0, function()
+	for _, hear in pairs(player.GetAll()) do
+		if (not cache[hear]) then
+			cache[hear] = {}
+		end
+
+		for _, talk in pairs(player.GetAll()) do
+			if (talk == hear) then
+				continue
+			end
+
+			local t_alive, h_alive = talk:Alive(), hear:Alive()
+			if (not t_alive and h_alive) then
+				cache[hear][talk] = false
+			elseif (not t_alive and not h_alive or not talk:KeyDown(IN_SPEED)) then
+				cache[hear][talk] = true
+			else
+				local channel = talk:GetRoleData().VoiceChannel
+
+				cache[hear][talk] = not channel or hear:GetRoleData().VoiceChannel ==  channel
+			end
+		end
+	end
+end)
+
 function GM:PlayerCanHearPlayersVoice(hear, talk)
 	if (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
 		return true, false
 	end
 
-	if (not talk:Alive() and not hear:Alive()) then
-		return true, false
-	end
-
-	if (not talk:Alive() and hear:Alive()) then
-		return false, false
-	end
-
-	local channel = talk:GetRoleData().VoiceChannel
-	if (channel and talk:KeyDown(IN_SPEED) and hear:GetRoleData().VoiceChannel ~= channel) then
-		return false, false
-	end
-
-	return true, false
+	return cache[hear][talk], false
 end
