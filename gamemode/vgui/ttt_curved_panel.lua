@@ -301,7 +301,7 @@ end
 vgui.Register("ttt_curved_button", table.Copy(PANEL), "EditablePanel")
 
 local PANEL = {}
-
+DEFINE_BASECLASS "ttt_curved_panel"
 function PANEL:RebuildMesh(w, h)
 	if (IsValid(self.Mesh)) then
 		self.Mesh:Destroy()
@@ -311,6 +311,14 @@ function PANEL:RebuildMesh(w, h)
 	local x, y = self:LocalToScreen(0, 0)
 
 	self.Mesh = hud.BuildCurvedMeshOutline(self:GetCurve() or 0, x, y, self:GetWide(), self:GetTall(), self:GetNoCurveTopLeft(), self:GetNoCurveTopRight(), self:GetNoCurveBottomLeft(), self:GetNoCurveBottomRight(), self:GetColor())
+end
+
+function PANEL:DrawInner()
+end
+
+function PANEL:Paint(w, h)
+	BaseClass.Paint(self, w, h)
+	self:DrawInner(w, h)
 end
 
 vgui.Register("ttt_curved_panel_outline", PANEL, "ttt_curved_panel")
