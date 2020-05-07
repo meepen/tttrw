@@ -72,7 +72,13 @@ function PLAYER:GetSpeedData()
 
 	hook.Run("TTTUpdatePlayerSpeed", ply, data)
 
-	return data
+	local mult = 1
+
+	for _, m in pairs(data) do
+		mult = mult * m
+	end
+
+	return mult
 end
 
 function PLAYER:Think()

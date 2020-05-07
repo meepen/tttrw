@@ -158,7 +158,7 @@ function GM:PreventCrouchSpam(ply, mv)
 end
 
 function GM:Move(ply, mv)
-	local data = player_manager.RunClass(ply, "GetSpeedData")
+	local speedmult = player_manager.RunClass(ply, "GetSpeedData")
 
 	local speed
 	
@@ -176,8 +176,8 @@ function GM:Move(ply, mv)
 	end
 	self:PreventCrouchSpam(ply, mv)
 
-	mv:SetMaxSpeed(speed * data.Multiplier * data.FinalMultiplier)
-	mv:SetMaxClientSpeed(speed * data.Multiplier * data.FinalMultiplier)
+	mv:SetMaxSpeed(speed * speedmult)
+	mv:SetMaxClientSpeed(speed * speedmult)
 
 	self:PreventCrouchJump(ply, mv)
 	self:DoBunnyHop(ply, mv)
