@@ -129,7 +129,12 @@ end)
 
 hook.Add("PostDrawEffects", "pluto_damage_numbers", function()
     cam.Start3D()
-        for _, self in pairs(ttt.damagenumbers) do
+        for i = #ttt.damagenumbers, 1, -1 do
+            local self = ttt.damagenumbers[i]
+            if (self.CreationTime + self.LiveTime < CurTime()) then
+                table.remove(ttt.damagenumbers, i)
+                continue
+            end
             local frac = (CurTime() - self.CreationTime) / self.LiveTime
             local totalfrac = frac
 
