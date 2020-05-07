@@ -64,3 +64,97 @@ function GM:TTTDrawHitmarkers()
     surface.DrawLine(x - 8, y + 6, x - 3, y + 6)
     surface.DrawLine(x + 8, y + 6, x + 3, y + 6)
 end
+
+surface.CreateFont("ttt_damagenumber", {
+	font = "Lato",
+	size = 160,
+	weight = 500,
+})
+
+ttt.damagenumbers = ttt.damagenumbers or {}
+local ID = 0
+
+local function Bezier(t, startpos, bias, endpos)
+    local rt = 1 - t
+    return rt * rt * startpos + 2 * rt * t * bias + t * t * endpos
+end
+
+local paths = {
+    {
+        0.4,
+        vector_origin,
+        Vector(100, -100),
+        Vector(200, 0),
+        0.6,
+        Vector(200, 0),
+        Vector(250, 150),
+        Vector(250, 300)
+    },
+    {
+        0.4,
+        vector_origin,
+        Vector(-100, -100),
+        Vector(-200, 0),
+        0.6,
+        Vector(-200, 0),
+        Vector(-250, 150),
+        Vector(-250, 300)
+    }
+}
+
+local colors = {
+    [HITGROUP_HEAD] = Color(255, 0, 0),
+    [HITGROUP_CHEST] = Color(128, 20, 108),
+    [HITGROUP_STOMACH] = Color(200, 20, 108),
+    default = color_white,
+}
+
+net.Receive("tttrw_damage_number", function()
+    local self = {
+        Owner = net.ReadEntity(),
+        Damage = net.ReadUInt(16),
+        DamageType = net.ReadUInt(32),
+        Pos = net.ReadVector(),
+        HitGroup = net.ReadUInt(8),
+        LiveTime = 0.5,
+        CreationTime = CurTime(),
+        ID = ID,
+    }
+    table.insert(ttt.damagenumbers, self)
+
+    hook.Run("PlayerHit", self.Owner, self.Damage, self.GetDamageType, self.HitGroup)
+
+    ID = ID + 1
+end)
+
+hook.Add("PostDrawEffects", "pluto_damage_numbers", function()
+    cam.Start3D()
+        for _, self in pairs(ttt.damagenumbers) do
+            local frac = (CurTime() - self.CreationTime) / self.LiveTime
+            local totalfrac = frac
+
+            local path = paths[self.ID % #paths + 1]
+
+            local targ = path[#path]
+            for i = 1, #path, 4 do
+                local curfrac = path[i]
+                if (frac <= curfrac) then
+                    targ = Bezier(frac / curfrac, path[i + 1], path[i + 2], path[i + 3])
+                    break
+                end
+                frac = frac - curfrac
+            end
+
+            local ang = (self.Pos - EyePos()):Angle():Right():Angle()
+            ang:RotateAroundAxis(ang:Forward(), 90)
+            cam.Start3D2D(self.Pos, ang, 0.04 + self.Damage / 100 * 0.09)
+                cam.IgnoreZ(true)
+                    local alpha = Lerp(math.max(totalfrac - 0.5, 0) * 2, 255, 0)
+                    local col = ColorAlpha(colors[self.HitGroup] or colors.default, alpha)
+                    local outline = ColorAlpha(color_black, alpha)
+                    draw.SimpleTextOutlined(self.Damage, "ttt_damagenumber", targ.x, targ.y, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 3, outline)
+                cam.IgnoreZ(false)
+            cam.End3D2D()
+        end
+    cam.End3D()
+end)
