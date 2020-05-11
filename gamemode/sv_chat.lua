@@ -148,7 +148,7 @@ local cache = setmetatable({}, {__index = function() return {} end})
 
 timer.Create("tttrw_hear_player_cache", 0.25, 0, function()
 	for _, hear in pairs(player.GetAll()) do
-		if (not cache[hear]) then
+		if (not rawget(cache, hear)) then
 			cache[hear] = {}
 		end
 
