@@ -144,7 +144,7 @@ function GM:KeyRelease(ply, key)
 	end
 end
 
-local cache = setmetatable({}, {__index = {}})
+local cache = setmetatable({}, {__index = function() return {} end})
 
 timer.Create("tttrw_hear_player_cache", 0.25, 0, function()
 	for _, hear in pairs(player.GetAll()) do
