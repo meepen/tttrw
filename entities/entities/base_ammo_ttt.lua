@@ -19,7 +19,9 @@ function ENT:RealInit() end -- bw compat
 function ENT:Initialize()
 	self:SetModel( self.Model )
 
-	self:PhysicsInit( SOLID_VPHYSICS )
+	if (SERVER) then
+		self:PhysicsInit( SOLID_VPHYSICS )
+	end
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_BBOX )
 
