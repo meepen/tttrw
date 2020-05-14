@@ -1,5 +1,5 @@
--- resource.AddFile "sound/tttrw/hitmarker_.mp3"
--- resource.AddFile "sound/tttrw/hitmarker_hs.wav"
+resource.AddFile "sound/tttrw/hitmarker_.mp3"
+resource.AddFile "sound/tttrw/hitmarker_hs.wav"
 
 local function GetFilter(ply)
     local ret = {ply}

@@ -68,7 +68,7 @@ AddCSLuaFile();
 		"sh_chat.lua",
 	},
 	Resources = {
-		--[["materials/tttrw/heart.png",
+		"materials/tttrw/heart.png",
 		"materials/tttrw/tbutton.png",
 		"materials/tttrw/xbutton128.png",
 		"materials/tttrw/transparentevil.png",
@@ -79,7 +79,7 @@ AddCSLuaFile();
 		"materials/tttrw/roles/detective.png",
 		"materials/tttrw/headshot.png",
 		"materials/tttrw/dna.png",
-		"materials/tttrw/expired_dna.png",]]
+		"materials/tttrw/expired_dna.png",
 	},
 	Load = function(self)
 		for _, file in ipairs(self.Shared) do
