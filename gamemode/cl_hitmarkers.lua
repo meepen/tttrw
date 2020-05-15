@@ -1,7 +1,9 @@
 local last_hit = -math.huge
 
 local ttt_hitmarker_sound_hs = CreateConVar("tttrw_hitmarker_sound_hs", "sound/tttrw/hitmarker_hs.wav", FCVAR_ARCHIVE, "Hitmarker sound")
+local ttt_hitmarker_sound_hs_volume = CreateConVar("tttrw_hitmarker_sound_hs_volume", 2, FCVAR_ARCHIVE, "Hitmarker sound volume", 0, 10)
 local ttt_hitmarker_sound = CreateConVar("tttrw_hitmarker_sound", "sound/tttrw/hitmarker_.mp3", FCVAR_ARCHIVE, "Hitmarker sound")
+local ttt_hitmarker_sound_volume = CreateConVar("tttrw_hitmarker_sound_volume", 2, FCVAR_ARCHIVE, "Hitmarker sound volume", 0, 10)
 
 function GM:PlayerHit(atk, dmg, dmgtype, hitgroup)
     if (atk ~= LocalPlayer()) then
@@ -10,9 +12,19 @@ function GM:PlayerHit(atk, dmg, dmgtype, hitgroup)
 
     last_hit = CurTime()
 
-    sound.PlayFile(hitgroup == HITGROUP_HEAD and ttt_hitmarker_sound_hs:GetString() or ttt_hitmarker_sound:GetString(), "mono", function(station, eid, err)
+    local snd, vol
+
+    if (hitgroup == HITGROUP_HEAD) then
+        snd = ttt_hitmarker_sound_hs:GetString()
+        vol = ttt_hitmarker_sound_hs_volume:GetFloat()
+    else
+        snd = ttt_hitmarker_sound:GetString()
+        vol = ttt_hitmarker_sound_volume:GetFloat()
+    end
+
+    sound.PlayFile(snd, "mono", function(station, eid, err)
         if (IsValid(station)) then
-            station:SetVolume(2)
+            station:SetVolume(vol)
             station:Play()
         else
             MsgC(Color(255,0,0,255,err))
