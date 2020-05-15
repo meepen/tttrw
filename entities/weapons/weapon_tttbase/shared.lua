@@ -534,7 +534,7 @@ end
 
 function SWEP:GetSpread()
 	if (self.IsSniper and not self:GetIronsights()) then
-		return self.Bullets.Spread + Vector(0.2, 0.2)
+		return self.Bullets.Spread + Vector(0.1, 0.1)
 	end
 	return self.Bullets.Spread * (self.Primary.Ammo:lower() == "buckshot" and 1 or (0.25 + (-self:GetMultiplier() + 2) * 0.75)) * (0.5 + self:GetCurrentZoom() / 2) ^ 0.7
 end
