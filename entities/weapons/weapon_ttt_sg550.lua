@@ -34,7 +34,7 @@ SWEP.Primary.DefaultClip   = 30
 SWEP.Primary.Sound         = Sound "Weapon_SG550.Single"
 SWEP.Secondary.Sound       = Sound "Default.Zoom"
 SWEP.HasScope              = true
-SWEP.IsSniper              = true
+SWEP.IsSniper              = false
 
 SWEP.HeadshotMultiplier    = 2.1
 SWEP.DeploySpeed = 1.6

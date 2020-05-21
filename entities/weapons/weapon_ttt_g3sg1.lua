@@ -36,7 +36,7 @@ SWEP.Primary.DefaultClip   = 30 --30
 SWEP.Primary.Sound         = Sound "Weapon_G3SG1.Single"
 SWEP.Secondary.Sound       = Sound "Default.Zoom"
 SWEP.HasScope              = true
-SWEP.IsSniper = true
+SWEP.IsSniper = false
 SWEP.ReloadSpeed = 1.3
 
 SWEP.HeadshotMultiplier    = 2.1
