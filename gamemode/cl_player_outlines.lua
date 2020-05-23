@@ -1,6 +1,6 @@
 local tttrw_outline_roles = CreateConVar("tttrw_outline_roles", "1", FCVAR_ARCHIVE, "See traitor buddies with outlines")
 local tttrw_outline_roles_ignorez = CreateConVar("tttrw_outline_roles_ignorez", "1", FCVAR_ARCHIVE, "See traitor buddies through walls with outlines")
-local tttrw_outline_roles_mult = CreateConVar("tttrw_outline_roles_mult", "1.05", FCVAR_ARCHIVE, "See traitor buddies through walls with outlines", 1, 3)
+local tttrw_outline_roles_mult = CreateConVar("tttrw_outline_roles_mult", "1.05", FCVAR_ARCHIVE, "See traitor buddies through walls with outlines", 1, 2)
 
 local mat = CreateMaterial("tttrw_player_outline", "VertexLitGeneric", {
 	["$basetexture"]    = "color/white",
