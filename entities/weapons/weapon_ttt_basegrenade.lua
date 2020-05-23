@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 SWEP.HoldType           = "slam"
 
-SWEP.PrintName          = "Incediary Grenada"
+SWEP.PrintName          = "Incediary Grenade"
 SWEP.Slot               = 3
 
 SWEP.ViewModelFlip      = false
