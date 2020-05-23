@@ -40,7 +40,6 @@ end
 
 local hooks = {
 	gm_showhelp = "ShowHelp",
-	gm_showteam = "ShowTeam",
 	gm_showspare2 = "ShowSpare2",
 	gm_showspare1 = "ShowSpare1",
 	zoom = "ShowQuickChat",

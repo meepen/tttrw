@@ -144,30 +144,70 @@ function GM:KeyRelease(ply, key)
 	end
 end
 
+local SoundStates = {
+	{
+		Name = "Mute None",
+		Query = function(hear, talk)
+			return true
+		end,
+	},
+	{
+		Name = "Mute Living",
+		Query = function(hear, talk)
+			return not talk:Alive()
+		end,
+	},
+	{
+		Name = "Mute All",
+		Query = function(hear, talk)
+			return false
+		end,
+	}
+}
+
+local function GetSoundState(ply)
+	return SoundStates[(ply.SoundState or 0) + 1]
+end
+
+local function AbleToHear(hear, talk)
+	local t_alive, h_alive = talk:Alive(), hear:Alive()
+	local able = false
+	if (not t_alive and h_alive) then
+		return false
+	elseif (not t_alive and not h_alive or not talk:KeyDown(IN_SPEED)) then
+		able = true
+	else
+		local channel = talk:GetRoleData().VoiceChannel
+
+		able = not channel or hear:GetRoleData().VoiceChannel ==  channel
+	end
+
+	return able
+end
+
 local cache = setmetatable({}, {__index = function() return {} end})
 
-timer.Create("tttrw_hear_player_cache", 0.25, 0, function()
+function GM:UpdateVoiceState(talk)
 	for _, hear in pairs(player.GetAll()) do
 		if (not rawget(cache, hear)) then
 			cache[hear] = {}
 		end
 
-		for _, talk in pairs(player.GetAll()) do
-			if (talk == hear) then
-				continue
-			end
+		local able = AbleToHear(hear, talk)
 
-			local t_alive, h_alive = talk:Alive(), hear:Alive()
-			if (not t_alive and h_alive) then
-				cache[hear][talk] = false
-			elseif (not t_alive and not h_alive or not talk:KeyDown(IN_SPEED)) then
-				cache[hear][talk] = true
-			else
-				local channel = talk:GetRoleData().VoiceChannel
+		if (able and not hear:Alive()) then
+			local state = GetSoundState(hear)
 
-				cache[hear][talk] = not channel or hear:GetRoleData().VoiceChannel ==  channel
-			end
+			able = state.Query(hear, talk)
 		end
+
+		cache[hear][talk] = able
+	end
+end
+
+timer.Create("tttrw_hear_player_cache", 0.5, 0, function()
+	for _, talk in pairs(player.GetAll()) do
+		gmod.GetGamemode():UpdateVoiceState(talk)
 	end
 end)
 
@@ -177,4 +217,9 @@ function GM:PlayerCanHearPlayersVoice(hear, talk)
 	end
 
 	return cache[hear][talk], false
+end
+
+function GM:ShowTeam(p)
+	p.SoundState = ((p.SoundState or 0) + 1) % #SoundStates
+	p:ChatPrint("Voice state set to: " .. GetSoundState(p).Name)
 end

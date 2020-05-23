@@ -145,6 +145,10 @@ function GM:KeyPress(ply, key)
 		return
 	end
 
+	if (SERVER and key == IN_SPEED) then
+		self:UpdateVoiceState(ply)
+	end
+
 	if (key == IN_WEAPON1) then
 		self:DropCurrentWeapon(ply)
 	elseif (SERVER) then

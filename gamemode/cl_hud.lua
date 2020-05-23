@@ -496,6 +496,15 @@ for item, ele in pairs(ttt.HUDElements) do
 	end
 end
 
+if (IsValid(ttt.HUDElement)) then
+	ttt.HUDElement:Remove()
+end
+
+ttt.HUDElement = vgui.Create "EditablePanel"
+
+ttt.HUDElement:SetParent(GetHUDPanel())
+ttt.HUDElement:SetSize(GetHUDPanel():GetSize())
+
 local function IsCustomizable(ele)
 	local s, base = pcall(baseclass.Get, ele)
 
@@ -533,10 +542,11 @@ local function CreateItem(data, parent)
 	end
 
 	local p = parent:Add(data.type)
+	p:SetMouseInputEnabled(true)
+	p.JSON = data
+	p.CustomizeParent = parent
 
 	p:SetName(data.name)
-
-	ttt.HUDElements[data.name] = p
 
 	for key, value in pairs(data) do
 		p:AcceptInput(key, value)
@@ -554,5 +564,80 @@ local function CreateItem(data, parent)
 end
 
 for id, data in ipairs(json) do
-	CreateItem(data, GetHUDPanel())
+	CreateItem(data, ttt.HUDElement)
 end
+
+local function GetHoveredPanel()
+	local p = vgui.GetHoveredPanel()
+	while (p) do
+		if (p.JSON) then
+			break
+		end
+		p = p:GetParent()
+	end
+
+	if (not p or not p.JSON) then
+		return
+	end
+	
+	return p
+end
+
+
+hook.Add("DrawOverlay", "cancer", function()
+	local p = GetHoveredPanel()
+	if (not p) then
+		return
+	end
+
+	local x0, y0 = p:LocalToScreen(0, 0)
+	local x1, y1 = p:LocalToScreen(p:GetSize())
+	local tx, ty = x0, y1
+	surface.SetFont "BudgetLabel"
+	local json = p.JSON
+	local text = "[" .. p:GetName() .. "]"
+	if (p.JSON.dock) then
+		text = text .. " dock:" .. p.JSON.dock
+	elseif (p.JSON.pos) then
+		text = text .. " pos:[" .. p.JSON.pos[1] .. "," .. p.JSON.pos[2] .. "]"
+	end
+
+	if (p.JSON.size) then
+		text = text .. " size:[" .. p.JSON.size[1] .. "," .. p.JSON.size[2] .. "]"
+	end
+
+	if (p.JSON.pos and p.JSON.pos[3]) then
+		text = text .. " z:" .. p.JSON.pos[3]
+	end
+
+	local w, h = surface.GetTextSize(text)
+
+	if (w + tx > ScrW()) then
+		tx = ScrW() - w
+	end
+	if (h + ty > ScrH()) then
+		ty = ScrH() - h
+	end
+
+	surface.SetTextColor(white_text)
+	surface.SetDrawColor(100, 50, 50, 100)
+
+	surface.SetTextPos(tx, ty)
+	surface.DrawText(text)
+
+	surface.DrawRect(x0, y0, x1 - x0, y1 - y0)
+end)
+
+concommand.Add("tttrw_edit_hud", function()
+	local parent = ttt.HUDElement:GetParent()
+
+	if (parent == GetHUDPanel()) then
+		ttt.HUDElement:SetParent()
+		ttt.HUDElement:MakePopup()
+		ttt.HUDElement:SetKeyboardInputEnabled(false)
+	else
+		ttt.HUDElement:SetMouseInputEnabled(false)
+		ttt.HUDElement:SetKeyboardInputEnabled(false)
+		ttt.HUDElement:SetParent(GetHUDPanel())
+	end
+end)
