@@ -1,6 +1,6 @@
 local tttrw_outline_roles = CreateConVar("tttrw_outline_roles", "1", FCVAR_ARCHIVE, "See traitor buddies with outlines")
 local tttrw_outline_roles_ignorez = CreateConVar("tttrw_outline_roles_ignorez", "1", FCVAR_ARCHIVE, "See traitor buddies through walls with outlines")
-local tttrw_outline_roles_mult = CreateConVar("tttrw_outline_roles_mult", "1.05", FCVAR_ARCHIVE, "See traitor buddies through walls with outlines", 1, 10)
+local tttrw_outline_roles_mult = CreateConVar("tttrw_outline_roles_mult", "1.05", FCVAR_ARCHIVE, "See traitor buddies through walls with outlines", 1, 3)
 
 local mat = CreateMaterial("tttrw_player_outline", "VertexLitGeneric", {
 	["$basetexture"]    = "color/white",
@@ -23,19 +23,27 @@ function GM:PostDrawOpaqueRenderables()
 	local scale = Vector(mult, mult, (mult - 1) / 5 + 1)
 	matr:SetScale(scale)
 
-	if (tttrw_outline_roles_ignorez:GetBool()) then
-		cam.IgnoreZ(true)
-	end
+
+	local ignorez = tttrw_outline_roles_ignorez:GetBool()
+
 
 	local r, g, b = render.GetColorModulation()
 	render.SuppressEngineLighting(true)
 	render.MaterialOverride(mat)
 
+	local local_team = LocalPlayer():GetRoleTeam()
+
 	for _, ply in pairs(player.GetAll()) do
 		local mn, mx 
-		if (ply:GetRoleTeam() ~= "traitor" or not ply:Alive() or ply:IsDormant()) then
+		local other_team = ply:GetRoleTeam()
+		if (other_team ~= "traitor" or not ply:Alive() or ply:IsDormant()) then
 			continue
 		end
+
+		if (ignorez and local_team == other_team) then
+			cam.IgnoreZ(true)
+		end
+
 		local col = ply:GetRoleData().Color
 		render.SetColorModulation(col.r / 255, col.g / 255, col.b / 255)
 
@@ -56,14 +64,12 @@ function GM:PostDrawOpaqueRenderables()
 
 		ply:DisableMatrix("RenderMultiply")
 		ply:InvalidateBoneCache()
+		cam.IgnoreZ(false)
 	end
 
 	render.MaterialOverride()
 	render.SuppressEngineLighting(false)
 	render.SetColorModulation(r, g, b)
-	if (tttrw_outline_roles_ignorez:GetBool()) then
-		cam.IgnoreZ(false)
-	end
 
 	for _, ply in pairs(player.GetAll()) do
 		local mn, mx 
