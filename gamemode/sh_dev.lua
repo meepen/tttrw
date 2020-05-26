@@ -9,7 +9,7 @@ hook.Add("StartCommand", "Bots", function(ply, cmd)
 		else
 			--cmd:SetSideMove(10000)
 		end
-		cmd:SetViewAngles(Angle(90, 0, 0))
+		cmd:SetViewAngles(Angle(0, 0, 0))
 		--cmd:SetButtons(bit.bor(cmd:GetButtons(), IN_JUMP))
 	end
 end)

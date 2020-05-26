@@ -533,9 +533,6 @@ function SWEP:TracerEffect(tr, dmg)
 end
 
 function SWEP:GetSpread()
-	if (self.IsSniper and not self:GetIronsights()) then
-		return self.Bullets.Spread + Vector(0.1, 0.1)
-	end
 	return self.Bullets.Spread * (self.Primary.Ammo:lower() == "buckshot" and 1 or (0.25 + (-self:GetMultiplier() + 2) * 0.75)) * (0.5 + self:GetCurrentZoom() / 2) ^ 0.7
 end
 
@@ -683,8 +680,20 @@ function SWEP:Think()
 	self:Hitboxes()
 end
 
+function SWEP:GetCurrentZoomMultiplier()
+	return math.min(1, (CurTime() - self:GetFOVMultiplierTime()) / (self:GetFOVMultiplierDuration() + 0.00001))
+end
+
+function SWEP:GetCurrentZoomPercent()
+	if (self:GetIronsights()) then
+		return self:GetCurrentZoomMultiplier()
+	else
+		return 1 - self:GetCurrentZoomMultiplier()
+	end
+end
+
 function SWEP:GetCurrentFOVMultiplier()
-	return self:GetOldFOVMultiplier() + (self:GetFOVMultiplier() - self:GetOldFOVMultiplier()) * math.min(1, (CurTime() - self:GetFOVMultiplierTime()) / (self:GetFOVMultiplierDuration() + 0.00001))
+	return self:GetOldFOVMultiplier() + (self:GetFOVMultiplier() - self:GetOldFOVMultiplier()) * self:GetCurrentZoomMultiplier()
 end
 
 function SWEP:ChangeFOVMultiplier(fovmult, duration)
