@@ -66,3 +66,12 @@ SWEP.RecoilInstructions = {
 	Angle(-power, -power * 0.2),
 	Angle(-power, -power * 0.4),
 }
+
+DEFINE_BASECLASS(SWEP.Base)
+
+function SWEP:GetSpread()
+	local consec = self:GetConsecutiveShots()
+	local mult = math.min(2, consec / 15)
+
+	return BaseClass.GetSpread(self) * (1 + mult)
+end
