@@ -131,8 +131,18 @@ function GM:PostDrawViewModel(vm, ply, weapon)
 end
 
 function GM:PlayerSetHandsModel(ply, ent)
-	local simplemodel = player_manager.TranslateToPlayerModelName(IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon().NoPlayerModelHands and "models/player/phoenix.mdl" or ply:GetModel())
-	local info = player_manager.TranslatePlayerHands(simplemodel)
+	local wep = ply:GetActiveWeapon()
+	local info
+	if (IsValid(wep) and wep.NoPlayerModelHands) then
+		info = {
+			skin = 0,
+			body = "10000000",
+			model = "models/weapons/c_arms_cstrike.mdl"
+		} 
+	else
+		local simplemodel = player_manager.TranslateToPlayerModelName(ply:GetModel())
+		info = player_manager.TranslatePlayerHands(simplemodel)
+	end
 	if info then
 		ent:SetModel(info.model)
 		ent:SetSkin(info.skin)
