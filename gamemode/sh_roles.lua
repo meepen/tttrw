@@ -206,14 +206,14 @@ function GM:TTTPrepareRoles(Team, Role)
 		:SetDeathIcon "materials/tttrw/roles/detective.png"
 		:SetDefaultCredits(2)
 		:CreditOnRoleDeath(function(roles, deathrole)
-			if (not deathrole.IsEvil) then
+			if (not deathrole.Evil) then
 				return 0
 			end
 
 			local amt = 0
 
 			for role, i in pairs(roles) do
-				if (role.IsEvil) then
+				if (role.Evil) then
 					amt = amt + i
 				end
 			end

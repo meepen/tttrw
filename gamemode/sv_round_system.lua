@@ -177,6 +177,17 @@ function round.Prepare()
 	end)
 end
 
+local function FindNextRole(needed)
+	for role, amt in pairs(needed) do
+		if (ttt.roles[role].Evil) then
+			print "EVIL"
+			return role, amt
+		end
+	end
+
+	return next(needed)
+end
+
 function GM:TTTSelectRoles(plys)
 	local roles_needed = {}
 
@@ -203,7 +214,7 @@ function GM:TTTSelectRoles(plys)
 
 	for i, info in ipairs(randPlayers) do
 		local ply = info.Player
-		local role, amt = next(roles_needed)
+		local role, amt = FindNextRole(roles_needed)
 		if (role) then
 			if (amt == 1) then
 				roles_needed[role] = nil
