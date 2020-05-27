@@ -544,10 +544,7 @@ function SWEP:CanPrimaryAttack()
 end
 
 function SWEP:PrimaryAttack()
-	if (not self:CanPrimaryAttack()) then
-		self:EmitSound "Weapon_Pistol.Empty"
-		self:SetNextPrimaryFire(CurTime() + 0.2)
-		self:Reload()
+	if (not self:CheckBeforeFire()) then
 		return
 	end
 
@@ -562,6 +559,30 @@ function SWEP:PrimaryAttack()
 		self:SetConsecutiveShots(self:GetConsecutiveShots() + 1)
 	else
 		self:SetConsecutiveShots(0)
+	end
+
+	self:StartShoot()
+end
+
+-- for burst guns
+function SWEP:StartShoot()
+	self:DefaultShoot()
+end
+
+function SWEP:CheckBeforeFire()
+	if (not self:CanPrimaryAttack()) then
+		self:EmitSound "Weapon_Pistol.Empty"
+		self:SetNextPrimaryFire(CurTime() + 0.2)
+		self:Reload()
+		return false
+	end
+
+	return true
+end
+
+function SWEP:DefaultShoot()
+	if (not self:CheckBeforeFire()) then
+		return
 	end
 
 	if (self:Clip1() <= math.max(self:GetMaxClip1() * 0.15, 3)) then
@@ -629,6 +650,10 @@ function SWEP:ViewPunch()
 	self:CalcViewPunch()
 end
 
+function SWEP:GetIdleAnimation()
+	return ACT_VM_IDLE
+end
+
 function SWEP:Think()
 	local reloadtime = self:GetReloadEndTime()
 	if (reloadtime ~= math.huge) then
@@ -662,7 +687,7 @@ function SWEP:Think()
 
 		self:SetClip1(self:Clip1() + added)
 		self:SetReloadEndTime(math.huge)
-		self:SendWeaponAnim(ACT_VM_IDLE)
+		self:SendWeaponAnim(self:GetIdleAnimation())
 	end
 
 	if (not self:IsToggleADS()) then
