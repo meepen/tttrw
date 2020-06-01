@@ -180,7 +180,6 @@ end
 local function FindNextRole(needed)
 	for role, amt in pairs(needed) do
 		if (ttt.roles[role].Evil) then
-			print "EVIL"
 			return role, amt
 		end
 	end
