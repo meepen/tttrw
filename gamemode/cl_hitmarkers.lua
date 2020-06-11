@@ -4,6 +4,7 @@ local ttt_hitmarker_sound_hs = CreateConVar("tttrw_hitmarker_sound_hs", "sound/t
 local ttt_hitmarker_sound_hs_volume = CreateConVar("tttrw_hitmarker_sound_hs_volume", 2, FCVAR_ARCHIVE, "Hitmarker sound volume", 0, 10)
 local ttt_hitmarker_sound = CreateConVar("tttrw_hitmarker_sound", "sound/tttrw/hitmarker_.mp3", FCVAR_ARCHIVE, "Hitmarker sound")
 local ttt_hitmarker_sound_volume = CreateConVar("tttrw_hitmarker_sound_volume", 2, FCVAR_ARCHIVE, "Hitmarker sound volume", 0, 10)
+local tttrw_hitmarker_no_direct = CreateConVar("tttrw_hitmarker_no_direct", 1, FCVAR_ARCHIVE, "Disable DMG_DIRECT hitmarker sounds", 0, 1)
 
 function GM:PlayerHit(atk, dmg, dmgtype, hitgroup)
     if (atk ~= LocalPlayer()) then
@@ -11,6 +12,10 @@ function GM:PlayerHit(atk, dmg, dmgtype, hitgroup)
     end
 
     last_hit = CurTime()
+
+    if (tttrw_hitmarker_no_direct:GetBool() and bit.band(dmgtype, DMG_DIRECT) == DMG_DIRECT) then
+        return
+    end
 
     local snd, vol
 
@@ -134,7 +139,7 @@ net.Receive("tttrw_damage_number", function()
     }
     table.insert(ttt.damagenumbers, self)
 
-    hook.Run("PlayerHit", self.Owner, self.Damage, self.GetDamageType, self.HitGroup)
+    hook.Run("PlayerHit", self.Owner, self.Damage, self.DamageType, self.HitGroup)
 
     ID = ID + 1
 end)
