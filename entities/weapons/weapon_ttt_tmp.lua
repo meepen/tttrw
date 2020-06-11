@@ -12,24 +12,21 @@ SWEP.Ortho = {0, 5}
 
 SWEP.Base                  = "weapon_tttbase"
 
-SWEP.Kind                  = WEAPON_HEAVY
-SWEP.WeaponID              = AMMO_PISTOL
-
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
 	DamageDropoffRange = 200,
 	DamageDropoffRangeMax = 500,
 	DamageMinimumPercent = 0.1,
-	Spread = Vector(0.04, 0.050)
+	Spread = Vector(0.02, 0.07)
 }
 
-SWEP.Primary.Damage        = 9.4
+SWEP.Primary.Damage        = 10
 SWEP.Primary.Delay         = 0.05
 SWEP.Primary.Recoil        = 1.2
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "pistol"
-SWEP.Primary.ClipSize      = 20
+SWEP.Primary.ClipSize      = 24
 SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_TMP.Single"
 
@@ -38,7 +35,7 @@ SWEP.ReloadSpeed = 2
 SWEP.HeadshotMultiplier    = 1.2
 SWEP.DeploySpeed = 1.7
 
-SWEP.AutoSpawnable         = true	
+SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
 SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
 
