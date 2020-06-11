@@ -67,7 +67,7 @@ function PLAYER:GetSpeedData()
 
 	local data = {
 		Multiplier = 1,
-		FinalMultiplier = IsValid(wep) and wep.GetSlowdown and wep:GetSlowdown() or 1
+		FinalMultiplier = IsValid(wep) and wep.GetSlowdown and wep:GetSlowdown() or nil
 	}
 
 	hook.Run("TTTUpdatePlayerSpeed", ply, data)
