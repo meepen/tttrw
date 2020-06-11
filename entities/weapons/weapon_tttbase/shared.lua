@@ -750,6 +750,10 @@ function SWEP:GetViewPunchAngles()
 	return current / 10
 end
 
+function SWEP:GetSlowdown()
+	return self:GetIronsights() and self.Ironsights and self.Ironsights.SlowDown or 1
+end
+
 function SWEP:AdjustMouseSensitivity()
 	if (self:GetIronsights()) then
 		return self.Ironsights.Zoom
