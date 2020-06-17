@@ -43,6 +43,17 @@ function SKIN:PaintSliderKnob(panel, w, h)
 	surface.DrawRect(0, 0, w, h)
 end
 
+function SKIN:PaintCollapsibleCategory(panel, w, h)
+
+	surface.SetDrawColor(dark)
+	surface.DrawRect(0, 0, w, select(2, panel.Header:GetTextSize()) + 2)
+
+end
+
+function SKIN:PaintCategoryList( panel, w, h )
+
+end
+
 derma.DefineSkin("tttrw", "TTTRW Customized Default", SKIN)
 
 function GM:ForceDermaSkin()

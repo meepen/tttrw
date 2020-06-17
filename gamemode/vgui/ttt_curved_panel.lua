@@ -343,7 +343,7 @@ local function hexlit(a)
 	return tonumber(a, 16)
 end
 
-local function HexColor(h)
+function HexColor(h)
 	if (h[1] == "#") then
 		h = h:sub(2)
 	end

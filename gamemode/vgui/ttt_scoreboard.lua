@@ -1,11 +1,10 @@
 local bg_color = Color(17, 15, 13, 0.75 * 255)
 
 local ttt_scoreboard_header_color = Color(20, 19, 20, 0.92 * 255)
-local white_text = Color(209, 209, 209)
 
 surface.CreateFont("ttt_scoreboard_player", {
-	font = 'Lato',
-	size = math.max(22, ScrH() / 60),
+	font = "Lato",
+	size = math.max(11, ScrH() / 120) * 2,
 	weight = 300,
 })
 
@@ -24,7 +23,7 @@ surface.CreateFont("ttt_scoreboard_info", {
 
 surface.CreateFont("ttt_scoreboard_rank", {
 	font = "Roboto",
-	size = math.max(ScrH() / 80, 18),
+	size = math.max(ScrH() / 180, 9) * 2,
 	weight = 0,
 	italic = false
 })
@@ -38,7 +37,7 @@ surface.CreateFont("ttt_scoreboard_header", {
 surface.CreateFont("ttt_scoreboard_group", {
 	font = "Roboto",
 	size = math.max(16, ScrH() / 80),
-	weight = 200,
+	weight = 400,
 })
 
 local Padding = math.Round(ScrH() * 0.008)
@@ -63,9 +62,9 @@ vgui.Register("tttrw_scoreboard_header_logo", PANEL, "DLabel")
 local PANEL = {}
 
 function PANEL:Init()
-	self:SetCurve(4)
-	self:SetColor(bg_color)
+	self:SetCurve(6)
 	self:SetTall(110)
+	self:SetColor(outline)
 
 	local pnl = hook.Run "TTTGetScoreboardLogoPanel"
 	self.Logo = self:Add(pnl)
@@ -91,19 +90,25 @@ function PANEL:Think()
 	self.RoundNumber:SizeToContents()
 end
 
+function PANEL:DrawInner(w, h)
+	local curve = self:GetCurve() / 2
+	surface.SetDrawColor(main_color)
+	surface.DrawRect(curve, curve, w - curve * 2, h - curve * 2)
+end
 
-vgui.Register("tttrw_scoreboard_header", PANEL, "ttt_curved_panel")
+vgui.Register("tttrw_scoreboard_header", PANEL, "ttt_curved_panel_outline")
 
 local PANEL = {}
 
 function PANEL:Init()
 	self.Text = self:Add "DLabel"
-	self.Text:Dock(FILL)
 	self.Text:SetContentAlignment(5)
+	self.Color = outline
 end
 
 function PANEL:SetText(t)
 	self.Text:SetText(t)
+	self:SizeToContents()
 end
 
 function PANEL:SetTextColor(col)
@@ -112,31 +117,38 @@ end
 
 function PANEL:SetFont(f)
 	self.Text:SetFont(f)
+	self:SizeToContents()
 end
 
 function PANEL:SetColor(col)
 	self.Color = col
 end
 
+function PANEL:SizeToContents()
+	self.Text:SizeToContents()
+	local w, h = self.Text:GetSize()
+
+	self:SetSize(w + Padding * 2, h + 4)
+
+	self.Text:Center()
+	self:Center()
+	self:GetParent():SetWide(self:GetWide())
+end
+
+function PANEL:SetColor(col)
+	self.InnerColor = col
+end
+
+DEFINE_BASECLASS "ttt_curved_panel_outline"
+
 function PANEL:Paint(w, h)
-	if (not self.Rect) then return end
-	surface.SetDrawColor(self.Color)
-	draw.NoTexture()
-	surface.DrawPoly(self.Rect)
+	surface.SetDrawColor(self.InnerColor or white_text)
+	local curve = self:GetCurve() / 2
+	surface.DrawRect(curve, curve, w - curve * 2, h - curve * 2)
+	BaseClass.Paint(self, w, h)
 end
 
-DEFINE_BASECLASS "ttt_curved_panel"
-
-function PANEL:PerformLayout(w, h)
-	self.Rect = {
-		{x = Slant * (h / (h + Padding)), y = 0},
-		{x = w, y = 0},
-		{x = w - Slant * (h / (h + Padding)), y = h},
-		{x = 0, y = h}
-	}
-end
-
-vgui.Register("ttt_scoreboard_rank", PANEL, "ttt_curved_panel")
+vgui.Register("ttt_scoreboard_rank", PANEL, "ttt_curved_panel_outline")
 
 local PANEL = {}
 
@@ -163,7 +175,7 @@ function PANEL:Init()
 		max_w = math.max(max_w, w)
 	end
 
-	self:SetWide(max_w + Padding * 4 + Slant * 2)
+	self:SetWide(max_w + Padding * 2 + Slant * 2)
 end
 
 function PANEL:SetStatus(stat)
@@ -233,14 +245,7 @@ function PANEL:Init()
 	self.Name:SizeToContentsX()
 	self.Name:Dock(LEFT)
 	self.Name:SetTextColor(white_text)
-
-	self.Mute = self:Add "DImageButton"
-	self.Mute:SetFont "ttt_scoreboard_player"
-	self.Mute:DockMargin(0, 0, 10, 0)
-	self.Mute:SetText "Mute"
-	self.Mute:SizeToContentsX()
-	self.Mute:Dock(RIGHT)
-	self.Mute:SetTextColor(white_text)
+	self.Name:SetContentAlignment(5)
 
 	self.Ping = self:Add "DLabel"
 	self.Ping:SetFont "ttt_scoreboard_info"
@@ -258,16 +263,18 @@ function PANEL:Init()
 	self.Karma:Dock(RIGHT)
 	self.Karma:SetTextColor(white_text)
 
-	self.Rank = self:Add "ttt_scoreboard_rank"
-	self.Rank:SetWide(self.Rank:GetWide() * 3)
+	self.RankContainer = self:Add "EditablePanel"
+	self.RankContainer:Dock(LEFT)
+	self.RankContainer:DockMargin(Padding, 0, 0, 0)
+
+	self.Rank = self.RankContainer:Add "ttt_scoreboard_rank"
 	self.Rank:SetColor(Color(0, 0, 0, 0))
 	self.Rank:SetFont "ttt_scoreboard_rank"
-	self.Rank:DockMargin(0, 0, Padding, 0)
 	self.Rank:SetText "Rank"
-	self.Rank:SizeToContentsX()
-	self.Rank:Dock(RIGHT)
 	self.Rank:SetTextColor(white_text)
 	self.Rank:SetMouseInputEnabled(false)
+	self.Rank:SetCurve(4)
+	self.Rank:SizeToContents()
 
 	self.Status = self:Add "ttt_scoreboard_status"
 	
@@ -388,6 +395,9 @@ function PANEL:SetPlayer(ply, group)
 
 	self.Name:SetText(ply:Nick())
 	self.Name:SizeToContentsX()
+	if (self.Name:GetWide() > 250) then -- wtf
+		self.Name:SetWide(250)
+	end
 	self.Name:Dock(LEFT)
 
 	self.Karma:SetText "1000"
@@ -404,27 +414,7 @@ function PANEL:SetPlayer(ply, group)
 	else
 		self.Rank:SetColor(ColorAlpha(col, 0.9 * 255))
 		self.Rank:SetText(hook.Run("TTTGetRankPrintName", ply:GetUserGroup()) or ply:GetUserGroup())
-	end
-
-	self.Mute:SetSize(24, 24)
-	self.Mute:SetText ""
-
-	if (ply:IsMuted()) then
-		self.Mute:SetImage "icon32/muted.png"
-	else
-		self.Mute:SetImage "icon32/unmuted.png"
-	end
-
-	function self.Mute:DoClick()
-		if (IsValid(ply)) then
-			ply:SetMuted(not ply:IsMuted())
-
-			if (ply:IsMuted()) then
-				self:SetImage "icon32/muted.png"
-			else
-				self:SetImage "icon32/unmuted.png"
-			end
-		end
+		self.Rank:SizeToContents()
 	end
 
 	self.Status:SetStatus(ttt.GetPlayerStatus(self.Player))
@@ -467,7 +457,7 @@ function PANEL:Init()
 	_, self.ContractedSize = surface.GetTextSize "A"
 	self:SetTall(self.ContractedSize + Padding)
 
-	self.Render = self:Add("ttt_scoreboard_player_render")
+	self.Render = self:Add "ttt_scoreboard_player_render"
 	self.Render:Dock(TOP)
 end
 
@@ -520,7 +510,7 @@ end
 
 function PANEL:SetColor(col)
 	--self.Render:SetColor(col)
-	self.Render:SetColor(ttt_scoreboard_header_color)
+	self.Render:SetColor(ColorAlpha(dark, 240))
 end
 
 function PANEL:SetText(text)
@@ -533,7 +523,8 @@ vgui.Register("ttt_scoreboard_group_header", PANEL, "EditablePanel")
 local PANEL = {}
 
 function PANEL:Init()
-	self:SetCurve(Curve)
+	self:SetCurve(4)
+	self.Color = outline
 
 	self:DockPadding(0, Padding / 2, 0, Padding / 2)
 
@@ -556,7 +547,17 @@ function PANEL:PerformLayout(w, h)
 	self.Text:Center()
 end
 
-vgui.Register("ttt_scoreboard_group_header_render", PANEL, "ttt_curved_panel")
+function PANEL:SetColor(c)
+	self.InnerColor = c
+end
+
+function PANEL:DrawInner(w, h)
+	local curve = self:GetCurve() / 2
+	surface.SetDrawColor(self.InnerColor or main_color)
+	surface.DrawRect(curve, curve, w - curve * 2, h - curve * 2)
+end
+
+vgui.Register("ttt_scoreboard_group_header_render", PANEL, "ttt_curved_panel_outline")
 
 local PANEL = {}
 
@@ -607,12 +608,12 @@ vgui.Register("ttt_scoreboard_group", PANEL, "EditablePanel")
 local PANEL = {}
 
 function PANEL:Init()
-	self:SetColor(bg_color)
-	self:SetCurve(4)
+	self:SetColor(outline)
+	self:SetCurve(6)
 
 	self:SetWide(ScrW() - ScrW() / 3)
 
-	self:DockPadding(Padding, 0, Padding, Padding)
+	self:DockPadding(Padding * 2, Padding * 2, Padding * 2, Padding * 2)
 
 	self.Contents = {}
 
@@ -667,7 +668,13 @@ function PANEL:AddGroup(name, color, plys)
 	table.insert(self.Contents, pnl)
 end
 
-vgui.Register("ttt_scoreboard_inner", PANEL, "ttt_curved_panel")
+function PANEL:DrawInner(w, h)
+	local curve = self:GetCurve() / 2
+	surface.SetDrawColor(main_color)
+	surface.DrawRect(curve, curve, w - curve * 2, h - curve * 2)
+end
+
+vgui.Register("ttt_scoreboard_inner", PANEL, "ttt_curved_panel_outline")
 
 
 local PANEL = {}
@@ -676,7 +683,7 @@ function PANEL:Init()
 	self.Header = self:Add "tttrw_scoreboard_header"
 	self.Header:Dock(TOP)
 	--self.Header:SetTall(150)
-	self.Header:DockMargin(0, 0, 0, 1)
+	self.Header:DockMargin(0, 0, 0, 4)
 	self.Header:SetCurveBottomLeft(false)
 	self.Header:SetCurveBottomRight(false)
 	
