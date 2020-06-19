@@ -131,8 +131,6 @@ function PANEL:SizeToContents()
 	self:SetSize(w + Padding * 2, h + 4)
 
 	self.Text:Center()
-	self:Center()
-	self:GetParent():SetWide(self:GetWide())
 end
 
 function PANEL:SetColor(col)
@@ -266,15 +264,20 @@ function PANEL:Init()
 	self.RankContainer = self:Add "EditablePanel"
 	self.RankContainer:Dock(LEFT)
 	self.RankContainer:DockMargin(Padding, 0, 0, 0)
+	self.RankContainer:SetMouseInputEnabled(false)
 
 	self.Rank = self.RankContainer:Add "ttt_scoreboard_rank"
 	self.Rank:SetColor(Color(0, 0, 0, 0))
 	self.Rank:SetFont "ttt_scoreboard_rank"
 	self.Rank:SetText "Rank"
 	self.Rank:SetTextColor(white_text)
-	self.Rank:SetMouseInputEnabled(false)
+	self.Rank:SetMouseInputEnabled(true)
 	self.Rank:SetCurve(4)
 	self.Rank:SizeToContents()
+	self.Rank:Dock(RIGHT)
+	self.Rank:SetZPos(10000)
+
+	self.PlayerSpecific = {}
 
 	self.Status = self:Add "ttt_scoreboard_status"
 	
@@ -335,17 +338,20 @@ end
 function PANEL:PerformLayout(w, h)
 	self.Rect1 = {
 		{x = 0, y = 0},
-		{x = w*.4, y = 0},
-		{x = w*.4-Slant, y = h},
+		{x = w * 0.4, y = 0},
+		{x = w * 0.4 - Slant, y = h},
 		{x = 0, y = h}
 	}
 
 	self.Rect2 = {
-		{x = w*.4+Padding, y = 0},
+		{x = w * 0.4 + Padding, y = 0},
 		{x = w, y = 0},
 		{x = w, y = h},
-		{x = w*.4-Slant+Padding, y = h},
+		{x = w * 0.4 - Slant + Padding, y = h},
 	}
+
+	
+	self.RankContainer:SetWide(w * 0.4 - Slant * 2 - self.Name:GetWide())
 
 	if (IsValid(self.Status)) then 
 		self.Status:SetPos(w*.4-Slant+Padding*3, Padding/2)
@@ -416,6 +422,23 @@ function PANEL:SetPlayer(ply, group)
 		self.Rank:SetText(hook.Run("TTTGetRankPrintName", ply:GetUserGroup()) or ply:GetUserGroup())
 		self.Rank:SizeToContents()
 	end
+
+	hook.Run("TTTRWScoreboardPlayer", self.Player, function()
+		local pnl = self.RankContainer:Add "ttt_scoreboard_rank"
+		pnl:SetColor(Color(0, 0, 0, 255))
+		pnl:SetFont "ttt_scoreboard_rank"
+		pnl:SetText "Panel"
+		pnl:SetTextColor(white_text)
+		pnl:SetMouseInputEnabled(false)
+		pnl:SetCurve(4)
+		pnl:Dock(LEFT)
+		pnl:SizeToContents()
+		pnl:DockMargin(0, 0, 2, 0)
+
+		table.insert(self.PlayerSpecific, pnl)
+
+		return pnl
+	end)
 
 	self.Status:SetStatus(ttt.GetPlayerStatus(self.Player))
 	self:GetParent():Toggle()
