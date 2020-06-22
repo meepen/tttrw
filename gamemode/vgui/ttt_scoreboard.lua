@@ -288,6 +288,18 @@ function PANEL:DoClick()
 	self:GetParent():Toggle()
 end
 
+function PANEL:OnMousePressed(key)
+	if (key == MOUSE_RIGHT) then
+		self.Menu = DermaMenu()
+
+		hook.Run("TTTRWPopulateScoreboardOptions", self.Menu, self.Player)
+
+		self.Menu:Open()
+	elseif (key == MOUSE_LEFT) then
+		self:DoClick()
+	end
+end
+
 function PANEL:Scissor()
     local x0, y0, x1, y1 = self:GetRenderBounds()
     render.SetScissorRect(x0, y0, x1, y1, true)
@@ -442,6 +454,16 @@ function PANEL:SetPlayer(ply, group)
 
 	self.Status:SetStatus(ttt.GetPlayerStatus(self.Player))
 	self:GetParent():Toggle()
+end
+
+DEFINE_BASECLASS "ttt_curved_button"
+function PANEL:OnRemove()
+	if (IsValid(self.Menu)) then
+		self.Menu:Remove()
+	end
+	if (BaseClass.OnRemove) then
+		BaseClass.OnRemove(self)
+	end
 end
 
 vgui.Register("ttt_scoreboard_player_render", PANEL, "ttt_curved_button")
@@ -717,3 +739,7 @@ function PANEL:Init()
 end
 
 vgui.Register("ttt_scoreboard", PANEL, "EditablePanel")
+
+function GM:TTTRWPopulateScoreboardOptions(menu, ply)
+	return true
+end

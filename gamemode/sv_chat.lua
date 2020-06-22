@@ -84,7 +84,12 @@ function GM:PlayerSay(ply, text, team)
 			return ""
 		end
 	end
-	return hook.Run("FormatPlayerText", ply, text)
+
+	local text, amount = hook.Run("FormatPlayerText", ply, text)
+
+	ply.Formatted = amount ~= 0
+
+	return text
 end
 
 function GM:PlayerCanSeePlayersChat(text, team, listener, speaker)
@@ -187,12 +192,8 @@ end
 
 local cache = setmetatable({}, {__index = function() return {} end})
 
-function GM:UpdateVoiceState(talk)
-	for _, hear in pairs(player.GetAll()) do
-		if (not rawget(cache, hear)) then
-			cache[hear] = {}
-		end
-
+local function TTTRWUpdateVoiceState(hear)
+	for _, talk in pairs(player.GetAll()) do
 		local able = AbleToHear(hear, talk)
 
 		if (able and not hear:Alive()) then
@@ -206,8 +207,12 @@ function GM:UpdateVoiceState(talk)
 end
 
 timer.Create("tttrw_hear_player_cache", 0.5, 0, function()
-	for _, talk in pairs(player.GetAll()) do
-		gmod.GetGamemode():UpdateVoiceState(talk)
+	for _, hear in pairs(player.GetAll()) do
+		if (not rawget(cache, hear)) then
+			cache[hear] = {}
+		end
+		TTTRWUpdateVoiceState(hear)
+		hook.Run("TTTRWUpdateVoiceState", hear, cache[hear])
 	end
 end)
 

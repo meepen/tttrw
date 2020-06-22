@@ -183,13 +183,16 @@ function GM:FormatPlayerText(ply, text, team)
 	capitalize["{lookingat}"] = capitalize["{target}"]
 	replacements["{lookingat}"] = replacements["{target}"]
 
+	local amount = 0
+
 	return text:gsub("()({.+})", function(ind, what)
 		local replace = replacements[what]
 
 		if (ind == 1 and capitalize[what] and replace) then
 			replace = replace:sub(1, 1):upper() .. replace:sub(2)
+			amount = amount + 1
 		end
 
 		return replace
-	end)
+	end), amount
 end
