@@ -741,5 +741,20 @@ end
 vgui.Register("ttt_scoreboard", PANEL, "EditablePanel")
 
 function GM:TTTRWPopulateScoreboardOptions(menu, ply)
+	menu:AddOption("Open Profile", function()
+		ply:ShowProfile()
+	end)
+
+	local sid = menu:AddSubMenu "Copy SteamID"
+
+	sid:AddOption("SteamID", function()
+		SetClipboardText(ply:SteamID())
+	end)
+	sid:AddOption("SteamID64", function()
+		SetClipboardText(ply:SteamID64())
+	end)
+	sid:AddOption("Profile Link", function()
+		SetClipboardText("https://steamcommunity.com/profiles/" .. ply:SteamID64())
+	end)
 	return true
 end
