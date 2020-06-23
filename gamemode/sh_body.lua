@@ -9,7 +9,7 @@ if (SERVER) then
 			return
 		end
 
-		hook.Run("PlayerInspectBody", ply, ent, ent:GetPos())
+		hook.Run("TTTRWPlayerInspectBody", ply, ent, ent:GetPos(), ply:KeyDown(IN_WALK))
 	end)
 end
 
@@ -30,13 +30,13 @@ function GM:TryInspectBody(ply)
 		net.SendToServer()
 	end
 
-	hook.Run("PlayerInspectBody", ply, tr.Entity, tr.HitPos)
+	hook.Run("TTTRWPlayerInspectBody", ply, tr.Entity, tr.HitPos, ply:KeyDown(IN_WALK))
 
 	return true
 end
 
 
-function GM:PlayerInspectBody(ply, ent, pos)
+function GM:TTTRWPlayerInspectBody(ply, ent, pos, is_silent)
 	if (CLIENT) then
 		if (not IsFirstTimePredicted() or IsValid(ttt.InspectMenu)) then
 			return
@@ -60,7 +60,7 @@ function GM:PlayerInspectBody(ply, ent, pos)
 			ent.HiddenState:SetCredits(0)
 		end
 
-		if (ply:Alive() and not ply:KeyDown(IN_WALK) and not ent.HiddenState:GetIdentified()) then
+		if (ply:Alive() and not is_silent and not ent.HiddenState:GetIdentified()) then
 			ent.HiddenState:SetIdentified(true)
 
 			for _, oply in pairs(player.GetAll()) do
