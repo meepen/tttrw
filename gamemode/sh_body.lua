@@ -4,6 +4,10 @@ if (SERVER) then
 	util.AddNetworkString "ttt_inspect_body"
 	net.Receive("ttt_inspect_body", function(len, ply)
 		local ent = net.ReadEntity()
+
+		if (not ent:GetNW2Bool("IsPlayerBody", false)) then
+			return
+		end
 		
 		if (not IsValid(ent) or ent:GetPos():Distance(ply:GetShootPos()) > MAX_DISTANCE * 1.2) then
 			return
