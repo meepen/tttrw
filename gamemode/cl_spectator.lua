@@ -65,3 +65,26 @@ end)
 hook.Add("KeyPress", "tttrw_afk", function()
 	Refresh()
 end)
+
+local lastx, lasty
+hook.Add("Tick", "tttrw_afk", function()
+	if (not system.HasFocus()) then
+		return
+	end
+
+	local x, y = gui.MousePos()
+	lastx, lasty = lastx or x, lasty or y
+	if (not lastx) then
+		return
+	end
+
+	if (x > ScrW() or x < 0 or y > ScrH() or y < 0) then
+		return
+	end
+
+	if (x ~= lastx or y ~= lasty) then
+		Refresh()
+	end
+
+	lastx, lasty = x, y
+end)

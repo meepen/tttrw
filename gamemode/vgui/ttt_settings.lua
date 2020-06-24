@@ -236,7 +236,7 @@ function PANEL:AddTextEntry(text, convar, v, enabled)
 	return text
 end
 
-function PANEL:AddSlider(text, convar)
+function PANEL:AddSlider(text, convar, min, max)
 	self:AddLabel(text)
 
 	local lbl = self.Last
@@ -246,6 +246,10 @@ function PANEL:AddSlider(text, convar)
 	p:Dock(TOP)
 	p:SetZPos(self.Index)
 	local cv = GetConVar(convar)
+
+	min = min or cv:GetMin() or 0
+	max = max or cv:GetMax() or 0
+
 	lbl:SetText(text .. string.format(" (%.2f)", cv:GetFloat()))
 
 	local old = p.OnCursorMoved
@@ -253,12 +257,18 @@ function PANEL:AddSlider(text, convar)
 	function p:OnCursorMoved(x, y)
 		old(self, x, y)
 
-		cv:SetFloat(self:GetSlideX() * (cv:GetMax() - cv:GetMin()) + cv:GetMin())
+		local val = self:GetSlideX() * (max - min) + min
+
+		if (cv:IsFlagSet(FCVAR_LUA_CLIENT)) then
+			cv:SetFloat(val)
+		else
+			RunConsoleCommand(cv:GetName(), val)
+		end
 
 		lbl:SetText(text .. string.format(" (%.2f)", cv:GetFloat()))
 	end
 
-	p:SetSlideX((cv:GetFloat() - cv:GetMin()) / (cv:GetMax() - cv:GetMin()))
+	p:SetSlideX((cv:GetFloat() - min) / (max - min))
 
 	self.Index = self.Index + 1
 
@@ -485,6 +495,7 @@ function GM:ShowHelp()
 		gameplay:AddCheckBox("Outline players roles", "tttrw_outline_roles")
 		gameplay:AddCheckBox("See outlines through walls", "tttrw_outline_roles_ignorez")
 		gameplay:AddSlider("Outline Size", "tttrw_outline_roles_mult")
+		gameplay:AddSlider("Viewmodel FOV", "viewmodel_fov", 40, 90)
 		gameplay:AddCheckBox("Automatically Bunny hop", "ttt_bhop_cl")
 		gameplay:AddCheckBox("Lowered Ironsights", "ttt_ironsights_lowered")
 		gameplay:AddCheckBox("Enable annoying HL2 crosshair", "hud_quickinfo")

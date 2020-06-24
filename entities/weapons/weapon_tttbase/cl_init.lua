@@ -760,3 +760,13 @@ function SWEP:DrawExtraModels()
 		end
 	end
 end
+
+local viewmodel_fov = GetConVar "viewmodel_fov"
+
+function SWEP:PreDrawViewModel()
+	if (not self.RealViewModelFOV) then
+		self.RealViewModelFOV = self.ViewModelFOV
+	end
+
+	self.ViewModelFOV = self.RealViewModelFOV * (viewmodel_fov:GetFloat() / viewmodel_fov:GetDefault())
+end
