@@ -81,6 +81,16 @@ function PLAYER:GetSpeedData()
 	return mult
 end
 
+function PLAYER:AddHitFilter(filter)
+	if (not filter) then
+		filter = {}
+	end
+
+	-- TODO(meep): SOMETHING
+
+	return filter
+end
+
 function PLAYER:Think()
 end
 

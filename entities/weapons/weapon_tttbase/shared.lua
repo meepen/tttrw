@@ -470,6 +470,14 @@ function SWEP:GetBulletDistance()
 	return self.Bullets and self.Bullets.Distance or nil
 end
 
+function SWEP:AddOwnerFilter(filter)
+	if (not IsValid(self:GetOwner())) then
+		return filter
+	end
+
+	return player_manager.RunClass(self:GetOwner(), "AddHitFilter", filter)
+end
+
 function SWEP:DoFireBullets(src, dir, data)
 	local bullet_info = self.Bullets
 	local owner = self:GetOwner()
@@ -477,6 +485,21 @@ function SWEP:DoFireBullets(src, dir, data)
 	src = src or owner:GetShootPos()
 	dir = dir or owner:EyeAngles():Forward()
 	local force = 2 / math.max(bullet_info.Num / 2, 1)
+
+	local ignore = {}
+	if (data and data.IgnoreEntity) then
+		if (istable(data.IgnoreEntity)) then
+			for _, v in pairs(data.IgnoreEntity) do
+				ignore[_] = v
+			end
+		else
+			ignore[1] = data.IgnoreEntity
+		end
+	end
+
+	ignore = self:AddOwnerFilter(ignore)
+
+	PrintTable(ignore)
 
 	local bullets = {
 		Num = bullet_info.Num,
@@ -488,6 +511,7 @@ function SWEP:DoFireBullets(src, dir, data)
 		HullSize = bullet_info.HullSize,
 		Force = force,
 		Callback = function(atk, tr, dmg)
+			PrintTable(tr)
 			if (IsValid(self)) then
 				self:FireBulletsCallback(tr, dmg, data)
 				self:TracerEffect(tr, dmg)
@@ -496,7 +520,7 @@ function SWEP:DoFireBullets(src, dir, data)
 		Distance = self:GetBulletDistance(),
 		Src = src,
 		Dir = dir,
-		IgnoreEntity = data and data.IgnoreEntity
+		IgnoreEntity = ignore[1] -- todo(meep): Facepunch/garrysmod-requests#969
 	}
 
 	self.LastBullets = table.Copy(bullets)
