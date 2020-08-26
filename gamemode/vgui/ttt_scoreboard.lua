@@ -381,7 +381,7 @@ function PANEL:Think()
 			group = "Dead"
 
 
-		elseif (not ply:Alive() and (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE or not LocalPlayer():Alive() or LocalPlayer():GetRoleData().Evil)) then
+		elseif (not ply:Alive() and (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE or not LocalPlayer():Alive() or LocalPlayer():GetRoleData().Evil) or IsValid(ply.DeadState)) then
 			group = "Unidentified"
 		end
 
@@ -690,7 +690,8 @@ function PANEL:Init()
 	end
 
 	self:AddGroup("Terrorists", Color(14, 88, 34), living)
-	if (LocalPlayer():GetRoleData().Evil or not LocalPlayer():Alive() or ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
+	--if (LocalPlayer():GetRoleData().Evil or not LocalPlayer():Alive() or ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
+	if #unidentified > 0 then
 		self:AddGroup("Unidentified", Color(85, 111, 87), unidentified)
 	end
 	self:AddGroup("Dead", Color(80, 105, 38), dead)
