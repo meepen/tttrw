@@ -2,7 +2,7 @@ function GM:VoiceKey(ply, key)
     if (not IsFirstTimePredicted()) then return end
     local channel = ply:GetRoleData().VoiceChannel
     if (not channel or not ply:Alive()) then return end
-    if (key == IN_SPEED) then
+    if (key == IN_SPEED and ttt.GetRoundState() == ttt.ROUNDSTATE_ACTIVE) then
         ply.VoiceChannel = true
         RunConsoleCommand("+voicerecord")
     end
