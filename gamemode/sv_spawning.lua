@@ -14,11 +14,16 @@ function GM:TTTPlayerGiveWeapons(ply)
 		[2] = true
 	}
 
+	local slots_left = table.Count(slots_needed)
+
 	for _, wep in RandomPairs(weapons.GetList()) do
 		if (wep.AutoSpawnable and slots_needed[wep.Slot]) then
 			ply:Give(wep.ClassName)
 			slots_needed[wep.Slot] = nil
-			continue
+			slots_left = slots_left - 1
+			if slots_left == 0 then
+				break
+			end
 		end
 	end
 end
