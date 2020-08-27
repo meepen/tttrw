@@ -36,8 +36,8 @@ function PANEL:Paint( w, h )
 	end
 
 	local col
-	if (IsValid(self.ply.HiddenState) and not self.ply.HiddenState:IsDormant() and self.ply.VoiceState) then
-		col = self.ply:GetRoleTeamData().Color
+	if (IsValid(self.ply.HiddenState) and not self.ply.HiddenState:IsDormant() and self.ply.VoiceState and self.ply:GetRole() ~= "Innocent") then
+		col = self.ply:GetRoleData().Color
 	elseif (not self.ply:Alive()) then
 		col = Color(self.ply:VoiceVolume() * 255, self.ply:VoiceVolume() * 255, 0, 240)
 	else
@@ -76,9 +76,8 @@ derma.DefineControl("VoiceNotify", "", PANEL, "EditablePanel")
 function GM:PlayerStartVoice(ply)
 	if (not IsValid(ttt.voices)) then return end
 
-	-- There'd be an exta one if voice_loopback is on, so remove it.
+	-- There'd be an extra one if voice_loopback is on, so remove it.
 	GAMEMODE:PlayerEndVoice(ply)
-
 
 	if (IsValid(PlayerVoicePanels[ply])) then
 		if (PlayerVoicePanels[ply].fadeAnim) then
