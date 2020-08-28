@@ -121,32 +121,12 @@ end
 local function GetPlayersWhoHear(ply)
 	local plys = player.GetAll()
 	for i = #plys, 1, -1 do
-		if (hook.Run("PlayerCanHearPlayersVoice", plys[i], ply)) then
+		if not (hook.Run("PlayerCanHearPlayersVoice", plys[i], ply)) then
 			table.remove(plys, i)
 		end
 	end
 
 	return plys
-end
-
-util.AddNetworkString "ttt_voice"
-
-function GM:VoiceKey(ply, key)
-	if (key == IN_SPEED) then
-		net.Start "ttt_voice"
-			net.WriteBool(true)
-			net.WriteEntity(ply)
-		net.Send(GetPlayersWhoHear(ply))
-	end
-end
-
-function GM:KeyRelease(ply, key)
-	if (key == IN_SPEED) then
-		net.Start "ttt_voice"
-			net.WriteBool(false)
-			net.WriteEntity(ply)
-		net.Send(GetPlayersWhoHear(ply))
-	end
 end
 
 local SoundStates = {
@@ -192,8 +172,11 @@ end
 
 local cache = setmetatable({}, {__index = function() return {} end})
 
-local function TTTRWUpdateVoiceState(hear)
-	for _, talk in pairs(player.GetAll()) do
+local function TTTRWUpdateVoiceState(ply, hearing)
+	for _, _ply in pairs(player.GetAll()) do
+		local hear = hearing and ply or _ply
+		local talk = hearing and _ply or ply
+
 		local able = AbleToHear(hear, talk)
 
 		if (able and not hear:Alive()) then
@@ -207,18 +190,36 @@ local function TTTRWUpdateVoiceState(hear)
 	hook.Run("TTTRWUpdateVoiceState", hear, cache[hear])
 end
 
-function GM:UpdateVoiceState(hear)
-	TTTRWUpdateVoiceState(hear)
-end
-
 timer.Create("tttrw_hear_player_cache", 0.5, 0, function()
 	for _, hear in pairs(player.GetAll()) do
 		if (not rawget(cache, hear)) then
 			cache[hear] = {}
 		end
-		TTTRWUpdateVoiceState(hear)
+		TTTRWUpdateVoiceState(hear, true)
 	end
 end)
+
+util.AddNetworkString "ttt_voice"
+
+function GM:VoiceKey(ply, key)
+	if (key == IN_SPEED) then
+		TTTRWUpdateVoiceState(ply, false)
+		net.Start "ttt_voice"
+			net.WriteBool(true)
+			net.WriteEntity(ply)
+		net.Send(GetPlayersWhoHear(ply))
+	end
+end
+
+function GM:KeyRelease(ply, key)
+	if (key == IN_SPEED) then
+		TTTRWUpdateVoiceState(ply, false)
+		net.Start "ttt_voice"
+			net.WriteBool(false)
+			net.WriteEntity(ply)
+		net.Send(GetPlayersWhoHear(ply))
+	end
+end
 
 function GM:PlayerCanHearPlayersVoice(hear, talk)
 	if (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
