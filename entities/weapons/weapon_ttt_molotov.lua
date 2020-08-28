@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 SWEP.Base = "weapon_ttt_basegrenade"
 
-SWEP.PrintName = "Incediary Grenade"
+SWEP.PrintName = "Incendiary Grenade"
 SWEP.Slot = 3
 
 SWEP.AutoSpawnable         = false
