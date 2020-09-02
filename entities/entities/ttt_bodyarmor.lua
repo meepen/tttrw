@@ -2,12 +2,12 @@ AddCSLuaFile()
 
 ENT.Base = "ttt_equipment_info"
 DEFINE_BASECLASS(ENT.Base)
-ENT.PrintName = "TTT Body Armour"
+ENT.PrintName = "TTT Body Armor"
 ENT.Author = "Ling"
 ENT.Contact = "lingbleed@gmail.com"
 
 ENT.Equipment = {
-	Name   = "Bodyarmor",
+	Name   = "Body Armor",
 	Desc   = "Reduces incoming damage.",
 	CanBuy = { traitor = true, Detective = true },
 	Cost   = 1,
