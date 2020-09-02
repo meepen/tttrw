@@ -85,6 +85,12 @@ function GM:PlayerSay(ply, text, team)
 		end
 	end
 
+	if (team and (not ply:Alive() or ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE or ply:GetRole() == "Innocent")) then
+		ply:Say(text, false)
+
+		return ""
+	end
+
 	local text, amount = hook.Run("FormatPlayerText", ply, text)
 
 	ply.Formatted = amount ~= 0
