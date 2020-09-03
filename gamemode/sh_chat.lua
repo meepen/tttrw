@@ -53,4 +53,11 @@ else
 
 		chat.AddText(unpack(stuff))
 	end)
+
+	hook.Add("OnPlayerChat", "OnTeamChat", function(ply, text, team, dead)
+		if not team then return end
+
+		chat.AddText(ply:GetRoleData().Color, "(TEAM) " .. ply:Name(), white_text, ": " .. text)
+		return true
+	end)
 end
