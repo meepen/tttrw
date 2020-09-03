@@ -381,7 +381,7 @@ function PANEL:Think()
 			group = "Dead"
 
 
-		elseif (not ply:Alive() and (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE or not LocalPlayer():Alive() or LocalPlayer():GetRoleData().Evil) or IsValid(ply.DeadState)) then
+		elseif (not ply:Alive() and (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE or not LocalPlayer():Alive() or LocalPlayer():GetRoleData().Evil) or IsValid(ply.DeadState) and not ply.DeadState:IsDormant()) then
 			group = "Unidentified"
 		end
 
