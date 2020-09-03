@@ -89,7 +89,7 @@ function GM:InitializeBodyData(variables, Information)
 	table.insert(variables, {
 		Title = Information.Victim:GetRole() .. (Information.Victim:GetRoleData().Evil and "!" or ""),
 		Icon = Information.Victim:GetRoleData().DeathIcon or "materials/tttrw/xbutton128.png",
-		Description = "This person was a " .. Information.Victim:GetRole()
+		Description = Information.Victim:Name() .. " was " .. Information.Victim:GetRole()
 	})
 
 	if (not Information.DamageInfo) then
