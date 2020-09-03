@@ -499,8 +499,6 @@ function SWEP:DoFireBullets(src, dir, data)
 
 	ignore = self:AddOwnerFilter(ignore)
 
-	PrintTable(ignore)
-
 	local bullets = {
 		Num = bullet_info.Num,
 		Attacker = owner,
@@ -511,7 +509,6 @@ function SWEP:DoFireBullets(src, dir, data)
 		HullSize = bullet_info.HullSize,
 		Force = force,
 		Callback = function(atk, tr, dmg)
-			PrintTable(tr)
 			if (IsValid(self)) then
 				self:FireBulletsCallback(tr, dmg, data)
 				self:TracerEffect(tr, dmg)
