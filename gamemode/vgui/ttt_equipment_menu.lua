@@ -369,8 +369,8 @@ function PANEL:Init()
 	self.Carry = self:Add "ttt_equipment_status"
 	self.Carry:Dock(BOTTOM)
 	self.Carry:SetZPos(1)
-	self.Carry:SetEnabledText "You can carry this equipment"
-	self.Carry:SetDisabledText "You cannot carry this equipment"
+	self.Carry:SetEnabledText "You can carry this equipment."
+	self.Carry:SetDisabledText "You cannot carry this equipment."
 
 	self.Stock = self:Add "ttt_equipment_status"
 	self.Stock:Dock(BOTTOM)

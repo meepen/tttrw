@@ -30,10 +30,11 @@ if (SERVER) then
 	end
 	
 	-- Temporary until we get a UI
-	concommand.Add("ttt_disguiser_toggle", function(pl)
+	concommand.Add("ttt_toggle_disguise", function(pl)
 		for k, v in pairs(pl:GetChildren()) do
 			if (v:GetClass() == "ttt_disguiser") then
 				v:Toggle()
+				pl:ChatPrint(v:GetNW2Bool("Enabled") and "Disguise enabled!" or "Disguise disabled.")
 			end
 		end
 	end)
