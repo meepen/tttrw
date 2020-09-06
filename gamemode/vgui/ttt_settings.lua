@@ -111,7 +111,7 @@ function PANEL:Init()
 	self.Index = 1
 	self:Dock(TOP)
 
-	self:DockPadding(0, 0, 0, 0)
+	self:DockPadding(0, 0, 8, 0)
 end
 
 function PANEL:SetText(t)
