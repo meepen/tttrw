@@ -110,6 +110,8 @@ local PANEL = {}
 function PANEL:Init()
 	self.Index = 1
 	self:Dock(TOP)
+
+	self:DockPadding(0, 0, 8, 0)
 end
 
 function PANEL:SetText(t)
@@ -488,8 +490,8 @@ end
 function GM:ShowHelp()
 	if (not IsValid(ttt.settings)) then
 		ttt.settings = vgui.Create "tttrw_base"
+		
 		local gameplay = vgui.Create "ttt_settings_category"
-
 		gameplay:AddCheckBox("Spectator Mode", "tttrw_afk")
 		gameplay:AddCheckBox("Aim Down Sights Toggle", "tttrw_toggle_ads")
 		gameplay:AddCheckBox("Outline players roles", "tttrw_outline_roles")
