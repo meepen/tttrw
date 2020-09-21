@@ -63,7 +63,7 @@ function PANEL:Init()
 	self.Text:SetTextColor(IsEvil() and evil_color or good_color)
 	self.Text:SetContentAlignment(5) -- Center
 	self.Text:SetFont "ttt_credit_font"
-	self.Text:SetText(LocalPlayer():GetCredits() .. " credits")
+	self.Text:SetText(LocalPlayer():GetCredits() .. " credit" .. (LocalPlayer():GetCredits() == 1 and "" or "s"))
 
 	hook.Add("OnPlayerCreditsChange", self, self.OnPlayerCreditsChange)
 end
@@ -73,7 +73,7 @@ function PANEL:OnPlayerCreditsChange(ply, old, new)
 		return
 	end
 
-	self.Text:SetText("You have " .. new .. " credits remaining")
+	self.Text:SetText("You have " .. new .. " credit" .. (new == 1 and "" or "s") .. " remaining")
 	self.Text:SizeToContents()
 	self.Text:Center()
 end
