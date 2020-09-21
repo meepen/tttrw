@@ -60,7 +60,7 @@ function GM:TTTRWPlayerInspectBody(ply, ent, pos, is_silent)
 		local creds = ent.HiddenState:GetCredits()
 		if (ply:Alive() and creds > 0 and ply:GetRoleData().DefaultCredits) then
 			ply:SetCredits(ply:GetCredits() + creds)
-			ply:Notify("You've received " .. creds .. " credits from the body")
+			ply:Notify("You have received " .. creds .. " credit" .. (creds == 1 and "" or "s") .. " from the body")
 			ent.HiddenState:SetCredits(0)
 		end
 
@@ -68,7 +68,7 @@ function GM:TTTRWPlayerInspectBody(ply, ent, pos, is_silent)
 			ent.HiddenState:SetIdentified(true)
 
 			for _, oply in pairs(player.GetAll()) do
-				oply:Notify(ply:Nick() .. " has confirmed " .. ent.HiddenState:GetNick() .. "'s death, they were a " .. ent.HiddenState:GetRole())
+				oply:Notify(ply:Nick() .. " has found " .. ent.HiddenState:GetNick() .. "'s body, they were " .. (startswithvowel(ent.HiddenState:GetRole()) and "an " or "a ") .. ent.HiddenState:GetRole())
 			end
 
 			local victim = ent.HiddenState:GetPlayer()

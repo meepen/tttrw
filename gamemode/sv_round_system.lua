@@ -522,7 +522,7 @@ function GM:TTTPlayerRemoved(removed)
 				for _, ply in pairs(round.GetActivePlayersByRole(rolename)) do
 					if (IsValid(ply)) then
 						ply:SetCredits(ply:GetCredits() + amt)
-						ply:Notify("You have received " .. amt .. " credit(s)")
+						ply:Notify("You have received " .. amt .. " credit" .. (amt == 1 and "" or "s"))
 					end
 				end
 			end
