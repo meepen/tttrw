@@ -48,6 +48,28 @@ function warn(...)
 	MsgN ""
 end
 
+function startswithvowel(phrase)
+	if (not phrase or not isstring(phrase)) then
+		return false
+	end
+
+	phrase = string.lower(phrase)
+
+	for _, starter in ipairs({"uni", "ump"}) do -- Sometimes starts with u but has a "yu" sound
+		if string.StartWith(phrase, starter) then
+			return false
+		end
+	end
+
+	for _, starter in ipairs({"a", "e", "i", "o", "u", "xm", "sg", "m4", "mp", "m2", "r3", "stg", "8"}) do -- Sometimes starts with a non-vowel but read aloud with a vowel sound
+		if string.StartWith(phrase, starter) then
+			return true
+		end
+	end
+
+	return false
+end
+
 function GM:InitPostEntity()
 	self:InitPostEntity_Networking()
 	self:GetActiveAmmos()
