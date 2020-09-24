@@ -23,10 +23,8 @@ end
 
 function ttt.GetHUDTarget()
 	local ply = LocalPlayer()
-	if (ply.GetObserverMode and (ply:GetObserverMode() == OBS_MODE_IN_EYE or ply:GetObserverMode() == OBS_MODE_CHASE)) then
-		if (ply:GetObserverTarget():IsPlayer()) then
-			return ply:GetObserverTarget()
-		end
+	if (ply.GetObserverMode and (ply:GetObserverMode() == OBS_MODE_IN_EYE or ply:GetObserverMode() == OBS_MODE_CHASE) and ply:GetObserverTarget():IsPlayer()) then
+		return ply:GetObserverTarget()
 	end
 	return ply
 end
