@@ -2,13 +2,16 @@ util.AddNetworkString "ttt_player_target"
 
 net.Receive("ttt_player_target", function(len, cl)
 	local ent = net.ReadEntity()
+	local disguised = net.ReadBool()
 
 	if (IsValid(ent) and (ent:IsPlayer() or ent:GetNW2Bool("IsPlayerBody", false))) then
 		cl:SetTarget(ent)
+		cl:SetTargetDisguised(disguised)
 	end
 	timer.Create("EliminateTargetFor" .. cl:UserID(), 3, 1, function()
 		if (IsValid(cl)) then
 			cl:SetTarget(nil)
+			cl:SetTargetDisguised(false)
 		end
 	end)
 end)

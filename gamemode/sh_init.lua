@@ -32,11 +32,16 @@ function PLAYER:IsSpec()
 end
 
 AccessorFunc(PLAYER, "Target", "Target")
+AccessorFunc(PLAYER, "TargetDisguised", "TargetDisguised")
 ENTITY = FindMetaTable "Entity"
 
 function PLAYER:SetTarget(target)
 	self.Target = target
 	hook.Run("PlayerTargetChanged", self, target)
+end
+
+function PLAYER:SetTargetDisguised(disguised)
+	self.TargetDisguised = disguised
 end
 
 function printf(...)
@@ -164,7 +169,8 @@ function GM:FormatPlayerText(ply, text, team)
 
 	if (IsValid(ply.Target)) then
 		if (ply.Target:IsPlayer()) then
-			replacements["{target}"] = ply.Target:Nick()
+			replacements["{target}"] = ply.TargetDisguised and "someone in disguise" or ply.Target:Nick()
+			capitalize["{target}"] = ply.TargetDisguised
 		elseif (IsValid(ply.Target.HiddenState) and ply.Target.HiddenState:GetIdentified()) then
 			replacements["{target}"] = ply.Target.HiddenState:GetNick() .. "'s body"
 		else
