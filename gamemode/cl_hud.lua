@@ -23,7 +23,7 @@ end
 
 function ttt.GetHUDTarget()
 	local ply = LocalPlayer()
-	if (ply.GetObserverMode and ply:GetObserverMode() == OBS_MODE_IN_EYE) then
+	if (ply.GetObserverMode and (ply:GetObserverMode() == OBS_MODE_IN_EYE or ply:GetObserverMode() == OBS_MODE_CHASE) and ply:GetObserverTarget():IsPlayer()) then
 		return ply:GetObserverTarget()
 	end
 	return ply
@@ -42,7 +42,9 @@ surface.CreateFont("TTTRWTargetID", {
 
 function GM:HUDDrawTargetID()
 	local ent = ttt.GetHUDTarget()
-	if (not IsValid(ent)) then return end
+	local ply = LocalPlayer()
+
+	if (not IsValid(ent) or (ply.GetObserverTarget and ply:GetObserverTarget() == OBS_MODE_CHASE)) then return end
 
 	local tr = ent:GetEyeTrace(MASK_SHOT)
 	ent = tr.Entity
@@ -155,7 +157,9 @@ function GM:HUDPaint()
 	hook.Run "TTTDrawHitmarkers"
 
 	local targ = ttt.GetHUDTarget()
-	if (IsValid(targ) and targ ~= LocalPlayer()) then
+	local ply = LocalPlayer()
+
+	if (IsValid(targ) and targ ~= LocalPlayer() and not (ply.GetObserverMode and ply:GetObserverMode() == OBS_MODE_CHASE)) then
 		-- https://github.com/Facepunch/garrysmod-issues/issues/3936
 		local wep = targ:GetActiveWeapon()
 		if (IsValid(wep) and wep.DoDrawCrosshair) then

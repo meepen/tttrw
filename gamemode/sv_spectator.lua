@@ -11,6 +11,8 @@ local function UpdatePlayerSpectating(ply, new_mode, dir)
 		end
 	end
 	if (mode ~= OBS_MODE_ROAMING) then
+		local current_num
+
 		for num, info in ipairs(active) do
 			if (info == current) then
 				current_num = num
