@@ -163,7 +163,7 @@ function GM:KeyPress(ply, key)
 		self:VoiceKey(ply, key)
 	end
 
-	if (CLIENT and key == IN_USE_ALT and self:TryInspectBody(ply)) then
+	if (CLIENT and key == IN_USE_ALT and not IsValid(ttt.InspectMenu) and self:TryInspectBody(ply)) then
 		return
 	end
 
