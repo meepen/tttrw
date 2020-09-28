@@ -89,7 +89,7 @@ function GM:InitializeBodyData(variables, Information)
 	table.insert(variables, {
 		Title = Information.Victim:GetRole() .. (Information.Victim:GetRoleData().Evil and "!" or ""),
 		Icon = Information.Victim:GetRoleData().DeathIcon or "materials/tttrw/xbutton128.png",
-		Description = Information.Victim:Name() .. " was " .. Information.Victim:GetRole()
+		Description = Information.Victim:Name() .. " was " .. (startswithvowel(Information.Victim:GetRole()) and "an " or "a ") .. Information.Victim:GetRole()
 	})
 
 	if (not Information.DamageInfo) then
@@ -101,7 +101,7 @@ function GM:InitializeBodyData(variables, Information)
 		table.insert(variables, {
 			Title = "Weapon",
 			Icon = "WEAPON_" .. wep:GetClass(),
-			Description = "This person appears to have died from a " .. (wep.PrintName or wep:GetClass())
+			Description = "This person appears to have died from " .. (startswithvowel(wep.PrintName or wep:GetClass()) and "an " or "a ") .. (wep.PrintName or wep:GetClass())
 		})
 	end
 
