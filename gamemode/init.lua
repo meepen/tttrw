@@ -98,7 +98,9 @@ local block = {
 	func_button = true,
 	trigger_push = true,
 	func_door = true,
+	func_tracktrain =  true,
 }
+
 function GM:EntityKeyValue(ent, key, value)
 	if (not block[ent:GetClass()] and key:lower() == "speed") then
 		return value / 66 / engine.TickInterval() * tttrw_door_speedup:GetFloat()

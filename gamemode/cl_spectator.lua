@@ -48,7 +48,7 @@ function GM:DrawOverlay()
 	if (input.LookupBinding "gm_showhelp") then
 		text = "Hit " .. input.LookupBinding "gm_showhelp" .. " and Disable Spectator Mode"
 	else
-		text = "Type gm_showhelp in console and Disable Spectator Mode"
+		text = "Bind a key to Open Help to continue"
 	end
 
 	surface.SetFont "tttrw_afk_font"
