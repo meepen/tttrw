@@ -1,16 +1,18 @@
 
-local font_tall = math.max(16, math.Round(ScrH() / 70))
+local font_tall = math.max(16, math.Round(ScrH() / 60))
 surface.CreateFont("ttt_weapon_select_font", {
 	font = "Roboto",
 	size = font_tall,
-	weight = 100,
-	shadow = true
+	weight = 1000,
 })
 surface.CreateFont("ttt_weapon_select_font_outline", {
 	font = "Roboto",
 	size = font_tall,
 	weight = 1000,
 })
+
+
+local WEAPON = FindMetaTable "Weapon"
 
 local function Player()
 	return ttt.GetHUDTarget()
@@ -46,7 +48,7 @@ function PANEL:Init()
 	hook.Add("Think", self, self.OnWeaponNameChange)
 
 	self:SetCurve(4)
-	self:SetColor(Color(0xb, 0xc, 0xb, 255))
+	self:SetColor(outline)
 	self:SetCurveTopRight(false)
 	self:SetCurveBottomRight(false)
 
@@ -54,14 +56,40 @@ function PANEL:Init()
 
 	self.Inner = self:Add "ttt_curved_panel"
 	self.Inner:Dock(FILL)
-	self.Inner:SetColor(Color(0xb, 0xc, 0xb, 200))
+	self.Inner:SetColor(main_color)
 	self.Inner:SetZPos(0)
 
-	self.Label = self:Add "DLabel"
+	self.Label = self:Add "EditablePanel"
 	self.Label:Dock(FILL)
-	self.Label:SetContentAlignment(5)
-	self.Label:SetFont "ttt_weapon_select_font"
-	self.Label:SetZPos(2)
+	self.Label:SetZPos(3)
+
+	self.Label.Paint = function(self, w, h)
+		local text = self.Text or ""
+		local col = self.TextColor or white_text
+		surface.SetFont "ttt_weapon_select_font"
+		local tw, th = surface.GetTextSize(text)
+
+		local x, y = w / 2 - tw / 2, h / 2 - th / 2
+
+		for _, code in utf8.codes(text) do
+			local chr = utf8.char(code)
+			local cw, ch = surface.GetTextSize(chr)
+
+			surface.SetTextColor(Color(0, 0, 0, 255))
+			for i = -1, 1 do
+				surface.SetTextPos(x + i, y)
+				surface.DrawText(chr)
+				surface.SetTextPos(x, y + i)
+				surface.DrawText(chr)
+			end
+
+			surface.SetTextColor(col)
+			surface.SetTextPos(x, y)
+			surface.DrawText(chr)
+
+			x = x + cw
+		end
+	end
 
 	self.Number = self:Add "ttt_weapon_select_number"
 	self.Number:Dock(LEFT)
@@ -70,7 +98,12 @@ end
 
 function PANEL:OnWeaponNameChange()
 	if (IsValid(self.Weapon) and self.Weapon.GetPrintName) then
-		self.Label:SetText(self.Weapon:GetPrintName())
+		self.Label.Text = self.Weapon:GetPrintName()
+		local col = white_text
+		if (self.Weapon.GetPrintNameColor) then
+			col = self.Weapon:GetPrintNameColor()
+		end
+		self.Label.TextColor = col
 	end
 end
 
@@ -101,11 +134,7 @@ function PANEL:SetActive(b)
 		function self.Active:Paint(w, h)
 			surface.SetDrawColor(self.Color)
 			draw.NoTexture()
-			surface.DrawPoly {
-				{ x = 0, y = 0, },
-				{ x = w, y = h, },
-				{ x = 0, y = h, },
-			}
+			surface.DrawRect(0, 0, w / 2, h)
 		end
 		function self.Active:SetImageColor(col)
 			self.Color = col
