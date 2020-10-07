@@ -12,9 +12,9 @@ local box_background = Color(41, 41, 41, 230)
 local white_text_color = Color(0xe0, 0xe0, 0xe0)
 
 surface.CreateFont("ttt_credit_font", {
-	font = 'Lato',
-	size = math.max(24, ScrH() / 90),
-	weight = 200
+	font = "Roboto",
+	size = math.max(16, ScrH() / 90),
+	weight = 500
 })
 
 surface.CreateFont("ttt_equipment_header_font", {
@@ -60,11 +60,11 @@ function PANEL:Init()
 	self:SetCurve(5)
 	self:SetColor(box_background)
 	self.Text = self:Add "DLabel"
-	self.Text:SetTextColor(IsEvil() and evil_color or good_color)
+	self.Text:SetTextColor(white_text_color)
 	self.Text:SetContentAlignment(5) -- Center
 	self.Text:SetFont "ttt_credit_font"
-	self.Text:SetText(LocalPlayer():GetCredits() .. " credit" .. (LocalPlayer():GetCredits() == 1 and "" or "s"))
 
+	self:OnPlayerCreditsChange(LocalPlayer(), LocalPlayer():GetCredits(), LocalPlayer():GetCredits())
 	hook.Add("OnPlayerCreditsChange", self, self.OnPlayerCreditsChange)
 end
 
@@ -73,13 +73,13 @@ function PANEL:OnPlayerCreditsChange(ply, old, new)
 		return
 	end
 
-	self.Text:SetText("You have " .. new .. " credit" .. (new == 1 and "" or "s") .. " remaining")
+	self.Text:SetText("You have " .. new .. " credit" .. (new == 1 and "" or "s"))
 	self.Text:SizeToContents()
 	self.Text:Center()
 end
 
 function PANEL:PerformLayout(w, h)
-	self:SetTall(GetHeaderSize())
+	self:SetTall(GetHeaderSize() / 2)
 	self.Text:SizeToContents()
 	self.Text:Center()
 end
@@ -90,6 +90,14 @@ local PANEL = {}
 
 function PANEL:DoClick()
 	ttt.equipment_menu:SetEquipment(self.Equipment)
+end
+
+function PANEL:DoRightClick()
+	local mn = DermaMenu()
+	mn:AddOption("Buy", function()
+		RunConsoleCommand("ttt_buy_equipment", self.Equipment.ClassName)
+	end):SetIcon("icon16/money.png")
+	mn:Open()
 end
 
 vgui.Register("ttt_equipment_item_button", PANEL, "DImageButton")
@@ -160,7 +168,7 @@ function PANEL:OnPlayerRoleChange(ply, old, new)
 		end
 		local btn = self.List:Add "ttt_equipment_item"
 		btn:SetImage(ent.Icon or "tttrw/disagree.png")
-		btn:SetSize(66, 66)
+		btn:SetSize(57, 57)
 		btn:SetEquipment(ent)
 		if (first) then
 			timer.Simple(0, function()
@@ -187,21 +195,13 @@ function PANEL:Init()
 	self:DockPadding(GetSpacing(), GetSpacing(), GetSpacing(), GetSpacing())
 end
 
-function PANEL:Paint(w, h)
-	draw.RoundedBox(5, 0, 0, w, h, box_background)
-end
-
-vgui.Register("ttt_equipment_list", PANEL, "EditablePanel")
+vgui.Register("ttt_equipment_list", PANEL, "ttt_equipment_background")
 
 
 local PANEL = {}
 
 function PANEL:Init()
 	self:SetMouseInputEnabled(true)
-	self.Text = self:Add "ttt_credit_remaining"
-	self.Text:Dock(TOP)
-	self.Text:DockMargin(0, 0, 0, GetSpacing())
-
 	self.BuyList = self:Add "ttt_equipment_list"
 	self.BuyList:Dock(LEFT)
 end
@@ -215,11 +215,11 @@ function PANEL:Paint() end
 vgui.Register("ttt_credit_screen", PANEL, "EditablePanel")
 
 local PANEL = {}
-function PANEL:Paint(w, h)
-	draw.RoundedBox(5, 0, 0, w, h, box_background)
+function PANEL:Init()
+	self:SetCurve(2)
+	self:SetColor(box_background)
 end
-
-vgui.Register("ttt_equipment_background", PANEL, "EditablePanel")
+vgui.Register("ttt_equipment_background", PANEL, "ttt_curved_panel")
 
 
 local PANEL = {}
@@ -247,62 +247,24 @@ end
 vgui.Register("ttt_equipment_header", PANEL, "ttt_equipment_background")
 
 
-local buy_button_mat = CreateMaterial("ttt_buy_material", "UnlitGeneric", {
-	["$basetexture"] = "color/white",
-	["$alpha"] = 1
-})
 local PANEL = {}
 function PANEL:Init()
-	self.Button = self:Add "DButton"
-	self.Button:SetFont "ttt_equipment_button_font"
-	self.Button:SetText "Buy"
-	self.Button:SetTextColor(box_background)
-	self.Button.Paint = self.PaintButton
-	self.Button.PerformLayout = function(self, w, h)
-		self:SetTall(self:GetParent():GetTall())
-	end
-
-	function self.Button:DoClick()
-		RunConsoleCommand("ttt_buy_equipment", self.Equipment.ClassName)
-	end
-
 	self:SetMouseInputEnabled(true)
-
-	self:PerformLayout(self:GetSize())
-
-	buy_button_mat:SetVector("$color", (IsEvil() and evil_color or good_color):ToVector())
+	self:SetText "Buy"
+	self:SetContentAlignment(5)
+	self:SetFont "ttt_equipment_header_font"
+	self:SetColor(IsEvil() and evil_color or good_color)
+	self:SetCurve(4)
 end
-
-function PANEL:PerformLayout(w, h)
-	self.Button:SizeToContentsY(GetSpacing())
-	self.Button:SetWide(w * 2 / 3)
-	self.Button:Center()
-	self:SetTall(self.Button:GetTall())
-
-	if (self.Button.Mesh) then
-		self.Button.Mesh:Destroy()
-		self.Button.Mesh = nil
-	end
-
-	local w = w * 2 / 3
-
-	self.Button.Mesh = hud.BuildCurvedMesh(5, 0, 0, w, h)
+function PANEL:DoClick()
+	RunConsoleCommand("ttt_buy_equipment", self.Equipment.ClassName)
 end
-
-function PANEL:PaintButton(w, h)
-	hud.StartStenciledMesh(self.Mesh, self:LocalToScreen(0, 0))
-		render.SetMaterial(buy_button_mat)
-		render.DrawScreenQuad()
-	hud.EndStenciledMesh()
-end
-
-function PANEL:Paint() end
 
 function PANEL:SetEquipment(eq)
-	self.Button.Equipment = eq
+	self.Equipment = eq
 end
 
-vgui.Register("ttt_equipment_buy_button", PANEL, "EditablePanel")
+vgui.Register("ttt_equipment_buy_button", PANEL, "ttt_curved_button")
 
 
 local PANEL = {}
@@ -369,8 +331,8 @@ function PANEL:Init()
 	self.Carry = self:Add "ttt_equipment_status"
 	self.Carry:Dock(BOTTOM)
 	self.Carry:SetZPos(1)
-	self.Carry:SetEnabledText "You can carry this equipment."
-	self.Carry:SetDisabledText "You cannot carry this equipment."
+	self.Carry:SetEnabledText "You can carry this."
+	self.Carry:SetDisabledText "You cannot carry this."
 
 	self.Stock = self:Add "ttt_equipment_status"
 	self.Stock:Dock(BOTTOM)
@@ -378,7 +340,14 @@ function PANEL:Init()
 	self.Stock:SetEnabledText "This item is in stock."
 	self.Stock:SetDisabledText "You item is not in stock."
 
+	self.Funds = self:Add "ttt_equipment_status"
+	self.Funds:Dock(BOTTOM)
+	self.Funds:SetZPos(3)
+	self.Funds:SetEnabledText "You have the credits."
+	self.Funds:SetDisabledText "You lack credits."
+
 	self:DockPadding(GetSpacing() * 1.5, GetSpacing() * 1.5, GetSpacing() * 1.5, GetSpacing() * 1.5)
+	self:SetTall(200)
 end
 
 function PANEL:SetEquipment(item)
@@ -390,6 +359,8 @@ function PANEL:SetEquipment(item)
 		self.Stock:SetEnabled(LocalPlayer():CanReceiveEquipment(item.ClassName))
 		self.Carry:SetEnabled(LocalPlayer():CanReceiveEquipment(item.ClassName))
 	end
+	self.Funds:SetEnabled(LocalPlayer():GetCredits() >= (item.Cost or 1))
+
 	self.Buy:SetEquipment(item)
 end
 
@@ -402,23 +373,17 @@ function PANEL:Init()
 	self.ItemName = self:Add "ttt_equipment_header"
 	self.ItemName:SetZPos(0)
 	self.ItemName:Dock(TOP)
-	self.ItemName:DockMargin(0, 0, 0, GetSpacing())
+	self.ItemName:DockMargin(0, 0, 0, GetSpacing() / 2)
 	self.ItemName:SetText "Example item"
 
+	self.Credits = self:Add "ttt_credit_remaining"
+	self.Credits:SetZPos(1)
+	self.Credits:Dock(TOP)
+	self.Credits:DockMargin(0, 0, 0, GetSpacing() / 2)
+
 	self.ItemDesc = self:Add "ttt_equipment_description"
-	self.ItemDesc:SetZPos(1)
-	self.ItemDesc:Dock(TOP)
-	self.ItemDesc:DockMargin(0, 0, 0, GetSpacing())
-
-	self.BoughtText = self:Add "ttt_equipment_header"
-	self.BoughtText:SetZPos(2)
-	self.BoughtText:Dock(TOP)
-	self.BoughtText:DockMargin(0, 0, 0, GetSpacing())
-	self.BoughtText:SetText "Bought items"
-
-	self.BoughtItems = self:Add "ttt_equipment_background"
-	self.BoughtItems:SetZPos(3)
-	self.BoughtItems:Dock(TOP)
+	self.ItemDesc:SetZPos(2)
+	self.ItemDesc:Dock(FILL)
 end
 
 function PANEL:SetEquipment(item)
@@ -426,44 +391,41 @@ function PANEL:SetEquipment(item)
 	self.ItemDesc:SetEquipment(item)
 end
 
-function PANEL:PerformLayout()
-	self.ItemName:SetTall(GetHeaderSize())
-	self.ItemDesc:SetTall((self:GetTall() - GetSpacing() * 2 - GetHeaderSize() * 2) * 4/7)
-	self.BoughtText:SetTall(GetHeaderSize())
-	self.BoughtItems:SetTall((self:GetTall() - GetSpacing() * 2 - GetHeaderSize() * 2) * 3/7)
-end
-
-function PANEL:Paint(w, h)
-	--draw.RoundedBox(5, 0, 0, w, h, box_background)
-end
-
 vgui.Register("ttt_item_screen", PANEL, "EditablePanel")
 
+local PANEL = {}
+
+function PANEL:Init()
+	self.CreditScreen = self:Add "ttt_credit_screen"
+	self.ItemScreen = self:Add "ttt_item_screen"
+
+	self.CreditScreen:Dock(FILL)
+	self.ItemScreen:Dock(RIGHT)
+	self.ItemScreen:DockPadding(6, 0, 0, 0)
+
+	self:Dock(TOP)
+	self:SetTall(350)
+end
+
+function PANEL:PerformLayout(w, h)
+	self.ItemScreen:SetWide(w / 2 - 3)
+end
+
+vgui.Register("ttt_eq_buy_screen", PANEL, "EditablePanel")
 
 local PANEL = {}
 
 function PANEL:Init()
 	self:SetMouseInputEnabled(true)
-	self.CloseButton = self:Add "ttt_close_button"
-	self.CreditScreen = self:Add "ttt_credit_screen"
-	self.ItemScreen = self:Add "ttt_item_screen"
 
-	self.CloseButton:SetColor(IsEvil() and evil_color or good_color)
+	self.BuyTab = vgui.Create "ttt_eq_buy_screen"
 
-	self.CloseButton:SetZPos(1)
-	self.CloseButton:Dock(TOP)
-	self.CreditScreen:Dock(LEFT)
-	self.ItemScreen:Dock(LEFT)
 
-	self:OnScreenSizeChanged(ScrW(), ScrH())
-	timer.Simple(0, function()
-		mat_evil:SetFloat("$alpha", 0.03)
-		mat_evil:SetVector("$color", evil_icons_color:ToVector())
-		mat_good:SetFloat("$alpha", 0.03)
-		mat_good:SetVector("$color", good_icons_color:ToVector())
-	end)
+	self:AddTab("Buy", self.BuyTab)
+	self:SetSize(600, 440)
+	self:Center()
 
-	hook.Add("OnPlayerRoleChange", self, self.OnPlayerRoleChange)
+	hook.Run("TTTRWAddBuyTabs", self)
 end
 
 function PANEL:OnPlayerRoleChange(ply, old, new)
@@ -472,67 +434,22 @@ function PANEL:OnPlayerRoleChange(ply, old, new)
 	end
 end
 
-function PANEL:OnScreenSizeChanged(w, h)
-	w = w * 0.4
-	h = h * 0.5
-	self:DockPadding(GetSpacing(), GetSpacing(), GetSpacing(), GetSpacing())
-	self.CloseButton:SetSize(GetHeaderSize(), GetHeaderSize())
-
-	local spaceLeft = w - GetSpacing() * 4 - GetHeaderSize()
-	self.CreditScreen:SetWide(spaceLeft * 3 / 7)
-	self.ItemScreen:SetWide(spaceLeft * 4 / 7)
-
-	self.CreditScreen:DockMargin(0, 0, GetSpacing(), 0)
-	self.ItemScreen:DockMargin(0, 0, GetSpacing(), 0)
-
-	self:SetSize(w, h)
-	self:Center()
-end
-
 function PANEL:SetEquipment(eq)
-	self.ItemScreen:SetEquipment(eq)
+	self.BuyTab.ItemScreen:SetEquipment(eq)
 end
 
-function PANEL:PerformLayout(w, h)
-	self.Mesh = hud.BuildCurvedMesh(6, 0, 0, self:GetWide(), self:GetTall())
-end
-
-local bg_color = CreateMaterial("ttt_color_material", "UnlitGeneric", {
-	["$basetexture"] = "color/white",
-	["$color"] = "{ 13 12 13 }",
-	["$alpha"] = 0.92
-})
-
-local matrix = Matrix()
-function PANEL:Paint(w, h)
-	local mat = LocalPlayer():GetRoleData().Evil and mat_evil or mat_good
-
-	hud.StartStenciledMesh(self.Mesh, self:LocalToScreen(0, 0))
-		render.SetMaterial(bg_color)
-		render.DrawScreenQuad()
-
-		render.SetMaterial(mat)
-		local pw, ph = mat:GetInt "$realwidth", mat:GetInt "$realheight"
-		if (pw) then
-			for x = 0, w, pw do
-				for y = 0, h, ph do
-					render.DrawQuad(Vector(x, y), Vector(x + pw, y), Vector(x + pw, y + ph), Vector(x, y + ph))
-				end
-			end
-		end
-	hud.EndStenciledMesh()
-end
-vgui.Register("ttt_equipment_menu", PANEL, "EditablePanel")
+vgui.Register("ttt_equipment_menu", PANEL, "tttrw_base")
 
 function GM:OpenBuyMenu()
 	if (IsValid(ttt.equipment_menu)) then
 		if (not ttt.equipment_menu:IsVisible()) then
+			ttt.equipment_menu:Remove()
 			ttt.equipment_menu:SetVisible(true)
 		end
-	else
-		ttt.equipment_menu = GetHUDPanel():Add "ttt_equipment_menu"
-		ttt.equipment_menu:SetVisible(true)
+	--else
 	end
+	ttt.equipment_menu = vgui.Create "ttt_equipment_menu"
+	ttt.equipment_menu:SetVisible(true)
 	ttt.equipment_menu:MakePopup()
 	ttt.equipment_menu:SetMouseInputEnabled(true)
 	ttt.equipment_menu:SetKeyboardInputEnabled(false)

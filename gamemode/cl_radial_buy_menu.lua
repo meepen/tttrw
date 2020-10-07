@@ -198,3 +198,7 @@ function GM:OpenRadialBuyMenu()
 
 	gui.EnableScreenClicker(true)
 end
+
+function GM:TTTRWAddBuyTabs(menu)
+	menu:AddTab("Radial Editor", vgui.Create "EditablePanel")
+end
