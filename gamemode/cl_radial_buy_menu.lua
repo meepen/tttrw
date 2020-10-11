@@ -65,6 +65,10 @@ local function GetSelectedEquipment()
 
 	local selectedEquipment = equipmentList[math.floor(mouseAngle / (2 * math.pi) * #equipmentList) + 1]
 
+	if (not selectedEquipment) then
+		return
+	end
+
 	if selectedEquipment.Cost > LocalPlayer():GetCredits() then return end
 
 	return selectedEquipment
@@ -174,11 +178,23 @@ function GM:DrawRadialBuyMenu_DrawOverlay()
 	end
 end
 
-function GM:OpenRadialBuyMenu()
-	self.RadialMenuOpen = true
+sql.Query "CREATE TABLE IF NOT EXISTS tttrw_radial_list (class TEXT NOT NULL, role TEXT NOT NULL, UNIQUE(role, class))"
+sql.Query "CREATE INDEX IF NOT EXISTS tttrw_radial_role ON tttrw_radial_list (role)"
 
+local function BuildEquipmentList()
 	equipmentList = {}
-	for classname, equipment in pairs(ttt.Equipment.List) do
+	local role = LocalPlayer():GetRoleTeam()
+
+	local list = sql.Query "SELECT class from tttrw_radial_list ORDER BY rowid ASC" or {}
+	PrintTable(list)
+
+	for _, classname in pairs(list) do
+		classname = classname.class
+		local equipment = ttt.Equipment.List[classname]
+		if (not equipment) then
+			continue
+		end
+
 		if (not LocalPlayer():CanReceiveEquipment(classname)) then
 			continue
 		end
@@ -188,6 +204,12 @@ function GM:OpenRadialBuyMenu()
 
 		table.insert(equipmentList, setmetatable({Circle = circle, Material = Material(equipment.Icon)}, {__index = equipment}))
 	end
+end
+
+function GM:OpenRadialBuyMenu()
+	self.RadialMenuOpen = true
+
+	BuildEquipmentList()
 
 	local deltaAngle = math.pi * 2 / #equipmentList
 
@@ -200,5 +222,20 @@ function GM:OpenRadialBuyMenu()
 end
 
 function GM:TTTRWAddBuyTabs(menu)
-	menu:AddTab("Radial Editor", vgui.Create "EditablePanel")
+	--menu:AddTab("Radial Editor", vgui.Create "EditablePanel")
 end
+
+hook.Add("TTTRWEquipmentItemMenu", "radial", function(mn, item)
+	local classname = item.ClassName
+	local already_in = sql.Query("SELECT 1 FROM tttrw_radial_list WHERE class = " .. sql.SQLStr(classname) .. " AND role = " .. sql.SQLStr(LocalPlayer():GetRoleTeam()) .. "")
+	if (already_in) then
+		mn:AddOption("Remove from Radial", function()
+			sql.Query("DELETE FROM tttrw_radial_list WHERE role = " .. sql.SQLStr(LocalPlayer():GetRoleTeam()) .. " and class = " .. sql.SQLStr(classname))
+		end):SetIcon("icon16/color_wheel.png")
+	else
+		mn:AddOption("Add to Radial", function()
+			sql.Query("INSERT INTO tttrw_radial_list (role, class) VALUES (" .. sql.SQLStr(LocalPlayer():GetRoleTeam()) .. ", " .. sql.SQLStr(classname) .. ")")
+			print(sql.LastError())
+		end):SetIcon("icon16/color_wheel.png")
+	end
+end)

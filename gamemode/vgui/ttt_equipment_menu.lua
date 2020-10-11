@@ -97,6 +97,7 @@ function PANEL:DoRightClick()
 	mn:AddOption("Buy", function()
 		RunConsoleCommand("ttt_buy_equipment", self.Equipment.ClassName)
 	end):SetIcon("icon16/money.png")
+	hook.Run("TTTRWEquipmentItemMenu", mn, self.Equipment)
 	mn:Open()
 end
 
