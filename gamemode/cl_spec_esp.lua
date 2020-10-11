@@ -3,7 +3,13 @@ local health_full = Color(58, 180, 80)
 local health_ok = Color(240, 255, 0)
 local health_dead = Color(255, 51, 0)
 
+local tttrw_spec_nameplates = CreateConVar("tttrw_spec_nameplates", "1", FCVAR_ARCHIVE)
+
 function GM:TTTRWDrawSpectatorHUD()
+	if (not tttrw_spec_nameplates:GetBool()) then
+		return
+	end
+
 	for _, ply in pairs(player.GetAll()) do
 		if (ply:IsDormant() or not ply:Alive() or ply:Health() <= 0) then
 			continue
