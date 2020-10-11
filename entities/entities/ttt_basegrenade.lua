@@ -131,7 +131,7 @@ function ENT:Move()
 
 		cur_pos = tr.HitPos
 
-		if (self:Collide(tr)) then
+		if (self:GrenadeBounce(tr)) then
 			break
 		end
 
@@ -155,7 +155,7 @@ function ENT:Move()
 	self:SetOrigin(next_pos)
 end
 
-function ENT:Collide(t)
+function ENT:GrenadeBounce(t)
 	return false
 end
 

@@ -21,7 +21,7 @@ function ENT:SetupDataTables()
 	self:NetVar("NextSound", "Float")
 end
 
-function ENT:Collide(tr)
+function ENT:GrenadeBounce(tr)
 	self:SetStuck(true)
 	if (tr.Entity ~= game.GetWorld()) then
 		self:SetParent(tr.Entity)
