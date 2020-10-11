@@ -6,7 +6,7 @@ local health_full = Color(58, 180, 80)
 local health_ok = Color(240, 255, 0)
 local health_dead = Color(255, 51, 0)
 
-local function ColorLerp(col_from, col_mid, col_to, amt)
+function ColorLerp(col_from, col_mid, col_to, amt)
 	if (amt > 0.5) then
 		col_from = col_mid
 		amt = (amt - 0.5) * 2
@@ -155,6 +155,9 @@ end
 function GM:HUDPaint()
 	hook.Run "HUDDrawTargetID"
 	hook.Run "TTTDrawHitmarkers"
+	if (not LocalPlayer():Alive() or ttt.Enums.RoundState[ttt.GetRoundState()] == "Ended") then
+		hook.Run "TTTRWDrawSpectatorHUD"
+	end
 
 	local targ = ttt.GetHUDTarget()
 	local ply = LocalPlayer()

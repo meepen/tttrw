@@ -49,6 +49,7 @@ AddCSLuaFile();
 		"cl_damage_positions.lua",
 		"cl_spectator.lua",
 		"cl_radial_buy_menu.lua",
+		"cl_spec_esp.lua",
 	},
 	Shared = {
 		"sh_init.lua",
