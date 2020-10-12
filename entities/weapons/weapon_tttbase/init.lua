@@ -134,7 +134,12 @@ concommand.Add("gmod_undo", function(ply)
 	end
 
 	local wep = ply:GetActiveWeapon()
-	if (not IsValid(wep) or not wep.AmmoEnt) then
+	if (not IsValid(wep) or not wep.Primary or not wep.Primary.Ammo) then
+		return
+	end
+	
+	local ent = ttt.ammo.findent(wep.Primary.Ammo)
+	if (not ent) then
 		return
 	end
 
@@ -153,7 +158,7 @@ concommand.Add("gmod_undo", function(ply)
 
 	wep:SetClip1(0)
 
-	local box = ents.Create(wep.AmmoEnt)
+	local box = ents.Create(ent)
 	if (not IsValid(box)) then
 		return
 	end

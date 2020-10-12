@@ -5,7 +5,7 @@ ENT.Base = "base_ammo_ttt"
 ENT.AmmoType = "AlyxGun"
 ENT.AmmoAmount = 12
 ENT.AmmoMax = 36
-ENT.Model = Model("models/items/357ammo.mdl")
+ENT.Model = Model "models/items/357ammo.mdl"
 ENT.AutoSpawnable = true
 
 function ENT:Initialize()

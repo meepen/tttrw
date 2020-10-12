@@ -63,36 +63,79 @@ function ENT:PlayerCanPickup(ply)
 	return tr.Fraction == 1.0
 end
 
-function ENT:CheckForWeapon(ply)
-	if not self.CachedWeapons then
-		-- create a cache of what weapon classes use this ammo
-		local tbl = {}
-		for k,v in pairs(weapons.GetList()) do
-			v = baseclass.Get(v.ClassName)
-			if v and v.AmmoEnt == self:GetClass() then
-				table.insert(tbl, v.ClassName)
+ttt.ammo = ttt.ammo or {}
+function ttt.ammo.getcache()
+	if (ttt.ammo.cache) then
+		return ttt.ammo.cache
+	end
+
+	local cache = {
+		namelookup = {},
+		entlookup  = {},
+		idlookup   = {},
+	}
+	ttt.ammo.cache = cache
+
+	for id, name in pairs(game.GetAmmoTypes()) do
+		cache.namelookup[name:lower()] = name
+		cache.idlookup[name] = id
+	end
+
+	for _, ent in pairs(scripted_ents.GetList()) do
+		if (ent.Base ~= "base_ammo_ttt") then
+			continue
+		end
+		local ENT = ent.t
+
+		cache.entlookup[ENT.AmmoType] = ENT.ClassName
+	end
+
+	for _, wep in pairs(weapons.GetList()) do
+		if (wep.Primary and wep.Primary.Ammo) then
+			local ammotype = wep.Primary.Ammo
+			if (not cache.namelookup[ammotype:lower()]) then
+				if (ammotype == "none") then
+					continue
+				end
+
+				print("Unknown ammo type " .. ammotype .. " for class " .. wep.ClassName)
+			else
+				wep.Primary.Ammo = cache.namelookup[ammotype:lower()]
 			end
 		end
-
-		self.CachedWeapons = tbl
 	end
 
-	-- Check if player has a weapon that we know needs us. This is called in
-	-- Touch, which is called many a time, so we use the cache here to avoid
-	-- looping through every weapon the player has to check their AmmoEnt.
-	for _, w in pairs(self.CachedWeapons) do
-		if ply:HasWeapon(w) then 
-			return w
+	return cache
+end
+
+function ttt.ammo.findent(ammotype)
+	if (not ammotype) then
+		return
+	end
+
+	local cache = ttt.ammo.getcache()
+
+	return cache.entlookup[cache.namelookup[ammotype:lower()]]
+end
+
+function ENT:PlayerHasWeaponForAmmo(ply)
+	for _, wep in pairs(ply:GetWeapons()) do
+		if (wep.Primary.Ammo and wep.Primary.Ammo == self.AmmoType) then
+			return true
+		end
+		if (wep.Secondary and wep.Secondary.Ammo and wep.Secondary.Ammo == self.AmmoType) then
+			return true
 		end
 	end
+
 	return false
 end
 
 function ENT:Touch(ent)
-	if (SERVER and self.tickRemoval ~= true) and ent:IsValid() and ent:IsPlayer() and self:CheckForWeapon(ent) and self:PlayerCanPickup(ent) then
+	if (SERVER and self.tickRemoval ~= true) and ent:IsValid() and ent:IsPlayer() and self:PlayerHasWeaponForAmmo(ent) and self:PlayerCanPickup(ent) then
 		local ammo = ent:GetAmmoCount(self.AmmoType)
 		-- need clipmax info and room for at least 1/4th
-		if self.AmmoMax >= (ammo + math.ceil(self.AmmoAmount * 0.25)) then
+		if (self.AmmoMax >= ammo + math.ceil(self.AmmoAmount / 4)) then
 			local given = self.AmmoAmount
 			given = math.min(given, self.AmmoMax - ammo)
 			ent:GiveAmmo(given, self.AmmoType)
@@ -100,7 +143,7 @@ function ENT:Touch(ent)
 			local newEntAmount = self.AmmoAmount - given
 			self.AmmoAmount = newEntAmount
 			
-			if self.AmmoAmount <= 0 or math.ceil(self.AmmoEntMax * 0.25) > self.AmmoAmount then
+			if self.AmmoAmount <= 0 or math.ceil(self.AmmoEntMax / 4) > self.AmmoAmount then
 				self.tickRemoval = true
 				self:Remove()
 			end
