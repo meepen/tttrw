@@ -154,6 +154,7 @@ function PANEL:Init()
 	self.Label = self:Add "DLabel"
 	self.Label:SetContentAlignment(5)
 	self.Label:Dock(FILL)
+	self.Label:SetText ""
 end
 
 function PANEL:SetTextColor(c)
@@ -698,6 +699,8 @@ function PANEL:Init()
 	self.Label:SetTextColor(white_text)
 	self.Label:SetFont "tttrw_base_tab"
 
+	self:SetText ""
+
 	self.Label:SetMouseInputEnabled(false)
 	self.Outline:SetMouseInputEnabled(false)
 end
@@ -707,7 +710,7 @@ function PANEL:GetRenderBounds()
 	return x0, y0, x1, y1 - (self.Active and self:GetCurve() - (self.Extra or 0) or 0)
 end
 
-function PANEL:SetText(t)
+function PANEL:SetRealText(t)
 	self.Label:SetText(t)
 	surface.SetFont(self.Label:GetFont())
 	local w = surface.GetTextSize(t)
@@ -741,7 +744,7 @@ function PANEL:Init()
 end
 
 function PANEL:SetText(t)
-	self.Inner:SetText(t)
+	self.Inner:SetRealText(t)
 	self:SetWide(self.Inner:GetWide())
 end
 
