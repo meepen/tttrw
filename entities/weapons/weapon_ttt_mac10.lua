@@ -36,7 +36,6 @@ SWEP.Primary.ClipSize      = 30
 SWEP.Primary.DefaultClip   = 60
 SWEP.Primary.Sound         = Sound "Weapon_mac10.Single"
 SWEP.Primary.Ammo          = "smg1"
-SWEP.AmmoEnt               = "item_ammo_smg1_ttt"
 
 SWEP.HeadshotMultiplier    = 1.4
 SWEP.DeploySpeed = 2.5

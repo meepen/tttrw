@@ -35,7 +35,6 @@ SWEP.DeploySpeed = 1.5
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
-SWEP.AmmoEnt               = "item_ammo_smg1_ttt"
 
 SWEP.ViewModel             = "models/weapons/cstrike/c_smg_mp5.mdl"
 SWEP.WorldModel            = "models/weapons/w_smg_mp5.mdl"

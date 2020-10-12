@@ -35,7 +35,6 @@ SWEP.DeploySpeed = 2
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
-SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
 
 SWEP.ViewModel             = "models/weapons/cstrike/c_pist_glock18.mdl"
 SWEP.WorldModel            = "models/weapons/w_pist_glock18.mdl"

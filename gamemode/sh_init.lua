@@ -72,33 +72,9 @@ end
 
 function GM:InitPostEntity()
 	self:InitPostEntity_Networking()
-	self:GetActiveAmmos()
 	if (SERVER) then
 		self:SetupTextFileEntities()
 	end
-end
-
-local function IsAmmo(classname)
-    DEFINE_BASECLASS(classname)
-    return BaseClass and BaseClass.IsAmmo
-end
-function GM:GetActiveAmmos()
-	if (not self.Ammos) then
-		local Ammos = {}
-		for ClassName, ent in pairs(scripted_ents.GetList()) do
-			
-			if (IsAmmo(ClassName)) then
-				Ammos[ent.t.AmmoType] = {
-					AmmoEnt = ClassName,
-					Max = ent.t.AmmoMax
-				}
-			end
-		end
-		
-		self.Ammos = Ammos
-	end
-
-	return self.Ammos
 end
 
 function GM:Initialize()

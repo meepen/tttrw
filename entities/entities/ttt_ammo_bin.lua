@@ -4,11 +4,12 @@ ENT.PrintName = "Ammo Bin"
 
 ENT.Base = "base_anim"
 ENT.Type = "anim"
+ENT.AmmoMax = 240
 
 ENT.Cooldown = false
 
 function ENT:SetupDataTables()
-    self:NetworkVar("Int", 0, "PercentRemaining")
+    self:NetworkVar("Int", 0, "AmmoTaken")
 end
 
 function ENT:Initialize()
@@ -29,8 +30,6 @@ function ENT:Initialize()
         hook.Add("PostDrawEffects", self, self.PostDrawEffects)
     end
 
-    self:SetPercentRemaining(300)
-
     self:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER)
 end
 
@@ -47,46 +46,58 @@ if (CLIENT) then
 end
 
 function ENT:PostDrawEffects()
+    if (self:IsDormant()) then
+        return
+    end
+
     if (self:GetPos():DistToSqr(LocalPlayer():GetPos()) < 15000) then
         cam.Start3D() -- this doesn't actually update dynamically, just stays at 300% rn
             local ang = (self:GetPos() - EyePos()):Angle():Right():Angle()
             ang:RotateAroundAxis(ang:Forward(), 90)
             cam.Start3D2D(self:GetPos()+Vector(0,0,30), ang, .1)
-                draw.DrawText( self:GetPercentRemaining().."% Remaining", "ttt_ammobin", 0, 0, Color( 0, 150, 175, 255 ), TEXT_ALIGN_CENTER )
+                draw.DrawText((self.AmmoMax - self:GetAmmoTaken()) .. " ammo left", "ttt_ammobin", 0, 0, Color( 0, 150, 175, 255 ), TEXT_ALIGN_CENTER )
             cam.End3D2D()
         cam.End3D()
     end
 end
 
 function ENT:Use(ply)
-    if not (self.Cooldown) then
-        if (IsValid(ply) and ply:IsPlayer()) then
-            local wep = ply:GetActiveWeapon()
-            local pri = wep:GetPrimaryAmmoType()
-            local max = ttt.Ammos[game.GetAmmoName(pri)].Max
-
-            local r = max - ply:GetAmmoCount(pri)
-            if (r > 0) then
-                local p = (r / max) * 100
-                local pr
-                if (p > self:GetPercentRemaining()) then
-                    pr = self:GetPercentRemaining()
-                else
-                    pr = p
-                end
-                local d = math.ceil(pr / 100 * max)
-                if (d == 0) then
-                    ply:ChatPrint("No Charge Remaining!")
-                else
-                    self:EmitSound(Sound("items/ammo_pickup.wav"))
-                    ply:SetAmmo(d + ply:GetAmmoCount(wep:GetPrimaryAmmoType()), wep:GetPrimaryAmmoType())
-                    self:SetPercentRemaining(self:GetPercentRemaining() - math.ceil(pr))
-                end
-                self.Cooldown = true
-                timer.Simple(1, function()
-                    self.Cooldown = false
-                end)
-            end
-        end
+    if (self.Cooldown) then
+        return
     end
+    if (not IsValid(ply) or not ply:IsPlayer()) then
+        return
+    end
+
+    local wep = ply:GetActiveWeapon()
+    if (not IsValid(wep) or not wep.Primary or not wep.Primary.Ammo) then
+        return
+    end
+    
+    local ammoclass = ttt.ammo.findent(wep.Primary.Ammo)
+    if (not ammoclass) then
+        return
+    end
+
+    local ammo = scripted_ents.GetStored(ammoclass).t
+    local max = ammo.AmmoMax
+
+    local current = ply:GetAmmoCount(wep.Primary.Ammo)
+    if (current >= max) then
+        return
+    end
+    
+    local given = math.min(ammo.AmmoAmount, max - current, self.AmmoMax - self:GetAmmoTaken())
+
+    self:SetAmmoTaken(self:GetAmmoTaken() + given)
+    ply:SetAmmo(given + ply:GetAmmoCount(wep.Primary.Ammo), wep.Primary.Ammo)
+
+    if (self:GetAmmoTaken() == self.AmmoMax) then
+        ply:ChatPrint "GAY"
+    end
+
+    self.Cooldown = true
+    timer.Simple(0.5, function()
+        self.Cooldown = false
+    end)
 end

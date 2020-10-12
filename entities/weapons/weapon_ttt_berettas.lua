@@ -35,7 +35,6 @@ SWEP.DeploySpeed = 1.7
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
 SWEP.Primary.Ammo          = "pistol"
-SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
 
 SWEP.HoldType = "duel"
 SWEP.ViewModel  = "models/weapons/cstrike/c_pist_elite.mdl"
@@ -44,7 +43,6 @@ SWEP.WorldModel = "models/weapons/w_pist_elite.mdl"
 SWEP.Ironsights = false
 
 SWEP.Ortho = {0.5, -1, angle = Angle(90, 0, 0), size = 0.8}
-
 
 local power = 24
 local power_y = 2

@@ -52,7 +52,6 @@ SWEP.DeploySpeed = 1.2
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
-SWEP.AmmoEnt               = "item_box_buckshot_ttt"
 
 SWEP.ViewModel             = "models/weapons/cstrike/c_shot_xm1014.mdl"
 SWEP.WorldModel            = "models/weapons/w_shot_xm1014.mdl"

@@ -6,10 +6,7 @@ function ENT:UpdateTransmitState()
 end
 
 function ENT:Think()
-    if (not gmod.GetGamemode().Ammos) then
-        return
-    end
-    local class = table.Random(gmod.GetGamemode().Ammos).AmmoEnt
+    local class = table.Random(ttt.ammo.getcache().entlookup)
     local e = ents.Create(class)
 
     if (not IsValid(e)) then

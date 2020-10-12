@@ -41,7 +41,6 @@ SWEP.DeploySpeed = 1.6
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
-SWEP.AmmoEnt               = "item_ammo_357_ttt"
 
 SWEP.ViewModel             = "models/weapons/cstrike/c_snip_sg550.mdl"
 SWEP.WorldModel            = "models/weapons/w_snip_sg550.mdl"

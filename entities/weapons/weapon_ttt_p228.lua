@@ -40,7 +40,6 @@ SWEP.DeploySpeed = 1.66
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
-SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
 
 SWEP.ViewModel             = "models/weapons/cstrike/c_pist_p228.mdl"
 SWEP.WorldModel            = "models/weapons/w_pist_p228.mdl"

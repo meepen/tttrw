@@ -31,12 +31,11 @@ SWEP.Primary.Sound         = Sound "Weapon_AUG.Single"
 
 SWEP.HeadshotMultiplier    = 1.7
 SWEP.DeploySpeed = 1.3
-SWEP.HasScope              = true --STOP COMPLAINING AAAAAAAAAAAAAAA
+SWEP.HasScope              = true
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
 SWEP.Primary.Ammo          = "smg1"
-SWEP.AmmoEnt               = "item_ammo_smg1_ttt"
 
 SWEP.ViewModel			= "models/weapons/cstrike/c_rif_aug.mdl"
 SWEP.WorldModel			= "models/weapons/w_rif_aug.mdl"

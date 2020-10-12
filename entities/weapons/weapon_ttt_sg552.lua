@@ -36,12 +36,11 @@ SWEP.Secondary.Sound       = Sound "Default.Zoom"
 
 SWEP.HeadshotMultiplier    = 1.45
 SWEP.DeploySpeed = 1.8
-SWEP.HasScope              = true --maybe they'll stop crying :)
+SWEP.HasScope              = true
 
 
 SWEP.AutoSpawnable         = true
 SWEP.Spawnable             = true
-SWEP.AmmoEnt               = "item_ammo_pistol_ttt"
 
 SWEP.ViewModel             = "models/weapons/cstrike/c_rif_sg552.mdl"
 SWEP.WorldModel            = "models/weapons/w_rif_sg552.mdl"
