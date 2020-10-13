@@ -66,6 +66,10 @@ end
 function ENT:GetDescription()
 	local source = self:GetOwner()
 
+	if (not IsValid(source)) then
+		self:SetOwner(self:GetParent())
+	end
+
 	if (IsValid(source)) then
 		if (source.HiddenState) then
 			return "Collected from " .. source.HiddenState:GetNick() .. "'s body"
