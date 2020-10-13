@@ -122,8 +122,13 @@ function GM:PlayerRagdollCreated(ply, rag, atk)
 		return
 	end
 
+	local dist = math.Clamp(atk:GetPos():Distance(ply:GetPos()) / ttt_dna_max_distance:GetFloat(), 0, 1)
+	if (dist >= 1) then
+		return
+	end
+
 	local e = self:CreateDNAData(atk)
-	e:SetExpireTime(CurTime() + Lerp(math.Clamp(atk:GetPos():Distance(ply:GetPos()) / ttt_dna_max_distance:GetFloat(), 0, 1), ttt_dna_max_time:GetFloat(), 0))
+	e:SetExpireTime(CurTime() + Lerp(dist, ttt_dna_max_time:GetFloat(), 0))
 	e:SetParent(rag)
 	e:Spawn()
 
