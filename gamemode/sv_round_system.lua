@@ -330,23 +330,27 @@ end
 
 function GM:TTTRoundStart()
 	for _, info in pairs(round.GetActivePlayers()) do
-		if (IsValid(info.Player)) then
-			info.Player:ChatPrint(white_text, "Your role is ", info.Role.Color, info.Role.Name, white_text, " on team ", info.Role.Team.Color, info.Role.Team.Name)
-			info.Player:SetRole(info.Role.Name)
-			info.Player:SetCredits(info.Player:GetRoleData().DefaultCredits or 0)
-			self:ProvideRoleGuns(info.Player)
-			info.Player:SetTeam(TEAM_TERROR)
-			info.Player:SetConfirmed(false)
-
-			if (info.Role.ModifyTickets) then
-				info.Player.Tickets = info.Role.ModifyTickets(info.Player.Tickets)
-			else
-				info.Player.Tickets = info.Player.Tickets + 1
-			end
+		if (not IsValid(info.Player)) then
+			return
 		end
+
+		info.Player:ChatPrint(white_text, "Your role is ", info.Role.Color, info.Role.Name, white_text, " on team ", info.Role.Team.Color, info.Role.Team.Name)
+		info.Player:SetRole(info.Role.Name)
+		info.Player:SetCredits(info.Player:GetRoleData().DefaultCredits or 0)
+		info.Player:SetTeam(TEAM_TERROR)
+		info.Player:SetConfirmed(false)
+
+		if (info.Role.ModifyTickets) then
+			info.Player.Tickets = info.Role.ModifyTickets(info.Player.Tickets)
+		else
+			info.Player.Tickets = info.Player.Tickets + 1
+		end
+
 		if (not info.Player:Alive()) then
 			info.Player:Spawn()
 		end
+		
+		self:ProvideRoleGuns(info.Player)
 	end
 
 	return true
