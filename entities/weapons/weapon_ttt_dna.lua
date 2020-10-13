@@ -170,10 +170,11 @@ if (SERVER) then
 		local ent = net.ReadEntity()
 
 		for _, child in pairs(wep:GetChildren()) do
-			if (ent == child) then
-				wep:SetCurrentDNA(child)
-				return
+			if (ent ~= child) then
+				continue
 			end
+			wep:SetCurrentDNA(wep:GetCurrentDNA() == child and NULL or child)
+			return
 		end
 	end)
 
@@ -246,6 +247,10 @@ function SWEP:HUDPaint()
 		return
 	end
 	-- draw time left for next scan, position of dna
+
+	if (not IsValid(self:GetCurrentDNA())) then
+		return
+	end
 
 	local pos = self:GetDNAPosition()
 	if (pos.x ~= pos.x) then

@@ -56,7 +56,7 @@ function PANEL:Init()
 
     self.Button = self:Add "ttt_curved_button"
     self.Button:SetFont "ttt_dna_menu_header_font"
-    self.Button:SetText "Start Scan"
+    self.Button:SetText "Select DNA"
     self.Button:SetCurve(4)
     self.Button:Dock(LEFT)
     self.Button:SetColor(Color(87, 90, 90))
@@ -67,6 +67,7 @@ function PANEL:Init()
 		if (not IsValid(self.Variable)) then
 			return
 		end
+        self.Button:SetText(LocalPlayer():GetWeapon "weapon_ttt_dna":GetCurrentDNA() == self.Variable and "Start Scan" or "Stop Scan")
 		net.Start "weapon_ttt_dna"
 			net.WriteEntity(self.Variable)
 		net.SendToServer()
@@ -99,6 +100,7 @@ end
 function PANEL:Select(ent)
 	self.CurrentElement:SetVariable(ent)
 	self.Variable = ent
+    self.Button:SetText(LocalPlayer():GetWeapon "weapon_ttt_dna":GetCurrentDNA() == self.Variable and "Stop Scan" or "Start Scan")
 end
 
 vgui.Register("ttt_dna_menu_body_inner", PANEL, "ttt_curved_panel")
