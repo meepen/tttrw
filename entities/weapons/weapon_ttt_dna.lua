@@ -10,7 +10,7 @@ SWEP.Primary.Automatic     = false
 SWEP.Primary.Ammo          = "none"
 SWEP.Primary.ClipSize      = -1
 SWEP.Primary.DefaultClip   = -1
-SWEP.Primary.Delay		   = .5
+SWEP.Primary.Delay		   = .4
 
 SWEP.Secondary.Delay 		= 1
 SWEP.Secondary.Automatic    = false
@@ -71,7 +71,7 @@ function SWEP:PrimaryAttack()
 		return
 	end
 
-	if (tr.HitPos:Distance(self:EyePos()) > 75) then
+	if (tr.HitPos:Distance(self:EyePos()) > 85) then
 		self:GetOwner():Notify "You are too far away from the object"
 		return
 	end
@@ -174,6 +174,27 @@ if (SERVER) then
 				continue
 			end
 			wep:SetCurrentDNA(wep:GetCurrentDNA() == child and NULL or child)
+			return
+		end
+	end)
+	util.AddNetworkString "weapon_ttt_dna_delete"
+	net.Receive("weapon_ttt_dna_delete", function(len, cl)
+		local wep = cl:GetWeapon "weapon_ttt_dna"
+
+		if (not IsValid(wep)) then
+			return
+		end
+
+		local ent = net.ReadEntity()
+
+		for _, child in pairs(wep:GetChildren()) do
+			if (ent ~= child) then
+				continue
+			end
+			if (wep:GetCurrentDNA() == child) then
+				wep:SetCurrentDNA(NULL)
+			end
+			child:Remove()
 			return
 		end
 	end)
