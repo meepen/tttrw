@@ -29,7 +29,7 @@ function ttt.GetHUDTarget()
 	return ply
 end
 
-local LastTarget, LastTime, LastTargetDisguised
+local LastTarget, LastTime
 
 local unided_color = Color(163, 148, 47)
 
@@ -80,19 +80,15 @@ function GM:HUDDrawTargetID()
 		return
 	end
 
-	if (LastTarget ~= ent or LastTargetDisguised ~= disguised or LastTime and LastTime < CurTime() - 1) then
+	if (LastTarget ~= ent or LastTime and LastTime < CurTime() - 1) then
 		LastTarget = ent
-		LastTargetDisguised = disguised
 		LastTime = CurTime()
 		net.Start "ttt_player_target"
 			net.WriteEntity(ent)
-			net.WriteBool(disguised)
 		net.SendToServer()
 		LocalPlayer():SetTarget(ent)
-		LocalPlayer():SetTargetDisguised(disguised)
 		timer.Create("EliminateTarget", 3, 1, function()
 			LocalPlayer():SetTarget(nil)
-			LocalPlayer():SetTargetDisguised(false)
 		end)
 	end
 
