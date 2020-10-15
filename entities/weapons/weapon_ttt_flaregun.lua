@@ -135,9 +135,15 @@ function IgniteTarget(att, path, dmginfo)
 			timer.Simple(dur + 0.1, function()
 				if IsValid(ent) then
 					ent.ignite_info = nil
+					ent.was_burned = nil
 				end
 			end)
 
+			ent.was_burned = {
+				att = att,
+				t = CurTime(),
+				wep = att:GetActiveWeapon():GetClass()
+			}
 		elseif ent:GetClass() == "prop_ragdoll" then
 			ScorchUnderRagdoll(ent)
 
