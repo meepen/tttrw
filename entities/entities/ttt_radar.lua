@@ -126,7 +126,8 @@ else
 		local i = 0
 		for _, pl in pairs(player.GetAll()) do
 			if (pl == self:GetParent() or not pl:Alive()) then continue end
-			
+			if (pl.HasDisguiser and pl:HasDisguiser() and self:GetParent():GetRoleTeam() ~= "traitor") then continue end
+
 			i = i + 1
 
 			local mn, mx = pl:GetModelBounds()

@@ -29,7 +29,7 @@ function ttt.GetHUDTarget()
 	return ply
 end
 
-local LastTarget, LastTime
+local LastTarget, LastTime, LastTargetDisguised
 
 local unided_color = Color(163, 148, 47)
 
@@ -54,10 +54,12 @@ function GM:HUDDrawTargetID()
 	local extra, extra_col = nil, white_text
 	local color = white_text
 
-	local target
+	local disguised = false
 
 	if (ent:IsPlayer()) then
-		if (ent.HasDisguiser and ent:HasDisguiser()) then return end
+		if (ent.HasDisguiser and ent:HasDisguiser()) then
+			disguised = true
+		end
 
 		text = ent:Nick()
 	elseif (ent:GetNW2Bool("IsPlayerBody", false)) then
@@ -78,16 +80,30 @@ function GM:HUDDrawTargetID()
 		return
 	end
 
-	if (LastTarget ~= ent or LastTime and LastTime < CurTime() - 1) then
+	if (LastTarget ~= ent or LastTargetDisguised ~= disguised or LastTime and LastTime < CurTime() - 1) then
 		LastTarget = ent
+		LastTargetDisguised = disguised
 		LastTime = CurTime()
 		net.Start "ttt_player_target"
 			net.WriteEntity(ent)
+			net.WriteBool(disguised)
 		net.SendToServer()
 		LocalPlayer():SetTarget(ent)
+		LocalPlayer():SetTargetDisguised(disguised)
 		timer.Create("EliminateTarget", 3, 1, function()
 			LocalPlayer():SetTarget(nil)
+			LocalPlayer():SetTargetDisguised(false)
 		end)
+	end
+
+	local disguisemsg = ""
+
+	if (disguised) then
+		if (IsValid(ent.HiddenState) and not ent.HiddenState:IsDormant()) then
+			disguisemsg = " (Disguised)"
+		else
+			return
+		end
 	end
 
 	surface.SetFont "TTTRWTargetID"
@@ -114,7 +130,7 @@ function GM:HUDDrawTargetID()
 			y = y + th + 4
 			local role = ent:GetRoleData()
 			local col = role.Color
-			local txt = role.Name
+			local txt = role.Name .. disguisemsg
 
 			tw, th = surface.GetTextSize(txt)
 
