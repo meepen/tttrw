@@ -54,22 +54,56 @@ function PANEL:Init()
     self.CurrentElement:Dock(TOP)
     self.CurrentElement:SetZPos(2)
 
-    self.Button = self:Add "ttt_curved_button"
-    self.Button:SetFont "ttt_dna_menu_header_font"
-    self.Button:SetText "Start Scan"
-    self.Button:SetCurve(4)
-    self.Button:Dock(LEFT)
-    self.Button:SetColor(Color(87, 90, 90))
-    self.Button:SetTextColor(Color(177, 177, 177))
-    self.Button:SetZPos(3)
-	self.Button:DockMargin(Padding, Padding, Padding, 0)
-	self.Button.DoClick = function()
+    self.ToggleButton = self:Add "ttt_curved_button"
+    self.ToggleButton:SetFont "ttt_dna_menu_header_font"
+    self.ToggleButton:SetText "Select DNA"
+    self.ToggleButton:SetCurve(4)
+    self.ToggleButton:Dock(LEFT)
+    self.ToggleButton:SetColor(Color(87, 90, 90))
+    self.ToggleButton:SetTextColor(Color(177, 177, 177))
+    self.ToggleButton:SetZPos(3)
+	self.ToggleButton:DockMargin(Padding, Padding, Padding, 0)
+	self.ToggleButton.DoClick = function()
 		if (not IsValid(self.Variable)) then
 			return
 		end
+        self.ToggleButton:SetText(LocalPlayer():GetWeapon "weapon_ttt_dna":GetCurrentDNA() == self.Variable and "Start Scan" or "Stop Scan")
 		net.Start "weapon_ttt_dna"
 			net.WriteEntity(self.Variable)
 		net.SendToServer()
+	end
+
+    self.DeleteButton = self:Add "ttt_curved_button"
+    self.DeleteButton:SetFont "ttt_dna_menu_header_font"
+    self.DeleteButton:SetText "Select DNA"
+    self.DeleteButton:SetCurve(4)
+    self.DeleteButton:Dock(LEFT)
+    self.DeleteButton:SetColor(Color(87, 90, 90))
+    self.DeleteButton:SetTextColor(Color(177, 177, 177))
+    self.DeleteButton:SetZPos(4)
+	self.DeleteButton:DockMargin(Padding, Padding, Padding, 0)
+	self.DeleteButton.DoClick = function()
+		if (not IsValid(self.Variable)) then
+			return
+		end
+        self.ToggleButton:SetText("Select DNA")
+        self.DeleteButton:SetText("Select DNA")
+        if (IsValid(self.CurrentElement)) then
+            self.CurrentElement:UnSelect()
+        end
+		net.Start "weapon_ttt_dna_delete"
+			net.WriteEntity(self.Variable)
+		net.SendToServer()
+        if (not IsValid(self.Icons)) then
+            return
+        end
+        for k, button in ipairs(self.Icons.Buttons) do
+            if (button.ent == self.Variable) then
+                table.remove(self.Icons.Buttons, k)
+                button:Remove()
+            end
+        end
+        self.Variable = nil
 	end
 
     -- has to be last lol
@@ -83,13 +117,14 @@ end
 function PANEL:ResizeChildrenProperly()
     local header = self.Header:GetTall()
 
-    surface.SetFont(self.Button:GetFont())
+    surface.SetFont(self.ToggleButton:GetFont())
     local _, h = surface.GetTextSize "A"
     local tall = self:GetTall() - Padding * 3.5 - h
 
     self.Icons:SetTall(tall / 5 * 2)
     self.CurrentElement:SetTall(tall / 5 * 2 + Padding)
-    self.Button:SetTall(Padding + h)
+    self.ToggleButton:SetTall(Padding + h)
+    self.DeleteButton:SetTall(Padding + h)
 end
 
 function PANEL:PerformLayout(w, h)
@@ -99,6 +134,8 @@ end
 function PANEL:Select(ent)
 	self.CurrentElement:SetVariable(ent)
 	self.Variable = ent
+    self.ToggleButton:SetText(LocalPlayer():GetWeapon "weapon_ttt_dna":GetCurrentDNA() == self.Variable and "Stop Scan" or "Start Scan")
+    self.DeleteButton:SetText("Delete DNA")
 end
 
 vgui.Register("ttt_dna_menu_body_inner", PANEL, "ttt_curved_panel")
@@ -125,6 +162,7 @@ function PANEL:Init()
         self.Buttons[i]:SetImage(ent:GetImagePath())
         self.Buttons[i]:Dock(LEFT)
         self.Buttons[i]:SetZPos(i)
+        self.Buttons[i].ent = ent
         self.Buttons[i].DoClick = function()
             self:GetParent():Select(ent)
         end
@@ -163,19 +201,24 @@ function PANEL:Init()
     self.Icon = self:Add "DImage"
     self.Icon:Dock(LEFT)
     self.Icon:SetZPos(0)
-    self.Icon:SetImage "materials/tttrw/disagree.png"
     self.Icon:DockMargin(0, 0, Padding, 0)
 
     self.Text = self:Add "DLabel"
     self.Text:SetFont "ttt_dna_menu_header_font"
     self.Text:Dock(FILL)
     self.Text:SetZPos(1)
-    self.Text:SetText "None selected"
+
+    self:UnSelect()
 end
 
 function PANEL:SetVariable(ent)
     self.Icon:SetImage(ent:GetImagePath())
     self.Text:SetText(ent:GetDescription())
+end
+
+function PANEL:UnSelect()
+    self.Icon:SetImage "materials/tttrw/disagree.png"
+    self.Text:SetText "None selected"
 end
 
 function PANEL:PerformLayout(w, h)

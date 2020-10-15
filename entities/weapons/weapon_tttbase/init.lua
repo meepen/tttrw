@@ -21,7 +21,16 @@ function SWEP:PreDrop()
 		end
 	end
 
-	local dna = gmod.GetGamemode():CreateDNAData(self:GetOwner())
+	local own = self:GetOwner()
+
+	for k, rag in ipairs(ents.FindByClass("prop_ragdoll")) do
+		if (rag.HiddenState and IsValid(rag.HiddenState:GetPlayer()) and rag.HiddenState:GetPlayer() == own) then
+			own = rag
+			break
+		end
+	end
+
+	local dna = gmod.GetGamemode():CreateDNAData(own)
 	dna:SetParent(self)
 	dna:Spawn()
 end

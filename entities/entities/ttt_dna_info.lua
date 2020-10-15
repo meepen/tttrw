@@ -66,11 +66,15 @@ end
 function ENT:GetDescription()
 	local source = self:GetOwner()
 
+	if (not IsValid(source)) then
+		self:SetOwner(self:GetParent())
+	end
+
 	if (IsValid(source)) then
 		if (source.HiddenState) then
 			return "Collected from " .. source.HiddenState:GetNick() .. "'s body"
 		elseif (IsValid(source) and source:IsWeapon()) then
-			return "Collected from " .. source:GetPrintName()
+			return "Collected from " .. (startswithvowel(source:GetPrintName()) and " an " or " a ") .. source:GetPrintName()
 		end
 	end
 
