@@ -195,8 +195,8 @@ local function TTTRWUpdateVoiceState(ply, hearing)
 		end
 
 		cache[hear][talk] = able
+		hook.Run("TTTRWUpdateVoiceState", hear, cache[hear])
 	end
-	hook.Run("TTTRWUpdateVoiceState", hear, cache[hear])
 end
 
 timer.Create("tttrw_hear_player_cache", 0.5, 0, function()
