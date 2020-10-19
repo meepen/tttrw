@@ -91,12 +91,13 @@ function SWEP:PrimaryAttack()
 	
 	local had_dna = false
 	local got_dna = 0
+	local dna
 	for _, child in pairs(ent:GetChildren()) do
 		if (child.IsDNA) then
 			had_dna = true
 			if (not already_got[child]) then
 				got_dna = got_dna + 1
-				local dna = gmod.GetGamemode():CreateDNAData(child:GetDNAOwner())
+				dna = gmod.GetGamemode():CreateDNAData(child:GetDNAOwner())
 				dna:SetOwner(child:GetParent())
 				dna:SetOldDNA(child)
 				dna:SetParent(self)
@@ -109,6 +110,7 @@ function SWEP:PrimaryAttack()
 		self:GetOwner():Notify "There are no DNA samples"
 	elseif (got_dna > 0) then
 		self:GetOwner():Notify("You collected " .. got_dna .. " DNA sample" .. (got_dna == 1 and "" or "s"))
+		self:SetCurrentDNA(dna)
 	else
 		self:GetOwner():Notify "You already collected the DNA samples off this."
 	end
