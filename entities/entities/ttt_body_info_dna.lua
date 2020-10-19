@@ -18,7 +18,7 @@ end
 
 function ENT:GetDescription()
 	if (IsValid(self:GetDNAEntity())) then
-		return string.format("This body has DNA that will expire in %.2f seconds", self:GetDNAEntity():GetExpireTime() - CurTime())
+		return "This body has DNA that will expire in " .. math.floor(self:GetDNAEntity():GetExpireTime() - CurTime()) .. " seconds"
 	else
 		return "This body has DNA, but it seems expired"
 	end
