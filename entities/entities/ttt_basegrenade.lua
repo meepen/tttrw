@@ -45,12 +45,11 @@ ENT.Mask = MASK_SOLID
 ENT.CollisionGroup = COLLISION_GROUP_PLAYERSOLID
 
 ENT.Bounds = {
-	Mins = Vector(-10, -10, -8),
-	Maxs = Vector(10, 10, 5),
+	Mins = Vector(-2, -2, -3),
+	Maxs = Vector(2, 2, 3),
 }
 
 function ENT:Trace(from, to)
-	self:GetOwner():LagCompensation(true)
 	local tr = util.TraceHull {
 		start = from,
 		endpos = to,
@@ -60,7 +59,6 @@ function ENT:Trace(from, to)
 		collisiongroup = self.CollisionGroup,
 		filter = self:GetOwner()
 	}
-	self:GetOwner():LagCompensation(false)
 	return tr
 end
 
@@ -100,6 +98,7 @@ function ENT:Think()
 	self:NextThink(CurTime())
 	if (CLIENT) then
 		self:SetNextClientThink(CurTime())
+		debugoverlay.Box(self:GetOrigin(), self.Bounds.Mins, self.Bounds.Maxs, 1, color_white)
 	end
 
 	return true
