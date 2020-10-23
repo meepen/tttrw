@@ -35,22 +35,6 @@ function ENT:Initialize()
     self:SetMoveType(MOVETYPE_NONE)
 	self:SetModel(self.Model)
 	self:DrawShadow(false)
-
-	if (CLIENT and self:GetOwner() == LocalPlayer()) then
-		self:SetPredictable(true)
-	end
-
-	hook.Add("PlayerTick", self, self.PlayerTick)
-
-	self:PlayerTick()
-end
-
-function ENT:PlayerTick(ply)
-	if (ply ~= self:GetOwner()) then
-		return
-	end
-
-	self:Tick()
 end
 
 local function reflect(d, n)
@@ -61,8 +45,8 @@ ENT.Mask = MASK_SOLID
 ENT.CollisionGroup = COLLISION_GROUP_PLAYERSOLID
 
 ENT.Bounds = {
-	Mins = Vector(10, 10, 5),
-	Maxs = Vector(-10, -10, -8),
+	Mins = Vector(-10, -10, -8),
+	Maxs = Vector(10, 10, 5),
 }
 
 function ENT:Trace(from, to)
@@ -70,8 +54,8 @@ function ENT:Trace(from, to)
 	local tr = util.TraceHull {
 		start = from,
 		endpos = to,
-		maxs = self.Bounds.Mins,
-		mins = self.Bounds.Maxs,
+		maxs = self.Bounds.Maxs,
+		mins = self.Bounds.Mins,
 		mask = self.Mask,
 		collisiongroup = self.CollisionGroup,
 		filter = self:GetOwner()
@@ -100,7 +84,7 @@ function ENT:GETVelocity()
 	return self:GetAbsVelocity()
 end
 
-function ENT:Tick()
+function ENT:Think()
 	if (CurTime() >= self:GetDieTime()) then
 		if (self.DoRemove) then
 			self:SetPos(self:GetOrigin())
@@ -112,9 +96,20 @@ function ENT:Tick()
 	end
 
 	self:Move()
+
+	self:NextThink(CurTime())
+	if (CLIENT) then
+		self:SetNextClientThink(CurTime())
+	end
+
+	return true
 end
 
 function ENT:Move()
+	if (not SERVER) then
+		return
+	end
+
 	local ft = FrameTime()
 
 	self:SETVelocity(self:GETVelocity() + Vector(0, 0, -300) * ft)
@@ -147,12 +142,12 @@ function ENT:Move()
 
 	if (tr.StartSolid or tr.Fraction == 0) then
 		self:SETVelocity(vector_origin)
-		next_pos = cur_pos
 	else
+		cur_pos = tr.HitPos
 		self:SetAngles(self:GetAngles() + self:GETVelocity():Angle() * 0.01 * math.min(self:GETVelocity():Length() - 10, 1))
 	end
 
-	self:SetOrigin(next_pos)
+	self:SetOrigin(cur_pos)
 end
 
 function ENT:GrenadeBounce(t)

@@ -54,7 +54,9 @@ function ENT:Move()
 	return BaseClass.Move(self)
 end
 
-function ENT:Tick()
+local size = 100
+
+function ENT:Think()
 	if (SERVER) then
 		local left = self:GetDieTime() - CurTime()
 
@@ -69,14 +71,7 @@ function ENT:Tick()
 			self:EmitSound "sticky_grenade"
 			self:SetNextSound(CurTime() + interval)
 		end
-	end
-
-	BaseClass.Tick(self)
-end
-
-local size = 100
-function ENT:Think()
-	if (CLIENT) then
+	else
 		local dlight = DynamicLight(self:EntIndex(), false)
 
 		dlight.Pos = IsValid(self:GetParent()) and self:LocalToWorld(vector_origin) or self:GetOrigin()
@@ -96,6 +91,8 @@ function ENT:Think()
 		dlight.outerangle = 360
 		dlight.innerangle = 360
 	end
+
+	return BaseClass.Think(self)
 end
 
 local max_dist = 150
