@@ -62,7 +62,7 @@ function PANEL:Init()
     self.ToggleButton:SetColor(Color(87, 90, 90))
     self.ToggleButton:SetTextColor(Color(177, 177, 177))
     self.ToggleButton:SetZPos(3)
-	self.ToggleButton:DockMargin(Padding, Padding, Padding, 0)
+	self.ToggleButton:DockMargin(0, Padding, 0, 0)
 	self.ToggleButton.DoClick = function()
 		if (not IsValid(self.Variable)) then
 			return
@@ -81,7 +81,7 @@ function PANEL:Init()
     self.DeleteButton:SetColor(Color(87, 90, 90))
     self.DeleteButton:SetTextColor(Color(177, 177, 177))
     self.DeleteButton:SetZPos(4)
-	self.DeleteButton:DockMargin(Padding, Padding, Padding, 0)
+	self.DeleteButton:DockMargin(Padding, Padding, 0, 0)
 	self.DeleteButton.DoClick = function()
 		if (not IsValid(self.Variable)) then
 			return
