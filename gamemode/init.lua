@@ -119,13 +119,17 @@ end
 local ttt_dna_max_time = CreateConVar("ttt_dna_max_time", "120", FCVAR_REPLICATED)
 local ttt_dna_max_distance = CreateConVar("ttt_dna_max_distance", "830", FCVAR_REPLICATED)
 
-function GM:PlayerRagdollCreated(ply, rag, atk)
-	if (not IsValid(atk) or atk == ply) then
+function GM:PlayerRagdollCreated(ply, rag, atk, dmg)
+	if (not IsValid(atk) or atk == ply or not atk:IsPlayer() or not IsValid(dmg:GetInflictor())) then
 		return
 	end
 
 	local dist = math.Clamp(atk:GetPos():Distance(ply:GetPos()) / ttt_dna_max_distance:GetFloat(), 0, 1)
 	if (dist >= 1) then
+		return
+	end
+
+	if (dmg:GetDamageType() == DMG_BURN or dmg:GetDamageType() == DMG_BLAST or dmg:GetDamageType() == DMG_SLOWBURN) then
 		return
 	end
 
