@@ -58,6 +58,7 @@ if (SERVER) then
 else
 	local bodies = {}
 	local indicator = surface.GetTextureID("effects/select_ring")
+	local call_color = Color(204, 204, 0)
 	local call_outline = Color(0, 0, 0)
 
 	net.Receive("ttt_call_detective", function(len)
@@ -82,13 +83,12 @@ else
 			end
 
 			local scrpos = info.pos:ToScreen()
+			scrpos.y = scrpos.y - 30
 			if (not scrpos.visible) then
 				continue
 			end
 
 			surface.SetTexture(indicator)
-			
-			surface.SetDrawColor(ttt.roles.Detective.Color)
 
 			local sz = IsOffScreen(scrpos) and 12 or 24
 			scrpos.x = math.Clamp(scrpos.x, sz, ScrW() - sz)
@@ -101,7 +101,7 @@ else
 
 			draw.SimpleTextOutlined(text, "ttt_radar_num_font", scrpos.x, scrpos.y, white_text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 2, call_outline)
 
-			surface.SetDrawColor(ttt.roles.Traitor.Color)
+			surface.SetDrawColor(call_color)
 
 			surface.DrawOutlinedRect(scrpos.x - w / 2 - 5, scrpos.y - h / 2 - 5, w + 10, h + 10)
 			surface.DrawOutlinedRect(scrpos.x - w / 2 - 6, scrpos.y - h / 2 - 6, w + 12, h + 12)
