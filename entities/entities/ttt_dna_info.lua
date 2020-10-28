@@ -20,7 +20,7 @@ function ENT:NetVar(name, type, default)
 end
 
 function ENT:SetupDataTables()
-	self:NetVar("ExpireTime", "Float", math.huge)
+	self:NetVar("ExpireTime", "Float", CurTime() + GetConVar("ttt_dna_max_time"):GetFloat())
 end
 
 function ENT:Initialize()

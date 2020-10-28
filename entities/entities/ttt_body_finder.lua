@@ -2,15 +2,14 @@ AddCSLuaFile()
 
 ENT.Base = "ttt_equipment_info"
 DEFINE_BASECLASS(ENT.Base)
-ENT.PrintName = "TTT Radar"
-ENT.Author = "Ling"
-ENT.Contact = "lingbleed@gmail.com"
+ENT.PrintName = "TTT Body Finder"
+ENT.Author = "add___123"
+ENT.Contact = "itsmeadd.123@gmail.com"
 
 ENT.Equipment = {
-	Name		   = "Radar",
-	Desc 		   = "Pings players' locations, showing them to you.",
+	Name		   = "Body Finder",
+	Desc 		   = "Pings body locations, showing them to you.",
 	CanBuy	       = {
-		traitor = true,
 		Detective = true
 	},
 	Cost 	   	   = 1,
@@ -18,7 +17,7 @@ ENT.Equipment = {
 	Icon           = "materials/tttrw/equipment/radar.png",
 }
 
-ENT.Delay = 12
+ENT.Delay = 30
 
 if (CLIENT) then
 	ENT.Targets = {}
@@ -37,17 +36,17 @@ function ENT:Initialize()
 end
 
 if (CLIENT) then
-	surface.CreateFont("ttt_radar_font", {font = "Lato", size = 14, weight = 1000})
-	surface.CreateFont("ttt_radar_num_font", {font = "Roboto", size = 16, weight = 900})
+	local draw_color = Color(128, 21, 0)
+	local draw_outline = Color(0, 0, 0)
 
-	function ENT:DrawTarget(pl)
-		local scrpos = pl.Pos:ToScreen() -- sweet
+	function ENT:DrawTarget(body)
+		local scrpos = body.Pos:ToScreen()
 		local sz = IsOffScreen(scrpos) and 12 or 24
 		scrpos.x = math.Clamp(scrpos.x, sz, ScrW() - sz)
 		scrpos.y = math.Clamp(scrpos.y, sz, ScrH() - sz)
 		if (IsOffScreen(scrpos)) then return end
 
-		local text = math.ceil(LocalPlayer():GetPos():Distance(pl.Pos))
+		local text = math.ceil(LocalPlayer():GetPos():Distance(body.Pos))
 		surface.SetFont "ttt_radar_num_font"
 		local w, h = surface.GetTextSize(text)
 		-- Show range to target
@@ -60,9 +59,7 @@ if (CLIENT) then
 			surface.SetAlphaMultiplier(1)
 		end
 
-		draw.SimpleTextOutlined(text, "ttt_radar_num_font", scrpos.x, scrpos.y, white_text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 2, Color(0, 0, 0, 255))
-
-		surface.SetDrawColor(pl.Color)
+		draw.SimpleTextOutlined(text, "ttt_radar_num_font", scrpos.x, scrpos.y, white_text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 2, draw_outline)
 
 		surface.DrawOutlinedRect(scrpos.x - w / 2 - 5, scrpos.y - h / 2 - 5, w + 10, h + 10)
 		surface.DrawOutlinedRect(scrpos.x - w / 2 - 6, scrpos.y - h / 2 - 6, w + 12, h + 12)
@@ -77,7 +74,6 @@ if (CLIENT) then
 		for i = 1, amount do
 			local target = {}
 			target.Pos = self:GetNW2Vector("scan_pos_" .. i)
-			target.Color = self:GetNW2Vector("scan_color_" .. i):ToColor()
 			
 			table.insert(self.Targets, target)
 		end
@@ -98,25 +94,24 @@ if (CLIENT) then
 		-- Player radar
 		surface.SetTexture(indicator)
 		
-		for _, pl in pairs(self.Targets) do
-			local scrpos = pl.Pos:ToScreen()
+		for _, body in pairs(self.Targets) do
+			local scrpos = body.Pos:ToScreen()
 			if (not scrpos.visible) then continue end
 			
-			surface.SetDrawColor(pl.Color)
+			surface.SetDrawColor(draw_color)
 
-			self:DrawTarget(pl)
+			self:DrawTarget(body)
 		end
-
 		
 		-- Time until next scan
 		surface.SetFont "ttt_radar_font"
 		surface.SetTextColor(time_color)
 
 		local remaining = math.max(0, self.NextScan - CurTime())
-		local text = string.format("Radar ready for next scan in: %s", string.FormattedTime(remaining, "%02i:%02i"))
+		local text = string.format("Body finder ready in: %s", string.FormattedTime(remaining, "%02i:%02i"))
 		local w, h = surface.GetTextSize(text)
 
-		surface.SetTextPos(ScrW() / 2 - w / 2, ScrH() - 140 - h)
+		surface.SetTextPos(ScrW() / 2 - w / 2, ScrH() - 120 - h)
 		surface.DrawText(text)
 	end
 else
@@ -124,19 +119,12 @@ else
 		self:SetNW2Float("next_scan", CurTime() + self.Delay)
 		
 		local i = 0
-		for _, pl in pairs(player.GetAll()) do
-			if (pl == self:GetParent() or not pl:Alive()) then continue end
-			if (pl.HasDisguiser and pl:HasDisguiser() and self:GetParent():GetRoleTeam() ~= "traitor") then continue end
+		for _, body in ipairs(ents.FindByClass("prop_ragdoll")) do
+			if (not body:GetNW2Bool("IsPlayerBody", false)) then continue end
 
 			i = i + 1
-
-			local mn, mx = pl:GetModelBounds()
 			
-			self:SetNW2Vector("scan_pos_" .. i, pl:GetPos() + Vector(0, 0, (mx.z + mn.z) / 2))
-			
-			local color = pl.HiddenState:IsVisibleTo(self:GetParent()) and pl:GetRoleData().Color or ttt.teams.innocent.Color
-			
-			self:SetNW2Vector("scan_color_" .. i, color:ToVector())
+			self:SetNW2Vector("scan_pos_" .. i, body:GetPos())
 		end
 		
 		self:SetNW2Int("amount", i)

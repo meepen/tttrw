@@ -6,6 +6,8 @@ gameevent.Listen "player_spawn"
 
 local unconnected = {}
 
+local ttt_dna_max_time = CreateConVar("ttt_dna_max_time", "120", FCVAR_REPLICATED)
+
 function GM:player_disconnect(info)
 	hook.Run("PlayerDisconnected", Player(info.userid))
 end

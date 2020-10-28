@@ -79,6 +79,10 @@ function PANEL:Init()
 	self.CurrentElement:Dock(TOP)
 	self.CurrentElement:SetZPos(2)
 
+	self.Buttons = self:Add "ttt_body_inspect_buttons"
+	self.Buttons:Dock(TOP)
+	self.Buttons:SetZPos(3)
+
 	-- has to be last lol
 	self.Icons = self:Add "ttt_body_inspect_icon_list"
 	self.Icons:Dock(TOP)
@@ -92,8 +96,8 @@ function PANEL:ResizeChildrenProperly()
 
 	local tall = self:GetTall() - Padding * 3.5
 
-	self.Icons:SetTall(tall / 5 * 2)
-	self.CurrentElement:SetTall(tall / 5 * 2 + Padding)
+	self.Icons:SetTall(tall / 6 * 2)
+	self.CurrentElement:SetTall(tall / 6 * 2 + Padding)
 end
 
 function PANEL:PerformLayout(w, h)
@@ -175,6 +179,54 @@ end
 
 vgui.Register("ttt_body_inspect_weapon_button", PANEL, "ttt_curved_button")
 
+local PANEL = {}
+
+function PANEL:Init()
+	local Padding = Padding / 2
+
+	self:DockMargin(0, Padding, Padding, Padding)
+
+	self.Confirm = self:Add "ttt_curved_button"
+	self.Confirm:SetText "Confirm Body"
+	self.Confirm:SetWide(ScrW() * 0.05)
+    self.Confirm:SetColor(Color(87, 90, 90))
+    self.Confirm:SetTextColor(Color(177, 177, 177))
+	self.Confirm.DoClick = function()
+		if (not IsValid(ttt.InspectBody)) then
+			return
+		end
+
+		net.Start "ttt_inspect_body"
+			net.WriteEntity(ttt.InspectBody)
+			net.WriteBool(true)
+		net.SendToServer()
+	end
+	self.Confirm:SetCurve(4)
+	self.Confirm:Dock(LEFT)
+	self.Confirm:DockMargin(Padding, 0, 0, 0)
+	self.Confirm:SetZPos(0)
+
+	self.Detective = self:Add "ttt_curved_button"
+	self.Detective:SetText "Call Detective"
+	self.Detective:SetWide(ScrW() * 0.05)
+    self.Detective:SetColor(Color(87, 90, 90))
+    self.Detective:SetTextColor(Color(177, 177, 177))
+	self.Detective.DoClick = function()
+		if (not IsValid(ttt.InspectBody)) then
+			return
+		end
+
+		net.Start "ttt_call_detective"
+			net.WriteEntity(ttt.InspectBody)
+		net.SendToServer()
+	end
+	self.Detective:SetCurve(4)
+	self.Detective:Dock(LEFT)
+	self.Detective:DockMargin(Padding, 0, 0, 0)
+	self.Detective:SetZPos(1)
+end
+
+vgui.Register("ttt_body_inspect_buttons", PANEL, "EditablePanel")
 
 local PANEL = {}
 

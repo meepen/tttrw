@@ -231,6 +231,8 @@ function GM:TTTSelectRoles(plys)
 			Role = ttt.roles[role]
 		}
 	end
+
+	hook.Run("TTTRolesSelected")
 end
 
 local function TryStart()
