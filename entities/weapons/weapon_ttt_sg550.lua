@@ -56,5 +56,5 @@ SWEP.Ironsights = {
 
 SWEP.RecoilInstructions = {
 	Interval = 1,
-	Angle(-20),
+	Angle(-40),
 }

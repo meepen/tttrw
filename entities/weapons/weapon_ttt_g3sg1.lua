@@ -25,13 +25,13 @@ SWEP.Bullets = {
 	Spread = vector_origin
 }
 
-SWEP.Primary.Damage        = 33
-SWEP.Primary.Delay         = 0.56
+SWEP.Primary.Damage        = 34
+SWEP.Primary.Delay         = 0.5
 SWEP.Primary.Recoil        = 2
 SWEP.Primary.RecoilTiming  = 0.085
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "357"
-SWEP.Primary.ClipSize      = 20 --15
+SWEP.Primary.ClipSize      = 15 --15
 SWEP.Primary.DefaultClip   = 30 --30
 SWEP.Primary.Sound         = Sound "Weapon_G3SG1.Single"
 SWEP.Secondary.Sound       = Sound "Default.Zoom"
@@ -55,10 +55,10 @@ SWEP.Ironsights = {
 	TimeTo = 0.075,
 	TimeFrom = 0.1,
 	SlowDown = 0.3,
-	Zoom = 0.12,
+	Zoom = 0.2,
 }
 
 SWEP.RecoilInstructions = {
 	Interval = 1,
-	Angle(-40),
+	Angle(-35),
 }

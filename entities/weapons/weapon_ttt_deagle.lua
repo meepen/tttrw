@@ -24,7 +24,7 @@ SWEP.Bullets = {
 }
 
 SWEP.Primary.Damage        = 30
-SWEP.Primary.Delay         = 0.7
+SWEP.Primary.Delay         = 0.8
 SWEP.Primary.Recoil        = 3.2
 SWEP.Primary.RecoilTiming  = 0.06
 SWEP.Primary.Automatic     = true
@@ -53,5 +53,5 @@ SWEP.Ironsights = {
 
 SWEP.RecoilInstructions = {
 	Interval = 1,
-	Angle(-50),
+	Angle(-65),
 }
