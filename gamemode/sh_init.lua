@@ -130,10 +130,6 @@ function GM:StartCommand(ply, cmd)
 end
 
 function GM:ScalePlayerDamage(ply, hitgroup, dmg)
-	local wep = dmg:GetInflictor()
-	if (IsValid(wep) and wep.ScaleDamage) then
-		wep:ScaleDamage(hitgroup, dmg)
-	end
 	if (SERVER) then
 		self:Karma_ScalePlayerDamage(ply, hitgroup, dmg)
 	end

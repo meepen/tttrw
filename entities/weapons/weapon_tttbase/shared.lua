@@ -255,17 +255,48 @@ function SWEP:DoDamageDropoff(tr, dmginfo)
 	end
 end
 
-local ignore = {
-	[HITGROUP_LEFTARM] = true,
-	[HITGROUP_RIGHTARM] = true,
-}
-
 function SWEP:FireBulletsCallback(tr, dmginfo, data)
 	local bullet = dmginfo:GetInflictor().Bullets
 
-	self:DoDamageDropoff(tr, dmginfo)
+	-- hitbox penetration
+	if (tr.Entity and tr.Entity:IsPlayer()) then
+		local ply = tr.Entity
+		local set = ply:GetHitboxSet()
+		local curscale = self:GetHitgroupScale(tr.HitGroup)
+		for hitbox = 0, ply:GetHitBoxCount(set) - 1 do
+			local group = ply:GetHitBoxHitGroup(hitbox, set)
+			-- check if better scale
+			local scale = self:GetHitgroupScale(group)
+			if (scale < curscale) then
+				continue
+			end
+
+			local bone = ply:GetHitBoxBone(hitbox, set)
+			if (not bone) then
+				continue
+			end
+
+			local origin, angles = ply:GetBonePosition(bone)
+			local mins, maxs = ply:GetHitBoxBounds(hitbox, set)
+
+			-- check if hit
+			local hitpos = util.IntersectRayWithOBB(tr.StartPos, tr.StartPos + tr.Normal * 0xFFFF, origin, angles, mins, maxs)
+
+			if (not hitpos) then
+				continue
+			end
+
+
+			tr.HitPos = hitpos
+			tr.HitGroup = group
+			tr.HitBox = HitBox
+			curscale = scale
+		end
+	end
 
 	dmginfo:SetDamageCustom(tr.HitGroup)
+	self:ScaleDamage(tr.HitGroup, dmginfo)
+	self:DoDamageDropoff(tr, dmginfo)
 end
 
 local vector_origin = vector_origin
