@@ -123,6 +123,10 @@ function GM:StartCommand(ply, cmd)
 	end
 
 	player_manager.RunClass(ply, "StartCommand", cmd)
+
+	local ang = cmd:GetViewAngles()
+	ang.r = 1
+	cmd:SetViewAngles(ang)
 end
 
 function GM:ScalePlayerDamage(ply, hitgroup, dmg)
@@ -195,4 +199,8 @@ function GM:FormatPlayerText(ply, text, team)
 
 		return replace
 	end), amount
+end
+
+function GM:EntityFireBullets(ent, data)
+	return true
 end

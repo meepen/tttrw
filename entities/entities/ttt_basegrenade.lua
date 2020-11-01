@@ -98,7 +98,7 @@ function ENT:Think()
 	self:NextThink(CurTime())
 	if (CLIENT) then
 		self:SetNextClientThink(CurTime())
-		debugoverlay.Box(self:GetOrigin(), self.Bounds.Mins, self.Bounds.Maxs, 1, color_white)
+		--debugoverlay.Box(self:GetOrigin(), self.Bounds.Mins, self.Bounds.Maxs, 1, color_white)
 	end
 
 	return true

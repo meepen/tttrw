@@ -237,8 +237,6 @@ function SWEP:GetDeveloperMode()
 	return false
 end
 
-local informations = {}
-
 function SWEP:OnDrop()
 	self:SetIronsightsTime(CurTime() - self:GetIronsightsTimeFrom())
 	self:SetIronsights(false)
@@ -257,32 +255,6 @@ function SWEP:DoDamageDropoff(tr, dmginfo)
 	end
 end
 
-ttt.ModelHitboxes = ttt.ModelHitboxes or {}
-
-local function GetModel(ply)
-	local m = ply:GetModel()
-	local r = ttt.ModelHitboxes[m]
-
-	if (not r) then
-		r = {}
-		ttt.ModelHitboxes[m] = r
-
-		for group = 0, ply:GetHitboxSetCount() - 1 do
-			r[group] = {}
-			for hitbox = 0, ply:GetHitBoxCount(group) - 1 do
-				r[group][hitbox] = {
-					Collide = CreatePhysCollideBox(ply:GetHitBoxBounds(hitbox, group)),
-					Group = ply:GetHitBoxHitGroup(hitbox, group),
-					Bone = ply:GetHitBoxBone(hitbox, group),
-				}
-			end
-		end
-	end
-
-	return r
-end
-
-
 local ignore = {
 	[HITGROUP_LEFTARM] = true,
 	[HITGROUP_RIGHTARM] = true,
@@ -293,164 +265,20 @@ function SWEP:FireBulletsCallback(tr, dmginfo, data)
 
 	self:DoDamageDropoff(tr, dmginfo)
 
-	if (tr.IsFake) then
-		return
-	end
-
-	if (IsValid(tr.Entity) and tr.Entity:IsPlayer()) then
-		if (CLIENT and IsFirstTimePredicted()) then
-
-			local mdl = GetModel(tr.Entity)
-
-			local hitgroup = tr.HitGroup
-
-			if (mdl) then
-				local d = dmginfo:GetDamage()
-				local best = 0
-			
-				for _, hitbox in pairs(mdl[tr.Entity:GetHitboxSet()]) do
-					local origin, angles = tr.Entity:GetBonePosition(hitbox.Bone)
-					if (not IsValid(hitbox.Collide)) then
-						continue
-					end
-
-					local hitpos, norm, frac = hitbox.Collide:TraceBox(origin, angles, tr.StartPos, tr.StartPos + tr.Normal * 10000, vector_origin, vector_origin)
-					if (hitpos and (ignore[tr.HitGroup] or hitpos:Distance(tr.HitPos) < 14)) then
-						dmginfo:SetDamage(d)
-						self:DoDamageDropoff(tr, dmginfo)
-						self:ScaleDamage(hitbox.Group, dmginfo)
-
-						if (dmginfo:GetDamage() > best) then
-							best, hitgroup = dmginfo:GetDamage(), hitbox.Group
-						end
-					end
-				end
-
-				dmginfo:SetDamage(d)
-			end
-
-			self.HitboxHit = hitgroup
-			self.EntityHit = tr.Entity
-		elseif (SERVER) then
-			dmginfo:SetDamageCustom(tr.Entity:LastHitGroup())
-		end
-		if (self.Bullets.Num == 1) then
-			dmginfo:SetDamage(0)
-		end
-	end
-	
-	if (SERVER) then
-		self.HitEntity = false and IsValid(tr.Entity) and tr.Entity:IsPlayer()
-		self.TickCount = self:GetOwner():GetCurrentCommand():TickCount()
-		self.LastShootTrace = tr
-	end
+	dmginfo:SetDamageCustom(tr.HitGroup)
 end
-
-
-function SWEP:Hitboxes()
-	if (self:GetDeveloperMode()) then
-		local owner = self:GetOwner()
-		if (not IsValid(owner) or owner:IsBot()) then
-			return 
-		end
-		local tick = math.floor(CurTime() / engine.TickInterval())
-
-		if (math.floor(tick % 5) ~= 0) then
-			return
-		end
-
-		local hitboxes = {}
-		local otherstuff = {}
-
-		otherstuff.CurTime = CurTime()
-
-		owner:LagCompensation(true)
-
-
-		if (SERVER) then
-			net.Start("tttrw_developer_hitboxes", true)
-			net.WriteUInt(tick, 32)
-			net.WriteEntity(self)
-		end
-		for _, ply in pairs(player.GetAll()) do
-			if (not ply:Alive() or ply == owner) then
-				continue
-			end
-
-			local group = ply:GetHitboxSet()
-			net.WriteUInt(ply:GetHitBoxCount(group), 16)
-			for hitbox = 0, ply:GetHitBoxCount(group) - 1 do
-				local bone = ply:GetHitBoxBone(hitbox, group)
-				local pos, angles = ply:GetBonePosition(bone)
-				local min, max = ply:GetHitBoxBounds(hitbox, group)
-				if (SERVER) then
-					net.WriteVector(pos)
-					net.WriteVector(min)
-					net.WriteVector(max)
-					net.WriteAngle(angles)
-				else
-					hitboxes[#hitboxes + 1] = {pos, min, max, angles}
-				end
-			end
-		end
-		owner:LagCompensation(false)
-
-		if (CLIENT) then
-			self.DeveloperInformations = {
-				Tick = tick,
-				hitboxes = hitboxes,
-			}
-		else
-			net.Send(self:GetOwner())
-		end
-	end
-end
-
 
 local vector_origin = vector_origin
 
 function SWEP:ShootBullet(data)
 	local owner = self:GetOwner()
-	
-	self:Hitboxes()
 
 	self:SetRealLastShootTime(CurTime())
+
 	owner:LagCompensation(true)
-
-	if (SERVER) then
-		self.LastHitboxes = {}
-		for _, ply in pairs(player.GetAll()) do
-			if (not ply:Alive() or ply == owner) then
-				continue
-			end
-
-			--[[
-			local hitboxes = {}
-
-			local group = ply:GetHitboxSet()
-			for hitbox = 0, ply:GetHitBoxCount(group) - 1 do
-				local bone = ply:GetHitBoxBone(hitbox, group)
-				local pos, angles = ply:GetBonePosition(bone)
-				local min, max = ply:GetHitBoxBounds(hitbox, group)
-				hitboxes[hitbox] = {pos, min, max, angles}
-			end
-
-			self.LastHitboxes[ply:EntIndex()] = hitboxes
-			]]
-
-			local mn, mx = ply:GetHull()
-			self.LastHitboxes[ply] = {
-				Mins = mn,
-				Maxs = mx,
-				Pos = ply:GetPos()
-			}
-		end
-	end
-
 	self:DoFireBullets(nil, nil, data)
 	owner:LagCompensation(false)
 
-	-- how this happen?
 	if (IsValid(self.Owner)) then
 		self:ShootEffects()
 	end
@@ -722,8 +550,6 @@ function SWEP:Think()
 	if (CLIENT) then
 		self:CalcAllUnpredicted()
 	end
-
-	self:Hitboxes()
 end
 
 function SWEP:GetCurrentZoomMultiplier()
