@@ -86,7 +86,7 @@ local scales = {
 	[HITGROUP_RIGHTARM] = 0.7,
 	[HITGROUP_LEFTLEG] = 0.7,
 	[HITGROUP_RIGHTLEG] = 0.7,
-	[HITGROUP_GEAR] = 0.7
+	[HITGROUP_GEAR] = 0
 }
 
 function SWEP:GetHitgroupScale(hg)
@@ -289,14 +289,18 @@ function SWEP:FireBulletsCallback(tr, dmginfo, data)
 
 			tr.HitPos = hitpos
 			tr.HitGroup = group
-			tr.HitBox = HitBox
+			tr.HitBox = hitbox
 			curscale = scale
 		end
 	end
 
 	dmginfo:SetDamageCustom(tr.HitGroup)
-	self:ScaleDamage(tr.HitGroup, dmginfo)
-	self:DoDamageDropoff(tr, dmginfo)
+	if (tr.HitGroup == HITGROUP_GEAR) then
+		dmginfo:SetDamage(0)
+	else
+		self:ScaleDamage(tr.HitGroup, dmginfo)
+		self:DoDamageDropoff(tr, dmginfo)
+	end
 end
 
 local vector_origin = vector_origin
