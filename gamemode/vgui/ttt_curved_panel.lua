@@ -131,17 +131,17 @@ function PANEL:Paint(w, h)
 		self._OLDY = y
 	end
 
-	self:Scissor()
 	render.SetColorMaterial()
-	if (true) then
+	if (not In3D) then
+		self:Scissor()
 		hud.StartStenciledMesh(self.Mesh, 0, 0)
 		surface.SetDrawColor(self.Color or color_white)
 		surface.DrawRect(0, 0, self:GetSize())
 		hud.EndStenciledMesh()
+		render.SetScissorRect(0, 0, 0, 0, false)
 	else
 		self.Mesh:Draw()
 	end
-	render.SetScissorRect(0, 0, 0, 0, false)
 end
 
 vgui.Register("ttt_curved_panel", PANEL, "EditablePanel")
