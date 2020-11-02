@@ -28,6 +28,7 @@ SWEP.Secondary.DefaultClip   = -1
 SWEP.Secondary.Automatic     = true
 SWEP.Secondary.Ammo          = "none"
 SWEP.Secondary.Delay         = 5
+SWEP.Secondary.Damage        = 60
 SWEP.Secondary.Animation = ACT_VM_HITCENTER
 SWEP.DeploySpeed = 1.3
 
@@ -221,18 +222,13 @@ function SWEP:Think()
 		local spos = owner:GetShootPos()
 		local sdest = spos + owner:GetAimVector() * 120
 	
-		local tr_main = util.TraceLine {
-			start = spos,
-			endpos = sdest,
-			filter = owner,
-			mask = MASK_SHOT_HULL
-		}
+		local tr_main = self:DoTrace(self:GetMask())
 
 		owner:LagCompensation(false)
 
 		self:HitEffects(tr_main)
 		if (IsValid(tr_main.Entity)) then
-			self:DoHit(tr_main.Entity, tr_main, 60)
+			self:DoHit(tr_main.Entity, tr_main, self.Secondary.Damage or 60)
 		end
 		self:EmitSound(self:GetCurrentAnimation().snd)
 	end
