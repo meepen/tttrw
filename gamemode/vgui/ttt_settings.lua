@@ -509,7 +509,6 @@ function GM:ShowHelp()
 		ttt.settings:AddTab("Gameplay", gameplay)
 
 		local sound = vgui.Create "ttt_settings_category"
-		sound:AddTextEntry("Where to put sounds (create if not exist)", nil, util.RelativePathToFull ".":sub(1, -2) .. "sound")
 		sound:AddCheckBox("Disable Direct Damage Hitsounds", "tttrw_hitmarker_no_direct")
 		sound:AddTextEntry("Hitmarker", "tttrw_hitmarker_sound")
 		sound:AddSlider("Volume", "tttrw_hitmarker_sound_volume")

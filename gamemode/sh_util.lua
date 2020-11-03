@@ -18,6 +18,6 @@ end
 if (CLIENT) then
 	concommand.Add("extract_file", function(_, _, _, s)
 		file.Write(s:gsub("/", "_") .. ".dat", file.Read(s, "GAME"))
-		print(util.RelativePathToFull("data/" .. s:gsub("/", "_") .. ".dat"))
+		print("data/" .. s:gsub("/", "_") .. ".dat")
 	end)
 end

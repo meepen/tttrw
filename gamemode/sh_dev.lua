@@ -114,5 +114,5 @@ concommand.Add("save_weapon_info", function(ply, cmd, args)
 
 	f:Close()
 
-	printf("Saved to %s", util.RelativePathToFull("data/" .. args[1]))
+	printf("Saved to %s", "data/" .. args[1])
 end)
