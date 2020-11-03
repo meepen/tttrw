@@ -40,7 +40,7 @@ function GM:PostDrawOpaqueRenderables()
 			continue
 		end
 
-		if (ignorez and local_team == other_team) then
+		if (ignorez and local_team == other_team and ply:GetRoleData().NoIgnoreZ ~= false) then
 			cam.IgnoreZ(true)
 		end
 

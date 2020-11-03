@@ -101,6 +101,7 @@ AccessorFunc(TEAM, "VoiceChannel")
 AccessorFunc(TEAM, "DeathIcon")
 AccessorFunc(TEAM, "DefaultCredits")
 AccessorFunc(TEAM, "CalculateAmount", "CalculateAmountFunc")
+AccessorFunc(TEAM, "NoIgnoreZ", "CanSeeThroughWalls")
 
 setmetatable(SEEN_BY_ALL, SEEN_BY_ALL)
 
