@@ -307,15 +307,19 @@ local vector_origin = vector_origin
 function SWEP:ShootBullet(data)
 	local owner = self:GetOwner()
 
+	local last_shoot = self:GetRealLastShootTime()
+
 	self:SetRealLastShootTime(CurTime())
 
 	owner:LagCompensation(true)
-	self:DoFireBullets(nil, nil, data)
+	local shot = self:DoFireBullets(nil, nil, data, last_shoot)
 	owner:LagCompensation(false)
 
 	if (IsValid(self.Owner)) then
 		self:ShootEffects()
 	end
+
+	return shot or 1
 end
 
 function SWEP:GetPrimaryAttackAnimation()
@@ -340,7 +344,7 @@ function SWEP:AddOwnerFilter(filter)
 	return player_manager.RunClass(self:GetOwner(), "AddHitFilter", filter)
 end
 
-function SWEP:DoFireBullets(src, dir, data)
+function SWEP:DoFireBullets(src, dir, data, last_shoot)
 	local bullet_info = self.Bullets
 	local owner = self:GetOwner()
 
@@ -361,8 +365,18 @@ function SWEP:DoFireBullets(src, dir, data)
 
 	ignore = self:AddOwnerFilter(ignore)
 
+	local shot = 1
+
+	if (self:GetConsecutiveShots() > 0) then
+		local interval = engine.TickInterval()
+		local delay = self:GetDelay()
+		local shot = self:GetConsecutiveShots()
+		local diff = math.floor(delay / interval * shot) - math.floor(delay / interval * (shot - 1))
+		shot = shot + diff
+	end
+
 	local bullets = {
-		Num = bullet_info.Num,
+		Num = bullet_info.Num * shot,
 		Attacker = owner,
 		Damage = self:GetDamage(),
 		Tracer = 0,
@@ -386,7 +400,9 @@ function SWEP:DoFireBullets(src, dir, data)
 
 	self:FireBullets(bullets)
 
-	self:SetBulletsShot(self:GetBulletsShot() + 1)
+	self:SetBulletsShot(self:GetBulletsShot() + shot)
+
+	return shot
 end
 
 function SWEP:TracerEffect(tr, dmg)
@@ -476,10 +492,10 @@ function SWEP:DefaultShoot()
 		self:EmitSound(self.Primary.Sound, self.Primary.SoundLevel or 1)
 	end
 
-	self:ShootBullet()
+	local shot = self:ShootBullet() or 1
 
 	if (not self:GetDeveloperMode()) then
-		self:TakePrimaryAmmo(1)
+		self:TakePrimaryAmmo(shot)
 	end
 
 	self:ViewPunch()
