@@ -135,7 +135,7 @@ function GM:PreDrawViewModel(vm, ply, wep)
 	end
 	wep.ViewModelFlip = stored
 
-	BaseClass.PreDrawViewModel(self)
+	BaseClass.PreDrawViewModel(self, vm, ply, wep)
 end
 
 function GM:PostDrawViewModel(vm, ply, weapon)
