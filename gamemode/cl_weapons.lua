@@ -122,6 +122,8 @@ end
 
 local cl_righthand = CreateConVar("cl_righthand", "1", FCVAR_ARCHIVE, "Switches which hand viewmodels are drawn", 0, 1)
 
+DEFINE_BASECLASS "gamemode_base"
+
 function GM:PreDrawViewModel(vm, ply, wep)
 	if (not IsValid(wep)) then
 		return
@@ -132,6 +134,8 @@ function GM:PreDrawViewModel(vm, ply, wep)
 		stored = not stored
 	end
 	wep.ViewModelFlip = stored
+
+	BaseClass.PreDrawViewModel(self)
 end
 
 function GM:PostDrawViewModel(vm, ply, weapon)
