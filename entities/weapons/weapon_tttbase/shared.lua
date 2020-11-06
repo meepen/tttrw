@@ -260,6 +260,8 @@ function SWEP:FireBulletsCallback(tr, dmginfo, data)
 		local ply = tr.Entity
 		local set = ply:GetHitboxSet()
 		local curscale = self:GetHitgroupScale(tr.HitGroup)
+
+		tr.HitGroup = ply:GetHitBoxHitGroup(tr.HitBox, set)
 		for hitbox = 0, ply:GetHitBoxCount(set) - 1 do
 			local group = ply:GetHitBoxHitGroup(hitbox, set)
 			-- check if better scale
