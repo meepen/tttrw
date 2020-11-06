@@ -120,6 +120,20 @@ function GM:PlayerBindPress(ply, bind, pressed)
 	end
 end
 
+local cl_righthand = CreateConVar("cl_righthand", "1", FCVAR_ARCHIVE, "Switches which hand viewmodels are drawn", 0, 1)
+
+function GM:PreDrawViewModel(vm, ply, wep)
+	if (not IsValid(wep)) then
+		return
+	end
+
+	local stored = baseclass.Get(wep.ClassName).ViewModelFlip
+	if (not cl_righthand:GetBool()) then
+		stored = not stored
+	end
+	wep.ViewModelFlip = stored
+end
+
 function GM:PostDrawViewModel(vm, ply, weapon)
 	if (weapon.UseHands or not weapon:IsScripted()) then
 

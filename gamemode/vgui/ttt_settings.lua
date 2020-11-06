@@ -494,6 +494,7 @@ function GM:ShowHelp()
 		local gameplay = vgui.Create "ttt_settings_category"
 		gameplay:AddCheckBox("Spectator Mode", "tttrw_afk")
 		gameplay:AddCheckBox("Aim Down Sights Toggle", "tttrw_toggle_ads")
+		gameplay:AddCheckBox("Switch Gun Hand", "cl_righthand")
 		gameplay:AddCheckBox("Outline players roles", "tttrw_outline_roles")
 		gameplay:AddCheckBox("See outlines through walls", "tttrw_outline_roles_ignorez")
 		gameplay:AddCheckBox("See nameplates after round or while dead", "tttrw_spec_nameplates")
