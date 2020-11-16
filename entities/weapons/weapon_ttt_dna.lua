@@ -111,6 +111,7 @@ function SWEP:PrimaryAttack()
 	elseif (got_dna > 0) then
 		self:GetOwner():Notify("You collected " .. got_dna .. " DNA sample" .. (got_dna == 1 and "" or "s"))
 		self:SetCurrentDNA(dna)
+		hook.Run("TTTFoundDNA", self:GetOwner(), dna:GetDNAOwner(), ent)
 	else
 		self:GetOwner():Notify "You already collected the DNA samples off this."
 	end

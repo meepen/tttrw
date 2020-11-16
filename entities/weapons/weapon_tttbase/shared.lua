@@ -211,6 +211,10 @@ function SWEP:Deploy()
 	return true
 end
 
+function SWEP:GetReloadAnimation()
+	return self.ReloadAnimation
+end
+
 function SWEP:Reload()
 	if (self:GetReloadEndTime() ~= math.huge or self:Clip1() == self:GetMaxClip1() or self:GetOwner():GetAmmoCount(self:GetPrimaryAmmoType()) <= 0) then
 		return
@@ -219,7 +223,7 @@ function SWEP:Reload()
 	if (CLIENT) then
 		self:CalcFOV()
 	end
-	self:DoReload(self.ReloadAnimation)
+	self:DoReload(self:GetReloadAnimation())
 end
 
 function SWEP:SecondaryAttack()
@@ -383,7 +387,7 @@ function SWEP:DoFireBullets(src, dir, data, last_shoot)
 		TracerName = self:GetTracerName(),
 		Spread = self:GetSpread(),
 		HullSize = bullet_info.HullSize,
-		Force = force,
+		Force = 0,
 		Callback = function(atk, tr, dmg)
 			if (IsValid(self)) then
 				self:FireBulletsCallback(tr, dmg, data)
