@@ -37,7 +37,7 @@ SWEP.IsSilent                = true
 
 SWEP.AutoSpawnable           = false
 SWEP.AllowDelete             = false -- never removed for weapon reduction
-SWEP.AllowDrop               = false
+SWEP.AllowDrop               = true
 
 SWEP.Ortho = {1, 1, angle = Angle(180, -90, -0)}
 
@@ -292,7 +292,9 @@ function SWEP:SecondaryAttack()
 end
 
 function SWEP:OnDrop()
-	self:Remove()
+	if (self:GetClass() == "weapon_ttt_crowbar") then
+		self:Remove()
+	end
 end
 
 function SWEP:ScaleDamage(hitgroup, dmg)
