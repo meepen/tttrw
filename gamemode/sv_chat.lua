@@ -152,6 +152,12 @@ local SoundStates = {
 		end,
 	},
 	{
+		Name = "Mute Dead",
+		Query = function(hear, talk)
+			return talk:Alive()
+		end,
+	},
+	{
 		Name = "Mute All",
 		Query = function(hear, talk)
 			return false
@@ -239,6 +245,9 @@ function GM:PlayerCanHearPlayersVoice(hear, talk)
 end
 
 function GM:ShowTeam(p)
+	if (p:Alive()) then
+		return
+	end
 	p.SoundState = ((p.SoundState or 0) + 1) % #SoundStates
 	p:ChatPrint("Voice state set to: " .. GetSoundState(p).Name)
 end
