@@ -156,7 +156,7 @@ function GM:DoPlayerDeath(ply, atk, dmg)
 
 	self:Karma_DoPlayerDeath(ply, atk, dmg)
 
-	if (IsValid(atk) and atk:IsPlayer()) then
+	if (IsValid(atk) and atk:IsPlayer() and ply ~= att) then
 		table.insert(atk.Killed, ply)
 	end
 

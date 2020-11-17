@@ -361,12 +361,11 @@ function PANEL:PerformLayout(w, h)
 		{x = w, y = h},
 		{x = w * 0.4 - Slant + Padding, y = h},
 	}
-
 	
 	self.RankContainer:SetWide(w * 0.4 - Slant * 2 - self.Name:GetWide())
 
 	if (IsValid(self.Status)) then 
-		self.Status:SetPos(w*.4-Slant+Padding*3, Padding/2)
+		self.Status:SetPos(w*.395-Slant+Padding*3, Padding/2)
 	end
 end
 
@@ -475,7 +474,7 @@ function PANEL:Init()
 	self:DockPadding(0, 0, Padding * Padding, 0)
 	self:DockMargin(0, -Padding/4, 0, 0)
 	
-	for STATUS = ttt.STATUS_MISSING, ttt.STATUS_KOS do
+	for STATUS = ttt.STATUS_MISSING, ttt.STATUS_FRIEND do
 		self.Statuses[STATUS] = self:Add "ttt_scoreboard_status"
 		self.Statuses[STATUS]:SetStatus(STATUS)
 		self.Statuses[STATUS]:SizeToContentsX()

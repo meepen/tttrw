@@ -1,3 +1,5 @@
+local ttt_print_damage_logs = CreateConVar("ttt_print_damage_logs", "1", FCVAR_REPLICATED, "Print damage logs enable")
+
 function GM:InsertLog(...)
     table.insert(self.CurrentLogs, {
         Time = CurTime(),
@@ -39,8 +41,11 @@ function GM:DamageLogs_TTTPrepareRound()
 end
 
 function GM:DamageLogs_TTTEndRound()
-    local text = {}
+    if (not ttt_print_damage_logs:GetBool()) then
+        return
+    end
 
+    local text = {}
 
     for i, log in ipairs(self.CurrentLogs) do
         text[i] = string.format("%.2f: %s", log.Time - self.StartTime, log.Text)

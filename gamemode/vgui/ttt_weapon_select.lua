@@ -33,8 +33,9 @@ function PANEL:Init()
 	self:SetCurveBottomRight(false)
 	self:SetCurveTopRight(false)
 end
+
 function PANEL:OnPlayerRoleChange(ply, old, new)
-	if (ply == Player()) then
+	if (ply == Player() and new) then
 		self:SetColor((ttt.roles[new] or ttt.roles.Spectator).Color)
 	end
 end
@@ -108,10 +109,11 @@ function PANEL:OnWeaponNameChange()
 end
 
 function PANEL:OnPlayerRoleChange(ply, old, new)
-	if (ply == Player() and IsValid(self.Active)) then
+	if (ply == Player() and IsValid(self.Active) and new) then
 		self.Active:SetImageColor(ttt.roles[new].Color)
 	end
 end
+
 function PANEL:PerformLayout(w, h)
 	self:SetTall(font_tall + 6)
 	self:GetParent():SizeToChildren(false, true)
