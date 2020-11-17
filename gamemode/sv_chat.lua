@@ -214,7 +214,7 @@ function GM:VoiceKey(ply, key)
 	if (key == IN_SPEED) then
 		TTTRWUpdateVoiceState(ply, false)
 		net.Start "ttt_voice"
-			net.WriteBool(true)
+			net.WriteBool(ply:Alive())
 			net.WriteEntity(ply)
 		net.Send(GetPlayersWhoHear(ply))
 	end
