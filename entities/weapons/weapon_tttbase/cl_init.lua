@@ -222,7 +222,25 @@ function SWEP:GetViewModelPosition(pos, ang)
 		ang = ang - self:GetOwner():GetViewPunchAngles()
 	end
 
-	return pos, ang + self:GetCurrentUnpredictedViewPunch()
+	ang = ang + self:GetCurrentUnpredictedViewPunch()
+
+	if (not self:GetIronsights()) then
+		local diff = self:GetUnpredictedTime() - self:GetRealLastShootTime()
+		local frac = diff / self:GetDelay()
+		local backwards = 1
+		local upwards = 1.5
+		if (frac < 0.15) then
+			frac = frac / 0.15
+			ang = ang + Angle(-upwards * frac)
+			pos = pos - ang:Forward() * backwards * frac
+		elseif (frac < 2) then
+			frac = 1 - (frac - 0.15) / 1.85
+			ang = ang + Angle(-upwards * frac)
+			pos = pos - ang:Forward() * backwards * frac
+		end
+	end
+
+	return pos, ang
 end
 
 function SWEP:GetCurrentUnpredictedFOVMultiplier()
