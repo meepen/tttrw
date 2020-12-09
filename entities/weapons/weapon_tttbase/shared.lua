@@ -215,7 +215,15 @@ function SWEP:GetReloadAnimation()
 	return self.ReloadAnimation
 end
 
+function SWEP:CanReload()
+	return not self.NoReload
+end
+
 function SWEP:Reload()
+	if (not self:CanReload()) then
+		return
+	end
+
 	if (self:GetReloadEndTime() ~= math.huge or self:Clip1() == self:GetMaxClip1() or self:GetOwner():GetAmmoCount(self:GetPrimaryAmmoType()) <= 0) then
 		return
 	end

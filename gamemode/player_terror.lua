@@ -77,7 +77,7 @@ function PLAYER:GetSpeedData()
 	local mult = 1
 
 	for _, m in pairs(data) do
-		mult = mult * m
+		mult = mult + m - 1
 	end
 
 	return mult
