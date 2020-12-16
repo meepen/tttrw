@@ -2,7 +2,7 @@ surface.CreateFont("tttrw_base_tab", {
 	font = "Lato",
 	extended = true,
 	weight = 100,
-	size = 20
+	size = 18
 })
 
 surface.CreateFont("tttrw_tab_selector", {
@@ -415,7 +415,7 @@ function PANEL:Init()
 
 	self.TopBar = self.TabContainer:Add "EditablePanel"
 	self.TopBar:Dock(TOP)
-	self.TopBar:SetTall(44)
+	self.TopBar:SetTall(36)
 
 	self.TopBar:SetZPos(2)
 
@@ -715,7 +715,7 @@ function PANEL:SetRealText(t)
 	surface.SetFont(self.Label:GetFont())
 	local w = surface.GetTextSize(t)
 	
-	self:SetWide(math.max(100, w + 75))
+	self:SetWide(w + 50)
 end
 
 function PANEL:Activate(x)
@@ -752,7 +752,7 @@ function PANEL:PerformLayout(w, h)
 	if (self.Selected) then
 		self.Inner:SetTall(h)
 	else
-		self.Inner:SetTall(h - 10)
+		self.Inner:SetTall(h - 3)
 	end
 end
 
