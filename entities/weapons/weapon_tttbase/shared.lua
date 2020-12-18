@@ -219,12 +219,16 @@ function SWEP:CanReload()
 	return not self.NoReload
 end
 
+function SWEP:GetReserveAmmo()
+	return self:GetOwner():GetAmmoCount(self:GetPrimaryAmmoType())
+end
+
 function SWEP:Reload()
 	if (not self:CanReload()) then
 		return
 	end
 
-	if (self:GetReloadEndTime() ~= math.huge or self:Clip1() == self:GetMaxClip1() or self:GetOwner():GetAmmoCount(self:GetPrimaryAmmoType()) <= 0) then
+	if (self:GetReloadEndTime() ~= math.huge or self:Clip1() == self:GetMaxClip1() or self:GetReserveAmmo() <= 0) then
 		return
 	end
 	self:ChangeIronsights(false)
@@ -588,8 +592,7 @@ function SWEP:Think()
 			return
 		end
 
-
-		local ammocount = self:GetOwner():GetAmmoCount(self:GetPrimaryAmmoType())
+		local ammocount = self:GetReserveAmmo()
 		local needed = self:GetMaxClip1() - self:Clip1()
 
 		local added = math.min(needed, ammocount)
@@ -673,6 +676,10 @@ function SWEP:GetReloadAnimationSpeed()
 	return self.ReloadSpeed
 end
 
+function SWEP:GetReloadDuration(speed)
+	return self:SequenceDuration() / speed + 0.1
+end
+
 function SWEP:DoReload(act)
 	local speed = self:GetReloadAnimationSpeed()
 
@@ -683,7 +690,7 @@ function SWEP:DoReload(act)
 		self:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_RELOAD, 0)
 	end
 
-	local endtime = CurTime() + self:SequenceDuration() / speed + 0.1
+	local endtime = CurTime() + self:GetReloadDuration(speed)
 
 	self.LastSound = nil
 	self:SetReloadStartTime(CurTime())
