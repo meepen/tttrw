@@ -26,6 +26,7 @@ SWEP.Secondary.Delay     = 0.1
 SWEP.ReloadSpeed         = 1
 
 SWEP.HeadshotMultiplier  = 2
+SWEP.PropForce = 1
 SWEP.DeploySpeed = 1
 
 SWEP.DeployAnim = ACT_VM_DRAW
@@ -399,7 +400,7 @@ function SWEP:DoFireBullets(src, dir, data, last_shoot)
 		TracerName = self:GetTracerName(),
 		Spread = self:GetSpread(),
 		HullSize = bullet_info.HullSize,
-		Force = 0,
+		Force = self.PropForce,
 		Callback = function(atk, tr, dmg)
 			if (IsValid(self)) then
 				self:FireBulletsCallback(tr, dmg, data)
