@@ -142,7 +142,7 @@ function SWEP:DoDrawCrosshair(x, y)
 		return true
 	end
 
-	if (not ttt_crosshair_ironsights:GetBool()) then
+	if (self.Ironsights and not ttt_crosshair_ironsights:GetBool()) then
 		local frac = self:GetIronsightsFraction()
 		if (self:GetIronsights()) then
 			frac = 1- frac
