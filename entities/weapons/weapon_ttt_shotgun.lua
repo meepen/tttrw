@@ -56,9 +56,6 @@ SWEP.Spawnable             = true
 SWEP.ViewModel             = "models/weapons/cstrike/c_shot_xm1014.mdl"
 SWEP.WorldModel            = "models/weapons/w_shot_xm1014.mdl"
 
-SWEP.Reloading 			   = false
-SWEP.ReloadTimer		   = 0
-
 SWEP.Ironsights = {
 	Pos = Vector(-6.881, -9.214, 2.66),
 	Angle = Vector(-0.101, -0.7, -0.201),
@@ -69,27 +66,41 @@ SWEP.Ironsights = {
 }
 
 DEFINE_BASECLASS "weapon_tttbase"
+function SWEP:SetupDataTables()
+	BaseClass.SetupDataTables(self)
+	self:NetVar("ShotgunReloadingTime", "Float", -math.huge)
+end
+
+function SWEP:SetShotgunReloading(b)
+	if (b) then
+		self:SetShotgunReloadingTime(CurTime())
+	else
+		self:SetShotgunReloadingTime(-math.huge)
+	end
+end
+
+function SWEP:GetShotgunReloading()
+	return self:GetShotgunReloadingTime() ~= -math.huge
+end
 
 function SWEP:Reload()
-	--if self:GetNWBool( "reloading", false ) then return end
-	if self.Reloading then return end
+	if (self:GetShotgunReloading()) then
+		return
+	end
 
-	if self:Clip1() < self:GetMaxClip1() and self:GetOwner():GetAmmoCount( self.Primary.Ammo ) > 0 then
-
-	   	if self:StartReload() then
-		  	return
-	   	end
+	if (self:Clip1() < self:GetMaxClip1() and self:GetOwner():GetAmmoCount( self.Primary.Ammo ) > 0) then
+	   	self:StartReload()
 	end
 end
 
 function SWEP:StartReload()
-	if self.Reloading then
-	   	return false
+	if (self:GetShotgunReloading() or self.NoReload) then
+		return
 	end
 
 	self:SetIronsights( false )
 
-	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+	self:SetNextPrimaryFire(CurTime() + self:GetDelay())
 
 	local ply = self:GetOwner()
 
@@ -99,16 +110,13 @@ function SWEP:StartReload()
 
 	local wep = self
 
-	if wep:Clip1() >= self.Primary.MaxClip then
+	if (wep:Clip1() >= self:GetMaxClip1()) then
 	   	return false
 	end
 
 	wep:SendWeaponAnim(ACT_SHOTGUN_RELOAD_START)
 
-	self.ReloadTimer = (CurTime() + wep:SequenceDuration())
-
-	--wep:SetNWBool("reloading", true)
-	self.Reloading = true
+	self:SetShotgunReloading(true)
 	return true
 end
 
@@ -116,25 +124,28 @@ function SWEP:PerformReload()
 	local ply = self:GetOwner()
 
 	-- prevent normal shooting in between reloads
-	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+	self:SetNextPrimaryFire(CurTime() + self:GetDelay())
 
-	if not ply or ply:GetAmmoCount(self.Primary.Ammo) <= 0 then return end
+	if (not ply or ply:GetAmmoCount(self.Primary.Ammo) <= 0) then
+		return
+	end
 
-	if self:Clip1() >= self.Primary.ClipSize then return end
+	if (self:Clip1() >= self:GetMaxClip1()) then
+		return
+	end
 
-	self:GetOwner():RemoveAmmo( 1, self.Primary.Ammo, false )
-	self:SetClip1( self:Clip1() + 1 )
+	self:GetOwner():RemoveAmmo(1, self.Primary.Ammo, false)
+	self:SetClip1(self:Clip1() + 1)
 
 	self:SendWeaponAnim(ACT_VM_RELOAD)
-
-	self.ReloadTimer = (CurTime() + self:SequenceDuration())
+	self:SetShotgunReloadingTime(CurTime())
+	self:GetOwner():GetViewModel():SetPlaybackRate(self:GetReloadAnimationSpeed())
 end
 
 function SWEP:FinishReload()
-	self.Reloading = false
+	self:SetShotgunReloading(false)
 	self:SendWeaponAnim(ACT_SHOTGUN_RELOAD_FINISH)
-
-	self.ReloadTimer = (CurTime() + self:SequenceDuration())
+	self:SetShotgunReloading(false)
 end
 
 function SWEP:CanPrimaryAttack()
@@ -146,18 +157,21 @@ function SWEP:CanPrimaryAttack()
 	return true
 end
 
+function SWEP:GetCurrentReloadAnimationTime()
+	return self:GetReloadDuration(self:GetReloadAnimationSpeed())
+end
+
 function SWEP:Think()
 	BaseClass.Think(self)
-	if self.Reloading then
+	if (self:GetShotgunReloading()) then
 	   	if self:GetOwner():KeyDown(IN_ATTACK) then
 		  	self:FinishReload()
 		  	return
 	   	end
-	   	if self.ReloadTimer <= CurTime() then
-
+	   	if (self:GetShotgunReloadingTime() + self:GetCurrentReloadAnimationTime() <= CurTime()) then
 		  	if self:GetOwner():GetAmmoCount(self.Primary.Ammo) <= 0 then
 			 	self:FinishReload()
-		  	elseif self:Clip1() < self.Primary.ClipSize then
+		  	elseif self:Clip1() < self:GetMaxClip1() then
 			 	self:PerformReload()
 		  	else
 			 	self:FinishReload()
@@ -168,8 +182,7 @@ function SWEP:Think()
 end
 
 function SWEP:Deploy()
-	self.Reloading = false
-	self.ReloadTimer = 0
+	self:SetShotgunReloading(false)
 	return BaseClass.Deploy(self)
 end
 
