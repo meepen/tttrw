@@ -1,6 +1,7 @@
 include "shared.lua"
 
 local ttt_lowered = CreateConVar("ttt_ironsights_lowered", "1", FCVAR_ARCHIVE)
+local ttt_crosshair_ironsights = CreateConVar("ttt_crosshair_ironsights", "1", FCVAR_ARCHIVE)
 
 SWEP.DrawCrosshair = true
 SWEP.ScopeArcTexture = Material "tttrw/scope"
@@ -141,7 +142,15 @@ function SWEP:DoDrawCrosshair(x, y)
 		return true
 	end
 
+	if (not ttt_crosshair_ironsights:GetBool()) then
+		local frac = self:GetIronsightsFraction()
+		if (self:GetIronsights()) then
+			frac = 1- frac
+		end
+		surface.SetAlphaMultiplier(frac)
+	end
 	ttt.DefaultCrosshair(x, y, self)
+	surface.SetAlphaMultiplier(1)
 
 	return true
 end
@@ -178,6 +187,13 @@ function SWEP:GetIronsightsPos(is_ironsights, frac, pos, ang)
 	return pos, ang
 end
 
+function SWEP:GetIronsightsFraction()
+	local toggletime = self.IronTime or 0
+	local time = is_ironsights and self.Ironsights.TimeTo or self.Ironsights.TimeFrom
+
+	return math.min(1, (self:GetUnpredictedTime() - toggletime) / time) ^ 1.3
+end
+
 function SWEP:GetViewModelPosition(pos, ang)
 	if (self.ViewModelPos) then
 		pos = pos + self.ViewModelPos
@@ -203,10 +219,7 @@ function SWEP:GetViewModelPosition(pos, ang)
 	end
 
 	local is_ironsights = self.CurIronsights
-	local toggletime = self.IronTime or 0
-	local time = is_ironsights and self.Ironsights.TimeTo or self.Ironsights.TimeFrom
-
-	local frac = math.min(1, (self:GetUnpredictedTime() - toggletime) / time) ^ 1.3
+	local frac = self:GetIronsightsFraction()
 
 	pos, ang = self:GetIronsightsPos(is_ironsights, frac, pos, ang)
 
