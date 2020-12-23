@@ -174,6 +174,8 @@ function GM:TTTRWPlayerInspectBody(ply, ent, pos, is_silent)
 				return
 			end
 
+			hook.Run("TTTBodyIdentified", victim, ply)
+
 			for _, oply in ipairs(victim.Killed) do
 				if (IsValid(oply) and not oply:GetConfirmed()) then
 					oply:SetConfirmed(true)
