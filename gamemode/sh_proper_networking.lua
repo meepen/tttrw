@@ -27,8 +27,6 @@ function GM:InitializeNetworking()
 
 		if (var.Enums) then
 			for enum, value in pairs(var.Enums) do
-				printf("%s_%s = %s", var.Name:upper(), enum:upper(), value)
-
 				ttt.Enums[var.Name][value] = enum
 				ttt[var.Name:upper().."_"..enum:upper()] = value
 			end
