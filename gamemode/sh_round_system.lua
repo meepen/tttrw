@@ -51,6 +51,7 @@ function GM:PlayerSpawn(ply)
 	else
 		self:CL_PlayerSpawn(ply)
 	end
+	ply:AddEFlags(EFL_NO_DAMAGE_FORCES)
 	player_manager.RunClass(ply, "Spawn")
 end
 
