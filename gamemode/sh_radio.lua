@@ -35,7 +35,9 @@ if (SERVER) then
 		local chat = ttt.QuickChat[str]
 		if (chat) then
 			ply.NextRadioCommand = CurTime() + 1
+			ply.InRadioChat = true
 			ply:Say(chat)
+			ply.InRadioChat = nil
 		end
 	end)
 else
