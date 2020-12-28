@@ -46,7 +46,6 @@ local PANEL = {}
 DEFINE_BASECLASS "ttt_curved_panel"
 function PANEL:Init()
 	hook.Add("OnPlayerRoleChange", self, self.OnPlayerRoleChange)
-	hook.Add("Think", self, self.OnWeaponNameChange)
 
 	self:SetCurve(4)
 	self:SetColor(outline)
@@ -60,52 +59,13 @@ function PANEL:Init()
 	self.Inner:SetColor(main_color)
 	self.Inner:SetZPos(0)
 
-	self.Label = self:Add "EditablePanel"
+	self.Label = self:Add "tttrw_weapon_name"
 	self.Label:Dock(FILL)
 	self.Label:SetZPos(3)
-
-	self.Label.Paint = function(self, w, h)
-		local text = self.Text or ""
-		local col = self.TextColor or white_text
-		surface.SetFont "ttt_weapon_select_font"
-		local tw, th = surface.GetTextSize(text)
-
-		local x, y = w / 2 - tw / 2, h / 2 - th / 2
-
-		for _, code in utf8.codes(text) do
-			local chr = utf8.char(code)
-			local cw, ch = surface.GetTextSize(chr)
-
-			surface.SetTextColor(Color(0, 0, 0, 255))
-			for i = -1, 1 do
-				surface.SetTextPos(x + i, y)
-				surface.DrawText(chr)
-				surface.SetTextPos(x, y + i)
-				surface.DrawText(chr)
-			end
-
-			surface.SetTextColor(col)
-			surface.SetTextPos(x, y)
-			surface.DrawText(chr)
-
-			x = x + cw
-		end
-	end
 
 	self.Number = self:Add "ttt_weapon_select_number"
 	self.Number:Dock(LEFT)
 	self.Number:SetZPos(1)
-end
-
-function PANEL:OnWeaponNameChange()
-	if (IsValid(self.Weapon) and self.Weapon.GetPrintName) then
-		self.Label.Text = self.Weapon:GetPrintName()
-		local col = white_text
-		if (self.Weapon.GetPrintNameColor) then
-			col = self.Weapon:GetPrintNameColor()
-		end
-		self.Label.TextColor = col
-	end
 end
 
 function PANEL:OnPlayerRoleChange(ply, old, new)
@@ -123,7 +83,7 @@ end
 function PANEL:SetWeapon(wep)
 	local swep_tbl = baseclass.Get(wep:GetClass())
 	self.Weapon = wep
-	self.Label:SetText "lol who knows"
+	self.Label.Weapon = wep
 	local swep_tbl = 
 	self.Number.Label:SetText(swep_tbl.Slot + 1)
 end
@@ -149,6 +109,46 @@ function PANEL:SetActive(b)
 end
 
 vgui.Register("ttt_weapon_select_weapon", PANEL, "ttt_curved_panel_outline")
+
+local PANEL = {}
+
+function PANEL:Paint(w, h)
+	if (not IsValid(self.Weapon)) then
+		return
+	end
+
+	if (hook.Run("TTTRWDrawWeaponName", self.Weapon, w, h)) then
+		return
+	end
+
+	local text = self.Weapon:GetPrintName()
+	local col = self.Weapon:GetPrintNameColor()
+	surface.SetFont "ttt_weapon_select_font"
+	local tw, th = surface.GetTextSize(text)
+
+	local x, y = w / 2 - tw / 2, h / 2 - th / 2
+
+	for _, code in utf8.codes(text) do
+		local chr = utf8.char(code)
+		local cw, ch = surface.GetTextSize(chr)
+
+		surface.SetTextColor(Color(0, 0, 0, 255))
+		for i = -1, 1 do
+			surface.SetTextPos(x + i, y)
+			surface.DrawText(chr)
+			surface.SetTextPos(x, y + i)
+			surface.DrawText(chr)
+		end
+
+		surface.SetTextColor(col)
+		surface.SetTextPos(x, y)
+		surface.DrawText(chr)
+
+		x = x + cw
+	end
+end
+
+vgui.Register("tttrw_weapon_name", PANEL, "EditablePanel")
 
 local PANEL = {}
 gameevent.Listen "player_spawn"
