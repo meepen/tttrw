@@ -273,7 +273,7 @@ function SWEP:FireBulletsCallback(tr, dmginfo, data)
 	local bullet = dmginfo:GetInflictor().Bullets
 
 	-- hitbox penetration
-	if (tr.Entity and tr.Entity:IsPlayer()) then
+	if (not tr.HitregCallback and tr.Entity and tr.Entity:IsPlayer()) then
 		local ply = tr.Entity
 		local set = ply:GetHitboxSet()
 		tr.HitGroup = ply:GetHitBoxHitGroup(tr.HitBox, set)
