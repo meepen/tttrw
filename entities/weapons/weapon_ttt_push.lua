@@ -21,15 +21,15 @@ SWEP.Primary.Ammo           = "none"
 SWEP.Primary.Damage         = 3
 SWEP.Primary.ClipSize       = -1
 SWEP.Primary.DefaultClip    = -1
-SWEP.Primary.Automatic      = false
-SWEP.Primary.Delay          = 1.5
+SWEP.Primary.Automatic      = true
+SWEP.Primary.Delay          = 1.25
 SWEP.Primary.Cone           = 0.005
 SWEP.Primary.Sound          = Sound "weapons/ar2/fire1.wav"
 SWEP.Primary.SoundLevel     = 54
 
 SWEP.Secondary.ClipSize     = -1
 SWEP.Secondary.DefaultClip  = -1
-SWEP.Secondary.Automatic    = false
+SWEP.Secondary.Automatic    = true
 SWEP.Secondary.Ammo         = "none"
 
 SWEP.NoSights               = true
@@ -61,6 +61,7 @@ function SWEP:Initialize()
     BaseClass.Initialize(self)
 
     self.NextCharge = 0
+    self.LastPulse = 0
     self:SetSkin(1)
 end
 
@@ -96,6 +97,12 @@ end
 function SWEP:FirePulse(force_fwd, force_up, pull)
     local owner = self:GetOwner()
     if (not IsValid(owner)) then return end
+
+    if (CurTime() < self.LastPulse + self.Primary.Delay) then
+        return
+    end
+
+    self.LastPulse = CurTime()
 
     owner:SetAnimation(PLAYER_ATTACK1)
 
@@ -142,30 +149,29 @@ function SWEP:FirePulse(force_fwd, force_up, pull)
 end
 
 local CHARGE_FORCE_FWD_MIN = 200
-local CHARGE_FORCE_FWD_MAX = 800
+local CHARGE_FORCE_FWD_MAX = 1000
 local CHARGE_FORCE_UP_MIN = 100
 local CHARGE_FORCE_UP_MAX = 200
 
 function SWEP:ChargedAttack(pull)
+    self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+    self:SetNextSecondaryFire(CurTime() + self.Primary.Delay)
+
     local charge = 0
 
     if (pull) then
         charge = math.Clamp(self:GetPullCharge(), 0, 1)
-        
-        self.PullCharging = false
-        self:SetPullCharge(0)
     else
         charge = math.Clamp(self:GetPushCharge(), 0, 1)
-        
-        self.PushCharging = false
-        self:SetPushCharge(0)
     end
+
+    self.PullCharging = false
+    self.PushCharging = false
+    self:SetPullCharge(0)
+    self:SetPushCharge(0)
 
     local force_fwd = Lerp(charge, CHARGE_FORCE_FWD_MIN, CHARGE_FORCE_FWD_MAX)
     local force_up = Lerp(charge, CHARGE_FORCE_UP_MIN, CHARGE_FORCE_UP_MAX)
-
-    self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
-    self:SetNextSecondaryFire(CurTime() + self.Primary.Delay)
 
     self:FirePulse(force_fwd, force_up, pull)
 end
@@ -231,6 +237,11 @@ if (CLIENT) then
     local _x = ScrW() / 2.0
     local _y = ScrH() / 2.0
 
+    surface.CreateFont("tttrw_push", {
+        font = "Roboto",
+        size = 18,
+    })
+
     function SWEP:DrawHUD()
         local x = _x
         local y = _y
@@ -245,15 +256,15 @@ if (CLIENT) then
             surface.SetDrawColor(0, 255, 0, 255)
         end
 
-        local length = 10
-        local gap = 5
+        local length = 8
+        local gap = 4
 
         surface.DrawLine(x - length, y, x - gap, y)
         surface.DrawLine(x + length, y, x + gap, y)
         surface.DrawLine(x, y - length, x, y - gap)
         surface.DrawLine(x, y + length, x, y + gap)
 
-        if (nxt > CurTime() and charge <= 0) then
+        if (nxt > CurTime() and not self.PullCharging and not self.PushCharging) then
             local w = Lerp((nxt - CurTime()) / self.Primary.Delay, 0, 30)
 
             local bx = x + 30
@@ -280,9 +291,9 @@ if (CLIENT) then
 
             surface.DrawRect(x - w/2, y - h, w * charge, h)
 
-            surface.SetFont("TabLarge")
+            surface.SetFont("tttrw_push")
             surface.SetTextColor(255, 255, 255, 180)
-            surface.SetTextPos((x - w / 2) + 3, y - h - 15)
+            surface.SetTextPos((x - w / 2) + 3, y - h - 20)
             surface.DrawText("CHARGE")
         end
     end
