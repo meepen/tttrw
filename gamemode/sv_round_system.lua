@@ -365,7 +365,7 @@ function GM:TTTBeginRound()
 			continue
 		end
 
-		ply:SetHealth(ply:GetMaxHealth())
+		info.Player:SetHealth(info.Player:GetMaxHealth())
 		hook.Run("TTTRWSetHealth", info.Player)
 		info.Player:Extinguish()
 	end
