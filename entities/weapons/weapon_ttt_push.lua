@@ -18,7 +18,7 @@ SWEP.ViewModel              = "models/weapons/c_superphyscannon.mdl"
 SWEP.WorldModel             = "models/weapons/w_physics.mdl"
 
 SWEP.Primary.Ammo           = "none"
-SWEP.Primary.Damage         = 3
+SWEP.Primary.Damage         = 2
 SWEP.Primary.ClipSize       = -1
 SWEP.Primary.DefaultClip    = -1
 SWEP.Primary.Automatic      = true
@@ -44,7 +44,7 @@ SWEP.Ironsights = false
 SWEP.Equipment = {
 	Name    = "Newton Launcher",
 	Desc 	= "Push with left click, pull with right click.",
-	CanBuy	= { traitor = true },
+	CanBuy	= { traitor = true, Detective = true },
 	Cost 	= 1,
 	Icon    = "materials/tttrw/equipment/push.png"
 }
@@ -54,8 +54,8 @@ SWEP.DeploySpeed            = 2.5
 SWEP.PushCharging           = false
 SWEP.PullCharging           = false
 
-local CHARGE_AMOUNT         = 0.01
-local CHARGE_DELAY          = 0.03
+local CHARGE_AMOUNT         = 0.015
+local CHARGE_DELAY          = 0.02
 
 function SWEP:Initialize()
     BaseClass.Initialize(self)
@@ -148,10 +148,10 @@ function SWEP:FirePulse(force_fwd, force_up, pull)
     owner:FireBullets(bullet)
 end
 
-local CHARGE_FORCE_FWD_MIN = 200
-local CHARGE_FORCE_FWD_MAX = 1000
-local CHARGE_FORCE_UP_MIN = 100
-local CHARGE_FORCE_UP_MAX = 200
+local CHARGE_FORCE_FWD_MIN = 600
+local CHARGE_FORCE_FWD_MAX = 1250
+local CHARGE_FORCE_UP_MIN = 150
+local CHARGE_FORCE_UP_MAX = 250
 
 function SWEP:ChargedAttack(pull)
     self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
@@ -207,7 +207,7 @@ function SWEP:Think()
 
     if (self.PushCharging and self.PullCharging) then
         self.PullCharging = false
-        self.SetPullCharge(0)
+        self:SetPullCharge(0)
     end
 
     local owner = self:GetOwner()
