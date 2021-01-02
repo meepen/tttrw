@@ -15,7 +15,7 @@ function ENT:AcceptInput(name, activator)
 		local max = self:LocalToWorld(self:OBBMaxs())
 		local ts = 0
 		for k,v in pairs(player.GetAll()) do
-			if (v:GetRoleTeam() == "traitor") then
+			if (v:Alive() and v:GetRoleTeam() == "traitor") then
 				local pos = v:GetPos()
 				if ((pos.x > min.x and pos.x < max.x) and (pos.y > min.y and pos.y < max.y) and (pos.z > min.z and pos.z < max.z)) then ts = ts + 1 end
 			end
