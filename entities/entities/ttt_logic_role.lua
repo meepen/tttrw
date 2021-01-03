@@ -21,7 +21,7 @@ end
 function ENT:AcceptInput(name, activator)
 	if name == "TestActivator" then
 		if IsValid(activator) and activator:IsPlayer() then
-			if (self.Role == "any" or self.Role == activator:GetRole() or self.Role == activator:GetRoleTeam()) then
+			if (self.Role == "any" or self.Role == activator:GetRole() or string.lower(self.Role) == activator:GetRoleTeam()) then
 				if (self.Role ~= "Detective") then
 					self:TriggerOutput("OnPass", activator)
 				end
