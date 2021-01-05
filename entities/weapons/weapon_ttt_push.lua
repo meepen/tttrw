@@ -22,7 +22,7 @@ SWEP.Primary.Damage         = 2
 SWEP.Primary.ClipSize       = -1
 SWEP.Primary.DefaultClip    = -1
 SWEP.Primary.Automatic      = true
-SWEP.Primary.Delay          = 1.25
+SWEP.Primary.Delay          = 1
 SWEP.Primary.Cone           = 0.005
 SWEP.Primary.Sound          = Sound "weapons/ar2/fire1.wav"
 SWEP.Primary.SoundLevel     = 54
@@ -54,7 +54,7 @@ SWEP.DeploySpeed            = 2.5
 SWEP.PushCharging           = false
 SWEP.PullCharging           = false
 
-local CHARGE_AMOUNT         = 0.015
+local CHARGE_AMOUNT         = 0.02
 local CHARGE_DELAY          = 0.02
 
 function SWEP:Initialize()
@@ -112,6 +112,7 @@ function SWEP:FirePulse(force_fwd, force_up, pull)
 
     local cone = self.Primary.Cone or 0.1
     local num = 6
+    local fwd = force_fwd / num
 
     local bullet = {}
     bullet.Num    = num
@@ -123,7 +124,6 @@ function SWEP:FirePulse(force_fwd, force_up, pull)
     bullet.Damage = self.Primary.Damage
     bullet.TracerName = "AirboatGunHeavyTracer"
 
-    local fwd = force_fwd / num
     local up = force_up / num
     bullet.Callback = function(att, tr, dmginfo)
         local ent = tr.Entity
@@ -133,14 +133,18 @@ function SWEP:FirePulse(force_fwd, force_up, pull)
             pushvel.z = math.max(pushvel.z, up)
 
             ent:SetGroundEntity(nil)
-            ent:SetLocalVelocity(ent:GetVelocity() + pushvel)
+
+            local phys = ent:GetPhysicsObject()
 
             if (ent:IsPlayer()) then
+                ent:SetLocalVelocity(ent:GetVelocity() + pushvel)
                 ent.was_pushed = {
                     att = owner,
                     t = CurTime(),
                     wep = self:GetClass(),
                 }
+            elseif (IsValid(phys)) then
+                phys:SetVelocity(phys:GetVelocity() + (pushvel / math.max(0.5, math.log(phys:GetMass(), 20))))
             end
         end
     end
@@ -217,14 +221,14 @@ function SWEP:Think()
     end
 
     if (self.PushCharging) then
-        if (not owner:KeyDown(IN_ATTACK)) then
+        if (not owner:KeyDown(IN_ATTACK) and self:GetPushCharge() > 0) then
             self:ChargedAttack()
         elseif (SERVER and self:GetPushCharge() < 1 and self.NextCharge < CurTime()) then
             self:SetPushCharge(math.min(1, self:GetPushCharge() + CHARGE_AMOUNT))
             self.NextCharge = CurTime() + CHARGE_DELAY
         end
     elseif (self.PullCharging) then
-        if (not owner:KeyDown(IN_ATTACK2)) then
+        if (not owner:KeyDown(IN_ATTACK2) and self:GetPullCharge() > 0) then
             self:ChargedAttack(true)
         elseif (SERVER and self:GetPullCharge() < 1 and self.NextCharge < CurTime()) then
             self:SetPullCharge(math.min(1, self:GetPullCharge() + CHARGE_AMOUNT))
