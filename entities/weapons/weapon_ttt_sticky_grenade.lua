@@ -14,4 +14,4 @@ SWEP.WorldModel         = "models/weapons/w_eq_fraggrenade.mdl"
 
 SWEP.TTTCompat = {"weapon_ttt_confgrenade"}
 
-SWEP.Ortho = {1.5, 2.3}
+SWEP.Ortho = {-2.5, 3.4, angle = Angle(-40, 20, 45)}

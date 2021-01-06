@@ -97,3 +97,5 @@ function SWEP:Holster()
 
 	return BaseClass.Holster(self)
 end
+
+SWEP.Ortho = {-2, 3, angle = Angle(-40, 20, 45)}

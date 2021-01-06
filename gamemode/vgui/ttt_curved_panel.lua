@@ -31,6 +31,10 @@ for _, name in pairs {"CurveTopRight", "CurveTopLeft", "CurveBottomLeft", "Curve
 	PANEL["GetNo" .. name] = function(self)
 		return not self[name]
 	end
+
+	PANEL["Get" .. name] = function(self)
+		return not self["GetNo" .. name](self)
+	end
 end
 
 function PANEL:SetColor(col)

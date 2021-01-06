@@ -16,6 +16,6 @@ SWEP.WorldModel         = "models/weapons/w_eq_smokegrenade.mdl"
 
 SWEP.TTTCompat = {"weapon_ttt_smokegrenade"}
 
-SWEP.Ortho = {2, 2.6}
-
 SWEP.GrenadeColor = 0 -- 1 = rainbow, 2 = green
+
+SWEP.Ortho = {-2.5, 3.4, angle = Angle(-40, 20, 45)}
