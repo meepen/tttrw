@@ -448,6 +448,14 @@ function SWEP:TracerEffect(tr, dmg)
 	end
 end
 
+function SWEP:GetMultiplier()
+	return 1
+end
+
+function SWEP:GetConsecutiveShots()
+	return 0
+end
+
 function SWEP:GetSpread()
 	return self.Bullets.Spread * (self.Primary.Ammo:lower() == "buckshot" and 1 or (0.25 + (-self:GetMultiplier() + 2) * 0.75)) * (0.5 + self:GetCurrentZoom() / 2) ^ 0.7
 end
@@ -631,6 +639,10 @@ function SWEP:GetCurrentZoomPercent()
 end
 
 function SWEP:GetCurrentFOVMultiplier()
+	if (not self.GetOldFOVMultiplier) then
+		return self.Ironsights.Zoom
+	end
+
 	return self:GetOldFOVMultiplier() + (self:GetFOVMultiplier() - self:GetOldFOVMultiplier()) * self:GetCurrentZoomMultiplier()
 end
 
