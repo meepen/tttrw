@@ -151,7 +151,7 @@ vgui.Register("ttt_scoreboard_rank", PANEL, "ttt_curved_panel_outline")
 local PANEL = {}
 
 function PANEL:Init()
-	self:SetText("")
+	self:SetText ""
 
 	self.Text = self:Add "DLabel"
 	self.Text:Dock(FILL)
@@ -173,14 +173,14 @@ function PANEL:Init()
 		max_w = math.max(max_w, w)
 	end
 
-	self:SetWide(max_w + Padding * 2 + Slant * 2)
+	self:SetWide(max_w + Slant * 2)
 end
 
 function PANEL:SetStatus(stat)
 	if (stat == self.Status) then stat = ttt.STATUS_DEFAULT end
 	self.Status = stat
-	self:SetColor(ttt.Status[self.Status]["color"])
-	self.Text:SetText(ttt.Status[self.Status]["text"])
+	self:SetColor(ttt.Status[self.Status].color)
+	self.Text:SetText(ttt.Status[self.Status].text)
 
 	if (IsValid(self:GetParent().Player)) then
 		ttt.SetPlayerStatus(self:GetParent().Player, stat)
@@ -188,17 +188,12 @@ function PANEL:SetStatus(stat)
 	end
 end
 
-function PANEL:SetColor(col)
-	self.Color = col
-end
-
 function PANEL:DoClick()
 	self:GetParent():DoClick()
 end
 
 function PANEL:Paint(w, h)
-	if (not self.Rect) then return end
-	surface.SetDrawColor(self.Color)
+	surface.SetDrawColor(self:GetColor())
 	draw.NoTexture()
 	surface.DrawPoly(self.Rect)
 end
@@ -212,15 +207,12 @@ function PANEL:PerformLayout(w, h)
 	}
 end
 
-vgui.Register("ttt_scoreboard_status", PANEL, "ttt_curved_button")
+vgui.Register("ttt_scoreboard_status", PANEL, "DButton")
 
 local PANEL = {}
 DEFINE_BASECLASS "ttt_curved_panel"
 
 function PANEL:Init()
-	self:SetCurve(math.Round(Padding / 2))
-	--self:SetColor(Color(70, 102, 135, 0.8 * 255))
-
 	self:DockMargin(0, 0, 0, Padding)
 	self:DockPadding(Padding / 2, Padding / 2, Padding / 2, Padding / 2)
 	self:Dock(TOP)
@@ -300,72 +292,31 @@ function PANEL:OnMousePressed(key)
 	end
 end
 
-function PANEL:Scissor()
-    local x0, y0, x1, y1 = self:GetRenderBounds()
-    render.SetScissorRect(x0, y0, x1, y1, true)
-end
-
 function PANEL:Paint(w, h)
-
 	if (not IsValid(self.Player)) then
 		self:SetColor(Color(17, 15, 13, 0.75 * 255))
-		BaseClass.Paint(self, w, h)
 		return
 	end
 
-	if (not self.Rect1) then return end
+	surface.SetDrawColor(17, 15, 13, 0.75 * 255)
+	ttt.DrawCurvedRect(0, 0, w, h, 4)
 
-	self.OldRemove = self.OldRemove or self.OnRemove or function() end
-	self.OnRemove = self.MeshRemove
-
-	local x, y = self:LocalToScreen(0, 0)
-	if (self._OLDW ~= w or self._OLDH ~= h or self._OLDX ~= x or self._OLDY ~= y) then
-		self:RebuildMesh(w, h)
-		self._OLDW = w
-		self._OLDH = h
-		self._OLDX = x
-		self._OLDY = y
-	end
-
-	self:Scissor()
-	render.SetColorMaterial()
-	if (true) then
-		hud.StartStenciledMesh(self.Mesh, 0, 0)
-
-		draw.NoTexture()
-
-		surface.SetDrawColor(self.Player:GetRoleData().Color)
-		surface.DrawPoly(self.Rect1)
-
-		surface.SetDrawColor(17, 15, 13, 0.75 * 255)
-		surface.DrawPoly(self.Rect2)
-
-		hud.EndStenciledMesh()
-	else
-		self.Mesh:Draw()
-	end
-	render.SetScissorRect(0, 0, 0, 0, false)
+	surface.SetDrawColor(self.Player:GetRoleData().Color)
+	local x = self:ScreenToLocal(self.RankContainer:LocalToScreen(self.RankContainer:GetSize()))
+	ttt.DrawCurvedRect(0, 0, x, h, 4, false, true, true, false)
+	surface.DrawPoly {
+		{x = x, y = 0},
+		{x = x + Slant, y = 0},
+		{x = x, y = h}
+	}
 end
 
 function PANEL:PerformLayout(w, h)
-	self.Rect1 = {
-		{x = 0, y = 0},
-		{x = w * 0.4, y = 0},
-		{x = w * 0.4 - Slant, y = h},
-		{x = 0, y = h}
-	}
-
-	self.Rect2 = {
-		{x = w * 0.4 + Padding, y = 0},
-		{x = w, y = 0},
-		{x = w, y = h},
-		{x = w * 0.4 - Slant + Padding, y = h},
-	}
-	
 	self.RankContainer:SetWide(w * 0.4 - Slant * 2 - self.Name:GetWide())
+	local x = self:ScreenToLocal(self.RankContainer:LocalToScreen(self.RankContainer:GetSize()))
 
 	if (IsValid(self.Status)) then 
-		self.Status:SetPos(w*.395-Slant+Padding*3, Padding/2)
+		self.Status:SetPos(x + 19, Padding / 2)
 	end
 end
 
@@ -465,7 +416,7 @@ function PANEL:OnRemove()
 	end
 end
 
-vgui.Register("ttt_scoreboard_player_render", PANEL, "ttt_curved_button")
+vgui.Register("ttt_scoreboard_player_render", PANEL, "DButton")
 
 local PANEL = {}
 
@@ -477,7 +428,6 @@ function PANEL:Init()
 	for STATUS = ttt.STATUS_MISSING, ttt.STATUS_FRIEND do
 		self.Statuses[STATUS] = self:Add "ttt_scoreboard_status"
 		self.Statuses[STATUS]:SetStatus(STATUS)
-		self.Statuses[STATUS]:SizeToContentsX()
 		self.Statuses[STATUS]:Dock(RIGHT)
 		self.Statuses[STATUS].DoClick = function()
 			self:GetParent().Render.Status:SetStatus(STATUS)
