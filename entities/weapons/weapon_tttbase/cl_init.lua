@@ -1,4 +1,5 @@
 include "shared.lua"
+include "cl_muzzle.lua"
 
 local ttt_lowered = CreateConVar("ttt_ironsights_lowered", "1", FCVAR_ARCHIVE)
 local ttt_crosshair_ironsights = CreateConVar("ttt_crosshair_ironsights", "1", FCVAR_ARCHIVE)
@@ -224,10 +225,10 @@ function SWEP:GetViewModelPosition(pos, ang)
 	pos, ang = self:GetIronsightsPos(is_ironsights, frac, pos, ang)
 
 	if (is_ironsights) then
-		self.SwayScale = 0.2
+		self.SwayScale = 0.05
 		self.BobScale = 0.07
 	else
-		self.SwayScale = 1
+		self.SwayScale = 1.5
 		self.BobScale = 1
 	end
 

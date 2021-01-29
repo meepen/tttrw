@@ -334,6 +334,9 @@ function SWEP:ShootBullet(data)
 
 	if (IsValid(self.Owner)) then
 		self:ShootEffects()
+		if (CLIENT) then
+			self:MuzzleEffects()
+		end
 	end
 
 	return shot or 1

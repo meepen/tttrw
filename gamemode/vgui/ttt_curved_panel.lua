@@ -108,13 +108,6 @@ function ttt.DrawCurvedRect(x, y, w, h, curve, no_topleft, no_topright, no_botto
 	end
 end
 
-hook.Add("DrawOverlay", "test_curves ;)", function()
-	surface.SetFont "BudgetLabel"
-	surface.SetTextPos(2, 3)
-	surface.SetTextColor(255, 0, 0, 255)
-	surface.DrawText(string.format("Curve timing (per draw): %.3fms", total_time / total_frames * 1000))
-end)
-
 
 local PANEL = {}
 
