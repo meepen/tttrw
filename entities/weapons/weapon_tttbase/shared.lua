@@ -209,6 +209,10 @@ function SWEP:Deploy()
 
 	self:SetNextPrimaryFire(CurTime() + duration)
 
+	if (CLIENT) then
+		self:StartClientsideAnimation()
+	end
+
 	return true
 end
 
@@ -613,7 +617,11 @@ function SWEP:Think()
 
 		self:SetClip1(self:Clip1() + added)
 		self:SetReloadEndTime(math.huge)
-		self:SendWeaponAnim(self:GetIdleAnimation())
+	end
+
+	local vm = self:GetOwner():GetViewModel(self:ViewModelIndex())
+	if (vm:IsSequenceFinished()) then
+		vm:SendViewModelMatchingSequence(vm:SelectWeightedSequence(self:GetIdleAnimation()))
 	end
 
 	if (not self:IsToggleADS()) then

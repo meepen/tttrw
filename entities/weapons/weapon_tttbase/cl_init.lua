@@ -721,6 +721,10 @@ function SWEP:DrawExtraModels()
 	end
 end
 
+function SWEP:StartClientsideAnimation()
+	self:SetLayerSequence(1, self:LookupSequence "idle")
+end
+
 local viewmodel_fov = GetConVar "viewmodel_fov"
 
 function SWEP:PreDrawViewModel()
