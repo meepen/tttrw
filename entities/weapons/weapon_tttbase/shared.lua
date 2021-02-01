@@ -621,7 +621,10 @@ function SWEP:Think()
 
 	local vm = self:GetOwner():GetViewModel(self:ViewModelIndex())
 	if (vm:IsSequenceFinished()) then
-		vm:SendViewModelMatchingSequence(vm:SelectWeightedSequence(self:GetIdleAnimation()))
+		local act = self:GetIdleAnimation()
+		if (act) then
+			vm:SendViewModelMatchingSequence(vm:SelectWeightedSequence(act))
+		end
 	end
 
 	if (not self:IsToggleADS()) then
