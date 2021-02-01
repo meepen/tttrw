@@ -19,7 +19,7 @@ end
 
 local function GetCurvePoly(curve, rot)
 	local vertices = {pos = {0, 0}, {x = 0, y = 0}}
-	local steps = curve
+	local steps = curve * 2 / 3
 	for a = steps, 0, -1 do
 		local rad = math.rad(rot + a / steps * 90)
 		table.insert(vertices, {
@@ -65,18 +65,14 @@ local function GetCurvedPoly(x, y, curve, rot)
 	return vertices
 end
 
-local total_time, total_frames = 0, 0
 local function DrawCurveTexture(x, y, curve, rot)
-	total_frames = total_frames + 1
-	local prev_time = SysTime()
 	local vertices = GetCurvedPoly(x, y, curve, rot)
-	total_time = total_time + SysTime() - prev_time
 	surface.DrawPoly(vertices)
 end
 
 function ttt.DrawCurvedRect(x, y, w, h, curve, no_topleft, no_topright, no_bottomright, no_bottomleft)
 	draw.NoTexture()
-	surface.DrawTexturedRect(x + curve, y, w - curve * 2, h)
+	surface.DrawRect(x + curve, y, w - curve * 2, h)
 	do
 		local sy = y
 		local sh = h
