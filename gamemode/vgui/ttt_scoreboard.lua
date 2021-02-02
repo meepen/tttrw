@@ -195,7 +195,9 @@ end
 function PANEL:Paint(w, h)
 	surface.SetDrawColor(self:GetColor())
 	draw.NoTexture()
-	surface.DrawPoly(self.Rect)
+	if (self.Rect) then
+		surface.DrawPoly(self.Rect)
+	end
 end
 
 function PANEL:PerformLayout(w, h)
