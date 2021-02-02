@@ -19,12 +19,17 @@ end
 
 local function GetCurvePoly(curve, rot)
 	local vertices = {pos = {0, 0}, {x = 0, y = 0}}
-	local steps = curve * 2 / 3
+	local steps = curve
+	local lx, ly
 	for a = steps, 0, -1 do
 		local rad = math.rad(rot + a / steps * 90)
+		local cx, cy = math.sin(rad) * curve, math.cos(rad) * curve
+		if (cx == lx or cy == ly) then
+			continue
+		end
 		table.insert(vertices, {
-			x = math.sin(rad) * curve,
-			y = math.cos(rad) * curve,
+			x = cx,
+			y = cy,
 		})
 	end
 
