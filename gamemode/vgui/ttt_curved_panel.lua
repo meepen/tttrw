@@ -76,6 +76,7 @@ local function DrawCurveTexture(x, y, curve, rot)
 end
 
 function ttt.DrawCurvedRect(x, y, w, h, curve, no_topleft, no_topright, no_bottomright, no_bottomleft)
+	x, y, w, h = math.Round(x), math.Round(y), math.Round(w), math.Round(h)
 	draw.NoTexture()
 	surface.DrawRect(x + curve, y, w - curve * 2, h)
 	do
