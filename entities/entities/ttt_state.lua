@@ -7,15 +7,13 @@ ENT.Author = "Meepen"
 ENT.Contact = "meepdarknessmeep@gmail.com"
 
 function ENT:NetworkVarNotifyCallback(name, old, new)
-	if (self.RealOld[name] == new) then
+	if (old == new) then
 		return
 	end
-	self.RealOld[name] = old
 	hook.Run("On" .. name .. "Change", old, new)
 end
 
 function ENT:SetupDataTables()
-	self.RealOld = {}
 	local types, vars = {}, hook.Run "InitializeNetworking"
 
 	local types = {}
