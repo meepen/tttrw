@@ -389,18 +389,21 @@ function SWEP:DoFireBullets(src, dir, data, last_shoot)
 
 	ignore = self:AddOwnerFilter(ignore)
 
-	local shot = 1
+	local extras = 0
 
 	if (self:GetConsecutiveShots() > 0) then
 		local interval = engine.TickInterval()
 		local delay = self:GetDelay()
-		local shot = self:GetConsecutiveShots()
-		local diff = math.floor(delay / interval * shot) - math.floor(delay / interval * (shot - 1))
-		shot = shot + diff
+		local consecutive_shots = self:GetConsecutiveShots()
+		local idelay_ratio = interval / delay
+		local diff = math.floor(idelay_ratio * consecutive_shots) - math.floor(idelay_ratio * (consecutive_shots - 1))
+		extras = math.floor(diff * bullet_info.Num)
 	end
 
+	local shots = math.min(bullet_info.Num + extras, self:Clip1())
+
 	local bullets = {
-		Num = bullet_info.Num * shot,
+		Num = shots,
 		Attacker = owner,
 		Damage = self:GetDamage(),
 		Tracer = 0,
@@ -424,9 +427,9 @@ function SWEP:DoFireBullets(src, dir, data, last_shoot)
 
 	self:FireBullets(bullets)
 
-	self:SetBulletsShot(self:GetBulletsShot() + shot)
+	self:SetBulletsShot(self:GetBulletsShot() + extras)
 
-	return shot
+	return shots
 end
 
 function SWEP:TracerEffect(tr, dmg)
