@@ -35,7 +35,7 @@ function GM:TTTRWDrawSpectatorHUD()
 		local hpw = math.ceil(wid * hppct)
 		y = y + th + 4
 
-		local r, g, b = ColorLerp(health_dead, health_ok, health_full, hppct)
+		local r, g, b = ColorLerp(hppct, health_dead, health_ok, health_full)
 		local a = 230
 		th = math.ceil(th / 2)
 		surface.SetDrawColor(r, g, b, a)

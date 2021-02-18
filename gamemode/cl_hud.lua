@@ -6,19 +6,23 @@ local health_full = Color(58, 180, 80)
 local health_ok = Color(240, 255, 0)
 local health_dead = Color(255, 51, 0)
 
-function ColorLerp(col_from, col_mid, col_to, amt)
-	if (amt > 0.5) then
-		col_from = col_mid
-		amt = (amt - 0.5) * 2
-	else
-		col_to = col_mid
-		amt = amt * 2
+function ColorLerp(frac, ...)
+	local amt = select("#", ...)
+
+	if (frac <= 0) then
+		return (...)
+	elseif (frac >= 1) then
+		return select(amt, ...)
 	end
 
-	local fr, fg, fb = col_from.r, col_from.g, col_from.b
-	local tr, tg, tb = col_to.r, col_to.g, col_to.b
+	local cur_index = math.max(0, math.min(amt, math.floor(frac * (amt - 1)) + 1))
+	local from, to = select(cur_index, ...)
 
-	return fr + (tr - fr) * amt, fg + (tg - fg) * amt, fb + (tb - fb) * amt
+	local frac_between = (frac / (1 / (amt - 1))) % 1
+
+	local dr, dg, db = to.r - from.r, to.g - from.g, to.b - from.b
+
+	return Color(from.r + dr * frac_between, from.g + dg * frac_between, from.b + db * frac_between)
 end
 
 function ttt.GetHUDTarget()
@@ -142,7 +146,7 @@ function GM:HUDDrawTargetID()
 		local hpw = math.ceil(wid * hppct)
 		y = y + th + 4
 
-		local r, g, b = ColorLerp(health_dead, health_ok, health_full, hppct)
+		local r, g, b = ColorLerp(hppct, health_dead, health_ok, health_full)
 		local a = 230
 		th = math.ceil(th / 2)
 		surface.SetDrawColor(r, g, b, a)

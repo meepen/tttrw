@@ -1,4 +1,5 @@
 local tttrw_afk = CreateConVar("tttrw_afk", 0, {FCVAR_USERINFO, FCVAR_ARCHIVE}, "Are you still there?")
+local tttrw_afk_disable = CreateConVar("tttrw_afk_disable", 0, {FCVAR_REPLICATED}, "Disable AFK system.")
 
 surface.CreateFont("tttrw_afk_font", {
 	font = 'Lato',
@@ -8,7 +9,7 @@ surface.CreateFont("tttrw_afk_font", {
 
 local function Refresh()
 	timer.Create("tttrw_afk", 80, 1, function()
-		if (not LocalPlayer():Alive()) then
+		if (not LocalPlayer():Alive() or tttrw_afk_disable:GetBool()) then
 			return
 		end
 
