@@ -400,7 +400,7 @@ function SWEP:DoFireBullets(src, dir, data, last_shoot)
 		extras = extras + math.floor(diff * bullet_info.Num)
 	end
 
-	local shots = math.min(bullet_info.Num * extras, self:Clip1())
+	local shots = bullet_info.Num * math.min(extras, self:Clip1())
 
 	local bullets = {
 		Num = shots,
