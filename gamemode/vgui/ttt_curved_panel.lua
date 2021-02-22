@@ -166,7 +166,8 @@ function PANEL:Paint(w, h)
 	render.SetStencilReferenceValue(1)
 	surface.SetDrawColor(0, 1, 0, 1)
 	local curve = (self:GetCurve() or 0) / 2
-	ttt.DrawCurvedRect(curve, curve, w - curve * 2, h - curve * 2, curve, self:GetNoCurveTopLeft(), self:GetNoCurveTopRight(), self:GetNoCurveBottomRight(), self:GetNoCurveBottomLeft())
+	local outlinesize = self.OutlineSize or 1
+	ttt.DrawCurvedRect(outlinesize, outlinesize, w - outlinesize * 2, h - outlinesize * 2, curve, self:GetNoCurveTopLeft(), self:GetNoCurveTopRight(), self:GetNoCurveBottomRight(), self:GetNoCurveBottomLeft())
 
 	surface.SetDrawColor(self:GetColor() or white_text)
 	render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
@@ -175,6 +176,10 @@ function PANEL:Paint(w, h)
 	render.SetStencilEnable(false)
 	render.SetScissorRect(0, 0, 0, 0, false)
 	self:DrawInner(w, h)
+end
+
+function PANEL:SetOutlineSize(size)
+	self.OutlineSize = size
 end
 
 vgui.Register("ttt_curved_panel_outline", PANEL, "ttt_curved_panel")
