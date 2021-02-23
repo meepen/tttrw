@@ -167,7 +167,7 @@ function PANEL:Paint(w, h)
 	render.SetStencilFailOperation(STENCIL_KEEP)
 	render.SetStencilZFailOperation(STENCIL_KEEP)
 	render.SetStencilReferenceValue(1)
-	surface.SetDrawColor(0, 1, 0, 1)
+	surface.SetDrawColor(0, 0, 0, 1)
 	local curve = (self:GetCurve() or 0) / 2
 	local outlinesize = self.OutlineSize or 1
 	ttt.DrawCurvedRect(outlinesize, outlinesize, w - outlinesize * 2, h - outlinesize * 2, curve, self:GetNoCurveTopLeft(), self:GetNoCurveTopRight(), self:GetNoCurveBottomRight(), self:GetNoCurveBottomLeft())
