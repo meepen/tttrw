@@ -153,6 +153,9 @@ local PANEL = {}
 function PANEL:Scissor()
 end
 
+function PANEL:AddToStencil()
+end
+
 function PANEL:Paint(w, h)
 	self:Scissor()
 	render.SetStencilEnable(true)
@@ -168,6 +171,7 @@ function PANEL:Paint(w, h)
 	local curve = (self:GetCurve() or 0) / 2
 	local outlinesize = self.OutlineSize or 1
 	ttt.DrawCurvedRect(outlinesize, outlinesize, w - outlinesize * 2, h - outlinesize * 2, curve, self:GetNoCurveTopLeft(), self:GetNoCurveTopRight(), self:GetNoCurveBottomRight(), self:GetNoCurveBottomLeft())
+	self:AddToStencil(w, h)
 
 	surface.SetDrawColor(self:GetColor() or white_text)
 	render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
