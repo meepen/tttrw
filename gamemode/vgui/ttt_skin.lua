@@ -34,13 +34,13 @@ function SKIN:PaintTextEntry( panel, w, h )
 end
 
 function SKIN:PaintSlider(panel, w, h)
-	surface.SetDrawColor(Color(12, 13, 12))
-	surface.DrawRect(0, h / 4, w, h / 2)
+	surface.SetDrawColor(Color(48, 49, 55))
+	ttt.DrawCurvedRect(0, 6, w, h - 12, 6)
 end
 
 function SKIN:PaintSliderKnob(panel, w, h)
 	surface.SetDrawColor(white_text)
-	surface.DrawRect(0, 0, w, h)
+	ttt.DrawCurvedRect(0, 0, w, h, 6)
 end
 
 function SKIN:PaintCollapsibleCategory(panel, w, h)
@@ -63,41 +63,32 @@ end
 local PANEL = {}
 
 function PANEL:Init()
-	self:SetColor(Color(83, 89, 89))
-	self:SetCurve(2)
-end
-
-function PANEL:OnMousePressed()
-	self:GetParent():Grip(1)
-end
-
-derma.DefineControl("DScrollBarGrip", "A Scrollbar Grip", PANEL, "ttt_curved_panel")
-
-local PANEL = {}
-
-function PANEL:Init()
 	self.Offset = 0
 	self.Scroll = 0
 	self.CanvasSize = 1
 	self.BarSize = 1
 
-	self.Inner = self:Add "ttt_curved_panel"
+	self.Inner = self:Add "EditablePanel"
+	function self.Inner:Paint(w, h)
+		derma.SkinHook( "Paint", "Slider", self, w, h )
+	end
 	self.Inner:Dock(FILL)
+	self.Inner:DockMargin(1, 0, 1, 0)
 	self.Inner.Grip = function(s, ...)
 		self:Grip(...)
 	end
 
-	self.btnGrip = self.Inner:Add "DScrollBarGrip"
+	self.btnGrip = self:Add "EditablePanel"
 
-	self.btnUp = self:Add "EditablePanel"
-	self.btnDown = self.btnUp
-	self.btnUp:SetVisible(false)
+	function self.btnGrip:OnMousePressed()
+		self:GetParent():Grip(1)
+	end
 
-	self:SetColor(Color(31, 31, 32))
-	self.Inner:SetColor(Color(31, 31, 32))
-	self:SetCurve(4)
+	function self.btnGrip:Paint(w, h)
+		derma.SkinHook("Paint", "SliderKnob", self, w, h)
+	end
 
-	self:SetSize(16, 20)
+	self:SetSize(12, 20)
 end
 
 function PANEL:SetEnabled( b )
@@ -128,11 +119,7 @@ function PANEL:Value()
 end
 
 function PANEL:BarScale()
-	if (self.BarSize == 0) then
-		return 1
-	end
-
-	return self.BarSize / (self.CanvasSize + self.BarSize - 4)
+	return 1
 end
 
 function PANEL:SetUp( _barsize_, _canvassize_ )
@@ -152,7 +139,7 @@ function PANEL:OnMouseWheeled(dlta)
 	return self:AddScroll(dlta * -2)
 end
 
-function PANEL:AddScroll( dlta )
+function PANEL:AddScroll(dlta)
 	local OldScroll = self:GetScroll()
 
 	dlta = dlta * 25
@@ -236,10 +223,9 @@ function PANEL:OnCursorMoved( x, y )
 
 	local x, y = self:ScreenToLocal(0, gui.MouseY())
 
-	-- Uck.
 	y = y - self.HoldPos
 
-	local TrackSize = self:GetTall() - self.btnGrip:GetTall()
+	local TrackSize = self:GetTall()
 
 	y = y / TrackSize
 
@@ -262,13 +248,11 @@ end
 
 function PANEL:PerformLayout(Wide, h)
 	local Scroll = self:GetScroll() / (self.CanvasSize + 4)
-	local BarSize = math.max(self:BarScale() * h, 10)
-	local Track = h - BarSize
-	Track = Track + 1
+	local Track = h
 
 	Scroll = Scroll * Track
-	self.btnGrip:SetPos(1, Scroll + 1)
-	self.btnGrip:SetSize(Wide - 4, BarSize)
+	self.btnGrip:SetPos(0, Scroll + 1)
+	self.btnGrip:SetSize(Wide, Wide)
 end
 
-derma.DefineControl("DVScrollBar", "A Scrollbar", PANEL, "ttt_curved_panel_shadow")
+derma.DefineControl("DVScrollBar", "A Scrollbar", PANEL, "EditablePanel")
