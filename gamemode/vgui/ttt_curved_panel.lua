@@ -150,6 +150,10 @@ vgui.Register("ttt_curved_button", PANEL, "DButton")
 
 local PANEL = {}
 
+function PANEL:Init()
+	self:SetOutlineSize(1)
+end
+
 function PANEL:Scissor()
 end
 
@@ -184,6 +188,7 @@ end
 
 function PANEL:SetOutlineSize(size)
 	self.OutlineSize = size
+	self:DockPadding(size, size, size, size)
 end
 
 vgui.Register("ttt_curved_panel_outline", PANEL, "ttt_curved_panel")
