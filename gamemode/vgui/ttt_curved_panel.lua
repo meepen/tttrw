@@ -200,12 +200,11 @@ end
 
 local PANEL = {}
 DEFINE_BASECLASS "ttt_curved_panel"
-function PANEL:Init()
-	self:DockPadding(1, 1, 1, 1)
-end
+
 function PANEL:SetColor(col)
 	BaseClass.SetColor(self, ShadowColor(col))
 end
+
 vgui.Register("ttt_curved_panel_shadow", PANEL, "ttt_curved_panel_outline")
 vgui.Register("ttt_curved_panel_shadow_button", table.Copy(PANEL), "ttt_curved_outline_button")
 
@@ -234,9 +233,9 @@ function HexColor(h)
 	return Color(unpack(col))
 end
 
-outline = HexColor "#0e1c20ff"
+outline = Color(33, 33, 33)
 inactive_tab = HexColor "#202629ff"
-main_color = HexColor "#0b121370"
+main_color = Color(0, 1, 3, 96)
 solid_color = Color(42, 50, 54)
 dark = Color(32, 38, 41)
 
@@ -261,7 +260,6 @@ function PANEL:Init()
 	self.Main:SetCurve(2)
 	self.MainSolid:SetCurve(2)
 
-	self.Inner:DockPadding(2, 2, 2, 2)
 	self.Main:DockPadding(8, 8, 8, 10)
 
 	self.TabContainer = self.Main:Add "EditablePanel"
@@ -535,7 +533,6 @@ function PANEL:Init()
 	self.InnerShadow:Dock(FILL)
 
 	self:DockPadding(1, 1, 1, 1)
-	self.Outline:DockPadding(2, 2, 2, 0)
 
 	self:SetColor(outline)
 	self.Outline:SetColor(outline)
@@ -722,7 +719,6 @@ function PANEL:Init()
 
 	self.Inner:SetCurve(4)
 	self:SetCurve(4)
-	self.Inner:DockPadding(2, 2, 2, 2)
 	self.Inner:SetCurve(2)
 	self.Inner:SetColor(outline)
 	self:SetColor(outline)
