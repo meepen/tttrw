@@ -247,11 +247,8 @@ function PANEL:Grip()
 end
 
 function PANEL:PerformLayout(Wide, h)
-	local Scroll = self:GetScroll() / (self.CanvasSize + 4)
-	local Track = h
-
-	Scroll = Scroll * Track
-	self.btnGrip:SetPos(0, Scroll + 1)
+	local pct = self:GetScroll() / (self.CanvasSize)
+	self.btnGrip:SetPos(0, pct * (h - self.btnGrip:GetTall()))
 	self.btnGrip:SetSize(Wide, Wide)
 end
 
