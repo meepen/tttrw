@@ -1,5 +1,6 @@
 AddCSLuaFile "cl_init.lua"
 AddCSLuaFile "shared.lua"
+AddCSLuaFile "cl_muzzle.lua"
 include "shared.lua"
 
 resource.AddFile "materials/tttrw/scope.vmt"

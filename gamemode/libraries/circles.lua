@@ -1,3 +1,4 @@
+local ret = (function()
 --[[
 MIT License
 
@@ -412,3 +413,8 @@ _R.Circles = {
 }
 
 return _R.Circles
+
+end)()
+
+ttt.Circles = ret
+return ret

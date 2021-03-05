@@ -209,6 +209,10 @@ function SWEP:Deploy()
 
 	self:SetNextPrimaryFire(CurTime() + duration)
 
+	if (CLIENT) then
+		self:StartClientsideAnimation()
+	end
+
 	return true
 end
 
@@ -334,6 +338,9 @@ function SWEP:ShootBullet(data)
 
 	if (IsValid(self.Owner)) then
 		self:ShootEffects()
+		if (CLIENT) then
+			self:MuzzleEffects()
+		end
 	end
 
 	return shot or 1
@@ -382,18 +389,21 @@ function SWEP:DoFireBullets(src, dir, data, last_shoot)
 
 	ignore = self:AddOwnerFilter(ignore)
 
-	local shot = 1
+	local extras = 1
 
 	if (self:GetConsecutiveShots() > 0) then
 		local interval = engine.TickInterval()
 		local delay = self:GetDelay()
-		local shot = self:GetConsecutiveShots()
-		local diff = math.floor(delay / interval * shot) - math.floor(delay / interval * (shot - 1))
-		shot = shot + diff
+		local consecutive_shots = self:GetConsecutiveShots()
+		local idelay_ratio = interval / delay
+		local diff = math.floor(idelay_ratio * consecutive_shots) - math.floor(idelay_ratio * (consecutive_shots - 1))
+		extras = extras + math.floor(diff * bullet_info.Num)
 	end
 
+	local shots = bullet_info.Num * math.min(extras, self:Clip1())
+
 	local bullets = {
-		Num = bullet_info.Num * shot,
+		Num = shots,
 		Attacker = owner,
 		Damage = self:GetDamage(),
 		Tracer = 0,
@@ -417,9 +427,9 @@ function SWEP:DoFireBullets(src, dir, data, last_shoot)
 
 	self:FireBullets(bullets)
 
-	self:SetBulletsShot(self:GetBulletsShot() + shot)
+	self:SetBulletsShot(self:GetBulletsShot() + extras)
 
-	return shot
+	return extras
 end
 
 function SWEP:TracerEffect(tr, dmg)
@@ -446,6 +456,14 @@ function SWEP:TracerEffect(tr, dmg)
 		end
 		util.Effect(self:GetTracerName(), d, true, r)
 	end
+end
+
+function SWEP:GetMultiplier()
+	return 1
+end
+
+function SWEP:GetConsecutiveShots()
+	return 0
 end
 
 function SWEP:GetSpread()
@@ -602,7 +620,14 @@ function SWEP:Think()
 
 		self:SetClip1(self:Clip1() + added)
 		self:SetReloadEndTime(math.huge)
-		self:SendWeaponAnim(self:GetIdleAnimation())
+	end
+
+	local vm = self:GetOwner():GetViewModel(self:ViewModelIndex())
+	if (vm:IsSequenceFinished()) then
+		local act = self:GetIdleAnimation()
+		if (act) then
+			vm:SendViewModelMatchingSequence(vm:SelectWeightedSequence(act))
+		end
 	end
 
 	if (not self:IsToggleADS()) then
@@ -631,6 +656,10 @@ function SWEP:GetCurrentZoomPercent()
 end
 
 function SWEP:GetCurrentFOVMultiplier()
+	if (not self.GetOldFOVMultiplier) then
+		return self.Ironsights.Zoom
+	end
+
 	return self:GetOldFOVMultiplier() + (self:GetFOVMultiplier() - self:GetOldFOVMultiplier()) * self:GetCurrentZoomMultiplier()
 end
 

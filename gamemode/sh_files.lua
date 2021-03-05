@@ -81,6 +81,7 @@ AddCSLuaFile();
 		"materials/tttrw/headshot.png",
 		"materials/tttrw/dna.png",
 		"materials/tttrw/expired_dna.png",
+		"particles/tfa_smoke.pcf",
 	},
 	Load = function(self)
 		for _, file in ipairs(self.Shared) do

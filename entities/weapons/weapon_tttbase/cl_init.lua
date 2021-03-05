@@ -1,10 +1,10 @@
 include "shared.lua"
+include "cl_muzzle.lua"
 
 local ttt_lowered = CreateConVar("ttt_ironsights_lowered", "1", FCVAR_ARCHIVE)
 local ttt_crosshair_ironsights = CreateConVar("ttt_crosshair_ironsights", "1", FCVAR_ARCHIVE)
 
 SWEP.DrawCrosshair = true
-SWEP.ScopeArcTexture = Material "tttrw/scope"
 SWEP.ReticleScale = 1
 
 function SWEP:HasTFAScope()
@@ -88,38 +88,54 @@ function SWEP:DrawScopeOverlay()
 	return true
 end
 
+local circles = setmetatable({}, {
+	__index = function(self, k)
+		local num = math.Round(k)
+		if (num ~= k) then
+			return self[num]
+		end
+
+		self[k] = ttt.Circles.New(CIRCLE_FILLED, num, num, num)
+		self[k]:SetColor(Color(0, 0, 0))
+		self[k]:SetDistance(num / 10)
+
+		return self[k]
+	end
+})
+
 function SWEP:DrawHUD()
 	if (self:GetIronsights() and self.HasScope) then
 		if (self:HasTFAScope()) then
 			return self:DrawScopeOverlay()
 		end
 
-		-- scope arc
-		surface.SetMaterial(self.ScopeArcTexture)
 		local x = ScrW() / 2
 
+		local circle = circles[ScrH() / 2]
+		circle:SetPos(ScrW() / 2, ScrH() / 2)
+		render.ClearStencil()
+		render.SetStencilEnable(true)
+		render.SetStencilReferenceValue(1)
+		render.SetStencilCompareFunction(STENCIL_ALWAYS)
+		render.SetStencilFailOperation(STENCIL_KEEP)
+		render.SetStencilZFailOperation(STENCIL_KEEP)
+		render.SetStencilTestMask(0xff)
+		render.SetStencilWriteMask(0xff)
+		render.SetStencilPassOperation(STENCIL_REPLACE)
 
-		local is_ironsights = self.CurIronsights
-		local toggletime = self.IronTime or 0
-		local time = is_ironsights and self.Ironsights.TimeTo or self.Ironsights.TimeFrom
+		render.OverrideColorWriteEnable(true, false)
+			draw.NoTexture()
+			circle()
+			render.OverrideColorWriteEnable(false)
 
-		local frac = math.min(1, (self:GetUnpredictedTime() - toggletime) / time)
+		render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
+		render.SetStencilPassOperation(STENCIL_KEEP)
 
-		surface.SetDrawColor(0, 0, 0, 255)
+			surface.SetDrawColor(0, 0, 0)
+			surface.DrawRect(0, 0, ScrW(), ScrH())
 
-		-- top right
-		surface.DrawTexturedRectUV(x, 0, ScrH() / 2, ScrH() / 2, 0, 1, 1, 0)
+		render.SetStencilEnable(false)
 
-		-- top left
-		surface.DrawTexturedRectUV(x - ScrH() / 2, 0, ScrH() / 2, ScrH() / 2, 1, 1, 0, 0)
-
-		-- bottom left
-		surface.DrawTexturedRectUV(x - ScrH() / 2, ScrH() / 2, ScrH() / 2, ScrH() / 2, 1, 0, 0, 1)
-		-- bottom right
-		surface.DrawTexturedRect(x, ScrH() / 2, ScrH() / 2, ScrH() / 2)
-
-		surface.DrawRect(0, 0, math.ceil(x - ScrH() / 2), ScrH())
-		surface.DrawRect(math.floor(x + ScrH() / 2), 0, math.ceil(x - ScrH() / 2), ScrH())
 	end
 end
 
@@ -224,10 +240,10 @@ function SWEP:GetViewModelPosition(pos, ang)
 	pos, ang = self:GetIronsightsPos(is_ironsights, frac, pos, ang)
 
 	if (is_ironsights) then
-		self.SwayScale = 0.2
+		self.SwayScale = 0.05
 		self.BobScale = 0.07
 	else
-		self.SwayScale = 1
+		self.SwayScale = 1.5
 		self.BobScale = 1
 	end
 
@@ -718,6 +734,10 @@ function SWEP:DrawExtraModels()
 			cam.End3D2D()
 		end
 	end
+end
+
+function SWEP:StartClientsideAnimation()
+	self:SetLayerSequence(1, self:LookupSequence "idle")
 end
 
 local viewmodel_fov = GetConVar "viewmodel_fov"

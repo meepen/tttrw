@@ -11,9 +11,105 @@ surface.CreateFont("tttrw_tab_selector", {
 	weight = 100,
 	size = 18
 })
+local PANEL = FindMetaTable "Panel"
+function PANEL:GetRenderBounds()
+	local x, y = self:LocalToScreen(0, 0)
+	return x, y, x + self:GetWide(), y + self:GetTall()
+end
+
+local function GetCurvePoly(curve, rot)
+	local vertices = {pos = {0, 0}, {x = 0, y = 0}}
+	local steps = curve
+	for a = steps, 0, -1 do
+		local rad = math.rad(rot + a / steps * 90)
+		local cx, cy = math.sin(rad) * curve, math.cos(rad) * curve
+
+		table.insert(vertices, {
+			x = cx,
+			y = cy,
+		})
+	end
+
+	return vertices
+end
+
+local curves = setmetatable({}, {
+	__index = function(self, curve)
+		local t = setmetatable({curve = curve}, {
+			__index = function(self, rot)
+				rot = math.Round(rot % 360, 1)
+				if (rawget(self, rot)) then
+					return self[rot]
+				end
+
+				self[rot] = GetCurvePoly(self.curve, rot)
+				return self[rot]
+			end
+		})
+
+		self[curve] = t
+		return t
+	end
+})
+
+local function GetCurvedPoly(x, y, curve, rot)
+	x, y = math.Round(x), math.Round(y)
+	local vertices = curves[curve][rot or 0]
+	local pos = vertices.pos
+	local dx, dy = -pos[1] + x, -pos[2] + y
+
+	for _, vertex in ipairs(vertices) do
+		vertex.x = vertex.x + dx
+		vertex.y = vertex.y + dy
+	end
+
+	vertices.pos = {x, y}
+
+	return vertices
+end
+
+local function DrawCurveTexture(x, y, curve, rot)
+	local vertices = GetCurvedPoly(x, y, curve, rot)
+	surface.DrawPoly(vertices)
+end
+
+function ttt.DrawCurvedRect(x, y, w, h, curve, no_topleft, no_topright, no_bottomright, no_bottomleft)
+	x, y, w, h = math.Round(x), math.Round(y), math.Round(w), math.Round(h)
+	draw.NoTexture()
+	surface.DrawRect(x + curve, y, w - curve * 2, h)
+	do
+		local sy = y
+		local sh = h
+		if (not no_topleft) then
+			DrawCurveTexture(x + curve, y + curve, curve, -180)
+			sy = sy + curve
+			sh = sh - curve
+		end
+		if (not no_bottomleft) then
+			DrawCurveTexture(x + curve, y + h - curve, curve, -90)
+			sh = sh - curve
+		end
+		surface.DrawTexturedRect(x, sy, curve, sh)
+	end
+
+	do
+		local sy = y
+		local sh = h
+		if (not no_topright) then
+			DrawCurveTexture(x + w - curve, y + curve, curve, 90)
+			sy = sy + curve
+			sh = sh - curve
+		end
+		if (not no_bottomright) then
+			DrawCurveTexture(x + w - curve, y + h - curve, curve, 0)
+			sh = sh - curve
+		end
+		surface.DrawTexturedRect(x + w - curve, sy, curve, sh)
+	end
+end
+
 
 local PANEL = {}
-ttt.ColorMaterials = ttt.ColorMaterials or {}
 
 AccessorFunc(PANEL, "Curve", "Curve", FORCE_NUMBER)
 AccessorFunc(PANEL, "Color", "Color")
@@ -21,9 +117,6 @@ AccessorFunc(PANEL, "Color", "Color")
 for _, name in pairs {"CurveTopRight", "CurveTopLeft", "CurveBottomLeft", "CurveBottomRight"} do
 	PANEL["Set" .. name] = function(self, v)
 		self[name] = v
-		if (IsValid(self.Mesh)) then
-			self:RebuildMesh()
-		end
 	end
 
 	PANEL[name] = true
@@ -36,294 +129,66 @@ for _, name in pairs {"CurveTopRight", "CurveTopLeft", "CurveBottomLeft", "Curve
 		return not self["GetNo" .. name](self)
 	end
 end
-
-function PANEL:SetColor(col)
-	if (col ~= self.Color) then
-		self.Color = col
-		self:RebuildMesh()
-	end
-end
-
-function PANEL:SetCurve(curve)
-	self.Curve = curve
-	self:RebuildMesh()
-end
-
-function PANEL:RebuildMesh(w, h)
-	if (not w) then
-		w, h = self:GetSize()
-	end
-
-	if (IsValid(self.Mesh)) then
-		self.Mesh:Destroy()
-		self.Mesh = nil
-	end
-
-	local x, y = self:LocalToScreen(0, 0)
-
-	self.Mesh = hud.BuildCurvedMesh(self:GetCurve() or 0, x, y, w, h, self:GetNoCurveTopLeft(), self:GetNoCurveTopRight(), self:GetNoCurveBottomLeft(), self:GetNoCurveBottomRight(), self:GetColor() or color_white)
-end
-
-local memoize = {}
-
-hook.Add("PostRenderVGUI", "ttt_curved_panel", function()
-	memoize = {}
-end)
-
-local function GetRenderBounds(self)
-	local m = memoize[self]
-	if (m ~= nil) then
-		return m[1], m[2], m[3], m[4]
-	end
-
-	local x0, y0 = self:LocalToScreen(0, 0)
-	local x1, y1 = self:LocalToScreen(self:GetSize())
-
-	local parent = self:GetParent()
-
-	if (IsValid(parent)) then
-		local px0, py0, px1, py1 = GetRenderBounds(parent)
-		x0 = math.max(x0, px0)
-		y0 = math.max(y0, py0)
-		x1 = math.min(x1, px1)
-		y1 = math.min(y1, py1)
-	end
-
-	memoize[self] = {x0, y0, x1, y1}
-
-	return x0, y0, x1, y1
-end
-
-PANEL.GetRenderBounds = GetRenderBounds
-
-function PANEL:SetScissor(b)
-	self.DontScissor = not b
-end
-
-function PANEL:GetScissor()
-	return not self.DontScissor
-end
-
 function PANEL:Scissor()
-	if (not self:GetScissor()) then
-		return
-	end
-	local x0, y0, x1, y1 = self:GetRenderBounds()
-	render.SetScissorRect(x0, y0, x1, y1, true)
 end
 
-function PANEL:MeshRemove()
-	if (IsValid(self.Mesh)) then
-		self.Mesh:Destroy()
-	end
-
-	if (self.OldRemove) then
-		self:OldRemove()
-	end
+function PANEL:DrawInner(w, h)
 end
 
 function PANEL:Paint(w, h)
-	self.OldRemove = self.OldRemove or self.OnRemove or function() end
-	self.OnRemove = self.MeshRemove
-
-	local x, y = self:LocalToScreen(0, 0)
-	if (self._OLDW ~= w or self._OLDH ~= h or self._OLDX ~= x or self._OLDY ~= y) then
-		self:RebuildMesh(w, h)
-		self._OLDW = w
-		self._OLDH = h
-		self._OLDX = x
-		self._OLDY = y
-	end
-
-	render.SetColorMaterial()
-	if (not In3D) then
-		self:Scissor()
-		hud.StartStenciledMesh(self.Mesh, 0, 0)
-		surface.SetDrawColor(self.Color or color_white)
-		surface.DrawRect(0, 0, self:GetSize())
-		hud.EndStenciledMesh()
-		render.SetScissorRect(0, 0, 0, 0, false)
-	else
-		self.Mesh:Draw()
-	end
+	self:Scissor()
+	surface.SetDrawColor(self:GetColor() or white_text)
+	ttt.DrawCurvedRect(0, 0, w, h, (self:GetCurve() or 0) / 2, self:GetNoCurveTopLeft(), self:GetNoCurveTopRight(), self:GetNoCurveBottomRight(), self:GetNoCurveBottomLeft())
+	self:DrawInner(w, h)
+	render.SetScissorRect(0, 0, 0, 0, false)
 end
 
 vgui.Register("ttt_curved_panel", PANEL, "EditablePanel")
-PANEL = table.Copy(PANEL)
-AccessorFunc( PANEL, "m_bDisabled",		"Disabled",			FORCE_BOOL )
 
-function PANEL:Init()
-	self:SetCursor "hand"
-
-	self.Label = self:Add "DLabel"
-	self.Label:SetContentAlignment(5)
-	self.Label:Dock(FILL)
-	self.Label:SetText ""
-end
-
-function PANEL:SetTextColor(c)
-	self.Label:SetTextColor(c)
-end
-
-function PANEL:SetText(c)
-	self.Label:SetText(c)
-end
-
-function PANEL:GetTexT()
-	return self.Label:GetText()
-end
-
-function PANEL:SetFont(f)
-	self.Label:SetFont(f)
-end
-
-function PANEL:GetFont(f)
-	return self.Label:GetFont()
-end
-
-function PANEL:OnMousePressed( mousecode )
-
-	if ( self:GetDisabled() ) then return end
-
-	if ( mousecode == MOUSE_LEFT && !dragndrop.IsDragging() && self.m_bDoubleClicking ) then
-
-		if ( self.LastClickTime && SysTime() - self.LastClickTime < 0.2 ) then
-
-			self:DoDoubleClickInternal()
-			self:DoDoubleClick()
-			return
-
-		end
-
-		self.LastClickTime = SysTime()
-
-	end
-
-	-- If we're selectable and have shift held down then go up
-	-- the parent until we find a selection canvas and start box selection
-	if ( self:IsSelectable() && mousecode == MOUSE_LEFT && input.IsShiftDown() ) then
-
-		return self:StartBoxSelection()
-
-	end
-
-	self:MouseCapture( true )
-	self.Depressed = true
-	self:OnDepressed()
-	self:InvalidateLayout(true)
-
-	--
-	-- Tell DragNDrop that we're down, and might start getting dragged!
-	--
-	self:DragMousePress( mousecode )
-end
-
-function PANEL:OnReleased()
-end
-
-function PANEL:OnDepressed()
-end
-
-function PANEL:OnToggled(bool)
-end
-
-function PANEL:DoClick()
-end
-
-function PANEL:DoRightClick()
-end
-
-function PANEL:DoMiddleClick()
-end
-
-function PANEL:DoClickInternal()
-end
-
-function PANEL:DoDoubleClick()
-end
-
-function PANEL:DoDoubleClickInternal()
-end
-
-function PANEL:OnMouseReleased( mousecode )
-
-	self:MouseCapture( false )
-
-	if ( self:GetDisabled() ) then return end
-	if ( !self.Depressed && dragndrop.m_DraggingMain != self ) then return end
-
-	if ( self.Depressed ) then
-		self.Depressed = nil
-		self:OnReleased()
-		self:InvalidateLayout( true )
-	end
-
-	--
-	-- If we were being dragged then don't do the default behaviour!
-	--
-	if ( self:DragMouseRelease( mousecode ) ) then
-		return
-	end
-	
-	if ( self:IsSelectable() && mousecode == MOUSE_LEFT ) then
-
-		local canvas = self:GetSelectionCanvas()
-		if ( canvas ) then
-			canvas:UnselectAll()
-		end
-
-	end
-
-	if ( !self.Hovered ) then return end
-
-	--
-	-- For the purposes of these callbacks we want to
-	-- keep depressed true. This helps us out in controls
-	-- like the checkbox in the properties dialog. Because
-	-- the properties dialog will only manually change the value
-	-- if IsEditing() is true - and the only way to work out if
-	-- a label/button based control is editing is when it's depressed.
-	--
-	self.Depressed = true
-
-	if ( mousecode == MOUSE_RIGHT ) then
-		self:DoRightClick()
-	end
-
-	if ( mousecode == MOUSE_LEFT ) then
-		self:DoClickInternal()
-		self:DoClick()
-	end
-
-	if ( mousecode == MOUSE_MIDDLE ) then
-		self:DoMiddleClick()
-	end
-
-	self.Depressed = nil
-
-end
-
-vgui.Register("ttt_curved_button", table.Copy(PANEL), "EditablePanel")
+local PANEL = table.Copy(PANEL)
+vgui.Register("ttt_curved_button", PANEL, "DButton")
 
 local PANEL = {}
-DEFINE_BASECLASS "ttt_curved_panel"
-function PANEL:RebuildMesh(w, h)
-	if (IsValid(self.Mesh)) then
-		self.Mesh:Destroy()
-		self.Mesh = nil
-	end
 
-	local x, y = self:LocalToScreen(0, 0)
-
-	self.Mesh = hud.BuildCurvedMeshOutline(self:GetCurve() or 0, x, y, self:GetWide(), self:GetTall(), self:GetNoCurveTopLeft(), self:GetNoCurveTopRight(), self:GetNoCurveBottomLeft(), self:GetNoCurveBottomRight(), self:GetColor())
+function PANEL:Init()
+	self:SetOutlineSize(1)
 end
 
-function PANEL:DrawInner()
+function PANEL:Scissor()
+end
+
+function PANEL:AddToStencil()
 end
 
 function PANEL:Paint(w, h)
-	BaseClass.Paint(self, w, h)
+	self:Scissor()
+	render.SetStencilEnable(true)
+	render.ClearStencil()
+	render.SetStencilWriteMask(0xFF)
+	render.SetStencilTestMask(0xFF)
+	render.SetStencilCompareFunction(STENCIL_ALWAYS)
+	render.SetStencilPassOperation(STENCIL_REPLACE)
+	render.SetStencilFailOperation(STENCIL_KEEP)
+	render.SetStencilZFailOperation(STENCIL_KEEP)
+	render.SetStencilReferenceValue(1)
+	surface.SetDrawColor(0, 0, 0, 1)
+	local curve = (self:GetCurve() or 0) / 2
+	local outlinesize = self.OutlineSize or 1
+	ttt.DrawCurvedRect(outlinesize, outlinesize, w - outlinesize * 2, h - outlinesize * 2, curve, self:GetNoCurveTopLeft(), self:GetNoCurveTopRight(), self:GetNoCurveBottomRight(), self:GetNoCurveBottomLeft())
+	self:AddToStencil(w, h)
+
+	surface.SetDrawColor(self:GetColor() or white_text)
+	render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
+	ttt.DrawCurvedRect(0, 0, w, h, curve, self:GetNoCurveTopLeft(), self:GetNoCurveTopRight(), self:GetNoCurveBottomRight(), self:GetNoCurveBottomLeft())
+
+	render.SetStencilEnable(false)
+	render.SetScissorRect(0, 0, 0, 0, false)
 	self:DrawInner(w, h)
+end
+
+function PANEL:SetOutlineSize(size)
+	self.OutlineSize = size
+	self:DockPadding(size, size, size, size)
 end
 
 vgui.Register("ttt_curved_panel_outline", PANEL, "ttt_curved_panel")
@@ -335,12 +200,11 @@ end
 
 local PANEL = {}
 DEFINE_BASECLASS "ttt_curved_panel"
-function PANEL:Init()
-	self:DockPadding(1, 1, 1, 1)
-end
+
 function PANEL:SetColor(col)
 	BaseClass.SetColor(self, ShadowColor(col))
 end
+
 vgui.Register("ttt_curved_panel_shadow", PANEL, "ttt_curved_panel_outline")
 vgui.Register("ttt_curved_panel_shadow_button", table.Copy(PANEL), "ttt_curved_outline_button")
 
@@ -369,9 +233,9 @@ function HexColor(h)
 	return Color(unpack(col))
 end
 
-outline = HexColor "#0e1c20ff"
+outline = Color(33, 33, 33)
 inactive_tab = HexColor "#202629ff"
-main_color = HexColor "#0b121370"
+main_color = Color(0, 1, 3, 96)
 solid_color = Color(42, 50, 54)
 dark = Color(32, 38, 41)
 
@@ -396,7 +260,6 @@ function PANEL:Init()
 	self.Main:SetCurve(2)
 	self.MainSolid:SetCurve(2)
 
-	self.Inner:DockPadding(2, 2, 2, 2)
 	self.Main:DockPadding(8, 8, 8, 10)
 
 	self.TabContainer = self.Main:Add "EditablePanel"
@@ -670,7 +533,6 @@ function PANEL:Init()
 	self.InnerShadow:Dock(FILL)
 
 	self:DockPadding(1, 1, 1, 1)
-	self.Outline:DockPadding(2, 2, 2, 0)
 
 	self:SetColor(outline)
 	self.Outline:SetColor(outline)
@@ -693,8 +555,6 @@ function PANEL:Init()
 	self.Inner:SetCurveBottomLeft(false)
 	self.InnerShadow:SetCurveBottomLeft(false)
 
-	self.InnerShadow.GetRenderBounds = self.GetRenderBounds
-	self.Outline.GetRenderBounds = self.GetRenderBounds
 	self.Outline.Extra = 1
 
 	self.Label = self:Add "DLabel"
@@ -707,11 +567,6 @@ function PANEL:Init()
 
 	self.Label:SetMouseInputEnabled(false)
 	self.Outline:SetMouseInputEnabled(false)
-end
-
-function PANEL:GetRenderBounds()
-	local x0, y0, x1, y1 = self.BaseClass.GetRenderBounds(self)
-	return x0, y0, x1, y1 - (self.Active and self:GetCurve() - (self.Extra or 0) or 0)
 end
 
 function PANEL:SetRealText(t)
@@ -864,7 +719,6 @@ function PANEL:Init()
 
 	self.Inner:SetCurve(4)
 	self:SetCurve(4)
-	self.Inner:DockPadding(2, 2, 2, 2)
 	self.Inner:SetCurve(2)
 	self.Inner:SetColor(outline)
 	self:SetColor(outline)

@@ -4,6 +4,8 @@ local ttt_minimum_players = CreateConVar("ttt_minimum_players", "2", FCVAR_NONE,
 local ttt_posttime_seconds = CreateConVar("ttt_posttime_seconds", "5", FCVAR_REPLICATED, "The wait time after a round has been completed.")
 local ttt_roundtime_minutes = CreateConVar("ttt_roundtime_minutes", "10", FCVAR_REPLICATED, "The maximum length of a round.")
 
+local tttrw_no_endround_popup = CreateConVar("tttrw_no_endround_popup", "0", FCVAR_REPLICATED, "Should endround info show up?")
+
 local ttt_haste = CreateConVar("ttt_haste", "1", FCVAR_REPLICATED, "Enables haste mode. Haste mode has a small initial time with additional time for each kill.")
 local ttt_haste_starting_minutes = CreateConVar("ttt_haste_starting_minutes", "5", FCVAR_REPLICATED, "The initial time limit before kill time is added.")
 local ttt_haste_minutes_per_death = CreateConVar("ttt_haste_minutes_per_death", "0.5", FCVAR_REPLICATED, "The time added in minutes per death in haste mode.")
@@ -390,13 +392,16 @@ function GM:TTTRoundEnd(winning_team, winners)
 		table.insert(winner_ents, ply.Player)
 	end
 
-	net.Start "ttt_endround"
-		net.WriteString(winning_team)
-		net.WriteUInt(#winner_names, 8)
-		for i = 1, #winner_names do
-			net.WriteString(winner_names[i])
-		end
-	net.Broadcast()
+
+	if (not tttrw_no_endround_popup:GetBool()) then
+		net.Start "ttt_endround"
+			net.WriteString(winning_team)
+			net.WriteUInt(#winner_names, 8)
+			for i = 1, #winner_names do
+				net.WriteString(winner_names[i])
+			end
+		net.Broadcast()
+	end
 
 	round.SetState(ttt.ROUNDSTATE_ENDED, ttt_posttime_seconds:GetFloat()):_then(round.Prepare)
 end

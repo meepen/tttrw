@@ -1,3 +1,5 @@
+local tttrw_afk_disable = CreateConVar("tttrw_afk_disable", 0, {FCVAR_REPLICATED}, "Disable AFK system.")
+
 resource.AddSingleFile "resource/fonts/Lato-Regular.ttf"
 resource.AddSingleFile "resource/fonts/Lato-Semibold.ttf"
 
