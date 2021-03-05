@@ -34,8 +34,8 @@ function SKIN:PaintTextEntry( panel, w, h )
 end
 
 function SKIN:PaintSlider(panel, w, h)
-	surface.SetDrawColor(Color(48, 49, 55))
-	ttt.DrawCurvedRect(0, 6, w, h - 12, 6)
+	surface.SetDrawColor(0x21, 0x22, 0xa, 128)
+	ttt.DrawCurvedRect(2, 6, w - 4, h - 12, 2)
 end
 
 function SKIN:PaintSliderKnob(panel, w, h)

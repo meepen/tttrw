@@ -70,7 +70,7 @@ end
 
 function PANEL:OnPlayerRoleChange(ply, old, new)
 	if (ply == Player() and IsValid(self.Active) and new) then
-		self.Active:SetImageColor(ttt.roles[new].Color)
+		self.Active:SetImageColor(ttt and ttt.roles and ttt.roles[new] and ttt.roles[new].Color or Color(255, 255, 255))
 	end
 end
 

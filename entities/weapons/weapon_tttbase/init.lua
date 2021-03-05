@@ -35,8 +35,6 @@ function SWEP:PreDrop()
 end
 
 
--- TODO(meep): hidden weapons so people can't cheat to see weapons
-
 function SWEP:SetupPlayerVisibility(ply)
 	self:SetPreventTransmit(ply, IsValid(self:GetOwner()) and ply:Alive())
 end

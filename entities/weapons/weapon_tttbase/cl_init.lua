@@ -393,6 +393,10 @@ concommand.Remove "gmod_undo"
 SWEP.vRenderOrder = nil
 function SWEP:ViewModelDrawn()
 	local owner = self:GetOwner()
+	if (not IsValid(owner)) then
+		return
+	end
+
 	local vm = owner:GetViewModel()
 	if (not IsValid(vm)) then return end
 
