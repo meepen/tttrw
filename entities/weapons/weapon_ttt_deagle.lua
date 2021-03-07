@@ -10,7 +10,7 @@ SWEP.TTTCompat = {
 SWEP.ViewModelFlip      = false
 SWEP.ViewModelFOV       = 54
 
-SWEP.Ortho = {0.5, 5}
+SWEP.Ortho = {0, 5, angle = Angle(0, -90, 5) }
 
 SWEP.Base                  = "weapon_tttbase"
 

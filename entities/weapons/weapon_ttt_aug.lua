@@ -15,10 +15,10 @@ SWEP.Base                  = "weapon_tttbase"
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
-	DamageDropoffRange = 650,
-	DamageDropoffRangeMax = 4200,
-	DamageMinimumPercent = 0.1,
-	Spread = Vector(0.01, 0.02)
+	DamageDropoffRange = 1000,
+	DamageDropoffRangeMax = 4400,
+	DamageMinimumPercent = 0.15,
+	Spread = Vector(0.01, 0.015, 0),
 }
 
 SWEP.Primary.Damage        = 18

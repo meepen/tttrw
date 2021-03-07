@@ -18,10 +18,10 @@ SWEP.WeaponID              = AMMO_PISTOL
 SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
-	DamageDropoffRange = 3500,
-	DamageDropoffRangeMax = 6520,
-	DamageMinimumPercent = 0.1,
-	Spread = Vector(0.01, 0.015, 0),
+	DamageDropoffRange = 1500,
+	DamageDropoffRangeMax = 4400,
+	DamageMinimumPercent = 0.18,
+	Spread = Vector(0.01, 0.01, 0),
 }
 
 SWEP.Primary.Damage        = 21
@@ -54,7 +54,7 @@ SWEP.Ironsights = {
 	Zoom = 0.4,
 }
 
-local pow = 1.4
+local pow = 1.75
 SWEP.RecoilInstructions = {
 	Interval = 1,
 	pow * Angle(-6, -2),
