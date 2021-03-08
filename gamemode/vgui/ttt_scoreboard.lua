@@ -712,5 +712,10 @@ function GM:TTTRWGetPlayerCategory(ply)
 	if (IsValid(ply.DeadState) and not ply.DeadState:IsDormant()) then
 		return ply.DeadState:GetIdentified() and "Dead" or "Unidentified"
 	end
+
+	if (not ply:Alive() and (not LocalPlayer():Alive() or LocalPlayer():GetRoleData().Evil)) then
+		return "Unidentified"
+	end
+
 	return "Terrorists"
 end
