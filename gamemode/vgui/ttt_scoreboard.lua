@@ -542,14 +542,16 @@ function PANEL:AddPlayerPanel(ply, pnl)
 	end
 
 	local oldgroup = pnl.Group
+
+	self.Players[ply] = pnl
+	pnl.Group = self
+	pnl:SetParent(self)
+
 	if (IsValid(oldgroup)) then
 		oldgroup.Players[ply] = nil
 		oldgroup:Resize()
 	end
 
-	self.Players[ply] = pnl
-	pnl.Group = self
-	pnl:SetParent(self)
 	self:InvalidateChildren(true)
 	self:Resize()
 end
