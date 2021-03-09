@@ -17,20 +17,20 @@ SWEP.Bullets = {
 	Num = 1,
 	DamageDropoffRange = 700,
 	DamageDropoffRangeMax = 1300,
-	DamageMinimumPercent = 0.35,
-	Spread = Vector(0.038, 0.038)
+	DamageMinimumPercent = 0.25,
+	Spread = Vector(0.045, 0.045)
 }
 
 SWEP.TTTCompat = {"weapon_zm_sledge"}
 
-SWEP.Primary.Damage        = 11
+SWEP.Primary.Damage        = 10.5
 SWEP.Primary.Delay         = 0.06
 SWEP.Primary.Recoil        = 2
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "AirboatGun"
-SWEP.Primary.ClipSize      = 80
-SWEP.Primary.MaxClip	   = 80
-SWEP.Primary.DefaultClip   = 240
+SWEP.Primary.ClipSize      = 100
+SWEP.Primary.MaxClip	   = 100
+SWEP.Primary.DefaultClip   = 100 * 3
 SWEP.Primary.Sound         = Sound "Weapon_m249.Single"
 
 SWEP.HeadshotMultiplier    = 1.25
