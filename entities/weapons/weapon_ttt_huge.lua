@@ -28,9 +28,9 @@ SWEP.Primary.Delay         = 0.06
 SWEP.Primary.Recoil        = 2
 SWEP.Primary.Automatic     = true
 SWEP.Primary.Ammo          = "AirboatGun"
-SWEP.Primary.ClipSize      = 150
-SWEP.Primary.MaxClip	   = 150
-SWEP.Primary.DefaultClip   = 300
+SWEP.Primary.ClipSize      = 80
+SWEP.Primary.MaxClip	   = 80
+SWEP.Primary.DefaultClip   = 240
 SWEP.Primary.Sound         = Sound "Weapon_m249.Single"
 
 SWEP.HeadshotMultiplier    = 1.25

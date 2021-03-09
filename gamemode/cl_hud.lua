@@ -651,6 +651,45 @@ hook.Add("DrawOverlay", "cancer", function()
 	surface.DrawRect(x0, y0, x1 - x0, y1 - y0)
 end)
 
+ttt.hudeditor = ttt.hudeditor or {
+	Events = setmetatable({}, {
+		__index = function(self, k)
+			self[k] = {}
+			return self[k]
+		end
+	})
+}
+function ttt.hudeditor:Hook(event, name, fn)
+	self.Events[event][name] = fn
+end
+
+function ttt.hudeditor:Init()
+	self.Valid = true
+	for event in pairs(self.Events) do
+		hook.Add(event, self, function(self, ...)
+			for _, event in pairs(self.Events[event]) do
+				event(self, ...)
+			end
+		end)
+	end
+end
+
+function ttt.hudeditor:Destroy()
+	self.Valid = false
+end
+
+function ttt.hudeditor:IsValid()
+	return self.Valid
+end
+
+
+ttt.hudeditor:Hook("DrawOverlay", "selector", function(self)
+	surface.SetDrawColor(0, 0, 255)
+	surface.DrawRect(0, 0, 25, 25)
+end)
+
+ttt.hudeditor:Destroy()
+
 concommand.Add("tttrw_edit_hud", function()
 	local parent = ttt.HUDElement:GetParent()
 
