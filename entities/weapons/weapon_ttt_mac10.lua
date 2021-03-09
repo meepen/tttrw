@@ -21,7 +21,7 @@ SWEP.Bullets = {
 	HullSize = 0,
 	Num = 1,
 	DamageDropoffRange = 600,
-	DamageDropoffRangeMax = 2400,
+	DamageDropoffRangeMax = 2100,
 	DamageMinimumPercent = 0.1,
 	Spread = Vector(0.040, 0.040, 0.00)
 }
@@ -29,7 +29,7 @@ SWEP.Bullets = {
 SWEP.TTTCompat = {"weapon_zm_mac10"}
 
 SWEP.Primary.Damage        = 12
-SWEP.Primary.Delay         = 0.063
+SWEP.Primary.Delay         = 0.075
 SWEP.Primary.Recoil        = 1.2
 SWEP.Primary.Automatic     = true
 SWEP.Primary.ClipSize      = 30
