@@ -9,11 +9,11 @@ AccessorFunc(ENT, "die_explode", "ExplodeOnDeath")
 AccessorFunc(ENT, "dietime", "DieTime")
 
 ENT.firechild = nil
-ENT.fireparams = {size=120, growth=1}
+ENT.fireparams = {size=80, growth=1}
+ENT.fire_damage = 2
 
 ENT.dietime = 0
-ENT.next_hurt = 0
-ENT.hurt_interval = 1
+ENT.hurt_interval = 0.2
 
 CreateConVar("ttt_fire_fallback", "0", FCVAR_ARCHIVE)
 
@@ -37,11 +37,15 @@ function ENT:Initialize()
 	self:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
 	self:SetHealth(99999)
 
-	self.next_hurt = CurTime() + self.hurt_interval + math.Rand(0, 3)
+	self.next_hurt = CurTime()
 
 	self:SetBurning(false)
 
 	if self.dietime == 0 then self.dietime = CurTime() + 20 end
+end
+
+function ENT:GetDamage()
+	return self.fire_damage
 end
 
 local function SpawnFire(pos, size, attack, fuel, owner, parent)
@@ -126,31 +130,7 @@ function ENT:Think()
 		return
 	end
 
-	if IsValid(self.firechild) then
-		if self.next_hurt < CurTime() then
-			if self:WaterLevel() > 0 then
-				self.dietime = 0
-				return
-			end
-
-			-- deal damage
-
-			local dmg = DamageInfo()
-			dmg:SetDamageType(DMG_BURN)
-			dmg:SetDamage(math.random(4,6))
-			if IsValid(self:GetDamageParent()) then
-				dmg:SetAttacker(self:GetDamageParent())
-			else
-				dmg:SetAttacker(self)
-			end
-			dmg:SetInflictor(self.firechild)
-
-			RadiusDamage(dmg, self:GetPos(), 132, self)
-
-			self.next_hurt = CurTime() + self.hurt_interval
-		end
-		return
-	elseif self:GetVelocity() == Vector(0,0,0) then
+	if (not IsValid(self.firechild)) then
 		if self:WaterLevel() > 0 then
 			self.dietime = 0
 			return
@@ -159,6 +139,27 @@ function ENT:Think()
 		self.firechild = SpawnFire(self:GetPos(), self.fireparams.size, self.fireparams.growth, 999, self:GetDamageParent(), self)
 
 		self:SetBurning(true)
+	end
+
+	if self.next_hurt < CurTime() then
+		if self:WaterLevel() > 0 then
+			self.dietime = 0
+			return
+		end
+
+		local dmg = DamageInfo()
+		dmg:SetDamageType(DMG_BURN)
+		dmg:SetDamage(self:GetDamage())
+		if IsValid(self:GetDamageParent()) then
+			dmg:SetAttacker(self:GetDamageParent())
+		else
+			dmg:SetAttacker(self)
+		end
+		dmg:SetInflictor(self.firechild)
+
+		RadiusDamage(dmg, self:GetPos(), math.sqrt(self.fireparams.size), self)
+
+		self.next_hurt = CurTime() + self.hurt_interval
 	end
 end
 
