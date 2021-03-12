@@ -9,11 +9,11 @@ AccessorFunc(ENT, "die_explode", "ExplodeOnDeath")
 AccessorFunc(ENT, "dietime", "DieTime")
 
 ENT.firechild = nil
-ENT.fireparams = {size=80, growth=1}
-ENT.fire_damage = 2
+ENT.fireparams = {size=120, growth=1}
+ENT.fire_damage = 5
 
 ENT.dietime = 0
-ENT.hurt_interval = 0.2
+ENT.hurt_interval = 1
 
 CreateConVar("ttt_fire_fallback", "0", FCVAR_ARCHIVE)
 
