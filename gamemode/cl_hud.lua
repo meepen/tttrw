@@ -207,7 +207,8 @@ local hide = {
 	CHudHealth = true,
 	CHudDamageIndicator = true,
 	CHudAmmo = true,
-	CHudSecondaryAmmo = true
+	CHudSecondaryAmmo = true,
+	CHudBattery = true
 }
 
 function GM:HUDShouldDraw(name)
@@ -218,396 +219,372 @@ function GM:HUDShouldDraw(name)
 	return true
 end
 
---[[
-	
-	self:SetSize(ScrW() * 0.22, ScrH() * 0.04)
-	self:SetCurve(math.Round(ScrH() * 0.0025) * 2)
-	self:SetPos(ScrW() * 0.05, ScrH() - ScrH() * 0.1)
-]]
-
-local default = [[
-[
+local default = [=[[
 	{
-		"name": "SpectatingOverlay",
-		"type": "ttt_curve_outline",
-		"pos": [0.5, 0.1, 0],
-		"size": [0.18, 0.036],
-		"curve": 0.005,
-		"bg_color": "role",
-		"outline_color": [12, 13, 12, 255],
-		"disappear_no_target": true,
-		"children": [
-			{
-				"name": "SpectatorText",
-				"type": "ttt_text",
-				"color": "white",
-				"text": [
-					"Spectating %s",
-					"target_name"
-				],
-				"font": {
-					"size": 0.024,
-					"font": "Lato",
-					"weight": 1000
-				},
-				"dock": "fill"
-			}
-		]
-	},
-	{
-		"name": "PropPunchBackground",
-		"type": "ttt_curve",
-		"bg_color": "black_bg",
-		"pos": [0.5, 0.9, 0],
-		"size": [0.18, 0.036],
-		"disappear_no_prop": true,
-		"curve": 0.004,
-		"children": [
-			{
-				"name": "PropPunchOverlay",
-				"type": "ttt_curve_outline",
-				"dock": "fill",
-				"curve": 0.005,
-				"frac": "prop_punches_frac",
-				"bg_color": {
-					"func": "lerp",
-					"frac": "prop_punches_frac",
-					"points": [
-						[200, 49, 59],
-						[153, 129, 6],
-						[59, 171, 91]
-					]
-				},
-				"outline_color": [12, 13, 12, 255],
-				"children": [
-					{
-						"name": "PropPunchText",
-						"type": "ttt_text",
-						"color": "white",
-						"text": [
-							"Prop Punches"
-						],
-						"font": {
-							"size": 0.024,
-							"font": "Lato",
-							"weight": 1000
-						},
-						"dock": "fill"
-					}
-				]
-			}
-		]
-	},
-	{
-		"name": "BottomLeft",
-		"type": "ttt_curve",
-		"bg_color": [0, 0, 0, 0],
-		"pos": [0.1, 0.93, 1],
-		"size": [0.18, 0.1],
-		"curve": 0.004,
-		"curvetargets": {
-			"topleft": false,
-			"topright": false
+		"element": "curve",
+		"color": [255, 0, 111, 0],
+		"name": "bottomleft_area",
+		"positioning": {
+			"size": [330, 92],
+			"offset": [26, 50],
+			"from": "bottom"
 		},
 		"children": [
 			{
-				"name": "HealthBackground",
-				"type": "ttt_curve",
-				"bg_color": "black_bg",
-				"dock": "top",
-				"size": [0.22, 0.036],
-				"pos": [0, 0, 2],
-				"curve": 0.004,
+				"element": "curve_outline",
+				"dock": "left",
+				"color": {
+					"func": "coloralpha",
+					"inputs": [
+						"$$rolecolor",
+						64
+					]
+				},
+				"positioning": {
+					"size": [6, 0]
+				},
 				"children": [
 					{
-						"name": "HealthBar",
-						"type": "ttt_curve_outline",
-						"bg_color": {
-							"func": "lerp",
-							"frac": "health_frac",
-							"points": [
-								[200, 49, 59],
-								[153, 129, 6],
-								[59, 171, 91]
-							]
-						},
-						"curvetargets": {
-							"topleft": false,
-							"topright": false
-						},
-						"outline_color": [12, 13, 12, 255],
+						"element": "curve",
 						"dock": "fill",
-						"frac": "health_frac",
-						"curve": 0.004,
-						"children": [
-							{
-								"name": "HealthText",
-								"type": "ttt_text",
-								"color": "white",
-								"text": [
-									"%i / %i",
-									"health",
-									"health_max"
-								],
-								"font": {
-									"size": 0.024,
-									"font": "Lato",
-									"weight": 1000
-								},
-								"dock": "fill"
-							}
-						]
+						"color": "$$rolecolor",
+						"frameupdate": ["color"]
+					}
+				],
+				"margin": [0, 0, 6, 0],
+				"frameupdate": ["color"]
+			},
+			{
+				"element": "base",
+				"dock": "right",
+				"name": "healthcontainer",
+				"positioning": {
+					"size": [84, 0]
+				},
+				"margin": [16, 0, 0, 0],
+				"children": [
+					{
+						"element": "label",
+						"dock": "fill",
+						"contentalignment": 1,
+						"font": {
+							"font": "Roboto",
+							"weight": 500,
+							"size": 28
+						},
+						"text": "$$health",
+						"margin": [0, 0, 0, 25],
+						"rendersystem": "shadow",
+						"frameupdate": ["text"]
 					}
 				]
 			},
 			{
-				"name": "Divider",
-				"type": "ttt_curve",
-				"dock": "top",
-				"pos": [0, 0, 1],
-				"size": [0, 0.002],
-				"bg_color": [0, 0, 0, 0],
-				"curve": 0.004,
-				"curvetargets": {
-					"topleft": false,
-					"topright": false,
-					"bottomleft": false,
-					"bottomright": false
-				}
-			},
-			{
-				"name": "RoleAndTimeBar",
-				"type": "ttt_curve_outline",
-				"pos": [0.12, 0.95, 0],
-				"dock": "top",
-				"size": [0.22, 0.036],
-				"curve": 0.004,
-				"bg_color": "role",
-				"outline_color": [12, 13, 12, 255],
-
-				"curvetargets": {
-					"bottomleft": false,
-					"bottomright": false
+				"element": "base",
+				"dock": "bottom",
+				"name": "rolecontainer",
+				"positioning": {
+					"size": [0, 18]
 				},
-
-				"padding": [0.15, 0, 0.15, 0],
+				"margin": [0, 14, 0, 1],
 				"children": [
 					{
-						"name": "TimeText",
-						"type": "ttt_text",
-						"color": "white",
-						"text": [
-							"%s",
-							"time_remaining_pretty"
-						],
-						"font": {
-							"size": 0.024,
-							"font": "Lato",
-							"weight": 1000
+						"element": "image",
+						"name": "roleimage",
+						"positioning": {
+							"size": [18, 18]
 						},
-						"dock": "fill",
-						"align": "right"
+						"dock": "left",
+						"image": "$$roleicon",
+						"frameupdate": ["image"]
 					},
 					{
-						"name": "RoleText",
-						"type": "ttt_text",
-						"color": "white",
-						"text": [
-							"%s",
-							"role_name"
-						],
+						"element": "label",
+						"dock": "fill",
+						"contentalignment": 4,
+						"margin": [6, 0, 0, 0],
+						"rendersystem": "shadow",
 						"font": {
-							"size": 0.024,
-							"font": "Lato",
-							"weight": 1000
+							"font": "Roboto",
+							"weight": 500,
+							"size": 20
 						},
-						"dock": "fill",
-						"align": "left"
-					}
-				]
-			}
-		]
-	},
-	{
-		"name": "BottomRight",
-		"type": "ttt_curve",
-		"bg_color": [0, 0, 0, 0],
-		"pos": [0.9, 0.93, 0],
-		"size": [0.18, 0.1],
-		"curve": 0.004,
-		"children": [
-			{
-				"name": "AmmoBackground",
-				"type": "ttt_curve",
-				"bg_color": "black_bg",
-				"dock": "top",
-				"size": [0.22, 0.036],
-				"pos": [0, 0, 1],
-				"curve": 0.004,
-				"children": [
-					{
-						"name": "AmmoBar",
-						"type": "ttt_curve_outline",
-						"bg_color": {
-							"func": "lerp",
-							"frac": "clip_frac",
-							"points": [
-								[200, 49, 59],
-								[153, 129, 6],
-								[59, 171, 91]
-							]
-						},
-						"outline_color": [12, 13, 12, 255],
-						"dock": "fill",
-						"frac": "clip_frac",
-						"curve": 0.004,
+						"text": "$$rolename",
+						"frameupdate": ["text"],
 						"children": [
 							{
-								"name": "AmmoClip2",
-								"type": "ttt_text",
-								"color": "white",
-								"text": [
-									"%s",
-									"clip_pretty"
-								],
+								"element": "label",
+								"dock": "right",
+								"contentalignment": 3,
+								"color": "$$teamcolor",
+								"rendersystem": "shadow",
+								"text": "$$teamname",
+								"frameupdate": ["text", "color"],
 								"font": {
-									"size": 0.024,
-									"font": "Lato",
-									"weight": 1000
-								},
-								"dock": "fill",
-								"children": [
-									{
-										"name": "WeaponShadow",
-										"type": "ttt_weapon",
-										"color": [0, 0, 0, 0],
-										"dock": "right",
-										"color": "white",
-										"size": [0.028, 0]
-									}
-								]
+									"font": "Roboto",
+									"weight": 500,
+									"size": 18
+								}
 							}
 						]
 					}
 				]
+			},
+			{
+				"element": "curve_outline",
+				"name": "healthbaroutline",
+				"curve": 6,
+				"color": "#000000",
+				"dock": "bottom",
+				"positioning": {
+					"size": [128, 12]
+				},
+				"children": [
+					{
+						"element": "curve",
+						"name": "healthbar",
+						"dock": "fill",
+						"curve": "inherit",
+						"color": "#fff",
+						"scissor": [
+							0,
+							0,
+							{
+								"func": "sub",
+								"inputs": [
+									1,
+									{
+										"func": "divide",
+										"inputs": [
+											"$$health",
+											"$$maxhealth"
+										]
+									}
+								]
+							},
+							0
+						]
+					},
+					{
+						"element": "curve",
+						"name": "armorbar",
+						"dock": "fill",
+						"curve": "inherit",
+						"color": "#555",
+						"scissor": [
+							0,
+							7,
+							{
+								"func": "sub",
+								"inputs": [
+									1,
+									{
+										"func": "divide",
+										"inputs": [
+											"$$armor",
+											"$$maxarmor"
+										]
+									}
+								]
+							},
+							0
+						]
+					}
+				]
+			},
+			{
+				"element": "label",
+				"dock": "fill",
+				"margin": [0, 1, 0, 6],
+				"contentalignment": 4,
+				"font": {
+					"font": "Roboto",
+					"weight": 300,
+					"size": 24
+				},
+				"text": {
+					"func": "concat",
+					"inputs": [
+						"$$roundstate",
+						": ",
+						"$$timeleft"
+					]
+				},
+				"frameupdate": ["text"],
+				"children": [
+					{
+						"element": "label",
+						"dock": "right",
+						"contentalignment": 3,
+						"text": "$$overtime",
+						"font": {
+							"font": "Roboto",
+							"weight": 500,
+							"size": 18
+						},
+						"color": "$$teamcolor",
+						"rendersystem": "shadow",
+						"frameupdate": ["text", "color"]
+					}
+				]
 			}
 		]
 	},
 	{
-		"name": "WeaponSelect",
-		"type": "ttt_weapon_select"
+		"element": "base",
+		"name": "gunammo",
+		"positioning": {
+			"size": [375, 100],
+			"offset": [26, 50],
+			"from": "bottom right"
+		},
+		"children": [
+			{
+				"element": "image",
+				"image": "gui/gradient.png",
+				"reverse": true,
+				"color": {
+					"func": "coloralpha",
+					"inputs": ["$$guncolor", 96]
+				},
+				"dock": "bottom",
+				"positioning": {
+					"size": [0, 34]
+				},
+				"frameupdate": ["color"],
+				"margin": [34, 4, 0, 0],
+				"children": [
+					{
+						"element": "label",
+						"dock": "right",
+						"contentalignment": 6,
+						"text": "$$gunname",
+						"font": {
+							"font": "Roboto",
+							"weight": 300,
+							"size": 26
+						},
+						"margin": [0, 0, 12, 0],
+						"frameupdate": ["text"]
+					}
+				]
+			},
+			{
+				"element": "curve",
+				"dock": "bottom",
+				"name": "gundivider",
+				"positioning": {
+					"size": [0, 1]
+				},
+				"color": "#888",
+				"margin": [0, 4, 0, 0]
+			},
+			{
+				"element": "base",
+				"dock": "fill",
+				"name": "ammocontainer",
+				"children": [
+					{
+						"element": "curve",
+						"curve": 4,
+						"color": [20, 20, 20, 208],
+						"dock": "right",
+						"margin": [0, 4, 0, 12],
+						"sizeto": {
+							"what": "children",
+							"width": true
+						},
+						"padding": [6, 0, 6, 0],
+						"frameupdate": ["sizeto"],
+						"children": [
+							{
+								"element": "label",
+								"contentalignment": 5,
+								"text": "$$gunreserves",
+								"rendersystem": "shadow",
+								"sizeto": "contents",
+								"frameupdate": ["text", "sizeto", "center"],
+								"font": {
+									"font": "Roboto",
+									"weight": 300,
+									"size": 32
+								}
+							}
+						]
+					},
+					{
+						"element": "label",
+						"dock": "right",
+						"contentalignment": 3,
+						"margin": [0, 0, 16, 0],
+						"text": "$$gunammo",
+						"font": {
+							"font": "Roboto",
+							"weight": 300,
+							"size": 64
+						},
+						"frameupdate": ["text"]
+					}
+				]
+			}
+		]
 	}
-]
-]]
+]]=]
 
-local json
+local function init_hud()
+	local json
+	
+	local s, e = pcall(function()
+		json = util.JSONToTable(file.Read("tttrw_hud.json", "DATA") or default)
+	end)
+	
+	if (not s or not json) then
+		warn("%s", e or "json ded")
+		return
+	end
 
-local s, e = pcall(function()
-	json = util.JSONToTable(file.Read("tttrw_hud.json", "DATA") or default)
+	if (IsValid(ttt.HUDElement)) then
+		ttt.HUDElement:Remove()
+	end
+
+	ttt.HUDElement = vgui.Create "EditablePanel"
+	ttt.HUDElement:ParentToHUD()
+	ttt.HUDElement:SetSize(ScrW(), ScrH())
+
+	for id, data in ipairs(json) do
+		local p, err = ttt.hud.create(data, ttt.HUDElement)
+		if (not p) then
+			print(p, err)
+		end
+	end
+end
+
+hook.Add("HUDPaint", "tttrw_hud_init", function()
+	init_hud()
+	hook.Remove("HUDPaint", "tttrw_hud_init")
 end)
 
-if (not s or not json) then
-	warn("%s", not json and "json ded" or e)
-	return
-end
+hook.Add("OnScreenSizeChanged", init_hud)
 
-ttt.HUDElements = ttt.HUDElements or {}
-
-for item, ele in pairs(ttt.HUDElements) do
-	if (IsValid(ele)) then
-		ele:Remove()
-	end
-end
-
-if (IsValid(ttt.HUDElement)) then
-	ttt.HUDElement:Remove()
-end
-
-ttt.HUDElement = vgui.Create "EditablePanel"
-
-ttt.HUDElement:SetParent(GetHUDPanel())
-ttt.HUDElement:SetSize(GetHUDPanel():GetSize())
-
-local function IsCustomizable(ele)
-	local s, base = pcall(baseclass.Get, ele)
-
-	if (not s) then
-		return false
-	end
-	
-	while (base) do
-		if (base.AcceptInput) then
-			return true
-		end
-		if (not base.Base) then
-			return false
-		end
-		base = baseclass.Get(base.Base)
-		if (not base) then
-			return false
-		end
-	end
-end
-
-local function CreateItem(data, parent)
-	if (not data.type or not IsCustomizable(data.type) or not data.name) then
-		warn("Couldn't create %s", data.name or data.type)
-		return
-	end
-
-	if (parent.GetCustomizeParent) then
-		parent = parent:GetCustomizeParent()
-	end
-
-	if (not IsValid(parent)) then
-		warn("Couldn't create %s: no parent", data.name or data.type)
-		return
-	end
-
-	local p = parent:Add(data.type)
-	p:SetMouseInputEnabled(true)
-	p.JSON = data
-	p.CustomizeParent = parent
-
-	p:SetName(data.name)
-
-	for key, value in pairs(data) do
-		p:AcceptInput(key, value)
-	end
-
-	if (data.children) then
-		if (p.GetCustomizeParent) then
-			p = p:GetCustomizeParent()
-		end
-
-		for _, child in ipairs(data.children) do
-			CreateItem(child, p)
-		end
-	end
-end
-
-for id, data in ipairs(json) do
-	CreateItem(data, ttt.HUDElement)
-end
+concommand.Add("tttrw_hud_init", init_hud)
 
 local function GetHoveredPanel()
 	local p = vgui.GetHoveredPanel()
 	while (p) do
-		if (p.JSON) then
+		if (p.TTTRWHUDElement) then
 			break
 		end
 		p = p:GetParent()
 	end
 
-	if (not p or not p.JSON) then
+	if (not p or not p.TTTRWHUDElement) then
 		return
 	end
 	
 	return p
 end
 
-
-hook.Add("DrawOverlay", "cancer", function()
+hook.Add("DrawOverlay", "tttrw_edit_hud", function()
 	local p = GetHoveredPanel()
 	if (not p) then
 		return
@@ -618,21 +595,8 @@ hook.Add("DrawOverlay", "cancer", function()
 	local tx, ty = x0, y1
 	surface.SetFont "BudgetLabel"
 	local json = p.JSON
-	local text = "[" .. p:GetName() .. "]"
-	if (p.JSON.dock) then
-		text = text .. " dock:" .. p.JSON.dock
-	elseif (p.JSON.pos) then
-		text = text .. " pos:[" .. p.JSON.pos[1] .. "," .. p.JSON.pos[2] .. "]"
-	end
-
-	if (p.JSON.size) then
-		text = text .. " size:[" .. p.JSON.size[1] .. "," .. p.JSON.size[2] .. "]"
-	end
-
-	if (p.JSON.pos and p.JSON.pos[3]) then
-		text = text .. " z:" .. p.JSON.pos[3]
-	end
-
+	local text = "" .. p:GetName()
+	
 	local w, h = surface.GetTextSize(text)
 
 	if (w + tx > ScrW()) then

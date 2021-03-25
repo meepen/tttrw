@@ -1,518 +1,714 @@
-local PANEL = {}
-
-local docks = {
-	fill = FILL,
-	right = RIGHT,
-	left = LEFT,
-	top = TOP,
-	bottom = BOTTOM
+ttt.hud = {
+	elements = {},
+	text = {},
+	functions = {},
+	inputs = {},
 }
 
-function PANEL:AcceptInput(key, value)
-	self.inputs = self.inputs or {}
-	self.inputs[key] = value
-	if (key == "bg_color") then
-		self:SetColor(self:GetInputColor(key))
-	elseif (key == "pos" or key == "size" or key == "padding") then
-		self:Recenter()
-		return true
-	elseif (key == "dock") then
-		self:Dock(docks[value])
-	elseif (key == "curve") then
-		self:SetCurve(math.Round(ScrH() * value / 2) * 2)
-	elseif (key == "curvetargets") then
-		for key, curve in pairs(value) do
-			if (key == "topright") then
-				self:SetCurveTopRight(curve)
-			elseif (key == "topleft") then
-				self:SetCurveTopLeft(curve)
-			elseif (key == "bottomleft") then
-				self:SetCurveBottomLeft(curve)
-			elseif (key == "bottomright") then
-				self:SetCurveBottomRight(curve)
+
+local function SetJSON(self, json)
+	if (not istable(json)) then
+		return "json not readable"
+	end
+
+	for key, value in pairs(json) do
+		local fn = self.Inputs["Set" .. key]
+		if (not fn) then
+			fn = self.Inputs["Set" .. key:sub(1, 1):upper() .. key:sub(2)]
+		end
+
+		if (not fn) then
+			return "unknown input: " .. key
+		end
+
+		local err = fn(self, value)
+		if (err) then
+			return err
+		end
+	end
+
+	self.TTTRWHUDElement = json
+end
+
+function ttt.hud.registerelement(element, inputs, base, vgui_element)
+	ttt.hud.elements[element] = {
+		Name = element,
+		Inputs = inputs,
+		Parent = parent,
+		VGUIElement = vgui_element or base and "tttrw_hud_" .. base or "EditablePanel"
+	}
+
+	inputs.CustomizeBase = base
+
+	setmetatable(inputs, {
+		__index = function(self, k)
+			local base = rawget(self, "CustomizeBase")
+			if (base and ttt.hud.elements[base]) then
+				return ttt.hud.elements[base].Inputs[k]
 			end
 		end
-	elseif (key == "disappear_no_target" and value) then
-		hook.Add("Think", self, self.HasTarget)
-	elseif (key == "disappear_no_prop" and value) then
-		hook.Add("Think", self, self.HasProp)
-	end
+	})
+
+	inputs.TTTRWHUDElement = true
+
+	vgui.Register("tttrw_hud_" .. element, {
+		Inputs = inputs,
+		TTTRWHUDName = element,
+		SetJSON = SetJSON
+	}, ttt.hud.elements[element].VGUIElement)
 end
 
-function PANEL:HasTarget()
-	local targ = LocalPlayer():GetObserverTarget()
-	if (IsValid(targ) and targ:IsPlayer()) then
-		self:SetVisible(true)
-	else
-		self:SetVisible(false)
+function ttt.hud.create(data, parent)
+	if (not ttt.hud.elements[data.element]) then
+		return "no such element: " .. tostring(data.element)
 	end
+
+	print("[TTTRW HUD]: Creating element " .. (data.name or data.element))
+
+
+	if (ttt.hud.elements[data.element].Inputs.GetCustomizeParent) then
+		parent = ttt.hud.elements[data.element].Inputs.GetCustomizeParent(parent)
+	end
+
+	local ele = vgui.Create("tttrw_hud_" .. data.element, parent)
+	local err = ele:SetJSON(data)
+	if (err) then
+		ele:Remove()
+
+		return false, err
+	end
+	ele.TTTRWHUDParent = parent
+	ele:SetMouseInputEnabled(true)
+	return ele
 end
 
-function PANEL:HasProp()
-	local targ = LocalPlayer():GetObserverTarget()
-	if (IsValid(targ) and not targ:IsPlayer()) then
-		self:SetVisible(true)
-	else
-		self:SetVisible(false)
-	end
+function ttt.hud.createfunction(name, func)
+	ttt.hud.functions[name] = func
 end
 
-function PANEL:AnimationThink()
-	self.color_inputs = self.color_inputs or {}
-	for key, value in pairs(self.color_inputs) do
-		local new = self:GetInputColor(key)
-		if (new ~= value) then
-			self:AcceptInput(key, new)
+function ttt.hud.createinput(name, func)
+	ttt.hud.inputs["$$" .. name] = func
+end
+
+function ttt.hud.getvalue(data)
+	if (IsColor(data)) then
+		return data
+	elseif (istable(data)) then
+		local func = ttt.hud.functions[data.func]
+		if (isfunction(func)) then
+			local args = {n = 0}
+			if (data.inputs) then
+				args = {n = #data.inputs, unpack(data.inputs)}
+				for i = 1, args.n do
+					args[i] = ttt.hud.getvalue(args[i]) or args[i]
+				end
+			end
+
+			return func(unpack(args, 1, args.n))
+		end
+
+		if (#data == 3 or #data == 4) then
+			return Color(unpack(data))
+		end
+	elseif (isstring(data)) then
+		if (data:StartWith "$$") then
+			local func = ttt.hud.inputs[data]
+			if (func) then
+				return func()
+			end
+		end
+
+		if (data:StartWith "#") then
+			local col = HexColor(data)
+			if (col) then
+				return col
+			end
 		end
 	end
+
+	return tonumber(data) or data
 end
 
-function PANEL:GetCustomizeParent()
+--[[
+	DEFAULT FUNCTIONS
+]]
+
+ttt.hud.createfunction("lerp", function(pct, ...)
+	local amount = select("#", ...)
+
+	pct = ttt.hud.getvalue(pct)
+	print(pct)
+
+	if (pct >= 1) then
+		return ttt.hud.getvalue(select(amount, ...))
+	elseif (pct <= 0) then
+		return ttt.hud.getvalue((...))
+	end
+
+	local curindex = pct / (1 / (amount - 1))
+
+	local before, after = select(math.floor(curindex) + 1, ...)
+	before, after = ttt.hud.getvalue(before), ttt.hud.getvalue(after)
+
+	local frac = curindex % (1 / (amount - 1))
+
+	local Lerp = Lerp
+	if (IsColor(before)) then
+		Lerp = ColorLerp
+	end
+
+	return Lerp(frac, before, after)
+end)
+
+ttt.hud.createfunction("divide", function(a, b)
+	return ttt.hud.getvalue(a) / ttt.hud.getvalue(b)
+end)
+
+ttt.hud.createfunction("concat", function(...)
+	local data = {n = select("#", ...), ...}
+	for i = 1, data.n do
+		data[i] = ttt.hud.getvalue(data[i])
+	end
+	return table.concat(data, "", 1, data.n)
+end)
+
+
+ttt.hud.createfunction("uppercase", function(a)
+	return ttt.hud.getvalue(a):upper()
+end)
+
+ttt.hud.createfunction("add", function(a, b)
+	return ttt.hud.getvalue(a) + ttt.hud.getvalue(b)
+end)
+
+ttt.hud.createfunction("sub", function(a, b)
+	return ttt.hud.getvalue(a) - ttt.hud.getvalue(b)
+end)
+
+ttt.hud.createfunction("coloralpha", function(col, alpha)
+	alpha = ttt.hud.getvalue(alpha)
+	col = ttt.hud.getvalue(col)
+
+	return ColorAlpha(col, alpha)
+end)
+
+ttt.hud.createinput("gunname", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return ""
+	end
+	local wep = targ:GetActiveWeapon()
+
+	if (not IsValid(wep)) then
+		return ""
+	end
+
+	return wep:GetPrintName()
+end)
+
+ttt.hud.createinput("guncolor", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return ""
+	end
+	local wep = targ:GetActiveWeapon()
+
+	if (not IsValid(wep)) then
+		return ""
+	end
+
+	return wep:GetPrintNameColor()
+end)
+
+ttt.hud.createinput("gunammo", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return 0
+	end
+	local wep = targ:GetActiveWeapon()
+
+	if (not IsValid(wep)) then
+		return 0
+	end
+
+	return wep:Clip1() == -1 and 0 or wep:Clip1()
+end)
+
+ttt.hud.createinput("gunreserves", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return 0
+	end
+	local wep = targ:GetActiveWeapon()
+
+	if (not IsValid(wep)) then
+		return 0
+	end
+
+	return targ:GetAmmoCount(wep:GetPrimaryAmmoType())
+end)
+
+ttt.hud.createinput("health", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return 0
+	end
+
+	return targ:Health()
+end)
+
+ttt.hud.createinput("maxhealth", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return 0
+	end
+
+	return targ:GetMaxHealth()
+end)
+
+ttt.hud.createinput("rolecolor", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return Color(0, 0, 0)
+	end
+
+	return targ:GetRoleData().Color
+end)
+
+ttt.hud.createinput("armor", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return Color(0, 0, 0)
+	end
+
+	return targ:Armor()
+end)
+
+ttt.hud.createinput("maxarmor", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return Color(0, 0, 0)
+	end
+
+	return targ:GetMaxArmor()
+end)
+
+ttt.hud.createinput("rolename", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return ""
+	end
+
+	return targ:GetRoleData().Name
+end)
+
+ttt.hud.createinput("teamcolor", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return Color(0, 0, 0)
+	end
+
+	return targ:GetRoleTeamData().Color
+end)
+
+ttt.hud.createinput("teamname", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return ""
+	end
+
+	return targ:GetRoleTeamData().Name
+end)
+
+ttt.hud.createinput("roleicon", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return ""
+	end
+
+	return targ:GetRoleData().DeathIcon or ""
+end)
+
+ttt.hud.createinput("roundstate", function()
+	return ttt.Enums.RoundState[ttt.GetRoundState()]
+end)
+
+ttt.hud.createinput("timeleft", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return ""
+	end
+
+	local timeleft = ttt.GetVisibleRoundEndTime() - CurTime()
+
+	if (timeleft <= 0) then
+		return ""
+	end
+
+	local text = {}
+	if (timeleft >= 0) then
+		local seconds = timeleft % 60
+		text[1] = string.format("%02i", math.floor(seconds))
+		timeleft = math.floor(timeleft / 60)
+	end
+
+	if (timeleft >= 0) then
+		local minutes = timeleft % 60
+		table.insert(text, 1, minutes)
+
+		timeleft = math.floor(timeleft / 60)
+	end
+
+	if (timeleft > 0) then
+		local hours = timeleft % 24
+		text[1] = string.format("%02i", text[1])
+		table.insert(text, 1, hours)
+
+		timeleft = math.floor(timeleft / 24)
+	end
+
+	return table.concat(text, ":")
+end)
+
+ttt.hud.createinput("overtime", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ) or not targ:GetRoleData().Evil or ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
+		return ""
+	end
+
+	local timeleft = ttt.GetRealRoundEndTime() - CurTime()
+
+	if (timeleft <= 0) then
+		return ""
+	end
+
+	local text = {}
+	if (timeleft >= 0) then
+		local seconds = timeleft % 60
+		text[1] = string.format("%02i", math.ceil(seconds))
+		timeleft = math.floor(timeleft / 60)
+	end
+
+	if (timeleft >= 0) then
+		local minutes = timeleft % 60
+		table.insert(text, 1, minutes)
+
+		timeleft = math.floor(timeleft / 60)
+	end
+
+	if (timeleft > 0) then
+		local hours = timeleft % 24
+		text[1] = string.format("%02i", text[1])
+		table.insert(text, 1, hours)
+
+		timeleft = math.floor(timeleft / 24)
+	end
+
+	return table.concat(text, ":")
+end)
+
+
+local INPUTS = {}
+
+function INPUTS:SetSize(array)
+	if (not istable(array)) then
+		return "not array"
+	end
+
+	local w, h = ttt.hud.getvalue(array[1]), ttt.hud.getvalue(array[2])
+
+	if (not w) then
+		return "no width"
+	end
+
+	if (not h) then
+		return "no height"
+	end
+
+	self:SetSize(w, h)
+end
+
+function INPUTS:RetrieveInputMethod(method)
+	local class = self.ClassName
+	while (class and class:StartWith "tttrw_hud_") do
+		local t = vgui.GetControlTable(class)
+		if (t[method]) then
+			return t[method]
+		end
+
+		class = t.Base
+	end
+end
+
+function INPUTS:SetElement()
+end
+
+function INPUTS:GetCustomizeParent()
 	return self
 end
 
-function PANEL:GetInputColor(key)
-	self.color_inputs = self.color_inputs or {}
-
-	local value = self.color_inputs[key]
-	if (not value) then
-		value = self.inputs[key]
-		self.color_inputs[key] = value
+function INPUTS:SetChildren(data)
+	for _, childdata in ipairs(data) do
+		local ele, err = ttt.hud.create(childdata, self)
+		if (not ele) then
+			return err
+		end
 	end
+end
+
+function INPUTS:SetName(name)
+	self:SetName(name)
+end
+
+local docks = {
+	fill = FILL,
+	left = LEFT,
+	top = TOP,
+	right = RIGHT,
+	bottom = BOTTOM
+}
+
+function INPUTS:SetDock(dock)
+	if (docks[dock]) then
+		self:Dock(docks[dock])
+		return
+	end
+
+	return "no such dock: " .. dock
+end
+
+local transform = {
+	right = function(x, y, w, h)
+		return ScrW() - x - w, y, w, h
+	end,
+	left = function(x, y, w, h)
+		return x, y, w, h
+	end,
+	top = function(x, y, w, h)
+		return x, y, w, h
+	end,
+	bottom = function(x, y, w, h)
+		return x, ScrH() - y - h, w, h
+	end
+}
+
+function INPUTS:SetPositioning(dat)
+	if (not istable(dat)) then
+		return "invalid arguments"
+	end
+	local x, y = 0, 0
+
+	if (istable(dat.offset)) then
+		x, y = ttt.hud.getvalue(dat.offset[1]), ttt.hud.getvalue(dat.offset[2])
+	end
+
+	local w, h = 16, 16
+
+
+	if (istable(dat.size)) then
+		w, h = ttt.hud.getvalue(dat.size[1]), ttt.hud.getvalue(dat.size[2])
+	end
+
+	if (dat.from) then
+		if (isstring(dat.from)) then
+			dat.from = dat.from:Split " "
+		end
+
+		for _, from in ipairs(dat.from) do
+			if (not transform[from]) then
+				return "invalid transform: " .. from
+			end
+
+			x, y, w, h = transform[from](x, y, w, h)
+		end
+	end
+
+	self:SetPos(x, y)
+	self:SetSize(w, h)
+end
+
+function INPUTS:SetFrameupdate(arr)
+	if (not istable(arr)) then
+		return "invalid frameupdate input"
+	end
+
+	hook.Add("PreRender", self, function()
+		for _, key in ipairs(arr) do
+			local value = ttt.hud.getvalue(self.TTTRWHUDElement[key])
+
+			local fn = self.Inputs["Set" .. key]
+			if (not fn) then
+				fn = self.Inputs["Set" .. key:sub(1, 1):upper() .. key:sub(2)]
+			end
 	
-	local col = self:GetCustomizedColor(value)
-
-	self.inputs[key] = col
-
-	return col
-end
-
-local color_functions = {
-	lerp = function(self, data)
-		local frac, from, to = math.Clamp(self:GetCustomizedNumber(data.frac), 0, 1)
-
-		local count = #data.points
-
-		for ind = count - 1, 1, -1 do
-			local col = data.points[ind]
-			local base = (ind - 1) / (count - 1)
-
-			if (base <= frac) then
-				from, to = self:GetCustomizedColor(data.points[ind]), self:GetCustomizedColor(data.points[ind + 1])
-				frac = (frac - base) * count
-				break
+			if (not fn) then
+				return "unknown input: " .. key
 			end
-		end
-
-		return Color(Lerp(frac, from.r, to.r), Lerp(frac, from.g, to.g), Lerp(frac, from.b, to.b), Lerp(frac, from.a, to.a))
-	end
-}
-
-local static_colors = {
-	white = white_text,
-	black = Color(11, 12, 11),
-	black_bg = Color(11, 12, 11, 200)
-}
-
-function PANEL:GetCustomizedColor(value)
-	local col
 	
-	if (not value) then
-		col = white_text
-	elseif (static_colors[value]) then
-		col = static_colors[value]
-	elseif (IsColor(value)) then
-		col = value
-	elseif (type(value) == "table") then
-		if (value.func and color_functions[value.func]) then
-			col = color_functions[value.func](self, value)
-		else
-			col = Color(
-				self:GetCustomizedNumber(value[1]) or value[1],
-				self:GetCustomizedNumber(value[2]) or value[2],
-				self:GetCustomizedNumber(value[3]) or value[3],
-				self:GetCustomizedNumber(value[4]) or value[4] or 255
-			)
-		end
-	elseif (value == "role") then
-		if (ttt.GetRoundState and ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
-			col = Color(154, 153, 153)
-		else
-
-			local targ = ttt.GetHUDTarget()
-		
-			if (IsValid(targ) and targ:Alive() and IsValid(targ.HiddenState) and not targ.HiddenState:IsDormant()) then
-				col = ttt.roles[targ:GetRole()].Color
-			else
-				col = Color(154, 153, 153)
+			local err = fn(self, value)
+			if (err) then
+				warn("%s", err)
 			end
 		end
-	end
-
-	return col
+	end)
 end
 
-local number_functions
-number_functions = {
-	lerp = function(self, data)
-		return Lerp(data.frac, self:GetCustomizedNumber(data.from), self:GetCustomizedNumber(data.to))
-	end,
-	health_frac = function(self)
-		local targ = ttt.GetHUDTarget()
-		if (not IsValid(targ) or not targ:Alive()) then
-			return 0
-		end
-
-		return targ:Health() / targ:GetMaxHealth()
-	end,
-	health = function()
-		local targ = ttt.GetHUDTarget()
-		if (not IsValid(targ)) then
-			return 0
-		end
-		return math.max(0, targ:Health())
-	end,
-	health_max = function()
-		local targ = ttt.GetHUDTarget()
-		if (not IsValid(targ)) then
-			return 0
-		end
-		return targ:GetMaxHealth()
-	end,
-	clip = function()
-		local targ = ttt.GetHUDTarget()
-		if (not IsValid(targ)) then
-			return -1
-		end
-		local wep = targ:GetActiveWeapon()
-
-		if (not IsValid(wep)) then
-			return -1
-		end
-		return wep:Clip1()
-	end,
-	clip_max = function()
-		local targ = ttt.GetHUDTarget()
-		if (not IsValid(targ)) then
-			return -1
-		end
-		local wep = targ:GetActiveWeapon()
-
-		if (not IsValid(wep)) then
-			return -1
-		end
-		return wep:GetMaxClip1()
-	end,
-	clip_frac = function()
-		return number_functions.clip() / number_functions.clip_max()
-	end,
-	ammo_reserve = function()
-		local targ = ttt.GetHUDTarget()
-		if (not IsValid(targ)) then
-			return 0
-		end
-		local wep = targ:GetActiveWeapon()
-
-		if (not IsValid(wep)) then
-			return 0
-		end
-		return targ:GetAmmoCount(wep:GetPrimaryAmmoType())
-	end,
-	prop_punches_frac = function()
-		local targ = ttt.GetHUDTarget()
-		if (not IsValid(targ)) then
-			return 0
-		end
-
-		return targ:GetNWFloat("spectator_punches", 0)
-	end
-}
-
-local text_functions = {
-	time_remaining_pretty = function(self)
-		if (ttt.GetRealRoundEndTime) then
-			local ends = ((not LocalPlayer():Alive() or LocalPlayer():GetRoleData().Evil) and ttt.GetRealRoundEndTime or ttt.GetVisibleRoundEndTime)()
-			local starts = ttt.GetRoundStateChangeTime()
-
-			if (ends < CurTime()) then
-				return "Overtime"
-			else
-				return string.FormattedTime(math.max(0, ends - CurTime()), "%i:%02i")
-			end
-		end
-	end,
-	clip_pretty = function(self)
-		local targ = ttt.GetHUDTarget()
-		if (not IsValid(targ)) then
-			return ""
-		end
-		local wep = targ:GetActiveWeapon()
-
-		if (not IsValid(wep)) then
-			return ""
-		end
-		local clip, max = wep:Clip1(), wep:GetMaxClip1()
-
-		if (clip == -1) then
-			return ""
-		end
-
-		return string.format("%i / %i + %i", clip, max, number_functions.ammo_reserve())
-	end,
-	reserve_pretty = function()
-		local targ = ttt.GetHUDTarget()
-		if (not IsValid(targ)) then
-			return ""
-		end
-		local wep = targ:GetActiveWeapon()
-
-		if (not IsValid(wep) or wep:Clip1() == -1) then
-			return ""
-		end
-
-		return targ:GetAmmoCount(wep:GetPrimaryAmmoType())
-	end,
-	role_name = function(self)
-		if (ttt.GetRoundState and ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
-			return ttt.Enums.RoundState[ttt.GetRoundState()]
-		end
-		
-		local targ = ttt.GetHUDTarget()
-
-		if (IsValid(targ) and targ:Alive() and IsValid(targ.HiddenState) and not targ.HiddenState:IsDormant()) then
-			return targ:GetRole()
-		elseif (ttt.GetRoundState) then
-			return ttt.Enums.RoundState[ttt.GetRoundState()]
-		else
-			return "DUNNO"
-		end
-	end,
-	target_name = function(self)
-		local targ = LocalPlayer():GetObserverTarget()
-		if (not IsValid(targ)) then
-			return ""
-		end
-
-		if (targ:IsPlayer()) then
-			return targ:Nick()
-		else
-			return language.GetPhrase(targ:GetClass())
-		end
-	end
-}
-
-function PANEL:GetCustomizedNumber(value)
-	local ret
-
-	if (type(value) == "table" and value.func) then
-		ret = number_functions[value.func](self, value)
-	elseif (type(value) == "string" and number_functions[value]) then
-		ret = number_functions[value](self)
+function INPUTS:SetPadding(arr)
+	if (isnumber(arr)) then
+		arr = {arr, arr, arr, arr}
 	end
 
-	return ret
+	if (not istable(arr)) then
+		return "invalid padding"
+	end
+
+	self:DockPadding(unpack(arr))
 end
 
-function PANEL:OnScreenSizeChanged()
-	self:Recenter()
+function INPUTS:SetMargin(arr)
+	if (isnumber(arr)) then
+		arr = {arr, arr, arr, arr}
+	end
+
+	if (not istable(arr)) then
+		return "invalid padding"
+	end
+
+	self:DockMargin(unpack(arr))
 end
 
-function PANEL:Recenter()
-	self.inputs = self.inputs or {}
-	local pos, size
-	if (self.inputs.pos) then
-		pos = {
-			math.Round(self.inputs.pos[1] * self:GetParent():GetWide()),
-			math.Round(self.inputs.pos[2] * self:GetParent():GetTall()),
-			self.inputs.pos[3]
-		}
+function INPUTS:SetSizeto(what)
+	if (what == "contents") then
+		self:SizeToContents()
+	elseif (what == "children") then
+		self:SizeToChildren(true, true)
+	elseif (istable(what)) then
+		if (what.what == "children") then
+			self:SizeToChildren(what.width, what.height)
+		end
+	end
+end
+
+function INPUTS:SetCenter(b)
+	self:Center()
+end
+
+ttt.hud.registerelement("base", INPUTS)
+
+
+local INPUTS = {}
+
+function INPUTS:SetColor(arr)
+	self:SetColor(ttt.hud.getvalue(arr))
+end
+
+function INPUTS:SetCurve(curve)
+	if (curve == "inherit") then
+		self:SetCurve(self:GetParent():GetCurve())
 	else
-		pos = {self:GetPos()}
-		pos[3] = self:GetZPos()
-	end
-
-	if (self.inputs.size) then
-		size = {
-			math.Round(self.inputs.size[1] * ScrW()),
-			math.Round(self.inputs.size[2] * ScrH())
-		}
-	else
-		size = {self:GetSize()}
-	end
-
-	self:SetPos(pos[1] - size[1] / 2, pos[2] - size[2] / 2)
-	self:SetSize(size[1], size[2])
-	self:SetZPos(pos[3])
-
-	if (self.DoPadding and self.inputs.padding) then
-		self:DoPadding(unpack(self.inputs.padding, 1, 4))
-	end
-
-	if (self.SetCurve) then
-		self:SetCurve(math.Round(ScrH() * (self.inputs.curve or 0.005) / 2) * 2)
+		self:SetCurve(ttt.hud.getvalue(curve))
 	end
 end
 
-function PANEL:DoPadding(left, top, right, bottom)
-	local p = self:GetCustomizeParent()
-	local c = (p.GetCurve and p:GetCurve() or 0) / 2
-	p:DockPadding(c + left * p:GetWide(), c + top * p:GetTall(), c + right * p:GetWide(), c + bottom * p:GetTall())
-end
+function INPUTS:SetScissor(arr)
+	function self:Scissor(w, h)
+		local sx, sy = ttt.hud.getvalue(arr[1]), ttt.hud.getvalue(arr[2])
+	
+		if (#arr > 2) then
+			w, h = w - w * ttt.hud.getvalue(arr[3]), h - h * ttt.hud.getvalue(arr[4])
+		end
 
-vgui.Register("ttt_hud_customizable", PANEL, "ttt_curved_panel")
-vgui.Register("ttt_curve", PANEL, "ttt_curved_panel")
+		sx, sy = self:LocalToScreen(sx, sy)
 
-
-local PANEL = table.Copy(PANEL)
-
-function PANEL:AcceptInput(key, value)
-	self.inputs = self.inputs or {}
-	self.inputs[key] = value
-	if (key == "bg_color") then
-		self:SetColor(Color(value[1], value[2], value[3], value[4] or 255))
-	elseif (key == "pos" or key == "size") then
-		self:Recenter()
-		return true
-	elseif (key == "path") then
-		self:SetImage(value)
-	elseif (key == "color") then
-		self:SetImageColor(Color(unpack(value)))
+		render.SetScissorRect(sx, sy, sx + w, sy + h, true)
 	end
 end
 
-vgui.Register("ttt_image", PANEL, "DImage")
+
+ttt.hud.registerelement("curve", INPUTS, "base", "ttt_curved_panel")
+
+local INPUTS = {}
+
+function INPUTS:SetOutlinesize(size)
+	self:SetOutlineSize(size)
+end
+
+ttt.hud.registerelement("curve_outline", INPUTS, "curve", "ttt_curved_panel_outline")
+
+local INPUTS = {}
+
+function INPUTS:SetContentalignment(align)
+	self:SetContentAlignment(align)
+end
+
+function INPUTS:SetFont(font)
+
+	local fontdata = {}
+	for key, value in SortedPairs(font) do
+		fontdata[#fontdata + 1] = key
+		fontdata[#fontdata + 1] = tostring(value)
+	end
+
+	local name = "tttrw_font" .. util.CRC(table.concat(fontdata))
+
+	surface.CreateFont(name, font)
+
+	self:SetFont(name)
+end
+
+function INPUTS:SetRendersystem(system)
+	if (not pluto) then
+		return
+	end
+
+	self:SetRenderSystem(pluto.fonts.systems[system])
+end
+
+function INPUTS:SetColor(arr)
+	self:SetTextColor(ttt.hud.getvalue(arr))
+end
+
+function INPUTS:SetText(text)
+	self:SetText(ttt.hud.getvalue(text))
+	self:SizeToContentsX()
+end
+
+ttt.hud.registerelement("label", INPUTS, "base", "tttrw_label")
 
 local PANEL = {}
 
-function PANEL:PerformLayout()
-	local p = self:GetParent():GetParent()
-	p:DoPadding(unpack(p.inputs.padding or {0, 0, 0, 0}, 1, 4))
-end
-
-function PANEL:GetFraction()
-	local frac = self:GetParent():GetParent().inputs.frac
-	return frac and self:GetParent():GetParent():GetCustomizedNumber(frac) or 1
-end
-
-function PANEL:Scissor()
-	local x0, y0, x1, y1 = self:GetRenderBounds()
-	local w = math.min(x1 - x0, self:GetWide() * self:GetFraction())
-	render.SetScissorRect(x0, y0, x0 + w, y1, true)
-end
-
-vgui.Register("ttt_curve_outline_inner", PANEL, "ttt_curved_panel")
-
-DEFINE_BASECLASS "ttt_hud_customizable"
-local PANEL = table.Copy(BaseClass)
-
-function PANEL:Init()
-	self.Outer = self:Add "ttt_curved_panel_outline"
-	self.Outer:Dock(FILL)
-	self.Outer:SetZPos(0)
-
-	self.Inner = self.Outer:Add "ttt_curve_outline_inner"
-	self.Inner:Dock(FILL)
-	self.Inner:SetZPos(0)
-end
-
-function PANEL:OnScreenSizeChanged()
-	self:Recenter()
-end
-
-function PANEL:AcceptInput(key, value)
-	self.inputs = self.inputs or {}
-	self.inputs[key] = value
-	if (key == "outline_color") then
-		self.Outer:SetColor(self:GetInputColor(key))
-	elseif (key == "bg_color") then
-		self.Inner:SetColor(self:GetInputColor(key))
-	elseif (key == "curve") then
-		value = math.Round(ScrH() * (self.inputs.curve or 0.005) / 2) * 2
-		self.Outer:SetCurve(value)
-		self.Inner:SetCurve(value / 2)
-		self.Outer:DockPadding(value / 2, value / 2, value / 2, value / 2)
-	elseif (key == "curvetargets") then
-		for key, curve in pairs(value) do
-			if (key == "topright") then
-				self.Outer:SetCurveTopRight(curve)
-				self.Inner:SetCurveTopRight(curve)
-			elseif (key == "topleft") then
-				self.Outer:SetCurveTopLeft(curve)
-				self.Inner:SetCurveTopLeft(curve)
-			elseif (key == "bottomleft") then
-				self.Outer:SetCurveBottomLeft(curve)
-				self.Inner:SetCurveBottomLeft(curve)
-			elseif (key == "bottomright") then
-				self.Outer:SetCurveBottomRight(curve)
-				self.Inner:SetCurveBottomRight(curve)
-			end
-		end
+function PANEL:Paint(w, h)
+	local mat = self:GetMaterial()
+	mat:SetVector("$color", self:GetImageColor():ToVector())
+	mat:SetFloat("$alpha", self:GetImageColor().a / 255)
+	surface.SetMaterial(self:GetMaterial())
+	surface.SetDrawColor(255, 255, 255)
+	if (self.Reverse) then
+		surface.DrawTexturedRectUV(0, 0, w, h, 1, 0, 0, 1)
 	else
-		BaseClass.AcceptInput(self, key, value)
+		surface.DrawTexturedRect(0, 0, w, h)
 	end
 end
 
-function PANEL:GetCustomizeParent()
-	return self.Inner
-end
+vgui.Register("tttrw_hud_dimage", PANEL, "DImage")
 
-vgui.Register("ttt_curve_outline", PANEL, "EditablePanel")
+local INPUTS = {}
 
-
-DEFINE_BASECLASS "ttt_hud_customizable"
-local PANEL = table.Copy(BaseClass)
-
-local alignments = {
-	topleft = 7,
-	top = 8,
-	topright = 9,
-	left = 4,
-	middle = 5,
-	right = 6,
-	bottomleft = 1,
-	bottom = 2,
-	bottomright = 3
-}
-
-function PANEL:AcceptInput(key, value)
-	self.inputs = self.inputs or {}
-	self.inputs[key] = value
-
-	if (key == "font") then
-		self:RecreateFont()
-	elseif (key == "align") then
-		self:SetContentAlignment(alignments[value])
-	else
-		BaseClass.AcceptInput(self, key, value)
+function INPUTS:SetImage(img)
+	img = ttt.hud.getvalue(img)
+	if (self.ImageName ~= img) then
+		self:SetMaterial(Material(img, "nocull smooth"))
+		self.ImageName = img
 	end
 end
 
-function PANEL:Init()
-	self:SetContentAlignment(5)
+function INPUTS:SetReverse()
+	self.Reverse = true
 end
 
-function PANEL:Think()
-	local data = {}
-	for i, inp in ipairs(self.inputs.text) do
-		data[i] = self:GetCustomizedNumber(inp) or text_functions[inp] and text_functions[inp](self) or inp
-	end
-
-	data[1] = self.inputs.text[1]
-
-	self:SetText(string.format(unpack(data)))
+function INPUTS:SetColor(col)
+	col = ttt.hud.getvalue(col)
+	self:SetImageColor(col)
 end
 
-function PANEL:RecreateFont()
-	local data = table.Copy(self.inputs.font)
-	data.size = data.size * ScrH()
-	surface.CreateFont(self:GetName() .. "_font", data)
-	self:SetFont(self:GetName() .. "_font")
-end
-
-function PANEL:OnScreenSizeChanged()
-	self:RecreateFont()
-	self:Recenter()
-end
-	
-
-vgui.Register("ttt_text", PANEL, "DLabel")
+ttt.hud.registerelement("image", INPUTS, "base", "tttrw_hud_dimage")

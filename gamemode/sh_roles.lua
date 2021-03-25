@@ -188,10 +188,11 @@ function GM:TTTPrepareRoles(Team, Role)
 
 	Team "spectator"
 		:SeenByAll()
-		:SetColor(Color(51, 54, 56))
+		:SetColor(51, 54, 56)
 
 	Role("Innocent", "innocent")
 	Role("Spectator", "spectator")
+		:SetDeathIcon "materials/tttrw/roles/innocent.png"
 	Role("Detective", "innocent")
 		:SeenByAll()
 		:SetCalculateAmountFunc(function(total_players)

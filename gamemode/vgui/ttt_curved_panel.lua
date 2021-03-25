@@ -114,6 +114,15 @@ local PANEL = {}
 AccessorFunc(PANEL, "Curve", "Curve", FORCE_NUMBER)
 AccessorFunc(PANEL, "Color", "Color")
 
+function PANEL:SetColor(col, g, b, a)
+	if (IsColor(col)) then
+		self.Color = col
+	else
+		local col = Color(col, g, b, a)
+		self.Color = col
+	end
+end
+
 for _, name in pairs {"CurveTopRight", "CurveTopLeft", "CurveBottomLeft", "CurveBottomRight"} do
 	PANEL["Set" .. name] = function(self, v)
 		self[name] = v
@@ -129,14 +138,14 @@ for _, name in pairs {"CurveTopRight", "CurveTopLeft", "CurveBottomLeft", "Curve
 		return not self["GetNo" .. name](self)
 	end
 end
-function PANEL:Scissor()
+function PANEL:Scissor(w, h)
 end
 
 function PANEL:DrawInner(w, h)
 end
 
 function PANEL:Paint(w, h)
-	self:Scissor()
+	self:Scissor(w, h)
 	surface.SetDrawColor(self:GetColor() or white_text)
 	ttt.DrawCurvedRect(0, 0, w, h, (self:GetCurve() or 0) / 2, self:GetNoCurveTopLeft(), self:GetNoCurveTopRight(), self:GetNoCurveBottomRight(), self:GetNoCurveBottomLeft())
 	self:DrawInner(w, h)
@@ -154,14 +163,14 @@ function PANEL:Init()
 	self:SetOutlineSize(1)
 end
 
-function PANEL:Scissor()
+function PANEL:Scissor(w, h)
 end
 
 function PANEL:AddToStencil()
 end
 
 function PANEL:Paint(w, h)
-	self:Scissor()
+	self:Scissor(w, h)
 	render.SetStencilEnable(true)
 	render.ClearStencil()
 	render.SetStencilWriteMask(0xFF)
@@ -227,7 +236,11 @@ function HexColor(h)
 
 	
 	for num in h:gmatch "(..)" do
-		col[#col + 1] = tonumber(num, 16)
+		local hexnum = tonumber(num, 16)
+		if (not hexnum) then
+			return
+		end
+		col[#col + 1] = hexnum
 	end
 
 	return Color(unpack(col))
