@@ -402,6 +402,7 @@ local default = [=[[
 					"weight": 300,
 					"size": 24
 				},
+				"rendersystem": "shadow",
 				"text": {
 					"func": "concat",
 					"inputs": [

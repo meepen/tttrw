@@ -209,12 +209,12 @@ end)
 ttt.hud.createinput("guncolor", function()
 	local targ = ttt.GetHUDTarget()
 	if (not IsValid(targ)) then
-		return ""
+		return Color(255, 255, 255)
 	end
 	local wep = targ:GetActiveWeapon()
 
 	if (not IsValid(wep)) then
-		return ""
+		return Color(255, 255, 255)
 	end
 
 	return wep:GetPrintNameColor()
@@ -287,7 +287,7 @@ end)
 ttt.hud.createinput("maxarmor", function()
 	local targ = ttt.GetHUDTarget()
 	if (not IsValid(targ)) then
-		return Color(0, 0, 0)
+		return 0
 	end
 
 	return targ:GetMaxArmor()
