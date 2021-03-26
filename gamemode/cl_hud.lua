@@ -219,318 +219,325 @@ function GM:HUDShouldDraw(name)
 	return true
 end
 
-local default = [=[[
-	{
-		"element": "curve",
-		"color": [255, 0, 111, 0],
-		"name": "bottomleft_area",
-		"positioning": {
-			"size": [330, 92],
-			"offset": [26, 50],
-			"from": "bottom"
-		},
-		"children": [
-			{
-				"element": "curve_outline",
-				"dock": "left",
-				"color": {
-					"func": "coloralpha",
-					"inputs": [
-						"$$rolecolor",
-						64
-					]
-				},
-				"positioning": {
-					"size": [6, 0]
-				},
-				"children": [
-					{
-						"element": "curve",
-						"dock": "fill",
-						"color": "$$rolecolor",
-						"frameupdate": ["color"]
-					}
-				],
-				"margin": [0, 0, 6, 0],
-				"frameupdate": ["color"]
-			},
-			{
-				"element": "base",
-				"dock": "right",
-				"name": "healthcontainer",
-				"positioning": {
-					"size": [84, 0]
-				},
-				"margin": [16, 0, 0, 0],
-				"children": [
-					{
-						"element": "label",
-						"dock": "fill",
-						"contentalignment": 1,
-						"font": {
-							"font": "Roboto",
-							"weight": 500,
-							"size": 28
-						},
-						"text": "$$health",
-						"margin": [0, 0, 0, 25],
-						"rendersystem": "shadow",
-						"frameupdate": ["text"]
-					}
-				]
-			},
-			{
-				"element": "base",
-				"dock": "bottom",
-				"name": "rolecontainer",
-				"positioning": {
-					"size": [0, 18]
-				},
-				"margin": [0, 14, 0, 1],
-				"children": [
-					{
-						"element": "image",
-						"name": "roleimage",
-						"positioning": {
-							"size": [18, 18]
-						},
-						"dock": "left",
-						"image": "$$roleicon",
-						"frameupdate": ["image"]
-					},
-					{
-						"element": "label",
-						"dock": "fill",
-						"contentalignment": 4,
-						"margin": [6, 0, 0, 0],
-						"rendersystem": "shadow",
-						"font": {
-							"font": "Roboto",
-							"weight": 500,
-							"size": 20
-						},
-						"text": "$$rolename",
-						"frameupdate": ["text"],
-						"children": [
-							{
-								"element": "label",
-								"dock": "right",
-								"contentalignment": 3,
-								"color": "$$teamcolor",
-								"rendersystem": "shadow",
-								"text": "$$teamname",
-								"frameupdate": ["text", "color"],
-								"font": {
-									"font": "Roboto",
-									"weight": 500,
-									"size": 18
-								}
-							}
-						]
-					}
-				]
-			},
-			{
-				"element": "curve_outline",
-				"name": "healthbaroutline",
-				"curve": 6,
-				"color": "#000000",
-				"dock": "bottom",
-				"positioning": {
-					"size": [128, 12]
-				},
-				"children": [
-					{
-						"element": "curve",
-						"name": "healthbar",
-						"dock": "fill",
-						"curve": "inherit",
-						"color": "#fff",
-						"scissor": [
-							0,
-							0,
-							{
-								"func": "sub",
-								"inputs": [
-									1,
-									{
-										"func": "divide",
-										"inputs": [
-											"$$health",
-											"$$maxhealth"
-										]
-									}
-								]
-							},
-							0
-						]
-					},
-					{
-						"element": "curve",
-						"name": "armorbar",
-						"dock": "fill",
-						"curve": "inherit",
-						"color": "#555",
-						"scissor": [
-							0,
-							7,
-							{
-								"func": "sub",
-								"inputs": [
-									1,
-									{
-										"func": "divide",
-										"inputs": [
-											"$$armor",
-											"$$maxarmor"
-										]
-									}
-								]
-							},
-							0
-						]
-					}
-				]
-			},
-			{
-				"element": "label",
-				"dock": "fill",
-				"margin": [0, 1, 0, 6],
-				"contentalignment": 4,
-				"font": {
-					"font": "Roboto",
-					"weight": 300,
-					"size": 24
-				},
-				"rendersystem": "shadow",
-				"text": {
-					"func": "concat",
-					"inputs": [
-						"$$roundstate",
-						": ",
-						"$$timeleft"
-					]
-				},
-				"frameupdate": ["text"],
-				"children": [
-					{
-						"element": "label",
-						"dock": "right",
-						"contentalignment": 3,
-						"text": "$$overtime",
-						"font": {
-							"font": "Roboto",
-							"weight": 500,
-							"size": 18
-						},
-						"color": "$$teamcolor",
-						"rendersystem": "shadow",
-						"frameupdate": ["text", "color"]
-					}
-				]
-			}
-		]
+local default = [=[{
+	"variables": {
+		"$$healthcolor": "#fff"
 	},
-	{
-		"element": "base",
-		"name": "gunammo",
-		"positioning": {
-			"size": [375, 100],
-			"offset": [26, 50],
-			"from": "bottom right"
-		},
-		"children": [
-			{
-				"element": "image",
-				"image": "gui/gradient.png",
-				"reverse": true,
-				"color": {
-					"func": "coloralpha",
-					"inputs": ["$$guncolor", 96]
-				},
-				"dock": "bottom",
-				"positioning": {
-					"size": [0, 34]
-				},
-				"frameupdate": ["color"],
-				"margin": [34, 4, 0, 0],
-				"children": [
-					{
-						"element": "label",
-						"dock": "right",
-						"contentalignment": 6,
-						"text": "$$gunname",
-						"font": {
-							"font": "Roboto",
-							"weight": 300,
-							"size": 26
-						},
-						"margin": [0, 0, 12, 0],
-						"frameupdate": ["text"]
-					}
-				]
+	"fonts": {
+	},
+	"elements": [
+		{
+			"element": "curve",
+			"color": [255, 0, 111, 0],
+			"name": "bottomleft_area",
+			"positioning": {
+				"size": [330, 92],
+				"offset": [26, 50],
+				"from": "bottom"
 			},
-			{
-				"element": "curve",
-				"dock": "bottom",
-				"name": "gundivider",
-				"positioning": {
-					"size": [0, 1]
-				},
-				"color": "#888",
-				"margin": [0, 4, 0, 0]
-			},
-			{
-				"element": "base",
-				"dock": "fill",
-				"name": "ammocontainer",
-				"children": [
-					{
-						"element": "curve",
-						"curve": 4,
-						"color": [20, 20, 20, 208],
-						"dock": "right",
-						"margin": [0, 4, 0, 12],
-						"sizeto": {
-							"what": "children",
-							"width": true
-						},
-						"padding": [6, 0, 6, 0],
-						"frameupdate": ["sizeto"],
-						"children": [
-							{
-								"element": "label",
-								"contentalignment": 5,
-								"text": "$$gunreserves",
-								"rendersystem": "shadow",
-								"sizeto": "contents",
-								"frameupdate": ["text", "sizeto", "center"],
-								"font": {
-									"font": "Roboto",
-									"weight": 300,
-									"size": 32
-								}
-							}
+			"children": [
+				{
+					"element": "curve_outline",
+					"dock": "left",
+					"color": {
+						"func": "coloralpha",
+						"inputs": [
+							"$$rolecolor",
+							64
 						]
 					},
-					{
-						"element": "label",
-						"dock": "right",
-						"contentalignment": 3,
-						"margin": [0, 0, 16, 0],
-						"text": "$$gunammo",
-						"font": {
-							"font": "Roboto",
-							"weight": 300,
-							"size": 64
+					"positioning": {
+						"size": [6, 0]
+					},
+					"children": [
+						{
+							"element": "curve",
+							"dock": "fill",
+							"color": "$$rolecolor",
+							"frameupdate": ["color"]
+						}
+					],
+					"margin": [0, 0, 6, 0],
+					"frameupdate": ["color"]
+				},
+				{
+					"element": "base",
+					"dock": "right",
+					"name": "healthcontainer",
+					"positioning": {
+						"size": [84, 0]
+					},
+					"margin": [16, 0, 0, 0],
+					"children": [
+						{
+							"element": "label",
+							"dock": "fill",
+							"contentalignment": 1,
+							"font": {
+								"font": "Roboto",
+								"weight": 500,
+								"size": 28
+							},
+							"text": "$$health",
+							"margin": [0, 0, 0, 25],
+							"rendersystem": "shadow",
+							"frameupdate": ["text"]
+						}
+					]
+				},
+				{
+					"element": "base",
+					"dock": "bottom",
+					"name": "rolecontainer",
+					"positioning": {
+						"size": [0, 18]
+					},
+					"margin": [0, 14, 0, 1],
+					"children": [
+						{
+							"element": "image",
+							"name": "roleimage",
+							"positioning": {
+								"size": [18, 18]
+							},
+							"dock": "left",
+							"image": "$$roleicon",
+							"frameupdate": ["image"]
 						},
-						"frameupdate": ["text"]
-					}
-				]
-			}
-		]
-	}
-]]=]
+						{
+							"element": "label",
+							"dock": "fill",
+							"contentalignment": 4,
+							"margin": [6, 0, 0, 0],
+							"rendersystem": "shadow",
+							"font": {
+								"font": "Roboto",
+								"weight": 500,
+								"size": 20
+							},
+							"text": "$$rolename",
+							"frameupdate": ["text"],
+							"children": [
+								{
+									"element": "label",
+									"dock": "right",
+									"contentalignment": 3,
+									"color": "$$teamcolor",
+									"rendersystem": "shadow",
+									"text": "$$teamname",
+									"frameupdate": ["text", "color"],
+									"font": {
+										"font": "Roboto",
+										"weight": 500,
+										"size": 18
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"element": "curve_outline",
+					"name": "healthbaroutline",
+					"curve": 6,
+					"color": "#000000",
+					"dock": "bottom",
+					"positioning": {
+						"size": [128, 12]
+					},
+					"children": [
+						{
+							"element": "curve",
+							"name": "healthbar",
+							"dock": "fill",
+							"curve": "inherit",
+							"color": "$$healthcolor",
+							"scissor": [
+								0,
+								0,
+								{
+									"func": "sub",
+									"inputs": [
+										1,
+										{
+											"func": "divide",
+											"inputs": [
+												"$$health",
+												"$$maxhealth"
+											]
+										}
+									]
+								},
+								0
+							]
+						},
+						{
+							"element": "curve",
+							"name": "armorbar",
+							"dock": "fill",
+							"curve": "inherit",
+							"color": "#555",
+							"scissor": [
+								0,
+								7,
+								{
+									"func": "sub",
+									"inputs": [
+										1,
+										{
+											"func": "divide",
+											"inputs": [
+												"$$armor",
+												"$$maxarmor"
+											]
+										}
+									]
+								},
+								0
+							]
+						}
+					]
+				},
+				{
+					"element": "label",
+					"dock": "fill",
+					"margin": [0, 1, 0, 6],
+					"contentalignment": 4,
+					"font": {
+						"font": "Roboto",
+						"weight": 300,
+						"size": 24
+					},
+					"rendersystem": "shadow",
+					"text": {
+						"func": "concat",
+						"inputs": [
+							"$$roundstate",
+							": ",
+							"$$timeleft"
+						]
+					},
+					"frameupdate": ["text"],
+					"children": [
+						{
+							"element": "label",
+							"dock": "right",
+							"contentalignment": 3,
+							"text": "$$overtime",
+							"font": {
+								"font": "Roboto",
+								"weight": 500,
+								"size": 18
+							},
+							"color": "$$teamcolor",
+							"rendersystem": "shadow",
+							"frameupdate": ["text", "color"]
+						}
+					]
+				}
+			]
+		},
+		{
+			"element": "base",
+			"name": "gunammo",
+			"positioning": {
+				"size": [290, 100],
+				"offset": [26, 50],
+				"from": "bottom right"
+			},
+			"children": [
+				{
+					"element": "image",
+					"image": "gui/gradient.png",
+					"reverse": true,
+					"color": {
+						"func": "coloralpha",
+						"inputs": ["$$guncolor", 96]
+					},
+					"dock": "bottom",
+					"positioning": {
+						"size": [0, 28]
+					},
+					"frameupdate": ["color"],
+					"margin": [34, 4, 0, 0],
+					"children": [
+						{
+							"element": "label",
+							"dock": "right",
+							"contentalignment": 6,
+							"text": "$$gunname",
+							"font": {
+								"font": "Roboto",
+								"weight": 300,
+								"size": 22
+							},
+							"margin": [0, 0, 12, 0],
+							"frameupdate": ["text"]
+						}
+					]
+				},
+				{
+					"element": "curve",
+					"dock": "bottom",
+					"name": "gundivider",
+					"positioning": {
+						"size": [0, 1]
+					},
+					"color": "#888",
+					"margin": [0, 4, 0, 0]
+				},
+				{
+					"element": "base",
+					"dock": "fill",
+					"name": "ammocontainer",
+					"children": [
+						{
+							"element": "curve",
+							"curve": 4,
+							"color": [20, 20, 20, 208],
+							"dock": "right",
+							"margin": [0, 18, 0, 4],
+							"sizeto": {
+								"what": "children",
+								"width": true
+							},
+							"padding": [6, 0, 6, 0],
+							"frameupdate": ["sizeto"],
+							"children": [
+								{
+									"element": "label",
+									"contentalignment": 5,
+									"text": "$$gunreserves",
+									"rendersystem": "shadow",
+									"sizeto": "contents",
+									"frameupdate": ["text", "sizeto", "center"],
+									"font": {
+										"font": "Roboto",
+										"weight": 300,
+										"size": 24
+									}
+								}
+							]
+						},
+						{
+							"element": "label",
+							"dock": "right",
+							"contentalignment": 3,
+							"margin": [0, 0, 8, 0],
+							"text": "$$gunammo",
+							"font": {
+								"font": "Roboto",
+								"weight": 300,
+								"size": 48
+							},
+							"frameupdate": ["text"]
+						}
+					]
+				}
+			]
+		}
+	]
+}]=]
 
 local function init_hud()
 	local json
@@ -543,21 +550,7 @@ local function init_hud()
 		warn("%s", e or "json ded")
 		return
 	end
-
-	if (IsValid(ttt.HUDElement)) then
-		ttt.HUDElement:Remove()
-	end
-
-	ttt.HUDElement = vgui.Create "EditablePanel"
-	ttt.HUDElement:ParentToHUD()
-	ttt.HUDElement:SetSize(ScrW(), ScrH())
-
-	for id, data in ipairs(json) do
-		local p, err = ttt.hud.create(data, ttt.HUDElement)
-		if (not p) then
-			print(p, err)
-		end
-	end
+	ttt.hud.init(json)
 end
 
 hook.Add("HUDPaint", "tttrw_hud_init", function()
@@ -565,7 +558,7 @@ hook.Add("HUDPaint", "tttrw_hud_init", function()
 	hook.Remove("HUDPaint", "tttrw_hud_init")
 end)
 
-hook.Add("OnScreenSizeChanged", init_hud)
+hook.Add("OnScreenSizeChanged", "tttrw_hud_init", init_hud)
 
 concommand.Add("tttrw_hud_init", init_hud)
 

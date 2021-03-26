@@ -3,8 +3,10 @@ ttt.hud = {
 	text = {},
 	functions = {},
 	inputs = {},
+	features = {},
+	current = nil,
+	fonts = {},
 }
-
 
 local function SetJSON(self, json)
 	if (not istable(json)) then
@@ -28,6 +30,31 @@ local function SetJSON(self, json)
 	end
 
 	self.TTTRWHUDElement = json
+end
+
+function ttt.hud.createfont(font, fontname)
+	if (ttt.hud.fonts[font]) then
+		return ttt.hud.fonts[font]
+	end
+
+	local fontdata = {}
+	for key, value in SortedPairs(font) do
+		fontdata[#fontdata + 1] = key
+		fontdata[#fontdata + 1] = tostring(value)
+	end
+
+	local name = "tttrw_font" .. util.CRC(table.concat(fontdata))
+
+	surface.CreateFont(name, font)
+	if (fontname) then
+		ttt.hud.fonts["$$" .. fontname] = name
+	end
+
+	return name
+end
+
+function ttt.hud.addfeature(feature)
+	ttt.hud.features[feature] = true
 end
 
 function ttt.hud.registerelement(element, inputs, base, vgui_element)
@@ -58,20 +85,33 @@ function ttt.hud.registerelement(element, inputs, base, vgui_element)
 	}, ttt.hud.elements[element].VGUIElement)
 end
 
-function ttt.hud.create(data, parent)
-	if (not ttt.hud.elements[data.element]) then
-		return "no such element: " .. tostring(data.element)
+function ttt.hud.init(json)
+	ttt.hud.current = json
+
+	-- fonts
+	if (json.fonts) then
+		for font, data in pairs(json.fonts) do
+			ttt.hud.createfont(data, font)
+		end
 	end
 
-	print("[TTTRW HUD]: Creating element " .. (data.name or data.element))
-
-
-	if (ttt.hud.elements[data.element].Inputs.GetCustomizeParent) then
-		parent = ttt.hud.elements[data.element].Inputs.GetCustomizeParent(parent)
+	if (IsValid(ttt.HUDElement)) then
+		ttt.HUDElement:Remove()
 	end
 
-	local ele = vgui.Create("tttrw_hud_" .. data.element, parent)
-	local err = ele:SetJSON(data)
+	ttt.HUDElement = vgui.Create "EditablePanel"
+	ttt.HUDElement:ParentToHUD()
+	ttt.HUDElement:SetSize(ScrW(), ScrH())
+
+	for id, data in ipairs(json.elements) do
+		local p, err = ttt.hud.create(data, ttt.HUDElement)
+		if (err) then
+			print(err)
+		end
+	end
+end
+
+local function remove_if_error(ele, err)
 	if (err) then
 		ele:Remove()
 
@@ -80,6 +120,37 @@ function ttt.hud.create(data, parent)
 	ele.TTTRWHUDParent = parent
 	ele:SetMouseInputEnabled(true)
 	return ele
+end
+
+function ttt.hud.create(data, parent)
+	if (not ttt.hud.elements[data.element]) then
+		return false, "no such element: " .. tostring(data.element)
+	end
+
+	if (data.requires) then
+		if (isstring(data.requires)) then
+			data.requires = data.requires:Split " "
+		end
+		if (not istable(data.requires)) then
+			return false, "data.requires invalid format"
+		end
+
+		for _, feature in ipairs(data.requires) do
+			if (not ttt.hud.features[feature]) then
+				print("[TTTRW HUD]: Skipping element because feature missing: " .. feature)
+				return
+			end
+		end
+	end
+
+	print("[TTTRW HUD]: Creating element " .. (data.name or data.element))
+
+	if (ttt.hud.elements[data.element].Inputs.GetCustomizeParent) then
+		parent = ttt.hud.elements[data.element].Inputs.GetCustomizeParent(parent)
+	end
+
+	local ele = vgui.Create("tttrw_hud_" .. data.element, parent)
+	return remove_if_error(ele, ele:SetJSON(data))
 end
 
 function ttt.hud.createfunction(name, func)
@@ -115,6 +186,12 @@ function ttt.hud.getvalue(data)
 			local func = ttt.hud.inputs[data]
 			if (func) then
 				return func()
+			end
+
+			local data = ttt.hud.current and ttt.hud.current.variables and ttt.hud.current.variables[data]
+
+			if (data) then
+				return ttt.hud.getvalue(data)
 			end
 		end
 
@@ -593,6 +670,10 @@ function INPUTS:SetCenter(b)
 	self:Center()
 end
 
+function INPUTS:SetRequires(req)
+	-- workaround
+end
+
 ttt.hud.registerelement("base", INPUTS)
 
 
@@ -642,18 +723,7 @@ function INPUTS:SetContentalignment(align)
 end
 
 function INPUTS:SetFont(font)
-
-	local fontdata = {}
-	for key, value in SortedPairs(font) do
-		fontdata[#fontdata + 1] = key
-		fontdata[#fontdata + 1] = tostring(value)
-	end
-
-	local name = "tttrw_font" .. util.CRC(table.concat(fontdata))
-
-	surface.CreateFont(name, font)
-
-	self:SetFont(name)
+	self:SetFont(ttt.hud.createfont(font))
 end
 
 function INPUTS:SetRendersystem(system)
