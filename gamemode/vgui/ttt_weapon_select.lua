@@ -1,230 +1,232 @@
-
-local font_tall = math.max(16, math.Round(ScrH() / 60))
-surface.CreateFont("ttt_weapon_select_font", {
-	font = "Roboto",
-	size = font_tall,
-	weight = 1000,
-})
-surface.CreateFont("ttt_weapon_select_font_outline", {
-	font = "Roboto",
-	size = font_tall,
-	weight = 1000,
-})
-
-
-local WEAPON = FindMetaTable "Weapon"
-
 local function Player()
 	return ttt.GetHUDTarget()
 end
 
-
 local PANEL = {}
 
 function PANEL:Init()
-	hook.Add("OnPlayerRoleChange", self, self.OnPlayerRoleChange)
-	self.Label = self:Add "DLabel"
-	self.Label:Dock(FILL)
-	self.Label:SetContentAlignment(5)
-	self.Label:SetFont "ttt_weapon_select_font_outline"
-	self.Label:SetTextColor(Color(12, 13, 12))
-	self:SetColor(LocalPlayer():GetRoleData().Color)
-	self:SetCurve(2)
-	self:SetCurveBottomRight(false)
-	self:SetCurveTopRight(false)
-end
-
-function PANEL:OnPlayerRoleChange(ply, old, new)
-	if (ply == Player() and new) then
-		self:SetColor((ttt.roles[new] or ttt.roles.Spectator).Color)
-	end
-end
-
-vgui.Register("ttt_weapon_select_number", PANEL, "ttt_curved_panel")
-
-local PANEL = {}
-DEFINE_BASECLASS "ttt_curved_panel"
-function PANEL:Init()
-	hook.Add("OnPlayerRoleChange", self, self.OnPlayerRoleChange)
-
-	self:SetCurve(4)
-	self:SetColor(outline)
-	self:SetCurveTopRight(false)
-	self:SetCurveBottomRight(false)
-
 	self:DockMargin(0, 0, 0, 4)
-
-	self.Inner = self:Add "ttt_curved_panel"
-	self.Inner:Dock(FILL)
-	self.Inner:SetColor(main_color)
-	self.Inner:SetZPos(0)
-
-	self.Label = self:Add "tttrw_weapon_name"
-	self.Label:Dock(FILL)
-	self.Label:SetZPos(3)
-
-	self.Number = self:Add "ttt_weapon_select_number"
+	self.NumberContainer = self:Add "ttt_curved_panel"
+	self.NumberContainer:Dock(RIGHT)
+	self.NumberContainer:SetColor(Color(0, 0, 0))
+	self.Seperator = self:Add "ttt_curved_panel"
+	self.Seperator:Dock(RIGHT)
+	self.Seperator:SetColor(Color(0, 0, 0, 0))
+	self.Seperator:SetWide(0)
+	self.Number = self.NumberContainer:Add "tttrw_label"
 	self.Number:Dock(LEFT)
-	self.Number:SetZPos(1)
+
+	self.WeaponText = self:Add "tttrw_label"
+	self.WeaponText:Dock(RIGHT)
+	self.WeaponText:SetWide(0)
+	self.WeaponText:SetContentAlignment(5)
+	self.WeaponText:DockMargin(0, 2, 8, 2)
+	self.WeaponText:SetFont(ttt.hud.fonts["$$weaponselect.weapon"] or "DermaDefault")
+
+	self.Number:SetFont(ttt.hud.fonts["$$weaponselect.number"] or "DermaDefault")
+	self.Number:SetContentAlignment(5)
 end
 
-function PANEL:OnPlayerRoleChange(ply, old, new)
-	if (ply == Player() and IsValid(self.Active) and new) then
-		self.Active:SetImageColor(ttt and ttt.roles and ttt.roles[new] and ttt.roles[new].Color or Color(255, 255, 255))
-	end
-end
-
-function PANEL:PerformLayout(w, h)
-	self:SetTall(font_tall + 6)
-	self:GetParent():SizeToChildren(false, true)
-	self.Number:SetWide(h + self.Number:GetCurve())
-end
-
-function PANEL:SetWeapon(wep)
-	local swep_tbl = baseclass.Get(wep:GetClass())
+function PANEL:SetData(slot, wep)
 	self.Weapon = wep
-	self.Label.Weapon = wep
-	local swep_tbl = 
-	self.Number.Label:SetText(swep_tbl.Slot + 1)
+	self.Slot = slot
+
+	self.Number:SetText(slot + 1)
+	self.Number:SizeToContentsX(16)
+	self.NumberContainer:InvalidateLayout(true)
+	self.NumberContainer:SizeToChildren(true, false)
+
+	-- instantly update as necessary
+	self:Think()
 end
 
-function PANEL:SetActive(b)
-	if (IsValid(self.Active) and not b) then
-		self.Active:Remove()
-	elseif (not IsValid(self.Active) and b) then
-		self.Active = self.Label:Add "EditablePanel"
-		function self.Active:Paint(w, h)
-			surface.SetDrawColor(self.Color)
-			draw.NoTexture()
-			surface.DrawRect(0, 0, w / 2, h)
-		end
-		function self.Active:SetImageColor(col)
-			self.Color = col
-		end
-		self.Active:SetSize(self:GetTall() - 8, self:GetTall())
-		self.Active:Dock(LEFT)
-		self.Active:SetImageColor(LocalPlayer():GetRoleData().Color)
-		self.Active:SetZPos(1)
+function PANEL:OnTextWidthAcquired(width)
+end
+
+function PANEL:Think()
+	local wep = self.Weapon
+	if (not IsValid(wep)) then
+		return
+	end
+
+	local col = Color(0, 0, 0)
+	if (IsValid(Player()) and Player():GetActiveWeapon() == self.Weapon) then
+		col = self:GetColor()
+	end
+	self.NumberContainer:SetColor(col)
+
+	local txt = (wep:GetPrintName() or ""):Trim()
+	if (txt ~= self.WeaponText:GetText()) then
+		self.WeaponText:SetText(txt)
+		self.WeaponText:SizeToContentsX()
+
+		self:InvalidateLayout(true)
+		self:OnTextWidthAcquired(self.WeaponText:GetWide() + self.NumberContainer:GetWide() + 16)
 	end
 end
 
-vgui.Register("ttt_weapon_select_weapon", PANEL, "ttt_curved_panel_outline")
+function PANEL:GetColor()
+	if (not IsValid(self.Weapon) or not self.Weapon.GetPrintNameColor) then
+		return Color(0, 0, 0)
+	end
 
-local PANEL = {}
+	local alpha = 64
+
+	if (IsValid(Player()) and Player():GetActiveWeapon() == self.Weapon) then
+		alpha = 128
+	end
+
+	return ColorAlpha(self.Weapon:GetPrintNameColor(), alpha)
+end
+
+local gradient = Material "gui/gradient.png"
 
 function PANEL:Paint(w, h)
-	if (not IsValid(self.Weapon)) then
-		return
-	end
-
-	if (hook.Run("TTTRWDrawWeaponName", self.Weapon, w, h)) then
-		return
-	end
-
-	local text = self.Weapon:GetPrintName()
-	local col = self.Weapon:GetPrintNameColor()
-	surface.SetFont "ttt_weapon_select_font"
-	local tw, th = surface.GetTextSize(text)
-
-	local x, y = w / 2 - tw / 2, h / 2 - th / 2
-
-	for _, code in utf8.codes(text) do
-		local chr = utf8.char(code)
-		local cw, ch = surface.GetTextSize(chr)
-
-		surface.SetTextColor(Color(0, 0, 0, 255))
-		for i = -1, 1 do
-			surface.SetTextPos(x + i, y)
-			surface.DrawText(chr)
-			surface.SetTextPos(x, y + i)
-			surface.DrawText(chr)
+	local mul = 1
+	if (self.Fades) then
+		local start, ends = self.Fades[1], self.Fades[2]
+		local t = CurTime()
+		if (t >= ends) then
+			mul = 0
+		elseif (t >= start) then
+			mul = 1 - (t - start) / (ends - start)
 		end
-
-		surface.SetTextColor(col)
-		surface.SetTextPos(x, y)
-		surface.DrawText(chr)
-
-		x = x + cw
 	end
+
+	self.WeaponText:SetAlpha(mul * 255)
+
+	gradient:SetVector("$color", self:GetColor():ToVector())
+	gradient:SetFloat("$alpha", self:GetColor().a / 255 * mul)
+	surface.SetDrawColor(255, 255, 255, 255)
+	surface.SetMaterial(gradient)
+	surface.DrawTexturedRectUV(0, 0, self.Seperator:GetPos(), h, 1, 0, 0, 1)
 end
 
-vgui.Register("tttrw_weapon_name", PANEL, "EditablePanel")
+function PANEL:FadeOut(start, ends)
+	self.Fades = {start, ends}
+end
+
+vgui.Register("ttt_weapon_select_weapon", PANEL, "EditablePanel")
 
 local PANEL = {}
-gameevent.Listen "player_spawn"
-gameevent.Listen "entity_killed"
+
 function PANEL:Init()
-	hook.Add("PlayerSwitchWeapon", self, self.PlayerSwitchWeapon)
-
-	self:SetWide(math.max(ScrW() / 6, 100))
-
-	self.CachedWeapons = {}
-	self.OrderedPanels = {}
+	self:SetSize(0, 0)
+	self.StoredSlots = {}
+	self.StoredPanels = {}
 end
 
-function PANEL:PlayerSwitchWeapon(ply, old, new)
-	if (IsValid(self.Active)) then
-		self.Active:SetActive(false)
-		self.Active = nil
-	end
-
-	for k, wep in pairs(self.CachedWeapons) do
-		if (wep == new) then
-			self.OrderedPanels[k]:SetActive(true)
-			self.Active = self.OrderedPanels[k]
-		end
+function PANEL:NotifyInput()
+	self.LastInput = CurTime()
+	
+	for _, child in pairs(self:GetChildren()) do
+		child:FadeOut(self.LastInput + 2, self.LastInput + 5)
 	end
 end
 
 function PANEL:Think()
-	if (not IsValid(Player())) then
-		return
-	end
-
-	if (not Player():Alive()) then
-		for ind, wep in pairs(self.CachedWeapons) do
-			self.OrderedPanels[ind]:Remove()
-			table.remove(self.CachedWeapons, ind)
-			table.remove(self.OrderedPanels, ind)
+	local p = Player()
+	if (not IsValid(p)) then
+		for slot in pairs(self.StoredSlots) do
+			self:RemoveSlot(slot)
 		end
 		return
 	end
 
-	local wep_lookup = {}
-	for _, wep in pairs(Player():GetWeapons()) do
-		wep_lookup[wep] = true
+	if (p ~= self.LastPlayer) then
+		self:NotifyInput()
+		self.LastPlayer = p
 	end
 
-	local changed = false
+	local wep = p:GetActiveWeapon()
 
-	for ind, wep in pairs(self.CachedWeapons) do
-		if (not wep_lookup[wep]) then
-			self.OrderedPanels[ind]:Remove()
-			table.remove(self.CachedWeapons, ind)
-			table.remove(self.OrderedPanels, ind)
-			changed = true
+	if (wep ~= self.LastWeapon) then
+		self:NotifyInput()
+		self.LastWeapon = wep
+	end
+
+	local have = {}
+	for _, wep in pairs(p:GetWeapons()) do
+		local slot = wep:GetSlot()
+		if (self.StoredSlots[slot] ~= wep) then
+			self:UpdateSlot(slot, wep)
 		end
-		wep_lookup[wep] = nil
+		have[slot] = wep
 	end
 
-	for wep in pairs(wep_lookup) do
-		local pnl = self:Add "ttt_weapon_select_weapon"
-		pnl:SetZPos(baseclass.Get(wep:GetClass()).Slot)
-		pnl:SetWeapon(wep)
-		pnl:Dock(TOP)
-		table.insert(self.OrderedPanels, pnl)
-		table.insert(self.CachedWeapons, wep)
-		changed = true
+	for slot, wep in pairs(self.StoredSlots) do
+		if (have[slot] ~= wep) then
+			self:RemoveSlot(slot)
+		end
+	end
+end
+
+function PANEL:SetWidth()
+	local max = 100
+	for _, p in pairs(self.StoredPanels) do
+		if (IsValid(p)) then
+			max = math.max(p.Width or 0, max)
+		end
 	end
 
-	self:PlayerSwitchWeapon(nil, nil, Player():GetActiveWeapon())
+	local cur_width = self:GetWide()
+	local new_width = max + 20
+	self:SetWide(new_width)
+	if ((self.ContentAlignment % 3) == 0) then
+		local x, y = self:GetPos()
+		self:SetPos(x + cur_width - new_width, y)
+	end
 end
 
-function PANEL:PerformLayout(w, h)
-	self:SetPos(ScrW() - w, ScrH() / 2 - h / 2)
-	self:SizeToContents()
+function PANEL:UpdateSlot(slot, wep)
+	self.StoredSlots[slot] = wep
+	local p = self.StoredPanels[slot]
+	if (not IsValid(p)) then
+		p = self:Add "ttt_weapon_select_weapon"
+		p:Dock(TOP)
+		p:SetZPos(slot)
+		self.StoredPanels[slot] = p
+
+		function p.OnTextWidthAcquired(s, w)
+			s.Width = w
+			self:SetWidth()
+		end
+		if (self.ContentAlignment >= 4 and self.ContentAlignment <= 6) then
+			local x, y = self:GetPos()
+			self:SetPos(x, y - p:GetTall() / 2)
+		end
+	end
+	p:SetData(slot, wep)
+	self:InvalidateLayout(true)
+	self:SizeToChildren(false, true)
+	self:NotifyInput()
 end
 
-function PANEL:AcceptInput() end
+function PANEL:RemoveSlot(slot)
+	self.StoredSlots[slot] = nil
 
-vgui.Register("ttt_weapon_select", PANEL, "Panel")
+	local p = self.StoredPanels[slot]
+	if (IsValid(p)) then
+		if (self.ContentAlignment >= 4 and self.ContentAlignment <= 6) then
+			local x, y = self:GetPos()
+			self:SetPos(x, y + p:GetTall() / 2)
+		end
+		p:Remove()
+	end
+	self:InvalidateLayout(true)
+	self:SizeToChildren(false, true)
+
+	self:SetWidth()
+	self:NotifyInput()
+end
+
+
+vgui.Register("ttt_weapon_select", PANEL, "EditablePanel")
+
+local INPUTS = {}
+
+function INPUTS:SetContentalignment(txt)
+	self.ContentAlignment = txt
+end
+
+ttt.hud.registerelement("weaponselect", INPUTS, "base", "ttt_weapon_select")

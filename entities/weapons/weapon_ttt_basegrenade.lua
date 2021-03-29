@@ -15,6 +15,7 @@ SWEP.Spawnable             = true
 
 SWEP.Primary.Delay = 3
 
+SWEP.Primary.ClipSize = -1
 SWEP.Primary.Ammo = "none"
 SWEP.Primary.Automatic = false
 

@@ -224,6 +224,16 @@ local default = [=[{
 		"$$healthcolor": "#fff"
 	},
 	"fonts": {
+		"weaponselect.number": {
+			"font": "Roboto",
+			"weight": 500,
+			"size": 16
+		},
+		"weaponselect.weapon": {
+			"font": "Roboto",
+			"weight": 300,
+			"size": 18
+		}
 	},
 	"elements": [
 		{
@@ -535,6 +545,14 @@ local default = [=[{
 					]
 				}
 			]
+		},
+		{
+			"element": "weaponselect",
+			"positioning": {
+				"from": "middle right",
+				"size": [0, 0]
+			},
+			"contentalignment": 6
 		}
 	]
 }]=]

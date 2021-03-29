@@ -183,15 +183,15 @@ function ttt.hud.getvalue(data)
 		end
 	elseif (isstring(data)) then
 		if (data:StartWith "$$") then
+			local vardata = ttt.hud.current and ttt.hud.current.variables and ttt.hud.current.variables[data]
+
+			if (vardata) then
+				return ttt.hud.getvalue(vardata)
+			end
+
 			local func = ttt.hud.inputs[data]
 			if (func) then
 				return func()
-			end
-
-			local data = ttt.hud.current and ttt.hud.current.variables and ttt.hud.current.variables[data]
-
-			if (data) then
-				return ttt.hud.getvalue(data)
 			end
 		end
 
@@ -558,6 +558,9 @@ local transform = {
 	right = function(x, y, w, h)
 		return ScrW() - x - w, y, w, h
 	end,
+	center = function(x, y, w, h)
+		return ScrW() / 2 + x, y, w, h
+	end,
 	left = function(x, y, w, h)
 		return x, y, w, h
 	end,
@@ -566,6 +569,9 @@ local transform = {
 	end,
 	bottom = function(x, y, w, h)
 		return x, ScrH() - y - h, w, h
+	end,
+	middle = function(x, y, w, h)
+		return x, ScrH() / 2 + y, w, h
 	end
 }
 

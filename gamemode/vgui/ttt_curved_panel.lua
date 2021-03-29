@@ -115,7 +115,7 @@ AccessorFunc(PANEL, "Curve", "Curve", FORCE_NUMBER)
 AccessorFunc(PANEL, "Color", "Color")
 
 function PANEL:SetColor(col, g, b, a)
-	if (IsColor(col)) then
+	if (istable(col)) then
 		self.Color = col
 	else
 		local col = Color(col, g, b, a)
