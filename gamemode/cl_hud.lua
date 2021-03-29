@@ -283,6 +283,7 @@ local default = [=[{
 							"element": "label",
 							"dock": "fill",
 							"contentalignment": 1,
+							"name": "healthlabel",
 							"font": {
 								"font": "Roboto",
 								"weight": 500,
@@ -326,6 +327,7 @@ local default = [=[{
 								"size": 20
 							},
 							"text": "$$rolename",
+							"name": "rolelabel",
 							"frameupdate": ["text"],
 							"children": [
 								{
@@ -335,6 +337,7 @@ local default = [=[{
 									"color": "$$teamcolor",
 									"rendersystem": "shadow",
 									"text": "$$teamname",
+									"name": "teamlabel",
 									"frameupdate": ["text", "color"],
 									"font": {
 										"font": "Roboto",
@@ -419,6 +422,7 @@ local default = [=[{
 						"size": 24
 					},
 					"rendersystem": "shadow",
+					"name": "roundstate_label",
 					"text": {
 						"func": "concat",
 						"inputs": [
@@ -596,7 +600,145 @@ local function GetHoveredPanel()
 	return p
 end
 
-hook.Add("DrawOverlay", "tttrw_edit_hud", function()
+if (IsValid(ttt.hudeditor)) then
+	ttt.hudeditor:Remove()
+	ttt.hudeditor = vgui.Create "tttrw_hud_editor"
+	ttt.hudeditor:MakePopup()
+	ttt.hudeditor:Center()
+end
+
+concommand.Add("tttrw_edit_hud", function()
+	if (IsValid(ttt.hudeditor)) then
+		ttt.hudeditor:Remove()
+	else
+		ttt.hudeditor = vgui.Create "tttrw_hud_editor"
+		ttt.hudeditor:MakePopup()
+		ttt.hudeditor:Center()
+	end
+end)
+
+local PANEL = {}
+
+function PANEL:Init()
+	self:SetSize(300, 300)
+	self.NameLabel = self:Add "tttrw_label"
+	self.NameLabel:Dock(TOP)
+	self.NameLabel:SetText "Click something to edit it!"
+	self.NameLabel:SetContentAlignment(5)
+	self.NameLabel:DockMargin(0, 0, 0, 8)
+
+	self.SaveButton = self:Add "DButton"
+	self.SaveButton:Dock(TOP)
+	self.SaveButton:SetTall(25)
+	self.SaveButton:SetText "Save"
+	self.SaveButton:DockMargin(32, 0, 32, 0)
+	self.SaveButton:SetDisabled(true)
+	self.SaveButton:DockMargin(0, 0, 0, 8)
+
+	self.Scroller = self:Add "DScrollPanel"
+	self.Scroller:Dock(FILL)
+end
+
+function PANEL:AddOptions(json)
+	for _, option in ipairs(self.Options or {}) do
+		option:Remove()
+	end
+
+	local num = 1
+	self.Options = {}
+	local key_size = 0
+	for key, value in pairs(json) do
+		if (key == "children") then
+			continue
+		end
+
+		local option = self.Scroller:Add "EditablePanel"
+		self.Options[num] = option
+		option:Dock(TOP)
+		option:DockPadding(6, 1, 6, 1)
+		local cur_num = num
+		function option:Paint(w, h)
+			if (cur_num % 2 == 0) then
+				surface.SetDrawColor(196, 196, 196, 64)
+			else
+				surface.SetDrawColor(255, 255, 255, 64)
+			end
+			surface.DrawRect(0, 0, w, h)
+
+			surface.SetDrawColor(0, 0, 0)
+			surface.DrawLine(key_size, 0, key_size, h)
+		end
+		option.Key = option:Add "tttrw_label"
+		option.Key:Dock(LEFT)
+		option.Key:SetContentAlignment(4)
+		option.Key:SetText(key)
+		option.Key:SetTextColor(Color(0, 0, 0))
+		option.Key:SizeToContentsX()
+
+		option.Value = option:Add "DTextEntry"
+		option.Value:Dock(FILL)
+		local txt = istable(value) and util.TableToJSON(value) or tostring(value)
+		option.Value:SetText((txt:StartWith "#" and "#" or "") .. txt) -- pain
+
+		key_size = math.max(option.Key:GetWide() + 20, key_size)
+		
+		num = num + 1
+	end
+
+	for _, option in ipairs(self.Options) do
+		option.Key:SetWide(key_size)
+	end
+end
+
+function PANEL:SetEditPanel(p)
+	self.EditPanel = p
+	self:AddOptions(p.TTTRWHUDElement)
+	self.SaveButton:SetDisabled(false)
+
+	self.NameLabel:SetText("Editing: " .. p:GetName())
+end
+
+vgui.Register("tttrw_hud_edit_panel", PANEL, "EditablePanel")
+
+local PANEL = {}
+
+function PANEL:Init()
+	ttt.HUDElement:SetParent()
+	ttt.HUDElement:SetMouseInputEnabled(true)
+	self:SetTitle "HUD Editor"
+	self:SetWide(500)
+
+	self.Inner = self:Add "tttrw_hud_edit_panel"
+	self.Inner:Dock(TOP)
+	self:InvalidateLayout(true)
+	self:SizeToChildren(false, true)
+
+	hook.Add("DrawOverlay", self, self.DrawOverlay)
+	hook.Add("VGUIMousePressAllowed", self, self.VGUIMousePressAllowed)
+end
+
+function PANEL:OnRemove()
+	ttt.HUDElement:SetMouseInputEnabled(false)
+	ttt.HUDElement:SetKeyboardInputEnabled(false)
+	ttt.HUDElement:SetParent(GetHUDPanel())
+end
+
+function PANEL:NotifyClicked(p)
+	self.Inner:SetEditPanel(p)
+
+end
+
+function PANEL:VGUIMousePressAllowed(btn)
+	local p = GetHoveredPanel()
+	if (not p) then
+		return
+	end
+
+	self:NotifyClicked(p)
+	return true
+end
+
+function PANEL:DrawOverlay()
 	local p = GetHoveredPanel()
 	if (not p) then
 		return
@@ -625,57 +767,6 @@ hook.Add("DrawOverlay", "tttrw_edit_hud", function()
 	surface.DrawText(text)
 
 	surface.DrawRect(x0, y0, x1 - x0, y1 - y0)
-end)
-
-ttt.hudeditor = ttt.hudeditor or {
-	Events = setmetatable({}, {
-		__index = function(self, k)
-			self[k] = {}
-			return self[k]
-		end
-	})
-}
-function ttt.hudeditor:Hook(event, name, fn)
-	self.Events[event][name] = fn
 end
 
-function ttt.hudeditor:Init()
-	self.Valid = true
-	for event in pairs(self.Events) do
-		hook.Add(event, self, function(self, ...)
-			for _, event in pairs(self.Events[event]) do
-				event(self, ...)
-			end
-		end)
-	end
-end
-
-function ttt.hudeditor:Destroy()
-	self.Valid = false
-end
-
-function ttt.hudeditor:IsValid()
-	return self.Valid
-end
-
-
-ttt.hudeditor:Hook("DrawOverlay", "selector", function(self)
-	surface.SetDrawColor(0, 0, 255)
-	surface.DrawRect(0, 0, 25, 25)
-end)
-
-ttt.hudeditor:Destroy()
-
-concommand.Add("tttrw_edit_hud", function()
-	local parent = ttt.HUDElement:GetParent()
-
-	if (parent == GetHUDPanel()) then
-		ttt.HUDElement:SetParent()
-		ttt.HUDElement:MakePopup()
-		ttt.HUDElement:SetKeyboardInputEnabled(false)
-	else
-		ttt.HUDElement:SetMouseInputEnabled(false)
-		ttt.HUDElement:SetKeyboardInputEnabled(false)
-		ttt.HUDElement:SetParent(GetHUDPanel())
-	end
-end)
+vgui.Register("tttrw_hud_editor", PANEL, "DFrame")

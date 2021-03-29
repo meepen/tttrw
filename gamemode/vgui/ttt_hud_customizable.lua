@@ -100,7 +100,7 @@ function ttt.hud.init(json)
 	end
 
 	ttt.HUDElement = vgui.Create "EditablePanel"
-	ttt.HUDElement:ParentToHUD()
+	ttt.HUDElement:SetParent(GetHUDPanel())
 	ttt.HUDElement:SetSize(ScrW(), ScrH())
 
 	for id, data in ipairs(json.elements) do
