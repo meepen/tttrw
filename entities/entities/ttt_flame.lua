@@ -10,10 +10,10 @@ AccessorFunc(ENT, "dietime", "DieTime")
 
 ENT.firechild = nil
 ENT.fireparams = {size=120, growth=1}
-ENT.fire_damage = 5
+ENT.fire_damage = 3
 
 ENT.dietime = 0
-ENT.hurt_interval = 1
+ENT.hurt_interval = 0.25
 
 CreateConVar("ttt_fire_fallback", "0", FCVAR_ARCHIVE)
 
@@ -157,7 +157,7 @@ function ENT:Think()
 		end
 		dmg:SetInflictor(self.firechild)
 
-		RadiusDamage(dmg, self:GetPos(), math.sqrt(self.fireparams.size), self)
+		RadiusDamage(dmg, self:GetPos(), self.fireparams.size, self)
 
 		self.next_hurt = CurTime() + self.hurt_interval
 	end
