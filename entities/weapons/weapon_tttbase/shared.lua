@@ -432,6 +432,9 @@ function SWEP:DoFireBullets(src, dir, data, last_shoot)
 	return extras
 end
 
+function SWEP:AddTracerEffectData(data)
+end
+
 function SWEP:TracerEffect(tr, dmg)
 	if ((not CLIENT or IsFirstTimePredicted()) and self:GetTracers() ~= 0 and self:GetBulletsShot() % self:GetTracers() == 0) then
 		local d = EffectData()
@@ -442,6 +445,8 @@ function SWEP:TracerEffect(tr, dmg)
 		d:SetDamageType(dmg:GetDamageType())
 		d:SetColor(1)
 		d:SetEntity(self)
+
+		self:AddTracerEffectData(d)
 
 		local att = self:LookupAttachment(self.MuzzleAttachment)
 
