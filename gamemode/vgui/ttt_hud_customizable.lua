@@ -6,30 +6,55 @@ ttt.hud = {
 	features = {},
 	current = nil,
 	fonts = {},
+	bases = {},
 }
+
+local function Set(self, key, value)
+	local fn = self.Inputs["Set" .. key]
+	if (not fn) then
+		fn = self.Inputs["Set" .. key:sub(1, 1):upper() .. key:sub(2)]
+	end
+
+	if (not fn) then
+		return "unknown input: " .. key
+	end
+
+	local err = fn(self, value)
+	if (err) then
+		return err
+	end
+
+	self.TTTRWHUDElement[key] = value
+end
 
 local function SetJSON(self, json)
 	if (not istable(json)) then
 		return "json not readable"
 	end
 
+	self.TTTRWHUDElement = json
+
 	for key, value in pairs(json) do
-		local fn = self.Inputs["Set" .. key]
-		if (not fn) then
-			fn = self.Inputs["Set" .. key:sub(1, 1):upper() .. key:sub(2)]
-		end
-
-		if (not fn) then
-			return "unknown input: " .. key
-		end
-
-		local err = fn(self, value)
+		local err = self:Set(key, value)
 		if (err) then
 			return err
 		end
 	end
+end
 
-	self.TTTRWHUDElement = json
+local function GetEditableParent(self)
+	local p = self:GetParent()
+	while (IsValid(p)) do
+		if (p.TTTRWHUDElement) then
+			break
+		end
+
+		p = p:GetParent()
+	end
+
+	if (IsValid(p) and p.TTTRWHUDElement) then
+		return p
+	end
 end
 
 function ttt.hud.createfont(font, fontname)
@@ -70,28 +95,44 @@ function ttt.hud.registerelement(element, inputs, base, vgui_element)
 	setmetatable(inputs, {
 		__index = function(self, k)
 			local base = rawget(self, "CustomizeBase")
+			if (k == "list") then
+				local r = {}
+				for kk in pairs(self) do
+					r[kk] = true
+				end
+				if (base) then
+					for kk in pairs(base.list or {}) do
+						r[kk] = true
+					end
+				end
+
+				return r
+			end
 			if (base and ttt.hud.elements[base]) then
 				return ttt.hud.elements[base].Inputs[k]
 			end
 		end
 	})
 
-	inputs.TTTRWHUDElement = true
-
 	vgui.Register("tttrw_hud_" .. element, {
 		Inputs = inputs,
 		TTTRWHUDName = element,
-		SetJSON = SetJSON
+		Set = Set,
+		SetJSON = SetJSON,
+		GetEditableParent = GetEditableParent
 	}, ttt.hud.elements[element].VGUIElement)
 end
 
 function ttt.hud.init(json)
 	ttt.hud.current = json
+	ttt.hud.bases = {}
 
 	-- fonts
-	if (json.fonts) then
-		for font, data in pairs(json.fonts) do
-			ttt.hud.createfont(data, font)
+	if (json.variables) then
+		for font, data in pairs(json.variables) do
+			if (istable(data) and data.font) then
+				ttt.hud.createfont(data, font)
+			end
 		end
 	end
 
@@ -108,6 +149,7 @@ function ttt.hud.init(json)
 		if (err) then
 			print(err)
 		end
+		table.insert(ttt.hud.bases, p)
 	end
 end
 
@@ -145,11 +187,15 @@ function ttt.hud.create(data, parent)
 
 	print("[TTTRW HUD]: Creating element " .. (data.name or data.element))
 
-	if (ttt.hud.elements[data.element].Inputs.GetCustomizeParent) then
+	if (parent and ttt.hud.elements[data.element].Inputs.GetCustomizeParent) then
 		parent = ttt.hud.elements[data.element].Inputs.GetCustomizeParent(parent)
 	end
 
+
 	local ele = vgui.Create("tttrw_hud_" .. data.element, parent)
+	if (not parent and IsValid(ele)) then
+		table.insert(ttt.hud.bases, ele)
+	end
 	return remove_if_error(ele, ele:SetJSON(data))
 end
 
@@ -161,10 +207,65 @@ function ttt.hud.createinput(name, func)
 	ttt.hud.inputs["$$" .. name] = func
 end
 
+local funcs = setmetatable({}, {__mode = "k"})
+local global = setmetatable({
+	pairs = pairs,
+	ipairs = ipairs,
+	tonumber = tonumber,
+	tostring = tostring,
+	table = {
+		concat = table.concat,
+		insert = insert,
+	},
+	pack = pack,
+	unpack = unpack,
+	string = {
+		len = string.len,
+	},
+	ColorAlpha = ColorAlpha,
+	Color = Color,
+}, {
+	__index = function(self, k)
+		if (isstring(k)) then
+			local input = ttt.hud.inputs["$$" .. k]
+			if (input) then
+				return input()
+			end
+		end
+	end
+})
+
+local function runlua(lua)
+	local func = funcs[lua]
+	if (not func) then
+		func = CompileString("return " .. lua, "=hud_func", false)
+		if (not isfunction(func)) then
+			func = CompileString(lua, "=hud_func", false)
+		end
+
+		if (not isfunction(func)) then
+			funcs[lua] = false
+			return
+		end
+
+		setfenv(func, global)
+		funcs[lua] = func
+	end
+
+	if (func) then
+		return func()
+	end
+end
+
+
 function ttt.hud.getvalue(data)
 	if (IsColor(data)) then
 		return data
 	elseif (istable(data)) then
+		if (data.lua) then
+			return runlua(data.lua)
+		end
+
 		local func = ttt.hud.functions[data.func]
 		if (isfunction(func)) then
 			local args = {n = 0}
@@ -214,7 +315,6 @@ ttt.hud.createfunction("lerp", function(pct, ...)
 	local amount = select("#", ...)
 
 	pct = ttt.hud.getvalue(pct)
-	print(pct)
 
 	if (pct >= 1) then
 		return ttt.hud.getvalue(select(amount, ...))
@@ -525,11 +625,13 @@ function INPUTS:GetCustomizeParent()
 end
 
 function INPUTS:SetChildren(data)
+	self.EditableChildren = self.EditableChildren or {}
 	for _, childdata in ipairs(data) do
 		local ele, err = ttt.hud.create(childdata, self)
 		if (not ele) then
 			return err
 		end
+		table.insert(self.EditableChildren, ele)
 	end
 end
 
