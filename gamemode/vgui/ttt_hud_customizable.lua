@@ -9,7 +9,9 @@ ttt.hud = {
 	bases = {},
 }
 
-local function Set(self, key, value)
+local function Update(self, key)
+	local value = self.TTTRWHUDElement[key]
+
 	local fn = self.Inputs["Set" .. key]
 	if (not fn) then
 		fn = self.Inputs["Set" .. key:sub(1, 1):upper() .. key:sub(2)]
@@ -23,8 +25,15 @@ local function Set(self, key, value)
 	if (err) then
 		return err
 	end
+end
 
+local function Set(self, key, value)
 	self.TTTRWHUDElement[key] = value
+	if (not value) then
+		return
+	end
+
+	return Update(self, key)
 end
 
 local function SetJSON(self, json)
@@ -94,12 +103,17 @@ function ttt.hud.registerelement(element, inputs, base, vgui_element)
 
 	setmetatable(inputs, {
 		__index = function(self, k)
-			local base = rawget(self, "CustomizeBase")
+			local base = ttt.hud.elements[rawget(self, "CustomizeBase")]
+			if (base) then
+				base = base.Inputs
+			end
+
 			if (k == "list") then
 				local r = {}
 				for kk in pairs(self) do
 					r[kk] = true
 				end
+
 				if (base) then
 					for kk in pairs(base.list or {}) do
 						r[kk] = true
@@ -108,8 +122,9 @@ function ttt.hud.registerelement(element, inputs, base, vgui_element)
 
 				return r
 			end
-			if (base and ttt.hud.elements[base]) then
-				return ttt.hud.elements[base].Inputs[k]
+
+			if (base) then
+				return base[k]
 			end
 		end
 	})
@@ -118,6 +133,7 @@ function ttt.hud.registerelement(element, inputs, base, vgui_element)
 		Inputs = inputs,
 		TTTRWHUDName = element,
 		Set = Set,
+		Update = Update,
 		SetJSON = SetJSON,
 		GetEditableParent = GetEditableParent
 	}, ttt.hud.elements[element].VGUIElement)
@@ -146,10 +162,12 @@ function ttt.hud.init(json)
 
 	for id, data in ipairs(json.elements) do
 		local p, err = ttt.hud.create(data, ttt.HUDElement)
-		if (err) then
+		if (not p or err) then
 			print(err)
 		end
-		table.insert(ttt.hud.bases, p)
+		if (p) then
+			table.insert(ttt.hud.bases, p)
+		end
 	end
 end
 
@@ -383,6 +401,23 @@ ttt.hud.createinput("gunname", function()
 	return wep:GetPrintName()
 end)
 
+ttt.hud.createinput("spectatingname", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return ""
+	end
+
+	return targ:Nick()
+end)
+
+ttt.hud.createinput("spectating", function()
+	return LocalPlayer():GetObserverMode() ~= OBS_MODE_NONE
+end)
+
+ttt.hud.createinput("spectatingplayer", function()
+	return IsValid(ttt.GetHUDTarget())
+end)
+
 ttt.hud.createinput("guncolor", function()
 	local targ = ttt.GetHUDTarget()
 	if (not IsValid(targ)) then
@@ -587,24 +622,6 @@ end)
 
 local INPUTS = {}
 
-function INPUTS:SetSize(array)
-	if (not istable(array)) then
-		return "not array"
-	end
-
-	local w, h = ttt.hud.getvalue(array[1]), ttt.hud.getvalue(array[2])
-
-	if (not w) then
-		return "no width"
-	end
-
-	if (not h) then
-		return "no height"
-	end
-
-	self:SetSize(w, h)
-end
-
 function INPUTS:RetrieveInputMethod(method)
 	local class = self.ClassName
 	while (class and class:StartWith "tttrw_hud_") do
@@ -661,7 +678,7 @@ local transform = {
 		return ScrW() - x - w, y, w, h
 	end,
 	center = function(x, y, w, h)
-		return ScrW() / 2 + x, y, w, h
+		return ScrW() / 2 + x - w / 2, y, w, h
 	end,
 	left = function(x, y, w, h)
 		return x, y, w, h
@@ -687,16 +704,25 @@ function INPUTS:SetPositioning(dat)
 		x, y = ttt.hud.getvalue(dat.offset[1]), ttt.hud.getvalue(dat.offset[2])
 	end
 
-	local w, h = 16, 16
-
+	local w, h = self:GetSize()
 
 	if (istable(dat.size)) then
 		w, h = ttt.hud.getvalue(dat.size[1]), ttt.hud.getvalue(dat.size[2])
+		self:SetSize(w, h)
 	end
 
 	if (dat.from) then
 		if (isstring(dat.from)) then
 			dat.from = dat.from:Split " "
+		end
+
+		for i = #dat.from, 1, -1 do
+			if (dat.from[i] == "middle" or dat.from[i] == "center") then
+				local what = dat.from[i]
+				table.remove(dat.from, i)
+				table.insert(dat.from, what)
+				-- always at end
+			end
 		end
 
 		for _, from in ipairs(dat.from) do
@@ -709,7 +735,6 @@ function INPUTS:SetPositioning(dat)
 	end
 
 	self:SetPos(x, y)
-	self:SetSize(w, h)
 end
 
 function INPUTS:SetFrameupdate(arr)
@@ -770,6 +795,9 @@ function INPUTS:SetSizeto(what)
 	elseif (istable(what)) then
 		if (what.what == "children") then
 			self:SizeToChildren(what.width, what.height)
+		elseif (what.what == "contents") then
+			self:SizeToContentsX(what.width)
+			self:SizeToContentsY(what.height)
 		end
 	end
 end
@@ -780,6 +808,10 @@ end
 
 function INPUTS:SetRequires(req)
 	-- workaround
+end
+
+function INPUTS:SetVisible(b)
+	self:SetVisible(b)
 end
 
 ttt.hud.registerelement("base", INPUTS)

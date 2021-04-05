@@ -701,8 +701,8 @@ local function init_hud()
 
 	if (IsValid(ttt.hudeditor)) then
 		ttt.hudeditor:Remove()
-		timer.Create("tttrw_edit_hud", 0, 1, function()
-			RunConsoleCommand "tttrw_edit_hud"
+		timer.Create("tttrw_hud_edit", 0, 1, function()
+			RunConsoleCommand "tttrw_hud_edit"
 		end)
 	end
 end
@@ -732,7 +732,7 @@ local function GetHoveredPanel()
 	return p
 end
 
-concommand.Add("tttrw_edit_hud", function()
+concommand.Add("tttrw_hud_edit", function()
 	if (IsValid(ttt.hudeditor)) then
 		ttt.hudeditor:Remove()
 	else
@@ -963,6 +963,8 @@ function PANEL:SetupOption(option, key, value)
 					option2:SetZPos(option2:GetZPos() - 1)
 				end
 			end
+			self.EditPanel:Set(option.Key:GetText(), nil)
+
 			table.RemoveByValue(self.Options, option)
 			option:Remove()
 			self:CreateNewOption()
@@ -1114,9 +1116,11 @@ function PANEL:Init()
 	function self.NodeRightClick(s)
 		local mn = DermaMenu()
 		mn:AddOption("New", function()
-			local p = ttt.hud.create({element = "base"}, s.HUDPanel)
-			s.HUDPanel.EditableChildren = s.HUDPanel.EditableChildren or {}
-			table.insert(s.HUDPanel.EditableChildren, p)
+			local p = ttt.hud.create({element = "base"}, s and s.HUDPanel or nil)
+			if (IsValid(s.HUDPanel)) then
+				s.HUDPanel.EditableChildren = s.HUDPanel.EditableChildren or {}
+				table.insert(s.HUDPanel.EditableChildren, p)
+			end
 			self:GetHUDNode(p)
 		end)
 		if (IsValid(s.HUDPanel)) then
@@ -1151,6 +1155,7 @@ function PANEL:Init()
 		if (now.EditableChildren) then
 			for _, child in ipairs(now.EditableChildren) do
 				table.insert(todo, child)
+				print(child)
 			end
 		end
 	end
