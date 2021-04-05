@@ -221,12 +221,12 @@ end
 
 local default = [=[{
 	"variables": {
+		"$$healthcolor": "#fff",
 		"weaponselect.number": {
 			"weight": 500.0,
 			"font": "Roboto",
 			"size": 16.0
 		},
-		"$$healthcolor": "#fff",
 		"weaponselect.weapon": {
 			"weight": 300.0,
 			"font": "Roboto",
@@ -243,30 +243,30 @@ local default = [=[{
 			],
 			"children": [
 				{
-					"positioning": {
-						"size": [
-							6.0,
-							0.0
-						]
-					},
-					"frameupdate": [
-						"color"
-					],
 					"margin": [
 						0.0,
 						0.0,
 						6.0,
 						0.0
 					],
+					"frameupdate": [
+						"color"
+					],
+					"positioning": {
+						"size": [
+							6.0,
+							0.0
+						]
+					},
 					"color": {
 						"lua": "ColorAlpha(rolecolor, 64)"
 					},
 					"children": [
 						{
-							"color": "$$rolecolor",
 							"frameupdate": [
 								"color"
 							],
+							"color": "$$rolecolor",
 							"element": "curve",
 							"name": "rolecolor_bar",
 							"dock": "fill"
@@ -356,7 +356,7 @@ local default = [=[{
 										"font": "Roboto",
 										"size": 18.0
 									},
-									"dock": "right",
+									"text": "$$teamname",
 									"contentalignment": 3.0,
 									"frameupdate": [
 										"text",
@@ -364,7 +364,7 @@ local default = [=[{
 									],
 									"rendersystem": "shadow",
 									"name": "teamlabel",
-									"text": "$$teamname"
+									"dock": "right"
 								}
 							],
 							"element": "label",
@@ -373,20 +373,20 @@ local default = [=[{
 								"font": "Roboto",
 								"size": 20.0
 							},
-							"text": "$$rolename",
+							"dock": "fill",
 							"contentalignment": 4.0,
 							"frameupdate": [
 								"text"
 							],
+							"text": "$$rolename",
+							"name": "rolelabel",
+							"rendersystem": "shadow",
 							"margin": [
 								6.0,
 								0.0,
 								0.0,
 								0.0
-							],
-							"name": "rolelabel",
-							"rendersystem": "shadow",
-							"dock": "fill"
+							]
 						}
 					],
 					"element": "base",
@@ -451,13 +451,13 @@ local default = [=[{
 								"font": "Roboto",
 								"size": 18.0
 							},
-							"dock": "right",
+							"text": "$$overtime",
 							"contentalignment": 3.0,
 							"frameupdate": [
 								"text",
 								"color"
 							],
-							"text": "$$overtime",
+							"dock": "right",
 							"rendersystem": "shadow",
 							"name": "overtime_label"
 						}
@@ -468,22 +468,22 @@ local default = [=[{
 						"font": "Roboto",
 						"size": 24.0
 					},
+					"text": {
+						"lua": "roundstate .. (timeleft ~= '' and ': ' .. timeleft or '')"
+					},
+					"contentalignment": 4.0,
+					"frameupdate": [
+						"text"
+					],
 					"margin": [
 						0.0,
 						1.0,
 						0.0,
 						6.0
 					],
-					"contentalignment": 4.0,
-					"frameupdate": [
-						"text"
-					],
-					"dock": "fill",
 					"rendersystem": "shadow",
 					"name": "roundstate_label",
-					"text": {
-						"lua": "roundstate .. (timeleft ~= '' and ': ' .. timeleft or '')"
-					}
+					"dock": "fill"
 				}
 			],
 			"element": "curve",
@@ -521,19 +521,19 @@ local default = [=[{
 							"frameupdate": [
 								"text"
 							],
+							"dock": "right",
+							"name": "weapon_name",
 							"margin": [
 								0.0,
 								0.0,
 								12.0,
 								0.0
-							],
-							"name": "weapon_name",
-							"dock": "right"
+							]
 						}
 					],
 					"element": "image",
 					"dock": "bottom",
-					"image": "gui/gradient.png",
+					"reverse": true,
 					"frameupdate": [
 						"color"
 					],
@@ -550,25 +550,25 @@ local default = [=[{
 						0.0
 					],
 					"name": "weapon_name_gradient",
-					"reverse": true
+					"image": "gui/gradient.png"
 				},
 				{
-					"dock": "bottom",
-					"margin": [
-						0.0,
-						4.0,
-						0.0,
-						0.0
-					],
-					"color": "#888",
-					"element": "curve",
-					"name": "gundivider",
 					"positioning": {
 						"size": [
 							0.0,
 							1.0
 						]
-					}
+					},
+					"dock": "bottom",
+					"color": "#888",
+					"element": "curve",
+					"name": "gundivider",
+					"margin": [
+						0.0,
+						4.0,
+						0.0,
+						0.0
+					]
 				},
 				{
 					"children": [
@@ -640,9 +640,9 @@ local default = [=[{
 							"frameupdate": [
 								"text"
 							],
-							"dock": "right",
+							"text": "$$gunammo",
 							"name": "current_ammo",
-							"text": "$$gunammo"
+							"dock": "right"
 						}
 					],
 					"element": "base",
@@ -677,9 +677,45 @@ local default = [=[{
 					0.0
 				],
 				"from": [
-					"middle",
-					"right"
+					"right",
+					"middle"
 				]
+			}
+		},
+		{
+			"visible": {
+				"lua": "spectating and spectatingplayer"
+			},
+			"element": "label",
+			"font": {
+				"font": "Roboto",
+				"size": 16.0
+			},
+			"positioning": {
+				"offset": [
+					0.0,
+					50.0
+				],
+				"from": [
+					"bottom",
+					"center"
+				]
+			},
+			"contentalignment": 5.0,
+			"sizeto": {
+				"what": "contents",
+				"width": 50.0,
+				"height": 10.0
+			},
+			"frameupdate": [
+				"positioning",
+				"sizeto",
+				"text",
+				"visible"
+			],
+			"name": "spectator_label",
+			"text": {
+				"lua": "'Spectating: ' .. spectatingname"
 			}
 		}
 	]
