@@ -479,6 +479,10 @@ ttt.hud.createinput("maxhealth", function()
 end)
 
 ttt.hud.createinput("rolecolor", function()
+	if (ttt.GetRoundState() == ttt.ROUNDSTATE_PREPARING) then
+		return ttt.roles.Spectator.Color
+	end
+
 	local targ = ttt.GetHUDTarget()
 	if (not IsValid(targ)) then
 		return Color(0, 0, 0)
@@ -506,6 +510,10 @@ ttt.hud.createinput("maxarmor", function()
 end)
 
 ttt.hud.createinput("rolename", function()
+	if (ttt.GetRoundState() == ttt.ROUNDSTATE_PREPARING) then
+		return "Preparing"
+	end
+
 	local targ = ttt.GetHUDTarget()
 	if (not IsValid(targ)) then
 		return ""
@@ -524,6 +532,10 @@ ttt.hud.createinput("teamcolor", function()
 end)
 
 ttt.hud.createinput("teamname", function()
+	if (ttt.GetRoundState() == ttt.ROUNDSTATE_PREPARING) then
+		return ""
+	end
+
 	local targ = ttt.GetHUDTarget()
 	if (not IsValid(targ)) then
 		return ""
@@ -533,6 +545,10 @@ ttt.hud.createinput("teamname", function()
 end)
 
 ttt.hud.createinput("roleicon", function()
+	if (ttt.GetRoundState() == ttt.ROUNDSTATE_PREPARING) then
+		return ttt.roles.Spectator.DeathIcon
+	end
+
 	local targ = ttt.GetHUDTarget()
 	if (not IsValid(targ)) then
 		return ""
