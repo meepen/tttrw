@@ -151,9 +151,14 @@ function GM:Karma_EntityTakeDamage(vic, dmg)
 		return
 	end
 
+	local inf = dmg:GetInflictor()
+	if (IsValid(inf) and inf.Avoidable) then
+		return
+	end
+
 	local hurt_amount = math.min(vic:Health(), dmg:GetDamage())
 	if (atk:GetRoleTeam() == vic:GetRoleTeam()) then
-		local penalty = GetKillPenalty(vic:GetRealKarma())
+		local penalty = GetHurtPenalty(vic:GetRealKarma(), hurt_amount)
   
 		GivePenalty(atk, penalty, vic)
 
