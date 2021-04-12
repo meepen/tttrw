@@ -154,12 +154,13 @@ function ENT:GrenadeBounce(t)
 end
 
 function ENT:StartFires(pos, num, lifetime, explode, dmgowner)
-	for i=1, num do
+	for i = 1, num do
 		local ang = Angle(-math.Rand(0, 180), math.Rand(0, 360), math.Rand(0, 360))
 
 		local vstart = pos
 
 		local flame = ents.Create "ttt_flame"
+		flame.fire_delay = 1
 		flame:SetPos(pos)
 		if IsValid(dmgowner) and dmgowner:IsPlayer() then
 			flame:SetDamageParent(dmgowner)
@@ -207,7 +208,7 @@ function ENT:Explode()
 
 	util.BlastDamage(self, self:GetOwner(), pos, 255, 50)
 
-	self:StartFires(pos, 10, 20, false, self:GetOwner())
+	self:StartFires(pos, 10, 15, false, self:GetOwner())
 
 	--self:SetDetonateExact(0)
 end

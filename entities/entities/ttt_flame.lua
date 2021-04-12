@@ -11,6 +11,7 @@ AccessorFunc(ENT, "dietime", "DieTime")
 ENT.firechild = nil
 ENT.fireparams = {size=120, growth=1}
 ENT.fire_damage = 3
+ENT.fire_delay = 0
 
 ENT.dietime = 0
 ENT.hurt_interval = 0.25
@@ -22,6 +23,7 @@ function ENT:SetupDataTables()
 end
 
 function ENT:Initialize()
+	self.CreationTiming = CurTime()
 	self:SetModel(self.Model)
 	self:DrawShadow(false)
 	self:SetNoDraw(true)
@@ -57,7 +59,7 @@ local function SpawnFire(pos, size, attack, fuel, owner, parent)
 	fire:SetPos(pos)
 	--no glow + delete when out + start on + last forever
 	fire:SetKeyValue("spawnflags", tostring(128 + 32 + 4 + 2 + 1))
-	fire:SetKeyValue("firesize", (size * math.Rand(0.7, 1.1)))
+	fire:SetKeyValue("firesize", size)
 	fire:SetKeyValue("fireattack", attack)
 	fire:SetKeyValue("health", fuel)
 	fire:SetKeyValue("damagescale", "-10") -- only neg. value prevents dmg
@@ -130,18 +132,18 @@ function ENT:Think()
 		return
 	end
 
-	if (not IsValid(self.firechild)) then
+	if (not IsValid(self.firechild) and self.CreationTiming < CurTime() - self.fire_delay) then
 		if self:WaterLevel() > 0 then
 			self.dietime = 0
 			return
 		end
 
-		self.firechild = SpawnFire(self:GetPos(), self.fireparams.size, self.fireparams.growth, 999, self:GetDamageParent(), self)
+		self.firechild = SpawnFire(self:GetPos(), self.fireparams.size * math.Rand(0.7, 1.1), self.fireparams.growth, 999, self:GetDamageParent(), self)
 
 		self:SetBurning(true)
 	end
 
-	if self.next_hurt < CurTime() then
+	if (IsValid(self.firechild) and self.next_hurt < CurTime()) then
 		if self:WaterLevel() > 0 then
 			self.dietime = 0
 			return
@@ -157,7 +159,7 @@ function ENT:Think()
 		end
 		dmg:SetInflictor(self.firechild)
 
-		RadiusDamage(dmg, self:GetPos(), self.fireparams.size, self)
+		RadiusDamage(dmg, self:GetPos(), self.firechild:GetKeyValues().firesize / 2, self)
 
 		self.next_hurt = CurTime() + self.hurt_interval
 	end
