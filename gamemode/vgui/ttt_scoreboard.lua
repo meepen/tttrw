@@ -375,7 +375,7 @@ function PANEL:SetPlayer(ply)
 		table.insert(self.PlayerSpecific, pnl)
 
 		return pnl
-	end)
+	end, self)
 
 	self.Status:SetStatus(ttt.GetPlayerStatus(self.Player))
 	self:GetParent():Toggle()
