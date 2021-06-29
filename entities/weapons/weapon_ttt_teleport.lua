@@ -40,6 +40,7 @@ DEFINE_BASECLASS "weapon_tttbase"
 
 local delay_beamup = 1
 local delay_beamdown = 1
+local fast_mult = 0.25
 
 local ttt_telefrags = CreateConVar("ttt_teleport_telefrags", "0")
 
@@ -50,6 +51,14 @@ end
 function SWEP:GetTeleportMark() return self.teleport end
 
 function SWEP:PrimaryAttack()
+	local ply = self:GetOwner()
+
+	if (not IsValid(ply) or not ply:Alive()) then
+		return 
+	end
+
+	local fast = (self == ply:GetActiveWeapon())
+
 	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 
 	if self:Clip1() <= 0 then
@@ -61,7 +70,7 @@ function SWEP:PrimaryAttack()
 	if ttt.GetRoundState() == ttt.ROUNDSTATE_ENDED then return end
 
 	if SERVER then
-		self:TeleportRecall()
+		self:TeleportRecall(fast)
 	else
 		surface.PlaySound("buttons/combine_button7.wav")
 	end
@@ -74,6 +83,21 @@ function SWEP:SecondaryAttack()
 		self:TeleportStore()
 	else
 		surface.PlaySound("ui/buttonrollover.wav")
+	end
+end
+
+if (SERVER) then
+	concommand.Add("ttt_use_teleporter", function(pl)
+		for k, v in ipairs(pl:GetWeapons()) do
+			if (v:GetClass() == "weapon_ttt_teleport") then
+				v:PrimaryAttack()
+			end
+		end
+	end)
+else
+	function SWEP:Initialize()
+		BaseClass.Initialize(self)
+		chat.AddText "Use this console command to use the teleporter holstered: ttt_use_teleporter"
 	end
 end
 
@@ -217,13 +241,16 @@ local function DoTeleport(ply, teleport, weapon)
 	end
 end
 
-local function StartTeleport(ply, teleport, weapon)
+local function StartTeleport(ply, teleport, weapon, fast)
 	if (not IsValid(ply)) or (not teleport) then
 		return end
 
 	--teleport.ang = ply:EyeAngles()
 
-	timer.Simple(delay_beamup, function() DoTeleport(ply, teleport, weapon) end)
+	local delay_up = delay_beamup * (fast and fast_mult or 1)
+	local delay_down = delay_beamdown * (fast and fast_mult or 1)
+
+	timer.Simple(delay_up, function() DoTeleport(ply, teleport, weapon) end)
 
 	local ang = ply:GetAngles()
 
@@ -232,8 +259,8 @@ local function StartTeleport(ply, teleport, weapon)
 	ang = Angle(0, ang.y, ang.r) -- deep copy
 	edata_up:SetAngles(ang)
 	edata_up:SetEntity(ply)
-	edata_up:SetMagnitude(delay_beamup)
-	edata_up:SetRadius(delay_beamdown)
+	edata_up:SetMagnitude(delay_up)
+	edata_up:SetRadius(delay_down)
 
 	util.Effect("teleport_beamup", edata_up)
 
@@ -242,13 +269,13 @@ local function StartTeleport(ply, teleport, weapon)
 	ang = Angle(0, ang.y, ang.r) -- deep copy
 	edata_dn:SetAngles(ang)
 	edata_dn:SetEntity(ply)
-	edata_dn:SetMagnitude(delay_beamup)
-	edata_dn:SetRadius(delay_beamdown)
+	edata_dn:SetMagnitude(delay_up)
+	edata_dn:SetRadius(delay_down)
 
 	util.Effect("teleport_beamdown", edata_dn)
 end
 
-function SWEP:TeleportRecall()
+function SWEP:TeleportRecall(fast)
 	local ply = self:GetOwner()
 	if IsValid(ply) then
 		local mark = self:GetTeleportMark()
@@ -258,7 +285,7 @@ function SWEP:TeleportRecall()
 
 			self:TakePrimaryAmmo(1)
 
-			timer.Simple(0.2, function() StartTeleport(ply, mark, self) end)
+			timer.Simple(0.2 * (fast and fast_mult or 1), function() StartTeleport(ply, mark, self, fast) end)
 		else
 			if (CLIENT) then chat.AddText(Color(255,50,50), "No location marked yet!") end
 		end
