@@ -38,6 +38,11 @@ if (SERVER) then
 			end
 		end
 	end)
+else
+	function ENT:Initialize()
+		BaseClass.Initialize(self)
+		chat.AddText "Use this console command to toggle your diguiser: ttt_toggle_disguise"
+	end
 end
 
 function PLAYER:HasDisguiser()
