@@ -102,6 +102,7 @@ AccessorFunc(TEAM, "DeathIcon")
 AccessorFunc(TEAM, "DefaultCredits")
 AccessorFunc(TEAM, "CalculateAmount", "CalculateAmountFunc")
 AccessorFunc(TEAM, "NoIgnoreZ", "CanSeeThroughWalls")
+AccessorFunc(TEAM, "SeeTeammateOutlines")
 
 setmetatable(SEEN_BY_ALL, SEEN_BY_ALL)
 
@@ -185,6 +186,7 @@ function GM:TTTPrepareRoles(Team, Role)
 		:SetModifyTicketsFunc(function(tickets)
 			return tickets / 2
 		end)
+		:SetSeeTeammateOutlines(true)
 
 	Team "spectator"
 		:SeenByAll()

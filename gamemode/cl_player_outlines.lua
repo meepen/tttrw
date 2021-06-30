@@ -36,7 +36,7 @@ function GM:PostDrawOpaqueRenderables()
 	for _, ply in pairs(player.GetAll()) do
 		local mn, mx 
 		local other_team = ply:GetRoleTeam()
-		if (other_team ~= "traitor" or not ply:Alive() or ply:IsDormant()) then
+		if (other_team ~= local_team or not LocalPlayer():GetRoleData().SeeTeammateOutlines or not ply:Alive() or ply:IsDormant()) then
 			continue
 		end
 
@@ -73,7 +73,7 @@ function GM:PostDrawOpaqueRenderables()
 
 	for _, ply in pairs(player.GetAll()) do
 		local mn, mx 
-		if (ply:GetRoleTeam() ~= "traitor" or not ply:Alive()) then
+		if (not ply:GetRoleData().SeeTeammateOutlines or not ply:Alive()) then
 			continue
 		end
 
