@@ -97,7 +97,9 @@ if (SERVER) then
 else
 	function SWEP:Initialize()
 		BaseClass.Initialize(self)
-		chat.AddText "Use this console command to use the teleporter holstered: ttt_use_teleporter"
+		if (self:GetOwner() == LocalPlayer()) then
+			chat.AddText "Use this console command to use the teleporter holstered: ttt_use_teleporter"
+		end
 	end
 end
 
