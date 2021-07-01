@@ -155,12 +155,21 @@ local function Role(name, team)
 end
 
 function GM:TTTPrepareRoles(Team, Role)
+	local sees_innocent_team = {}
+
+	hook.Run("TTTRoleSeesRole", "innocent", sees_innocent_team)
+
+	local sees_traitor_team = {}
+
+	hook.Run("TTTRoleSeesRole", "traitor", sees_traitor_team)
+
 	Team "innocent"
+		:SeenBy(unpack(sees_innocent_team))
 		:SetColor(19, 130, 77)
 		:SetDeathIcon "materials/tttrw/roles/innocent.png"
 
 	Team "traitor"
-		:SeenBy {"traitor"}
+		:SeenBy {"traitor", unpack(sees_traitor_team)}
 		:SetColor(136, 21, 22)
 		:SetDefaultCredits(2)
 		:CreditOnRoleDeath(function(roles, deathrole)
