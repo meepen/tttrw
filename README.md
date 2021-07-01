@@ -29,6 +29,10 @@ The base TTT gamemode has long been overdue for a complete overhaul, with the la
 **use this to set up custom teams and roles.**
 **see: [sh_roles.lua](https://github.com/meepen/tttrw/blob/960496a/gamemode/sh_roles.lua#L156)**
 
+#### `TTTRoleSeesRole`(`role`, `seers_list`) -> `no value`
+**use this to set up who sees what role in custom teams and roles.**
+**see: [sh_roles.lua](https://github.com/meepen/tttrw/blob/960496a/gamemode/sh_roles.lua#L156)**
+
 #### `TTTUpdatePlayerSpeed`(`ply`, `data`) -> `no value`
 **adds a multiplier to player speed**
 add a entry to `data` with a value of a multiplier to change the speed of the player.
