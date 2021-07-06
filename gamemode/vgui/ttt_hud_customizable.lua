@@ -425,7 +425,7 @@ ttt.hud.createinput("guncolor", function()
 	end
 	local wep = targ:GetActiveWeapon()
 
-	if (not IsValid(wep)) then
+	if (not IsValid(wep) or not IsValid(wep.GetPrintNameColor)) then
 		return Color(255, 255, 255)
 	end
 

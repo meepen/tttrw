@@ -18,7 +18,7 @@ function PANEL:Init()
 end
 
 function PANEL:GetRenderSystem()
-	return self.surface or pluto.fonts.systems.default or surface
+	return self.surface or (pluto and pluto.fonts.systems.default) or surface
 end
 
 function PANEL:SetClickable(clickable)
