@@ -41,7 +41,9 @@ if (SERVER) then
 else
 	function ENT:Initialize()
 		BaseClass.Initialize(self)
-		chat.AddText "Use this console command to toggle your diguiser: ttt_toggle_disguise"
+		if (LocalPlayer() == self:GetOwner()) then
+			chat.AddText "Use this console command to toggle your diguiser: ttt_toggle_disguise"
+		end
 	end
 end
 
