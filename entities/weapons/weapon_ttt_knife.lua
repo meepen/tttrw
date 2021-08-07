@@ -36,7 +36,7 @@ SWEP.WeaponID               = AMMO_KNIFE
 
 SWEP.Equipment = {
 	Name		   = "Knife",
-	Desc 		   = "One slice, one kill.",
+	Desc 		   = "One slice, one kill; most of the time at least.",
 	CanBuy	       = { traitor = true },
 	Cost 	   	   = 1,
 	Limit	       = 1,
@@ -47,6 +47,9 @@ SWEP.IsSilent               = true
 
 -- Pull out faster than standard guns
 SWEP.DeploySpeed            = 2
+
+
+local ttt_backstabs_on = CreateConVar("ttt_backstabs_on","false",FCVAR_REPLICATED,"Do knives only instant kill from behind?")
 
 function SWEP:PrimaryAttack()
 	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
@@ -95,13 +98,26 @@ function SWEP:PrimaryAttack()
 
 	if SERVER and tr.Hit and tr.HitNonWorld and IsValid(hitEnt) then
 		if hitEnt:IsPlayer() then
-			-- knife damage is never karma'd, so don't need to take that into
-			-- account we do want to avoid rounding error strangeness caused by
-			-- other damage scaling, causing a death when we don't expect one, so
-			-- when the target's health is close to kill-point we just kill
-			if hitEnt:Health() < (self.Primary.Damage + 10) then
-				self:StabKill(tr, spos, sdest)
+			if GetConVar("ttt_backstabs_on") == true then
+				--If backstabs are on, then is the stabber looking in the general same 
+				--direction as the stabbed. Hacky way of "is A behind B"
+				if hitEnt:GetAimVector():IsEqualTol(self:GetOwner():GetAimVector(), 0.75) then
+					self:StabKill(tr, spos, sdest)
+				-- If not, do 50 damage.
+				else
+					local dmg = DamageInfo()
+					dmg:SetDamage(50)
+					dmg:SetAttacker(self:GetOwner())
+					dmg:SetInflictor(self.Weapon or self)
+					dmg:SetDamageForce(self:GetOwner():GetAimVector() * 5)
+					dmg:SetDamagePosition(self:GetOwner():GetPos())
+					dmg:SetDamageType(DMG_SLASH)
+					
+					hitEnt:DispatchTraceAttack(dmg, spos + (self:GetOwner():GetAimVector() * 3), sdest)
+					self:Remove()
+				end
 			else
+				--If backstabs aren't on, just do 2k to anywhere.
 				local dmg = DamageInfo()
 				dmg:SetDamage(self.Primary.Damage)
 				dmg:SetAttacker(self:GetOwner())
@@ -109,12 +125,12 @@ function SWEP:PrimaryAttack()
 				dmg:SetDamageForce(self:GetOwner():GetAimVector() * 5)
 				dmg:SetDamagePosition(self:GetOwner():GetPos())
 				dmg:SetDamageType(DMG_SLASH)
-
+					
 				hitEnt:DispatchTraceAttack(dmg, spos + (self:GetOwner():GetAimVector() * 3), sdest)
+				self:Remove()
 			end
 		end
 	end
-
 	self:GetOwner():LagCompensation(false)
 end
 
