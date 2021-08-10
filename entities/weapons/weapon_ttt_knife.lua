@@ -49,7 +49,7 @@ SWEP.IsSilent               = true
 SWEP.DeploySpeed            = 2
 
 
-local ttt_backstabs_on = CreateConVar("ttt_backstabs_on","false",FCVAR_REPLICATED,"Do knives only instant kill from behind?")
+local ttt_backstabs_on = CreateConVar("ttt_backstabs_on","0",FCVAR_NONE,"Do knives only instant kill from behind?")
 
 function SWEP:PrimaryAttack()
 	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
@@ -98,12 +98,13 @@ function SWEP:PrimaryAttack()
 
 	if SERVER and tr.Hit and tr.HitNonWorld and IsValid(hitEnt) then
 		if hitEnt:IsPlayer() then
-			if GetConVar("ttt_backstabs_on") == true then
+			if (GetConVar("ttt_backstabs_on"):GetInt()) == 1 then
 				--If backstabs are on, then is the stabber looking in the general same 
 				--direction as the stabbed. Hacky way of "is A behind B"
-				if hitEnt:GetAimVector():IsEqualTol(self:GetOwner():GetAimVector(), 0.75) then
+				--If entitity is under 50 health,stabkill.
+				if hitEnt:GetAimVector():IsEqualTol(self:GetOwner():GetAimVector(), 0.75) or hitEnt:Health() <= 50 then
 					self:StabKill(tr, spos, sdest)
-				-- If not, do 50 damage.
+			-- If not, do 50 damage,and dont remove the knife.
 				else
 					local dmg = DamageInfo()
 					dmg:SetDamage(50)
@@ -114,20 +115,22 @@ function SWEP:PrimaryAttack()
 					dmg:SetDamageType(DMG_SLASH)
 					
 					hitEnt:DispatchTraceAttack(dmg, spos + (self:GetOwner():GetAimVector() * 3), sdest)
-					self:Remove()
 				end
 			else
-				--If backstabs aren't on, just do 2k to anywhere.
-				local dmg = DamageInfo()
-				dmg:SetDamage(self.Primary.Damage)
-				dmg:SetAttacker(self:GetOwner())
-				dmg:SetInflictor(self.Weapon or self)
-				dmg:SetDamageForce(self:GetOwner():GetAimVector() * 5)
-				dmg:SetDamagePosition(self:GetOwner():GetPos())
-				dmg:SetDamageType(DMG_SLASH)
-					
-				hitEnt:DispatchTraceAttack(dmg, spos + (self:GetOwner():GetAimVector() * 3), sdest)
-				self:Remove()
+				--if backstabs arent on, and health is less than 2k, stabkill.
+				if hitEnt:Health() <= self.Primary.Damage then
+					self:StabKill(tr, spos, sdest)
+				else
+					--If backstabs aren't on, and the player somehow has more than 2k Hp, just do 2k
+					local dmg = DamageInfo()
+					dmg:SetDamage(self.Primary.Damage)
+					dmg:SetAttacker(self:GetOwner())
+					dmg:SetInflictor(self.Weapon or self)
+					dmg:SetDamageForce(self:GetOwner():GetAimVector() * 5)
+					dmg:SetDamagePosition(self:GetOwner():GetPos())
+					dmg:SetDamageType(DMG_SLASH)
+					hitEnt:DispatchTraceAttack(dmg, spos + (self:GetOwner():GetAimVector() * 3), sdest)
+				end
 			end
 		end
 	end
