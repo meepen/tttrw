@@ -36,7 +36,7 @@ SWEP.WeaponID               = AMMO_KNIFE
 
 SWEP.Equipment = {
 	Name		   = "Knife",
-	Desc 		   = "One slice, one kill.",
+	Desc 		   = "One slice, one kill; most of the time at least.",
 	CanBuy	       = { traitor = true },
 	Cost 	   	   = 1,
 	Limit	       = 1,
@@ -47,6 +47,9 @@ SWEP.IsSilent               = true
 
 -- Pull out faster than standard guns
 SWEP.DeploySpeed            = 2
+
+
+local ttt_backstabs_on = CreateConVar("ttt_backstabs_on","0",FCVAR_NONE,"Do knives only instant kill from behind?")
 
 function SWEP:PrimaryAttack()
 	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
@@ -95,26 +98,42 @@ function SWEP:PrimaryAttack()
 
 	if SERVER and tr.Hit and tr.HitNonWorld and IsValid(hitEnt) then
 		if hitEnt:IsPlayer() then
-			-- knife damage is never karma'd, so don't need to take that into
-			-- account we do want to avoid rounding error strangeness caused by
-			-- other damage scaling, causing a death when we don't expect one, so
-			-- when the target's health is close to kill-point we just kill
-			if hitEnt:Health() < (self.Primary.Damage + 10) then
-				self:StabKill(tr, spos, sdest)
+			if (GetConVar("ttt_backstabs_on"):GetInt()) == 1 then
+				--If backstabs are on, then is the stabber looking in the general same 
+				--direction as the stabbed. Hacky way of "is A behind B"
+				--If entitity is under 50 health,stabkill.
+				if hitEnt:GetAimVector():IsEqualTol(self:GetOwner():GetAimVector(), 0.75) or hitEnt:Health() <= 50 then
+					self:StabKill(tr, spos, sdest)
+			-- If not, do 50 damage,and dont remove the knife.
+				else
+					local dmg = DamageInfo()
+					dmg:SetDamage(50)
+					dmg:SetAttacker(self:GetOwner())
+					dmg:SetInflictor(self.Weapon or self)
+					dmg:SetDamageForce(self:GetOwner():GetAimVector() * 5)
+					dmg:SetDamagePosition(self:GetOwner():GetPos())
+					dmg:SetDamageType(DMG_SLASH)
+					
+					hitEnt:DispatchTraceAttack(dmg, spos + (self:GetOwner():GetAimVector() * 3), sdest)
+				end
 			else
-				local dmg = DamageInfo()
-				dmg:SetDamage(self.Primary.Damage)
-				dmg:SetAttacker(self:GetOwner())
-				dmg:SetInflictor(self.Weapon or self)
-				dmg:SetDamageForce(self:GetOwner():GetAimVector() * 5)
-				dmg:SetDamagePosition(self:GetOwner():GetPos())
-				dmg:SetDamageType(DMG_SLASH)
-
-				hitEnt:DispatchTraceAttack(dmg, spos + (self:GetOwner():GetAimVector() * 3), sdest)
+				--if backstabs arent on, and health is less than 2k, stabkill.
+				if hitEnt:Health() <= self.Primary.Damage then
+					self:StabKill(tr, spos, sdest)
+				else
+					--If backstabs aren't on, and the player somehow has more than 2k Hp, just do 2k
+					local dmg = DamageInfo()
+					dmg:SetDamage(self.Primary.Damage)
+					dmg:SetAttacker(self:GetOwner())
+					dmg:SetInflictor(self.Weapon or self)
+					dmg:SetDamageForce(self:GetOwner():GetAimVector() * 5)
+					dmg:SetDamagePosition(self:GetOwner():GetPos())
+					dmg:SetDamageType(DMG_SLASH)
+					hitEnt:DispatchTraceAttack(dmg, spos + (self:GetOwner():GetAimVector() * 3), sdest)
+				end
 			end
 		end
 	end
-
 	self:GetOwner():LagCompensation(false)
 end
 
