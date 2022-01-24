@@ -51,8 +51,10 @@ end
 
 function SWEP:Initialize()
 	BaseClass.Initialize(self)
-	hook.Add("HUDPaint", self, self.HUDPaint)
 	hook.Add("PlayerTick", self, self.PlayerTick)
+	if (CLIENT) then
+		hook.Add("HUDPaint", self, self.HUDPaint)
+	end
 end
 
 function SWEP:PrimaryAttack()
