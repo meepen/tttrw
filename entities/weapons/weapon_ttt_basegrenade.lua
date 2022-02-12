@@ -15,8 +15,7 @@ SWEP.Spawnable             = true
 
 SWEP.Primary.Delay = 3
 
-SWEP.Primary.ClipSize = -1
-SWEP.Primary.Ammo = "none"
+SWEP.Primary.ClipSize = 1
 SWEP.Primary.Automatic = false
 
 SWEP.ViewModel             = "models/weapons/cstrike/c_eq_flashbang.mdl"
@@ -27,6 +26,8 @@ SWEP.GrenadeEntity = "ttt_basegrenade"
 
 SWEP.ThrowVelocity = 800
 SWEP.Bounciness = 0.3
+SWEP.DamageMulti = 1
+SWEP.RangeMulti = 1
 
 DEFINE_BASECLASS "weapon_tttbase"
 function SWEP:SetupDataTables()
@@ -59,10 +60,12 @@ function SWEP:Throw()
 		e:SetWeapon(self)
 		e:Spawn()
 
-
+        self:TakePrimaryAmmo(1)
 		self:SetThrowStart(math.huge)
-		hook.Run("DropCurrentWeapon", self:GetOwner())
-		self:Remove()
+        if !(self:CanPrimaryAttack()) then
+		    hook.Run("DropCurrentWeapon", self:GetOwner())
+		    self:Remove()
+        end
 	end
 end
 

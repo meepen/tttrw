@@ -201,14 +201,26 @@ function ENT:Explode()
 	effect:SetStart(pos)
 	effect:SetOrigin(pos)
 	effect:SetScale(100)
-	effect:SetRadius(255)
+	effect:SetRadius(255 * self:GetRangeMulti())
 	effect:SetMagnitude(1)
 
 	util.Effect("Explosion", effect, true, true)
 
-	util.BlastDamage(self, self:GetOwner(), pos, 255, 50)
+	util.BlastDamage(self, self:GetOwner(), pos, (255 * self:GetRangeMulti()), (50 * self:GetDamageMulti()))
 
 	self:StartFires(pos, 10, 15, false, self:GetOwner())
 
 	--self:SetDetonateExact(0)
+end
+
+function ENT:GetDamageMulti()
+    if self.WeaponData == nil then return 1 end
+    if self.WeaponData.DamageMulti == nil then return 1 end
+    return self.WeaponData.DamageMulti
+end
+
+function ENT:GetRangeMulti()
+    if self.WeaponData == nil then return 1 end
+    if self.WeaponData.RangeMulti == nil then return 1 end
+    return self.WeaponData.RangeMulti
 end

@@ -95,9 +95,10 @@ function ENT:Think()
 	return BaseClass.Think(self)
 end
 
-local max_dist = 150
+
 
 function ENT:Explode()
+local max_dist = (150 * self:GetRangeMulti())
 	for k,v in pairs(ents.GetAll()) do
 		local top = v:GetPos() + vector_up * (v:OBBMaxs().z - v:OBBMins().z)
 		local dist = math.min(top:Distance(self:GetOrigin()), v:GetPos():Distance(self:GetOrigin()))
@@ -117,7 +118,7 @@ function ENT:Explode()
 
 			local dmg = DamageInfo()
 			dmg:SetDamageCustom(0)
-			dmg:SetDamage(150)
+			dmg:SetDamage(150 * self:GetDamageMulti())
 			dmg:ScaleDamage(1 - dist / max_dist)
 			dmg:SetInflictor(self)
 			dmg:SetAttacker(self:GetOwner())

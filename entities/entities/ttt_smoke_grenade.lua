@@ -19,7 +19,7 @@ function ENT:Explode()
 
 	data:SetStart(self:GetPos())
 	data:SetMagnitude(24)
-	data:SetRadius(80) -- 10 = 1 meter
+	data:SetRadius(80 * self:GetRangeMulti()) -- 10 = 1 meter
 	data:SetColor(self:GetGrenadeColor() or 0)
 	util.Effect("tttrw_smoke", data, true, true)
 end
