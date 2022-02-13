@@ -27,8 +27,8 @@ SWEP.GrenadeEntity = "ttt_basegrenade"
 
 SWEP.ThrowVelocity = 800
 SWEP.Bounciness = 0.3
-SWEP.DamageMulti = 1
-SWEP.RangeMulti = 1
+SWEP.DamageMultiplier = 1
+SWEP.RangeMultiplier = 1
 
 DEFINE_BASECLASS "weapon_tttbase"
 function SWEP:SetupDataTables()
@@ -63,7 +63,7 @@ function SWEP:Throw()
 
         self:TakePrimaryAmmo(1)
 		self:SetThrowStart(math.huge)
-        if !(self:CanPrimaryAttack()) then
+        if (self.Weapon:Clip1() <= 0) then
 		    hook.Run("DropCurrentWeapon", self:GetOwner())
 		    self:Remove()
         end
