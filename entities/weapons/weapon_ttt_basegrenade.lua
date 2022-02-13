@@ -16,6 +16,7 @@ SWEP.Spawnable             = true
 SWEP.Primary.Delay = 3
 
 SWEP.Primary.ClipSize = 1
+SWEP.Primary.Ammo = "none"
 SWEP.Primary.Automatic = false
 
 SWEP.ViewModel             = "models/weapons/cstrike/c_eq_flashbang.mdl"
