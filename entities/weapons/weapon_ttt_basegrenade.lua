@@ -15,7 +15,7 @@ SWEP.Spawnable             = true
 
 SWEP.Primary.Delay = 3
 
-SWEP.Primary.ClipSize = -1
+SWEP.Primary.ClipSize = 1
 SWEP.Primary.Ammo = "none"
 SWEP.Primary.Automatic = false
 
@@ -27,6 +27,8 @@ SWEP.GrenadeEntity = "ttt_basegrenade"
 
 SWEP.ThrowVelocity = 800
 SWEP.Bounciness = 0.3
+SWEP.DamageMultiplier = 1
+SWEP.RangeMultiplier = 1
 
 DEFINE_BASECLASS "weapon_tttbase"
 function SWEP:SetupDataTables()
@@ -59,10 +61,12 @@ function SWEP:Throw()
 		e:SetWeapon(self)
 		e:Spawn()
 
-
+        self:TakePrimaryAmmo(1)
 		self:SetThrowStart(math.huge)
-		hook.Run("DropCurrentWeapon", self:GetOwner())
-		self:Remove()
+        if (self.Weapon:Clip1() <= 0) then
+		    hook.Run("DropCurrentWeapon", self:GetOwner())
+		    self:Remove()
+        end
 	end
 end
 
