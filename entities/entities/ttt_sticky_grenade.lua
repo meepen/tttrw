@@ -98,7 +98,13 @@ end
 
 
 function ENT:Explode()
-local max_dist = (150 * self:GetRangeMultiplier())
+	-- explain why this is needed? NO CLUE
+	if (not IsValid(self)) then
+		return
+	end
+	
+	local max_dist = (150 * self:GetRangeMultiplier())
+
 	for k,v in pairs(ents.GetAll()) do
 		local top = v:GetPos() + vector_up * (v:OBBMaxs().z - v:OBBMins().z)
 		local dist = math.min(top:Distance(self:GetOrigin()), v:GetPos():Distance(self:GetOrigin()))
