@@ -27,7 +27,7 @@ SWEP.Secondary.ClipSize      = -1
 SWEP.Secondary.DefaultClip   = -1
 SWEP.Secondary.Automatic     = true
 SWEP.Secondary.Ammo          = "none"
-SWEP.Secondary.Delay         = 5
+SWEP.Secondary.Delay         = 4
 SWEP.Secondary.Damage        = 60
 SWEP.Secondary.Animation = ACT_VM_HITCENTER
 SWEP.DeploySpeed = 1.3
@@ -81,6 +81,9 @@ end
 function SWEP:Deploy()
 	self:SetSecondary(math.huge)
 	return BaseClass.Deploy(self)
+end
+
+function SWEP:CancelReload()
 end
 
 -- will open door AND return what it did
