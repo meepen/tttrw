@@ -6,6 +6,30 @@ local ttt_hitmarker_sound = CreateConVar("tttrw_hitmarker_sound", "sound/tttrw/h
 local ttt_hitmarker_sound_volume = CreateConVar("tttrw_hitmarker_sound_volume", 2, FCVAR_ARCHIVE, "Hitmarker sound volume", 0, 10)
 local tttrw_hitmarker_no_direct = CreateConVar("tttrw_hitmarker_no_direct", 1, FCVAR_ARCHIVE, "Disable DMG_DIRECT hitmarker sounds", 0, 1)
 
+local cache = {}
+
+local function ResetAndPlay(station, vol)
+	station:SetTime(0)
+	station:SetVolume(vol)
+	station:Play()
+end
+
+local function Play(snd, vol)
+	if (not IsValid(cache[snd])) then
+		sound.PlayFile(snd, "mono noblock noplay", function(station, eid, err)
+			if (err) then
+				ErrorNoHalt("Error playing " .. snd .. ": " .. err .. " (" .. eid .. ")")
+				return
+			end
+
+			cache[snd] = station
+			ResetAndPlay(station, vol)
+		end)
+	else
+		ResetAndPlay(cache[snd], vol)
+	end
+end
+
 function GM:PlayerHit(atk, dmg, dmgtype, hitgroup)
     if (atk ~= LocalPlayer()) then
         return
@@ -27,14 +51,7 @@ function GM:PlayerHit(atk, dmg, dmgtype, hitgroup)
         vol = ttt_hitmarker_sound_volume:GetFloat()
     end
 
-    sound.PlayFile(snd, "mono", function(station, eid, err)
-        if (IsValid(station)) then
-            station:SetVolume(vol)
-            station:Play()
-        else
-            MsgC(Color(255,0,0,255,err))
-        end
-    end)
+	Play(snd, vol)
 end
 
 local color = Color(220, 220, 220, 255)
