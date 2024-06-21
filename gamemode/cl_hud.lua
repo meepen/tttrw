@@ -721,17 +721,32 @@ local default = [=[{
 	]
 }]=]
 
+function GM:TTTRWGetDefaultHUD()
+	local json
+	if (file.Exists("tttrw/hud.json", "DATA")) then
+		pcall(function()
+			json = util.JSONToTable(file.Read("tttrw/hud.json", "DATA"))
+		end)
+	end
+
+	if (not json) then
+		json = util.JSONToTable(default)
+	end
+
+	return json
+end
+
 file.CreateDir "tttrw"
 local function init_hud()
 	local json
 	
 	local s, e = pcall(function()
-		json = util.JSONToTable(file.Read("tttrw/hud.json", "DATA") or default)
+		json = hook.Run("TTTRWGetDefaultHUD")
 	end)
 	
 	if (not s or not json) then
 		warn("%s", e or "json ded")
-		return
+		json = util.JSONToTable(default)
 	end
 	ttt.hud.init(json)
 
