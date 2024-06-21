@@ -160,6 +160,7 @@ function GM:DoPlayerDeath(ply, atk, dmg)
 
 	if (IsValid(atk) and atk:IsPlayer() and ply ~= att) then
 		table.insert(atk.Killed, ply)
+		atk:SetKills(atk:GetKills() + 1)
 	end
 
 	for _, wep in pairs(ply:GetWeapons()) do

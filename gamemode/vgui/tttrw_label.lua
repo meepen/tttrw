@@ -75,6 +75,7 @@ function PANEL:Paint(w, h)
 	local txt = self:GetText()
 	local tw, th = surface.GetTextSize(txt)
 
+	-- TODO: lookup table for alignment
 	if (self.Alignment == 1) then
 		surface.SetTextPos(0, h - th)
 	elseif (self.Alignment == 2) then
@@ -85,8 +86,12 @@ function PANEL:Paint(w, h)
 		surface.SetTextPos(0, h / 2 - th / 2 + 1)
 	elseif (self.Alignment == 6) then
 		surface.SetTextPos(w - tw, h / 2 - th / 2 + 0.5 )
+	elseif (self.Alignment == 7) then
+		surface.SetTextPos(0, 0)
 	elseif (self.Alignment == 8) then
 		surface.SetTextPos(w / 2 - tw / 2, 0)
+	elseif (self.Alignment == 9) then
+		surface.SetTextPos(w - tw, 0)
 	else -- if (self.Alignment == 5) then
 		surface.SetTextPos(w / 2 - tw / 2, h / 2 - th / 2 + 0.5)
 	end

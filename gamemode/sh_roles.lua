@@ -278,6 +278,12 @@ hook.Add("TTTGetHiddenPlayerVariables", "Roles", function(vars)
 		Default = 0,
 		Enums = {}
 	})
+	table.insert(vars, {
+		Name = "Kills",
+		Type = "Int",
+		Default = 0,
+		Enums = {}
+	})
 end)
 
 local PLY = FindMetaTable "Player"

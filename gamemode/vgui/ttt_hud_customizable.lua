@@ -36,6 +36,10 @@ local function Set(self, key, value)
 	return Update(self, key)
 end
 
+local function Get(self, key)
+	return self.TTTRWHUDElement[key]
+end
+
 local function SetJSON(self, json)
 	if (not istable(json)) then
 		return "json not readable"
@@ -203,7 +207,7 @@ function ttt.hud.create(data, parent)
 		end
 	end
 
-	print("[TTTRW HUD]: Creating element " .. (data.name or data.element))
+	print("[TTTRW HUD]: Creating element " .. tostring(data.name or data.element))
 
 	if (parent and ttt.hud.elements[data.element].Inputs.GetCustomizeParent) then
 		parent = ttt.hud.elements[data.element].Inputs.GetCustomizeParent(parent)
@@ -297,8 +301,19 @@ function ttt.hud.getvalue(data)
 			return func(unpack(args, 1, args.n))
 		end
 
-		if (#data == 3 or #data == 4) then
-			return Color(unpack(data))
+		local created = {}
+		local couldBeColor = true
+		for key, value in pairs(data) do
+			created[key] = ttt.hud.getvalue(value)
+			if (not isnumber(key) or not isnumber(created[key])) then
+				couldBeColor = false
+			end
+		end
+
+		if ((#data == 3 or #data == 4) and couldBeColor) then
+			local col = Color(created[1], created[2], created[3], created[4] or 255)
+			col[1], col[2], col[3], col[4] = created[1], created[2], created[3], created[4]
+			return col
 		end
 	elseif (isstring(data)) then
 		if (data:StartWith "$$") then
@@ -489,6 +504,24 @@ ttt.hud.createinput("rolecolor", function()
 	end
 
 	return targ:GetRoleData().Color
+end)
+
+ttt.hud.createinput("credits", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return 0
+	end
+
+	return targ:GetCredits()
+end)
+
+ttt.hud.createinput("kills", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return 0
+	end
+
+	return targ:GetKills()
 end)
 
 ttt.hud.createinput("armor", function()
@@ -894,9 +927,18 @@ function INPUTS:SetColor(arr)
 	self:SetTextColor(ttt.hud.getvalue(arr))
 end
 
+local notAllowedToResizeDock = {
+	fill = true,
+	top = true,
+	bottom = true,
+}
+
 function INPUTS:SetText(text)
 	self:SetText(ttt.hud.getvalue(text))
-	self:SizeToContentsX()
+	-- probably will need to add more stuff here:
+	if (not notAllowedToResizeDock[Get(self, "dock")]) then
+		self:SizeToContentsX()
+	end
 end
 
 ttt.hud.registerelement("label", INPUTS, "base", "tttrw_label")
