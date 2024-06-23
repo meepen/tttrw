@@ -721,15 +721,30 @@ local default = [=[{
 	]
 }]=]
 
+function GM:TTTRWGetDefaultHUDJSON()
+	return default
+end
+
+function GM:TTTRWGetServerDefaultHUDFile()
+	return "tttrw/hud.json"
+end
+
 function GM:TTTRWGetDefaultHUD()
+	local hudFile = hook.Run "TTTRWGetServerDefaultHUDFile"
 	local json
-	if (file.Exists("tttrw/hud.json", "DATA")) then
+	if (file.Exists(hudFile, "DATA")) then
 		pcall(function()
-			json = util.JSONToTable(file.Read("tttrw/hud.json", "DATA"))
+			json = util.JSONToTable(file.Read(hudFile, "DATA"))
 		end)
+
+		if (json) then
+			file.Write(hudFile .. ".last.json", util.TableToJSON(json, true))
+			print("Saved last loaded HUD to " .. hudFile .. ".last.json")
+		end
 	end
 
 	if (not json) then
+		local default = hook.Run "TTTRWGetDefaultHUDJSON"
 		json = util.JSONToTable(default)
 	end
 
@@ -746,6 +761,7 @@ local function init_hud()
 	
 	if (not s or not json) then
 		warn("%s", e or "json ded")
+		local default = hook.Run "TTTRWGetDefaultHUDJSON"
 		json = util.JSONToTable(default)
 	end
 	ttt.hud.init(json)
@@ -850,7 +866,8 @@ function PANEL:Init()
 
 	function self.ResetButton.DoClick()
 		Derma_Query("Completely reset HUD?", "Reset", "Yes", function()
-			file.Delete "tttrw/hud.json"
+			local hudFile = hook.Run("TTTRWGetServerDefaultHUDFile")
+			file.Rename(hudFile, hudFile .. ".old.json")
 			init_hud()
 		end, "No", function() end)
 	end

@@ -461,6 +461,20 @@ ttt.hud.createinput("gunammo", function()
 	return wep:Clip1() == -1 and 0 or wep:Clip1()
 end)
 
+ttt.hud.createinput("gunammo_max", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return 0
+	end
+
+	local wep = targ:GetActiveWeapon()
+	if (not IsValid(wep)) then
+		return 0
+	end
+
+	return wep:GetMaxClip1() == -1 and 0 or wep:GetMaxClip1()
+end)
+
 ttt.hud.createinput("gunreserves", function()
 	local targ = ttt.GetHUDTarget()
 	if (not IsValid(targ)) then
@@ -594,16 +608,9 @@ ttt.hud.createinput("roundstate", function()
 	return ttt.Enums.RoundState[ttt.GetRoundState()]
 end)
 
-ttt.hud.createinput("timeleft", function()
-	local targ = ttt.GetHUDTarget()
-	if (not IsValid(targ)) then
-		return ""
-	end
-
-	local timeleft = ttt.GetVisibleRoundEndTime() - CurTime()
-
+local function timeleft(timeleft)
 	if (timeleft <= 0) then
-		return ""
+		return "0"
 	end
 
 	local text = {}
@@ -629,43 +636,57 @@ ttt.hud.createinput("timeleft", function()
 	end
 
 	return table.concat(text, ":")
+end
+
+ttt.hud.createinput("timeleft", function()
+	return timeleft(ttt.GetVisibleRoundEndTime() - CurTime())
+end)
+
+ttt.hud.createinput("is_evil", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return false
+	end
+
+	return targ:GetRoleData().Evil
+end)
+
+ttt.hud.createinput("evil_timeleft", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ) or not targ:GetRoleData().Evil) then
+		return "0"
+	end
+
+	return timeleft(ttt.GetRealRoundEndTime() - CurTime())
+end)
+
+ttt.hud.createinput("is_overtime", function()
+	return CurTime() > ttt.GetVisibleRoundEndTime()
 end)
 
 ttt.hud.createinput("overtime", function()
+	local visibleTimeLeft = ttt.GetVisibleRoundEndTime() - CurTime()
+	local defaultTime = timeleft(visibleTimeLeft)
+	if (ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
+		return defaultTime
+	end
+
 	local targ = ttt.GetHUDTarget()
-	if (not IsValid(targ) or not targ:GetRoleData().Evil or ttt.GetRoundState() ~= ttt.ROUNDSTATE_ACTIVE) then
-		return ""
+	local realTimeLeft = ttt.GetRealRoundEndTime() - CurTime()
+	
+	local isEvil = not LocalPlayer():Alive()
+		or IsValid(targ)
+		and targ:GetRoleData().Evil
+
+	if (not isEvil and visibleTimeLeft <= 0) then
+		return "Overtime"
 	end
 
-	local timeleft = ttt.GetRealRoundEndTime() - CurTime()
-
-	if (timeleft <= 0) then
-		return ""
+	if (visibleTimeLeft <= 0) then
+		return "(" .. timeleft(realTimeLeft) .. ")"
 	end
 
-	local text = {}
-	if (timeleft >= 0) then
-		local seconds = timeleft % 60
-		text[1] = string.format("%02i", math.ceil(seconds))
-		timeleft = math.floor(timeleft / 60)
-	end
-
-	if (timeleft >= 0) then
-		local minutes = timeleft % 60
-		table.insert(text, 1, minutes)
-
-		timeleft = math.floor(timeleft / 60)
-	end
-
-	if (timeleft > 0) then
-		local hours = timeleft % 24
-		text[1] = string.format("%02i", text[1])
-		table.insert(text, 1, hours)
-
-		timeleft = math.floor(timeleft / 24)
-	end
-
-	return table.concat(text, ":")
+	return defaultTime
 end)
 
 
