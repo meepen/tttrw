@@ -41,6 +41,25 @@ if (SERVER) then
 		end
 	end)
 else
+	local function matchingCommandNames(input)
+		local names = {}
+		for name, _ in pairs(ttt.QuickChat) do
+			if name:lower():find(input) then table.insert(names, name) end
+		end
+		return names
+	end
+
+	local function onAutoComplete(command, input)
+		input = input:Trim():lower()
+		local suggestions = {}
+		local names = matchingCommandNames(input)
+		for _, name in ipairs(names) do
+			local suggestion = command .. ' ' .. name
+			table.insert(suggestions, suggestion)
+		end
+		return suggestions
+	end
+
 	concommand.Add("ttt_radio", function(ply, cmd, args)
 		local str = args[1]
 		if (ttt.QuickChat[str]) then
@@ -52,10 +71,10 @@ else
 				return
 			end
 
-			ttt.radio_menu = vgui.Create "ttt_radio_menu"
+			ttt.radio_menu = vgui.Create"ttt_radio_menu"
 			ttt.radio_menu:SetActiveTime(CurTime())
 		end
-	end)
+	end, onAutoComplete)
 
 	for k in pairs(ttt.QuickChat) do
 		concommand.Add("ttt_radio_" .. k, function()
