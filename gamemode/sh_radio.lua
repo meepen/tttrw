@@ -41,6 +41,15 @@ if (SERVER) then
 		end
 	end)
 else
+	local function RadioComplete(cmd, arg)
+		local c = {}
+		for cd, _ in pairs(ttt.QuickChat) do
+		   local rcmd = "ttt_radio " .. cd
+		   table.insert(c, rcmd)
+		end
+		return c
+	 end
+
 	concommand.Add("ttt_radio", function(ply, cmd, args)
 		local str = args[1]
 		if (ttt.QuickChat[str]) then
@@ -55,7 +64,7 @@ else
 			ttt.radio_menu = vgui.Create "ttt_radio_menu"
 			ttt.radio_menu:SetActiveTime(CurTime())
 		end
-	end)
+	end, RadioComplete)
 
 	for k in pairs(ttt.QuickChat) do
 		concommand.Add("ttt_radio_" .. k, function()
