@@ -822,22 +822,22 @@ function INPUTS:SetFrameupdate(arr)
 	end
 
 	hook.Add("PreRender", self, function()
-		for _, key in ipairs(arr) do
-			local value = ttt.hud.getvalue(self.TTTRWHUDElement[key])
+		local toremove = {}
+		for i, key in ipairs(arr) do
+			local val = self.TTTRWHUDElement[key]
+			if (val == nil) then
+				table.insert(toremove, i)
+				continue
+			end
 
-			local fn = self.Inputs["Set" .. key]
-			if (not fn) then
-				fn = self.Inputs["Set" .. key:sub(1, 1):upper() .. key:sub(2)]
-			end
-	
-			if (not fn) then
-				return "unknown input: " .. key
-			end
-	
-			local err = fn(self, value)
+			local err = self:Update(key)
 			if (err) then
-				warn("%s", err)
+				warn("%s: %s", self, err)
 			end
+		end
+
+		for i = #toremove, 1, -1 do
+			table.remove(arr, toremove[i])
 		end
 	end)
 end
