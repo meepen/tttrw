@@ -1010,3 +1010,75 @@ function INPUTS:SetColor(col)
 end
 
 ttt.hud.registerelement("image", INPUTS, "base", "tttrw_hud_dimage")
+
+local PANEL = {}
+
+PANEL.PolygonDefault = {
+	{x = 0, y = 0},
+	{x = 1, y = 0},
+	{x = 1, y = 1},
+	{x = 0, y = 1},
+}
+
+function PANEL:SetColor(col)
+	self.Color = col
+end
+
+function PANEL:GetColor()
+	return self.Color or white_text
+end
+
+function PANEL:SetPolygon(polygon)
+	self.Polygon = polygon
+	self:ResizePolygon(self:GetSize())
+end
+
+function PANEL:GetPolygon()
+	return self.Polygon or self.PolygonDefault
+end
+
+function PANEL:GetSizedPolygon()
+	if (not self.SizedPolygon) then
+		self:ResizePolygon(self:GetSize())
+	end
+
+	return self.SizedPolygon
+end
+
+function PANEL:PerformLayout(w, h)
+	self:ResizePolygon(w, h)  
+end
+
+function PANEL:ResizePolygon(w, h)
+	local polygon = self:GetPolygon()
+	local newPolygon = {}
+	for i = 1, #polygon do
+		newPolygon[i] = {x = polygon[i].x * w, y = polygon[i].y * h}
+	end
+
+	self.SizedPolygon = newPolygon
+end
+
+function PANEL:Paint(w, h)
+	surface.SetDrawColor(self:GetColor())
+	draw.NoTexture()
+	render.PushFilterMin(TEXFILTER.ANISOTROPIC)
+	render.PushFilterMag(TEXFILTER.ANISOTROPIC)
+	surface.DrawPoly(self.SizedPolygon)
+	render.PopFilterMag()
+	render.PopFilterMin()
+end
+
+vgui.Register("tttrw_polygon", PANEL, "EditablePanel")
+
+local INPUTS = {}
+
+function INPUTS:SetColor(col)
+	self:SetColor(ttt.hud.getvalue(col))
+end
+
+function INPUTS:SetPolygon(polygon)
+	self:SetPolygon(ttt.hud.getvalue(polygon))
+end
+
+ttt.hud.registerelement("polygon", INPUTS, "base", "ve_polygon")
