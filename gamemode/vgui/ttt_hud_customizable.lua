@@ -495,6 +495,15 @@ ttt.hud.createinput("health", function()
 		return 0
 	end
 
+	return targ:Health()
+end)
+
+ttt.hud.createinput("healthfloat", function()
+	local targ = ttt.GetHUDTarget()
+	if (not IsValid(targ)) then
+		return 0
+	end
+
 	return targ:Health() + targ:GetHealthFloat()
 end)
 
