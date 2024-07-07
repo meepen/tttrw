@@ -495,7 +495,7 @@ ttt.hud.createinput("health", function()
 		return 0
 	end
 
-	return targ:Health()
+	return targ:Health() + targ:GetHealthFloat()
 end)
 
 ttt.hud.createinput("maxhealth", function()

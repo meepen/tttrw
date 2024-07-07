@@ -162,6 +162,7 @@ function round.Prepare()
 			ply:StripWeapons()
 			ply:Spawn()
 			ply:SetHealth(ply:GetMaxHealth())
+			ply:SetHealthFloat(0)
 			ply:SetTeam(TEAM_TERROR)
 			printf("%s <%s> has been respawned", ply:Nick(), ply:SteamID())
 		end
@@ -368,6 +369,7 @@ function GM:TTTBeginRound()
 		end
 
 		info.Player:SetHealth(info.Player:GetMaxHealth())
+		info.Player:SetHealthFloat(0)
 		hook.Run("TTTRWSetHealth", info.Player)
 		info.Player:Extinguish()
 	end
