@@ -1081,4 +1081,4 @@ function INPUTS:SetPolygon(polygon)
 	self:SetPolygon(ttt.hud.getvalue(polygon))
 end
 
-ttt.hud.registerelement("polygon", INPUTS, "base", "ve_polygon")
+ttt.hud.registerelement("polygon", INPUTS, "base", "tttrw_polygon")
